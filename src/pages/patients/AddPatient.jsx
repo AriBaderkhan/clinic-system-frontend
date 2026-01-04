@@ -14,7 +14,7 @@ const handleCreate = async (payload) => {
   try {
     const result = await createPatients(payload);
     if (result.ok) {
-    navigate("/dashboard/patients");
+    navigate("/reception/patients");
   } 
     
   } catch (error) {

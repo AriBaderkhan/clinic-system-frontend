@@ -48,7 +48,7 @@ function EditPatient() {
   const handleUpdate = async (payload) => {
     const result = await updatePatient(patientId, payload);
     if (!result.ok) return; // error is already handled in hook
-    navigate("/dashboard/patients");
+    navigate("/reception/patients");
   };
 
   if (isLoadingPatient) {
