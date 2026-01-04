@@ -58,7 +58,7 @@ function EditAppointment() {
         scheduled_start: formValues.scheduled_start,
       });
 
-      navigate("/dashboard/appointments");
+      navigate("/reception/appointments");
     } catch (err) {
       console.error("Failed to update appointment:", err);
       const msg =
