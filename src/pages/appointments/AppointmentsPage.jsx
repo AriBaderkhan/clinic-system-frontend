@@ -5,7 +5,7 @@ import useAppointments from "../../hooks/useAppointments";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import appointmentApi from "../../api/appointmentApi";
-
+import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 function AppointmentPage() {
   const navigate = useNavigate();
 
@@ -21,6 +21,7 @@ function AppointmentPage() {
   });
 
   const [selectedForStatus, setSelectedForStatus] = useState(null);
+  const [selectedForComplete, setSelectedForComplete] = useState(null);
   const [selectedDetailsId, setSelectedDetailsId] = useState(null);
   const [actionError, setActionError] = useState("");
 
@@ -48,7 +49,7 @@ function AppointmentPage() {
     navigate(`/reception/appointments/${id}/edit`);
   };
 
-   const normalizedSearch = searchTerm.trim().toLowerCase();
+  const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const filteredAppointments = appointments.filter((a) => {
     if (!normalizedSearch) return true; // no search → keep all
@@ -86,6 +87,15 @@ function AppointmentPage() {
           onClose={() => setSelectedDetailsId(null)}
         />
       )}
+
+      {selectedForComplete && (
+        <CompleteAppointmentModal
+          appointment={selectedForComplete}
+          onClose={() => setSelectedForComplete(null)}
+          onCompleted={refresh} // or refreshAppointments based on your page
+        />
+      )}
+
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -271,7 +281,13 @@ function AppointmentPage() {
                       <td className="px-3 py-2 text-slate-700">
                         <button
                           type="button"
-                          onClick={() => setSelectedForStatus(a)}
+                          onClick={() => {
+                            if (a.status === "in_progress") {
+                              setSelectedForComplete(a);
+                            } else {
+                              setSelectedForStatus(a);
+                            }
+                          }}
                           className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] capitalize text-slate-700 hover:bg-slate-100"
                         >
                           {a.status}
