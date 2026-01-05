@@ -10,8 +10,15 @@ const navItems = [
   { label: "Reports", path: "reports" },
 ];
 
+// const name = localStorage.getItem('name')
+const handleLogout = () => {
+  localStorage.clear(); // or removeItem("token"), removeItem("role")
+  window.location.href = "/";
+};
+
 export default function ReceptionLayout() {
   const [open, setOpen] = useState(false);
+
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900">
@@ -39,7 +46,7 @@ export default function ReceptionLayout() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-              <span className="text-[11px] text-slate-400">Admin Dashboard</span>
+              <span className="text-[11px] text-slate-400">Reception Dashboard</span>
             </div>
           </div>
 
@@ -75,8 +82,21 @@ export default function ReceptionLayout() {
           ))}
         </nav>
 
+        <div className="border-t border-slate-800 px-3 py-3">
+          <button
+            onClick={() => {
+              handleLogout();
+              setOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+          >
+            <span>Logout</span>
+          </button>
+        </div>
+
+
         <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
-          Logged in as <span className="text-slate-200">Admin</span>
+          Powered By <span className="text-slate-200">Tradi Company</span>
         </div>
       </aside>
 
@@ -88,7 +108,7 @@ export default function ReceptionLayout() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-slate-400">Admin Dashboard</span>
+            <span className="text-[11px] text-slate-400">Reception Dashboard</span>
           </div>
         </div>
 
@@ -114,9 +134,21 @@ export default function ReceptionLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
-          Logged in as <span className="text-slate-200">Admin</span>
+        <div className="border-t border-slate-800 px-3 py-3">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+          >
+            <span>Logout</span>
+          </button>
         </div>
+
+        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
+          Powered By <span className="text-slate-200">Tradi Company</span>
+        </div>
+
+
+
       </aside>
 
       {/* ===== Main area ===== */}
@@ -138,8 +170,8 @@ export default function ReceptionLayout() {
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right text-xs sm:block">
-              <div className="font-medium text-white">Admin User</div>
-              <div className="text-slate-400">admin@clinic.com</div>
+              <div className="font-medium text-white">Reception User</div>
+              {/* <div className="text-slate-400">admin@clinic.com</div> */}
             </div>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
               A
@@ -153,4 +185,6 @@ export default function ReceptionLayout() {
       </div>
     </div>
   );
+
 }
+

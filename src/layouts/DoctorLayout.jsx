@@ -7,6 +7,12 @@ export default function DoctorLayout() {
   const [open, setOpen] = useState(false);
   const role = localStorage.getItem("role");
 
+  const name = localStorage.getItem('name')
+  const handleLogout = () => {
+    localStorage.clear(); // or removeItem("token"), removeItem("role")
+    window.location.href = "/";
+  };
+
   const navItems = useMemo(() => {
     return [
       { label: "Dashboard", path: "/doctor", end: true },
@@ -76,6 +82,20 @@ export default function DoctorLayout() {
             </NavLink>
           ))}
         </nav>
+        <div className="border-t border-slate-800 px-3 py-3">
+          <button
+            onClick={() => {
+              handleLogout();
+              setOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+          >
+            <span>Logout</span>
+          </button>
+        </div>
+        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
+          Powered By <span className="text-slate-200">Tradi Company</span>
+        </div>
       </aside>
 
       {/* ===== Desktop sidebar ===== */}
@@ -86,7 +106,7 @@ export default function DoctorLayout() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-slate-400">Doctor Dashboard</span>
+            <span className="text-[11px] text-slate-400">Dr.{name} Dashboard</span>
           </div>
         </div>
 
@@ -111,6 +131,19 @@ export default function DoctorLayout() {
             </NavLink>
           ))}
         </nav>
+
+        <div className="border-t border-slate-800 px-3 py-3">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+          >
+            <span>Logout</span>
+          </button>
+        </div>
+
+        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
+          Powered By <span className="text-slate-200">Tradi Company</span>
+        </div>
       </aside>
 
       {/* ===== Main area ===== */}
