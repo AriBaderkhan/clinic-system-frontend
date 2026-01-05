@@ -180,9 +180,20 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         return;
       }
 
-      if (v < meta.min_price) {
-        errs[type] = `Must be at least ${meta.min_price.toLocaleString()} IQD.`;
-      }
+      // if (v < meta.min_price) {
+      //   errs[type] = `Must be at least ${meta.min_price.toLocaleString()} IQD.`;
+      // }
+
+      const qty =
+  works
+    .filter((w) => getCatalogMetaById(w.work_id)?.code === type)
+    .reduce((sum, w) => sum + Number(w.quantity ?? 1), 0) || 1;
+
+const minTotal = meta.min_price * qty;
+
+if (v < minTotal) {
+  errs[type] = `Must be at least ${minTotal.toLocaleString()} IQD.`;
+}
     });
 
     setAgreementErrors(errs);
@@ -232,8 +243,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       works: cleanedWorks,
       agreementTotals: agreementTotalsPayload, // could be empty {}
       planCompletion: Object.fromEntries(
-    [...selectedTreatmentTypes].map((t) => [t, !!planCompletion[t]])
-  ),
+        [...selectedTreatmentTypes].map((t) => [t, !!planCompletion[t]])
+      ),
     };
 
     try {
@@ -413,17 +424,17 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                       </div>
 
                     );
-                    
-                      
+
+
                   }
 
 
-                return (
-                <div key={type} className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs">
-                  <div className="font-semibold">{title}</div>
-                  <div className="text-amber-700 mt-1">No active plan → agreement required</div>
-                </div>
-                );
+                  return (
+                    <div key={type} className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs">
+                      <div className="font-semibold">{title}</div>
+                      <div className="text-amber-700 mt-1">No active plan → agreement required</div>
+                    </div>
+                  );
                 })}
               </div>
             </div>
@@ -445,6 +456,14 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
                   if (!meta) return null;
 
+                  const qty =
+                    works
+                      .filter(w => getCatalogMetaById(w.work_id)?.code === type)
+                      .reduce((sum, w) => sum + Number(w.qty ?? w.quantity ?? 1), 0) || 1;
+
+
+                  const minTotal = meta.min_price * qty;
+
                   return (
                     <div key={type} className="space-y-1">
                       <label className="text-[11px] font-medium text-slate-700">
@@ -452,18 +471,18 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                       </label>
                       <input
                         type="number"
-                        min={meta.min_price}
-                        value={agreementTotals[type]}
+                        min={minTotal}
+                        value={agreementTotals[type] || minTotal}
                         onChange={(e) => {
-                          const v = e.target.value;
-                          setAgreementTotals((prev) => ({ ...prev, [type]: v }));
+                          // const v = e.target.value;
+                          setAgreementTotals((prev) => ({ ...prev, [type]: Number(e.target.value) }));
                           setAgreementErrors((prev) => ({ ...prev, [type]: "" }));
                         }}
                         className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
-                        placeholder={`Min: ${meta.min_price.toLocaleString()} IQD`}
+                        placeholder={`Min: ${meta.min_price.toLocaleString()} * ${qty} IQD`}
                       />
                       <p className="text-[11px] text-slate-500">
-                        Min: <span className="font-semibold">{meta.min_price.toLocaleString()} IQD</span>
+                        Min: <span className="font-semibold">{meta.min_price.toLocaleString()} × {qty} = {minTotal.toLocaleString()} IQD</span>
                       </p>
                       {agreementErrors[type] && <p className="text-[11px] text-red-600">{agreementErrors[type]}</p>}
                     </div>
