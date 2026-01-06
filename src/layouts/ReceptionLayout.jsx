@@ -4,8 +4,9 @@ import { useState } from "react";
 
 const navItems = [
   { label: "Dashboard", path: "", end: true },
-  { label: "Appointments", path: "appointments" },
   { label: "Patients", path: "patients" },
+  { label: "Appointments", path: "appointments" },
+  { label: "Sessions", path: "sessions" },
   { label: "History", path: "history" },
   { label: "Reports", path: "reports" },
 ];

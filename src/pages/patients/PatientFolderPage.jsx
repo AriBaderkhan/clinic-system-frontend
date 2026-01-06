@@ -300,8 +300,9 @@ export default function PatientFolderPage() {
               {[
                 { key: "all", label: "All" },
                 { key: "ORTHO", label: "Ortho" },
-                { key: "RCT", label: "RCT" },
                 { key: "IMPLANT", label: "Implant" },
+                { key: "RCT", label: "RCT" },
+                { key: "RE_RCT", label: "RE_RCT" },
               ].map((f) => (
                 <button
                   key={f.key}

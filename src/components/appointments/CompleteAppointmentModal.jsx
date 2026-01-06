@@ -8,7 +8,7 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-const TREATMENT_TYPES = ["ortho", "implant", "rct"];
+const TREATMENT_TYPES = ["ortho", "implant", "rct","re_rct"];
 
 export default function CompleteAppointmentModal({ appointment, onClose, onCompleted }) {
   const [nextPlan, setNextPlan] = useState("");
@@ -21,12 +21,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const [error, setError] = useState("");
 
   // agreement inputs (only for types that DON'T have active plan)
-  const [agreementTotals, setAgreementTotals] = useState({ ortho: "", implant: "", rct: "" });
-  const [agreementErrors, setAgreementErrors] = useState({ ortho: "", implant: "", rct: "" });
+  const [agreementTotals, setAgreementTotals] = useState({ ortho: "", implant: "", rct: "", re_rct: "" });
+  const [agreementErrors, setAgreementErrors] = useState({ ortho: "", implant: "", rct: "", re_rct: "" });
   const [planCompletion, setPlanCompletion] = useState({
     ortho: false,
     implant: false,
     rct: false,
+    re_rct: false,
   });
 
   // active plan state for each type
@@ -35,6 +36,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     ortho: { loading: false, plan: null },
     implant: { loading: false, plan: null },
     rct: { loading: false, plan: null },
+    re_rct: { loading: false, plan: null },
   });
 
   const apptId = appointment.id ?? appointment.appointment_id;
@@ -141,6 +143,33 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTreatmentTypes, patientId]);
 
+  // Auto-update agreement total when quantity changes
+  useEffect(() => {
+    selectedTreatmentTypes.forEach((type) => {
+      const meta = works
+        .map((w) => getCatalogMetaById(w.work_id))
+        .find((m) => m && m.code === type);
+
+      if (meta) {
+        const qty = works
+          .filter((w) => getCatalogMetaById(w.work_id)?.code === type)
+          .reduce((sum, w) => sum + Number(w.quantity || 1), 0);
+
+        const minTotal = meta.min_price * qty;
+
+        // Only auto-update if the current value is empty OR 
+        // if the current value is less than the new minimum
+        setAgreementTotals((prev) => {
+          const currentVal = Number(prev[type]);
+          if (!currentVal || currentVal < minTotal) {
+            return { ...prev, [type]: minTotal };
+          }
+          return prev;
+        });
+      }
+    });
+  }, [works, selectedTreatmentTypes, catalog]);
+
   const handleChangeWork = (index, field, value) => {
     setWorks((prev) => prev.map((w, i) => (i === index ? { ...w, [field]: value } : w)));
   };
@@ -154,7 +183,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   };
 
   const validateAgreementTotals = () => {
-    const errs = { ortho: "", implant: "", rct: "" };
+    const errs = { ortho: "", implant: "", rct: "", re_rct: "" };
 
     // only validate types that are selected AND do NOT have active plan
     selectedTreatmentTypes.forEach((type) => {
@@ -181,19 +210,19 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       }
 
       // if (v < meta.min_price) {
-      //   errs[type] = `Must be at least ${meta.min_price.toLocaleString()} IQD.`;
+      //   errs[type] = Must be at least ${meta.min_price.toLocaleString()} IQD.;
       // }
 
       const qty =
-  works
-    .filter((w) => getCatalogMetaById(w.work_id)?.code === type)
-    .reduce((sum, w) => sum + Number(w.quantity ?? 1), 0) || 1;
+        works
+          .filter((w) => getCatalogMetaById(w.work_id)?.code === type)
+          .reduce((sum, w) => sum + Number(w.quantity ?? 1), 0) || 1;
 
-const minTotal = meta.min_price * qty;
+      const minTotal = meta.min_price * qty;
 
-if (v < minTotal) {
-  errs[type] = `Must be at least ${minTotal.toLocaleString()} IQD.`;
-}
+      if (v < minTotal) {
+        errs[type] = `Must be at least ${minTotal.toLocaleString()} IQD.`;
+      }
     });
 
     setAgreementErrors(errs);
@@ -472,14 +501,15 @@ if (v < minTotal) {
                       <input
                         type="number"
                         min={minTotal}
-                        value={agreementTotals[type] || minTotal}
+                        // This connects the input to the state we updated in the useEffect above
+                        value={agreementTotals[type] || ""}
                         onChange={(e) => {
-                          // const v = e.target.value;
-                          setAgreementTotals((prev) => ({ ...prev, [type]: Number(e.target.value) }));
+                          // This allows the doctor to manually override the automatic number
+                          setAgreementTotals((prev) => ({ ...prev, [type]: e.target.value }));
                           setAgreementErrors((prev) => ({ ...prev, [type]: "" }));
                         }}
                         className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
-                        placeholder={`Min: ${meta.min_price.toLocaleString()} * ${qty} IQD`}
+                        placeholder={`Min: ${minTotal.toLocaleString()} IQD`}
                       />
                       <p className="text-[11px] text-slate-500">
                         Min: <span className="font-semibold">{meta.min_price.toLocaleString()} × {qty} = {minTotal.toLocaleString()} IQD</span>
