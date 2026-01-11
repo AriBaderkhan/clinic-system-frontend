@@ -28,7 +28,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const payNormal =
     normalAmount !== "" && Number.isFinite(normalNumeric) && normalNumeric > 0;
 
-  const isNormalBelowMin = payNormal && normalNumeric < minTotal;
+  // const isNormalBelowMin = payNormal && normalNumeric < minTotal;
 
   // Build planPayments + validation (no memo)
   const planPaymentsArray = [];
@@ -60,8 +60,9 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   // const noPaymentProvided = !payNormal && !payPlans;
   const hasPlanErrors = Object.keys(planErrors).length > 0;
 
+  //isNormalBelowMin
   const disableSubmit =
-    isSubmitting  || isNormalBelowMin || hasPlanErrors;
+    isSubmitting   || hasPlanErrors;
 
   const handleChangePlanAmount = (planId, value) => {
     setPlanAmounts((prev) => ({ ...prev, [String(planId)]: value }));
@@ -234,18 +235,19 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               step="1"
               value={normalAmount}
               onChange={(e) => setNormalAmount(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${
-                isNormalBelowMin
-                  ? "border-red-400 bg-red-50"
-                  : "border-slate-200 bg-white focus:border-[#1DB954]"
-              }`}
+              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none`}
+              //  ${
+              //   isNormalBelowMin
+              //     ? "border-red-400 bg-red-50"
+              //     : "border-slate-200 bg-white focus:border-[#1DB954]"
+              // }
               placeholder={total ? String(total) : "Enter amount"}
             />
-            {isNormalBelowMin && (
+            {/* {isNormalBelowMin && (
               <p className="text-[11px] text-red-500">
                 Amount cannot be less than minimum total ({formatMoney(minTotal)}).
               </p>
-            )}
+            )} */}
             
             
           </div>
