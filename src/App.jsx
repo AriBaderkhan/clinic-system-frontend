@@ -143,6 +143,7 @@ import EditAppointment from "./pages/appointments/EditAppointment";
 import PaymentHistory from "./pages/history/PaymentHistory";
 import ReportsPage from "./pages/reports/ReportsPage";
 import SessionsPage from './pages/sessions/SessionsPage'
+import TreatmentPlanPage from './pages/treatment_plan/TreatmentPlanPage'
 
 // Doctor pages
 import DoctorDashboard from './pages/doctor/DoctorDashboard'
@@ -191,6 +192,7 @@ export default function App() {
         {/* Reception allowed */}
         <Route path="reports" element={<ReportsPage />} />
         <Route path="sessions" element={<SessionsPage />} />
+        <Route path="treatment_plan" element={<TreatmentPlanPage />} />
       </Route>
 
       {/* ===================== DOCTOR ===================== */}

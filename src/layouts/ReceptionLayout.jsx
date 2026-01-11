@@ -7,6 +7,7 @@ const navItems = [
   { label: "Patients", path: "patients" },
   { label: "Appointments", path: "appointments" },
   { label: "Sessions", path: "sessions" },
+  { label: "Treatment Plan", path: "treatment_plan" },
   { label: "History", path: "history" },
   { label: "Reports", path: "reports" },
 ];
