@@ -10,12 +10,14 @@ function usePatients(options = {}) {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false); // for create/update/delete
 
+  const q = options.search?.trim() || "";
+
   const fetchPatients = useCallback(async () => {
     try {
       setIsLoading(true);
       setError("");
 
-      const res = await patientApi.getAllPatients();
+      const res = await patientApi.getAllPatients(q );
 
       // backend sends: { message, patients: [...] }
       const data = res.data;
@@ -31,7 +33,7 @@ function usePatients(options = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [q]);
 
   // CREATE patient (used by AddPatient page)
   const createPatients = useCallback(

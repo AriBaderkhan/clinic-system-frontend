@@ -1,9 +1,16 @@
 // src/pages/PatientsPage.jsx
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import usePatients from "../../hooks/usePatients";
 
 function PatientsPage() {
-  const { patients, isLoading, error, refresh, deletePatient } = usePatients();
+    const [searchTerm, setSearchTerm] = useState("");
+  const { patients, isLoading, error, refresh, deletePatient } = usePatients({
+    search: searchTerm,
+  });
+
+    // const normalizedSearch = searchTerm.trim().toLowerCase();
+
   const navigate = useNavigate();
 
   const handleEdit = (id) => {
@@ -54,6 +61,16 @@ function PatientsPage() {
               ? "Loading patients…"
               : `Total patients: ${patients.length}`}
           </div>
+             <div className="flex items-center gap-1">
+              <span className="text-[11px] text-slate-500">Search:</span>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Patient, phone"
+                className="w-80 rounded-md border border-slate-700 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+            </div>
           <button
             type="button"
             onClick={refresh}
