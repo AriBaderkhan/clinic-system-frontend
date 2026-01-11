@@ -42,8 +42,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
         return sum;
     }, [works, catalog]);
 
-    const paidNumber = Number(totalPaid || 0);
-    const isUnderPaid = paidNumber < estimatedTotal;
+    // const paidNumber = Number(totalPaid || 0);
+    // const isUnderPaid = paidNumber < estimatedTotal;
 
     useEffect(() => {
         let alive = true;
@@ -270,10 +270,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                         onChange={(e) => setTotalPaid(e.target.value)}
                                         className={[
                                             "mt-2 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-1",
-                                            isUnderPaid
-                                                ? "border-red-400 focus:border-red-400 focus:ring-red-400"
-                                                : "border-slate-200 focus:border-[#1DB954] focus:ring-[#1DB954]",
                                         ].join(" ")}
+                                        // isUnderPaid
+                                        //         ? "border-red-400 focus:border-red-400 focus:ring-red-400"
+                                        //         : "border-slate-200 focus:border-[#1DB954] focus:ring-[#1DB954]",
                                     />
 
                                 </div>
@@ -366,10 +366,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 <button
                                     type="button"
                                     onClick={handleSave}
-                                    disabled={isSaving || isUnderPaid}
+                                    disabled={isSaving }
                                     className={[
                                         "rounded-xl px-6 py-2 text-sm font-semibold text-white",
-                                        isSaving || isUnderPaid
+                                        isSaving 
                                             ? "bg-gray-300 cursor-not-allowed"
                                             : "bg-[#1DB954] hover:opacity-90",
                                     ].join(" ")}
