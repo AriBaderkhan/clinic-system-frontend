@@ -54,6 +54,7 @@ function EditAppointment() {
       setError("");
 
       await appointmentApi.editAppointment(appointmentId, {
+        patient_id: formValues.patient_id,
         doctor_id: formValues.doctor_id,
         scheduled_start: formValues.scheduled_start,
       });

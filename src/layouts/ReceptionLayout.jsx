@@ -43,9 +43,8 @@ export default function ReceptionLayout() {
       >
         <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
-              CD
-            </div>
+              <img src="../img/crown.jpg" alt="" className="flex h-9 w-9 items-center justify-center rounded-full" />
+            
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
               <span className="text-[11px] text-slate-400">Reception Dashboard</span>

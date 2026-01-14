@@ -19,10 +19,10 @@ function AppointmentForm({
   const [selectedPatient, setSelectedPatient] = useState(
     mode === "edit" && initialData
       ? {
-          id: initialData.patient_id,
-          name: initialData.patient_name,
-          phone: initialData.patient_phone,
-        }
+        id: initialData.patient_id,
+        name: initialData.patient_name,
+        phone: initialData.patient_phone,
+      }
       : null
   );
   const [patientResults, setPatientResults] = useState([]);
@@ -31,27 +31,86 @@ function AppointmentForm({
 
   // ------------------ OTHER FIELDS ------------------
   const [form, setForm] = useState({
+    patient_id: initialData?.patient_id ? String(initialData.patient_id) : "",
     doctor_id: initialData?.doctor_id ? String(initialData.doctor_id) : "",
     appointment_type: initialData?.appointment_type ?? "normal",
     scheduled_start:
       initialData?.scheduled_start?.slice(0, 16) ?? "", // datetime-local format
   });
 
+  // useEffect(() => {
+  //   if (!initialData || mode !== "edit") return;
+  //   setForm({
+  //     doctor_id: initialData.doctor_id ? String(initialData.doctor_id) : "",
+  //     appointment_type: initialData.appointment_type ?? "normal",
+  //     scheduled_start: initialData.scheduled_start.slice(0, 16),
+  //   });
+  // }, [initialData, mode]);
+
   useEffect(() => {
     if (!initialData || mode !== "edit") return;
+
     setForm({
       doctor_id: initialData.doctor_id ? String(initialData.doctor_id) : "",
       appointment_type: initialData.appointment_type ?? "normal",
       scheduled_start: initialData.scheduled_start.slice(0, 16),
     });
+
+    // ADD THIS PART - Make sure selectedPatient is set correctly in edit mode
+    setSelectedPatient({
+      id: initialData.patient_id,
+      name: initialData.patient_name,
+      phone: initialData.patient_phone,
+    });
+
+    setPatientQuery(`${initialData.patient_name} – ${initialData.patient_phone}`);
   }, [initialData, mode]);
 
   // 🔍 debounce patient search (ADD mode only)
-  useEffect(() => {
-    if (mode === "edit") return;
+  // useEffect(() => {
+  //   // if (mode === "edit") return;
 
+  //   const q = patientQuery.trim();
+  //   setPatientError("");
+
+  //   if (!q || q.length < 2) {
+  //     setPatientResults([]);
+  //     return;
+  //   }
+
+  //   const timer = setTimeout(async () => {
+  //     try {
+  //       setIsPatientSearching(true);
+  //       const res = await patientApi.searchPatients(q);
+  //       const data = res.data;
+
+  //       const list = Array.isArray(data)
+  //         ? data
+  //         : data.patients || data.data || [];
+
+  //       setPatientResults(list);
+  //     } catch (err) {
+  //       console.error("Patient search failed:", err);
+  //       setPatientError("Could not search patients. Try again.");
+  //       setPatientResults([]);
+  //     } finally {
+  //       setIsPatientSearching(false);
+  //     }
+  //   }, 300);
+
+  //   return () => clearTimeout(timer);
+  // }, [patientQuery, mode]);
+
+  useEffect(() => {
     const q = patientQuery.trim();
     setPatientError("");
+
+    // Skip search if in edit mode and query hasn't changed from initial
+    if (mode === "edit" && initialData &&
+      q === `${initialData.patient_name} – ${initialData.patient_phone}`) {
+      setPatientResults([]);
+      return;
+    }
 
     if (!q || q.length < 2) {
       setPatientResults([]);
@@ -79,7 +138,7 @@ function AppointmentForm({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [patientQuery, mode]);
+  }, [patientQuery, mode, initialData]);
 
   const handlePatientSelect = (p) => {
     setSelectedPatient(p);
@@ -92,45 +151,92 @@ function AppointmentForm({
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   let patient_id;
+
+  //   if (mode === "add") {
+  //     if (!selectedPatient?.id) {
+  //       setPatientError("Please select a patient from the list.");
+  //       return;
+  //     }
+  //     patient_id = selectedPatient.id;
+  //   } else {
+  //     if (!selectedPatient?.id) {
+  //       setPatientError("Please select a patient from the list.");
+  //       return;
+  //     }
+  //     patient_id = selectedPatient.id;
+  //   }
+
+
+  //   if (!form.doctor_id || !form.scheduled_start) {
+  //     setPatientError("Doctor and date/time are required.");
+  //     return;
+  //   }
+
+  //   const basePayload = {
+  //     doctor_id: Number(form.doctor_id),
+  //     scheduled_start: new Date(form.scheduled_start).toISOString(),
+  //   };
+
+  //   let payload;
+
+  //   if (mode === "add") {
+  //     payload = {
+  //       ...basePayload,
+  //       patient_id: Number(patient_id),
+  //       appointment_type: form.appointment_type, // only send in ADD
+  //     };
+  //   } else {
+  //     // EDIT -> only doctor + time
+  //     payload = { ...basePayload, patient_id: Number(patient_id) };
+  //   }
+
+  //   await onSubmit(payload);
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  let patient_id;
+    let patient_id;
 
-  if (mode === "add") {
+    // In both modes, check if patient is selected
     if (!selectedPatient?.id) {
       setPatientError("Please select a patient from the list.");
       return;
     }
+
     patient_id = selectedPatient.id;
-  } else {
-    patient_id = initialData.patient_id;
-  }
 
-  if (!form.doctor_id || !form.scheduled_start) {
-    setPatientError("Doctor and date/time are required.");
-    return;
-  }
+    if (!form.doctor_id || !form.scheduled_start) {
+      setPatientError("Doctor and date/time are required.");
+      return;
+    }
 
-  const basePayload = {
-    doctor_id: Number(form.doctor_id),
-    scheduled_start: new Date(form.scheduled_start).toISOString(),
-  };
-
-  let payload;
-
-  if (mode === "add") {
-    payload = {
-      ...basePayload,
-      patient_id: Number(patient_id),
-      appointment_type: form.appointment_type, // only send in ADD
+    const basePayload = {
+      patient_id: Number(patient_id),  // Always include patient_id
+      doctor_id: Number(form.doctor_id),
+      scheduled_start: new Date(form.scheduled_start).toISOString(),
     };
-  } else {
-    // EDIT -> only doctor + time
-    payload = basePayload;
-  }
 
-  await onSubmit(payload);
+    let payload;
+
+    if (mode === "add") {
+      payload = {
+        ...basePayload,
+        appointment_type: form.appointment_type,
+      };
+    } else {
+      // EDIT mode - send patient_id, doctor_id, and scheduled_start
+      payload = basePayload;
+    }
+
+    console.log("🔍 Mode:", mode);
+    console.log("🔍 Selected Patient:", selectedPatient);
+    console.log("🔍 Payload being sent:", payload);
+    await onSubmit(payload);
   };
 
   return (
@@ -142,7 +248,7 @@ function AppointmentForm({
       )}
 
       {/* PATIENT FIELD */}
-      {mode === "add" ? (
+      {mode === "add" || mode === "edit" ? (
         <div className="relative space-y-1">
           <label className="block text-xs font-medium text-slate-700">
             Patient (type name or phone)
@@ -176,17 +282,19 @@ function AppointmentForm({
             </ul>
           )}
         </div>
-      ) : (
-        <div className="space-y-1">
-          <label className="block text-xs font-medium text-slate-700">
-            Patient
-          </label>
-          <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800">
-            {initialData?.patient_name} –{" "}
-            <span className="text-slate-500">{initialData?.patient_phone}</span>
-          </div>
-        </div>
-      )}
+      )
+        // : (
+        //   <div className="space-y-1">
+        //     <label className="block text-xs font-medium text-slate-700">
+        //       Patient
+        //     </label>
+        //     <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800">
+        //       {initialData?.patient_name} –{" "}
+        //       <span className="text-slate-500">{initialData?.patient_phone}</span>
+        //     </div>
+        //   </div>
+        // )
+        : null}
 
       {/* DOCTOR SELECT */}
       <div className="space-y-1">
@@ -256,8 +364,8 @@ function AppointmentForm({
               ? "Creating..."
               : "Saving..."
             : mode === "add"
-            ? "Create Appointment"
-            : "Save Changes"}
+              ? "Create Appointment"
+              : "Save Changes"}
         </button>
       </div>
     </form>
