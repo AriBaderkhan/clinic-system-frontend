@@ -23,7 +23,10 @@ export default function useTreatmentPlansSection() {
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
   const [editingTpId, setEditingTpId] = useState(null);
-  const [tpDraft, setTpDraft] = useState({ type: "", agreed_total: "" });
+
+  // const [tpDraft, setTpDraft] = useState({ type: "", agreed_total: "" });
+  const [tpDraft, setTpDraft] = useState({ type: "", agreed_total: "", is_completed: false });
+
   const [savingTp, setSavingTp] = useState(false);
 
   const [editingPaid, setEditingPaid] = useState({ tpId: null, sessionId: null });
@@ -69,17 +72,28 @@ export default function useTreatmentPlansSection() {
     }
   };
 
+  // const startEditTp = (tp) => {
+  //   setEditingTpId(tp.id);
+  //   setTpDraft({
+  //     type: tp.type ?? "",
+  //     agreed_total: String(tp.agreed_total ?? ""),
+  //   });
+  // };
+
   const startEditTp = (tp) => {
     setEditingTpId(tp.id);
     setTpDraft({
       type: tp.type ?? "",
       agreed_total: String(tp.agreed_total ?? ""),
+      is_completed: !!tp.is_completed,
     });
   };
 
+
   const cancelEditTp = () => {
     setEditingTpId(null);
-    setTpDraft({ type: "", agreed_total: "" });
+    setTpDraft({ type: "", agreed_total: "", is_completed: false });
+
   };
 
   const saveEditTp = async (tp) => {
@@ -90,6 +104,9 @@ export default function useTreatmentPlansSection() {
     const agreedNum = Number(String(tpDraft.agreed_total).replace(/,/g, "").trim());
     if (String(tpDraft.agreed_total).trim() !== "" && Number.isFinite(agreedNum)) {
       if (agreedNum !== Number(tp.agreed_total)) payload.agreed_total = agreedNum;
+    }
+    if (tpDraft.is_completed !== !!tp.is_completed) {
+      payload.is_completed = tpDraft.is_completed;
     }
 
     if (Object.keys(payload).length === 0) {

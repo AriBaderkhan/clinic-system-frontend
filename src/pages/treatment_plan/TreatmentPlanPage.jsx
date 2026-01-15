@@ -170,7 +170,28 @@ export default function TreatmentPlanPage() {
                                         <td>{tp.total_paid}</td>
                                         <td>{tp.remaining}</td>
                                         <td>{isPaid ? "Paid" : "Due"}</td>
-                                        <td>{tp.is_completed ? "Done" : "Still Active"}</td>
+                                        {/* <td>{tp.is_completed ? "Done" : "Still Active"}</td> Here */}
+
+                                        <td>
+                                            {editingTpId === tp.id ? (
+                                                <select
+                                                    value={tpDraft.is_completed ? "done" : "undone"}
+                                                    onChange={(e) =>
+                                                        setTpDraft((prev) => ({
+                                                            ...prev,
+                                                            is_completed: e.target.value === "done",
+                                                        }))
+                                                    }
+                                                    disabled={savingTp}
+                                                >
+                                                    <option value="done">Done</option>
+                                                    <option value="undone">Undone</option>
+                                                </select>
+                                            ) : (
+                                                tp.is_completed ? "Done" : "Undone"
+                                            )}
+                                        </td>
+
                                         <td>{tp.created_at}</td>
 
                                         {/* ACTIONS */}
