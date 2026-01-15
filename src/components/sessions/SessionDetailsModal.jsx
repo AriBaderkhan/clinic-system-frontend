@@ -171,6 +171,15 @@ function SessionDetailsModal({ sessionId, onClose }) {
                     {session.plan.next_plan || "-"}
                   </p>
                 </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                  <p className="text-[11px] font-medium text-slate-500">
+                    Payment Note
+                  </p>
+                  <p className="mt-1 text-[13px] text-slate-800 whitespace-pre-line">
+                    {session.payment_note || "-"}
+                  </p>
+                </div>
               </div>
 
               {/* Works summary */}
