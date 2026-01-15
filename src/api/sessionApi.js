@@ -13,8 +13,8 @@ export async function paySession(sessionId, payload) {
 
 // session page 
 
-export async function apiGetAllSessions() {
-  const res = await api.get("/api/sessions");
+export async function apiGetAllSessions(params = {}) {
+  const res = await api.get("/api/sessions", { params });
   return res.data; // { message, sessions }
 }
 

@@ -10,10 +10,16 @@ function money(n) {
 }
 
 export default function Sessions() {
-  const { sessions, isLoading, error, refresh } = useSessions();
-
+  
   const [selectedId, setSelectedId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [dayFilter, setDayFilter] = useState("");   // '', 'today', 'yesterday', 'last_week', 'last_month' // '', 'normal', 'urgent', 'walk_in'
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const { sessions, isLoading, error, refresh } = useSessions({
+    day: dayFilter,
+    search: searchTerm,
+  });
 
   const rows = useMemo(() => {
     return [...sessions].sort((a, b) => {
@@ -55,6 +61,37 @@ export default function Sessions() {
           Refresh
         </button>
       </div>
+
+      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+
+            {/* Day filter */}
+            <div className="flex items-center gap-1">
+              <span className="text-[11px] text-slate-500">Day:</span>
+              <select
+                value={dayFilter}
+                onChange={(e) => setDayFilter(e.target.value)}
+                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                <option value="">All</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last_week">Last week</option>
+                <option value="last_month">Last month</option>
+              </select>
+            </div>
+
+            {/* 🔍 Search */}
+            <div className="flex items-center gap-1">
+              <span className="text-[11px] text-slate-500">Search:</span>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Patient and doctor name"
+                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
 
       <div className="rounded-2xl border bg-white p-4 shadow-sm">
         {isLoading && <p className="text-sm text-slate-600">Loading...</p>}
