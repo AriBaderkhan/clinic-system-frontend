@@ -17,8 +17,8 @@ export default function usePatientTreatmentPlans(patientId) {
         setError("");
         const data = await getPatientTreatmentPlans(patientId);
         if (!ignore) setPlans(Array.isArray(data) ? data : []);
-      } catch (e) {
-        if (!ignore) setError(e?.response?.data?.message || "Failed to load treatment plans.");
+      } catch (err) {
+        if (!ignore) setError(err.userMessage);
       } finally {
         if (!ignore) setIsLoading(false);
       }

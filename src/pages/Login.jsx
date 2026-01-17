@@ -45,13 +45,8 @@ function Login() {
       // Go to dashboard
       navigate("/dashboard");
     } catch (err) {
-      console.error("Login error:", err);
-
-      if (err.response?.status === 400 || err.response?.status === 401) {
-        setErrorMessage("Invalid email or password.");
-      } else {
-        setErrorMessage("Login failed. Please try again.");
-      }
+        setErrorMessage(err.userMessage || "Login failed. Please try again.");
+     
     } finally {
       setIsLoading(false);
     }

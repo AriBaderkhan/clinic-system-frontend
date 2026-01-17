@@ -23,12 +23,8 @@ function usePatientPayments(patientId) {
           setPayments(Array.isArray(data) ? data : []);
         }
       } catch (err) {
-        console.error("Failed to load patient payments:", err);
         if (!cancelled) {
-          setError(
-            err.response?.data?.message ||
-              "Could not load payments for this patient."
-          );
+          setError(err.userMessage);
           setPayments([]);
         }
       } finally {

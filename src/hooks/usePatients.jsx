@@ -27,8 +27,7 @@ function usePatients(options = {}) {
 
       setPatients(list);
     } catch (err) {
-      console.error("Failed to load patients:", err);
-      setError("Could not load patients. Please try again.");
+      setError(err.userMessage || "Could not load patients. Please try again.");
       setPatients([]);
     } finally {
       setIsLoading(false);
@@ -51,14 +50,9 @@ function usePatients(options = {}) {
         // Return a success object instead of nothing
         return { ok: true, data };
       } catch (err) {
-        const backendMsg = err.response?.data?.message;
-        console.error("🔥 Create patient error:", backendMsg || err);
+        setError(err.userMessage || "Could not create patient. Please try again.");
+        return { ok: false, error: err.userMessage || "Could not create patient. Please try again." };
 
-        const msg = backendMsg || "Could not create patient. Please try again.";
-        setError(msg);
-
-        // Return a failure object instead of throwing
-        return { ok: false, error: msg };
       } finally {
         setIsSubmitting(false);
       }
@@ -81,15 +75,8 @@ function usePatients(options = {}) {
 
         return { ok: true, data: res.data };
       } catch (err) {
-        const backend = err.response?.data;
-        console.error("🔥 Update patient error:", backend || err);
-
-        const msg =
-          backend?.message ||
-          "Could not update patient. Please try again.";
-
-        setError(msg);
-        return { ok: false, error: msg };
+        setError(err.userMessage || "Could not update patient. Please try again.");
+        return { ok: false, error: err.userMessage || "Could not update patient. Please try again." };
       } finally {
         setIsSubmitting(false);
       }
@@ -112,15 +99,8 @@ function usePatients(options = {}) {
 
         return { ok: true };
       } catch (err) {
-        const backend = err.response?.data;
-        console.error("🔥 Delete patient error:", backend || err);
-
-        const msg =
-          backend?.message ||
-          "Could not delete patient. Please try again.";
-
-        setError(msg);
-        return { ok: false, error: msg };
+        setError(err.userMessage || "Could not delete patient. Please try again.");
+        return { ok: false, error: err.userMessage || "Could not delete patient. Please try again." };
       } finally {
         setIsSubmitting(false);
       }

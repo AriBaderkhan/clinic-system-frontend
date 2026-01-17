@@ -15,11 +15,7 @@ function useSessionDetails(sessionId, open) {
       const data = await fetchSessionDetails(sessionId);
       setDetails(data);
     } catch (err) {
-      console.error("useSessionDetails error:", err);
-      setError(
-        err.response?.data?.message ||
-          "Could not load session details. Please try again."
-      );
+      setError(err.userMessage);
     } finally {
       setIsLoading(false);
     }

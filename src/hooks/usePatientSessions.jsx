@@ -23,12 +23,9 @@ function usePatientSessions(patientId) {
           setSessions(Array.isArray(data) ? data : []);
         }
       } catch (err) {
-        console.error("Failed to load patient sessions:", err);
+
         if (!cancelled) {
-          setError(
-            err.response?.data?.message ||
-              "Could not load sessions for this patient."
-          );
+          setError(err.userMessage);
           setSessions([]);
         }
       } finally {

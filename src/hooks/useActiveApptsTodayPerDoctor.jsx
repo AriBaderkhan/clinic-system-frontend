@@ -21,11 +21,7 @@ function useActiveApptsTodayPerDoctor() {
 
       setAppointments(list);
     } catch (err) {
-      console.error("Failed to load today's active appointments:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not load today's appointments. Please try again.";
-      setError(msg);
+      setError(err.userMessage);
       setAppointments([]);
     } finally {
       setIsLoading(false);

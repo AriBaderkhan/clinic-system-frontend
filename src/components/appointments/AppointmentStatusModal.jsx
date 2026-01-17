@@ -80,11 +80,7 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
       await onUpdated();
       onClose();
     } catch (err) {
-      console.error("Failed to update status:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not update status. Please try again.";
-      setError(msg);
+      setError(err.userMessage);
     } finally {
       setIsSubmitting(false);
     }

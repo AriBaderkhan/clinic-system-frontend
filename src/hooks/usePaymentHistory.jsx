@@ -15,11 +15,7 @@ function usePaymentHistory() {
       const data = await fetchPaymentHistory();
       setPayments(data);
     } catch (err) {
-      console.error("usePaymentHistory error:", err);
-      setError(
-        err.response?.data?.message ||
-          "Could not load payment history. Please try again."
-      );
+      setError(err.userMessage);
     } finally {
       setIsLoading(false);
     }

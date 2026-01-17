@@ -27,11 +27,7 @@ function useAppointments(filters = {}) {
 
       setAppointments(list);
     } catch (err) {
-      console.error("Failed to load appointments:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not load appointments. Please try again.";
-      setError(msg);
+      setError(err.userMessage);
       setAppointments([]);
     } finally {
       setIsLoading(false);

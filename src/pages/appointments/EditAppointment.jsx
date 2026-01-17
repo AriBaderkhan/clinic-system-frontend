@@ -33,11 +33,7 @@ function EditAppointment() {
         const docsList = docsRes.data?.docs || docsRes.data || [];
         setDoctors(docsList);
       } catch (err) {
-        console.error("Failed to load appointment for edit:", err);
-        const msg =
-          err?.response?.data?.message ||
-          "Could not load appointment. Please try again.";
-        setError(msg);
+        setError(err.userMessage || "Could not load appointment data. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -61,11 +57,7 @@ function EditAppointment() {
 
       navigate("/reception/appointments");
     } catch (err) {
-      console.error("Failed to update appointment:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not update appointment. Please try again.";
-      setError(msg);
+      setError(err.userMessage || "Could not update appointment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

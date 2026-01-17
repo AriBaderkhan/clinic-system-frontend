@@ -30,7 +30,7 @@ function AddAppointment() {
         setDoctors(list);
       } catch (err) {
         console.error("Failed to load doctors:", err);
-        setError("Could not load doctors. Please try again.");
+        setError(err.userMessage || "Could not load doctors. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -48,11 +48,7 @@ function AddAppointment() {
 
       navigate("/reception/appointments");
     } catch (err) {
-      console.error("Failed to create appointment:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not create appointment. Please try again.";
-      setError(msg);
+      setError(err.userMessage || "Could not create appointment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

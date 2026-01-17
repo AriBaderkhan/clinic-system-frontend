@@ -25,12 +25,8 @@ function useAppointmentById(appointmentId) {
           setAppointment(appt);
         }
       } catch (err) {
-        console.error("Failed to load appointment by id:", err);
         if (!cancelled) {
-          setError(
-            err?.response?.data?.message ||
-              "Could not load appointment. Please try again."
-          );
+          setError(err.userMessage);
           setAppointment(null);
         }
       } finally {

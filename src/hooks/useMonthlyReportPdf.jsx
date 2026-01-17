@@ -10,9 +10,9 @@ export default function useMonthlyReportPdf() {
     setIsLoading(true);
     try {
       return await downloadMonthlyReportPdf({ month });
-    } catch (e) {
-      setError(e?.response?.data?.message || e?.message || "Failed to download PDF");
-      throw e;
+    } catch (err) {
+      setError(err.userMessage || "Failed to download PDF");
+      throw err;
     } finally {
       setIsLoading(false);
     }

@@ -51,9 +51,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         setLoadingCatalog(true);
         const data = await fetchWorkCatalog();
         setCatalog(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error(e);
-        setError("Failed to load works list.");
+      } catch (err) {
+        setError(err.userMessage);
       } finally {
         setLoadingCatalog(false);
       }
@@ -283,7 +282,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       onClose();
     } catch (err) {
       console.error(err);
-      setError(err?.response?.data?.message || "Failed to complete appointment.");
+      setError(err.userMessage);
     } finally {
       setSaving(false);
     }

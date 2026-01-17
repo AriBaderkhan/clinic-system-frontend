@@ -21,5 +21,24 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+/* ---------- RESPONSE INTERCEPTOR (ERROR HANDLING) ---------- */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const data = error?.response?.data;
+
+    // 🔴 Build ONE final user-safe message everywhere
+    if (data?.message) {
+      error.userMessage = data.support_code
+        ? `${data.message} (Support Code: ${data.support_code})`
+        : data.message;
+    } else {
+      error.userMessage = "Something went wrong. Please try again.";
+    }
+
+    return Promise.reject(error);
+  }
+);
 // console.log(import.meta.env.VITE_API_BASE_URL)
 export default api

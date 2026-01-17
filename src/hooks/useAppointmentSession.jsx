@@ -27,11 +27,7 @@ function useAppointmentSession(appointmentId, open) {
         setError("");
         return;
       }
-
-      setError(
-        err?.response?.data?.message ||
-          "Could not load session for this appointment."
-      );
+      setError(err.userMessage);
       setSessionId(null);
     } finally {
       setIsLoading(false);

@@ -23,12 +23,8 @@ function usePatientAppointments(patientId) {
           setAppointments(Array.isArray(data) ? data : []);
         }
       } catch (err) {
-        console.error("Failed to load patient appointments:", err);
         if (!cancelled) {
-          setError(
-            err.response?.data?.message ||
-              "Could not load appointments for this patient."
-          );
+          setError(err.userMessage);
           setAppointments([]);
         }
       } finally {

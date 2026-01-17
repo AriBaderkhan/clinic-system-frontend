@@ -90,7 +90,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
       onClose?.();
     } catch (err) {
       console.log(err)
-      setError(err?.response?.data?.message || "Failed to save payment.");
+      setError(err.userMessage || "Failed to save payment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

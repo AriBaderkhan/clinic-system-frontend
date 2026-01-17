@@ -23,12 +23,12 @@ export default function useTreatmentPlanSessions() {
         ...prev,
         [key]: { loading: false, error: "", sessions: Array.isArray(data) ? data : [] },
       }));
-    } catch (e) {
+    } catch (err) {
       setCache((prev) => ({
         ...prev,
         [key]: {
           loading: false,
-          error: e?.response?.data?.message || "Failed to load sessions for this plan.",
+          error: err.userMessage,
           sessions: [],
         },
       }));

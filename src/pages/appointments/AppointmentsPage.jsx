@@ -37,11 +37,7 @@ function AppointmentPage() {
       await appointmentApi.deleteAppointment(id);
       await refresh();
     } catch (err) {
-      console.error("Failed to delete appointment:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Could not delete appointment. Please try again.";
-      setActionError(msg);
+      setActionError(err.userMessage || "Failed to delete appointment. Please try again.");
     }
   };
 

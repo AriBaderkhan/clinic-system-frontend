@@ -23,12 +23,8 @@ function usePatientById(patientId) {
           setPatient(data || null);
         }
       } catch (err) {
-        console.error("Failed to load patient by id:", err);
         if (!cancelled) {
-          setError(
-            err.response?.data?.message ||
-              "Could not load patient details. Please try again."
-          );
+          setError(err.userMessage);
           setPatient(null);
         }
       } finally {

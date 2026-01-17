@@ -14,7 +14,7 @@ export default function useUnpaidSessions() {
       const res = await getUnpaidSessions(); // { message, data }
       setSessions(res.data || []);
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to load unpaid sessions.");
+      setError(err.userMessage);
     } finally {
       setIsLoading(false);
     }

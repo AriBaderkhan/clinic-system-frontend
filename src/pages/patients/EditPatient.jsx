@@ -31,9 +31,8 @@ function EditPatient() {
         const data = res.data?.patient || res.data;
         if (isMounted) setPatient(data);
       } catch (err) {
-        console.error("Failed to load patient:", err);
         if (isMounted)
-          setLoadError("Could not load patient details. Please try again.");
+          setLoadError(err.userMessage || "Could not load patient. Please try again.");
       } finally {
         if (isMounted) setIsLoadingPatient(false);
       }

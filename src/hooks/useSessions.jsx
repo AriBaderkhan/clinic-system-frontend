@@ -20,8 +20,8 @@ export default function useSessions(filters = {}) {
       setIsLoading(true);
       const data = await apiGetAllSessions(cleanFilters);
       setSessions(data.sessions || []);
-    } catch (e) {
-      setError(e?.response?.data?.message || e?.message || "Failed to load sessions");
+    } catch (err) {
+      setError(err.userMessage);
     } finally {
       setIsLoading(false);
     }

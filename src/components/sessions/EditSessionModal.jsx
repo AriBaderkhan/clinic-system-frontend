@@ -96,9 +96,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                     .filter(Boolean);
 
                 setWorks(mapped.length ? mapped : [{ work_id: "", quantity: 1, tooth_number: null }]);
-            } catch (e) {
+            } catch (err) {
                 if (!alive) return;
-                setError(e?.response?.data?.message || e?.message || "Failed to load session");
+                setError(err.userMessage);
             } finally {
                 if (alive) setIsLoading(false); // ✅ FIXED (no "return;" inside finally)
             }
@@ -173,8 +173,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
             await updateNormalSession(sessionId, payload);
             onUpdated?.();
             onClose();
-        } catch (e) {
-            setError(e?.response?.data?.message || e?.message || "Failed to update session");
+        } catch (err) {
+            setError(err.userMessage);
         } finally {
             setIsSaving(false);
         }

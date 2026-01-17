@@ -8,9 +8,7 @@ import {
   updateMonthlyExpense,
 } from "../api/monthlyExpensesApi";
 
-function normalizeError(err) {
-  return err?.response?.data?.message || err?.message || "Something went wrong";
-}
+
 
 export default function useMonthlyExpenses() {
   const [items, setItems] = useState([]);
@@ -27,8 +25,8 @@ export default function useMonthlyExpenses() {
       const list = Array.isArray(res) ? res : (res?.data || res?.rows || []);
 
       setItems(Array.isArray(list) ? list : []);
-    } catch (e) {
-      setError(normalizeError(e));
+    } catch (err) {
+      setError(err.userMessage);
       setItems([]);
     } finally {
       setIsLoading(false);
