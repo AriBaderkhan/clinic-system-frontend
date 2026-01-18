@@ -30,3 +30,5 @@ export async function updateNormalSession(sessionId, payload) {
   const res = await api.put(`/api/sessions/${sessionId}/normal`, payload);
   return res.data;
 }
+
+export const deleteSession = (sessionId) => api.delete(`/api/sessions/${sessionId}`);

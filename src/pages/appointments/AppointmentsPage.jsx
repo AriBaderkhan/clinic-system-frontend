@@ -295,21 +295,21 @@ function AppointmentPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedDetailsId(id)}
-                            className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
+                            className="rounded-md border border-slate-200 bg-green-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-green-900"
                           >
                             View
                           </button>
                           <button
                             type="button"
                             onClick={() => handleEdit(id)}
-                            className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
+                            className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
                           >
                             Edit
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(id)}
-                            className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-[11px] text-red-600 hover:bg-red-100"
+                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
                           >
                             Delete
                           </button>

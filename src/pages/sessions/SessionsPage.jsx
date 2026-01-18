@@ -3,19 +3,19 @@ import { useMemo, useState } from "react";
 import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import EditSessionModal from "../../components/sessions/EditSessionModal";
-
+import { deleteSession } from "../../api/sessionApi";
 function money(n) {
   const v = Number(n || 0);
   return v.toLocaleString();
 }
 
 export default function Sessions() {
-  
+
   const [selectedId, setSelectedId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [dayFilter, setDayFilter] = useState("");   // '', 'today', 'yesterday', 'last_week', 'last_month' // '', 'normal', 'urgent', 'walk_in'
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const { sessions, isLoading, error, refresh } = useSessions({
     day: dayFilter,
     search: searchTerm,
@@ -43,6 +43,20 @@ export default function Sessions() {
     setIsEditOpen(false);
   }
 
+  const handleDelete = async (sessionId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this appointment?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteSession(sessionId);
+      await refresh();
+    } catch (err) {
+      err.userMessage
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
@@ -64,34 +78,34 @@ export default function Sessions() {
 
       <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
 
-            {/* Day filter */}
-            <div className="flex items-center gap-1">
-              <span className="text-[11px] text-slate-500">Day:</span>
-              <select
-                value={dayFilter}
-                onChange={(e) => setDayFilter(e.target.value)}
-                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="">All</option>
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="last_week">Last week</option>
-                <option value="last_month">Last month</option>
-              </select>
-            </div>
+        {/* Day filter */}
+        <div className="flex items-center gap-1">
+          <span className="text-[11px] text-slate-500">Day:</span>
+          <select
+            value={dayFilter}
+            onChange={(e) => setDayFilter(e.target.value)}
+            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          >
+            <option value="">All</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="last_week">Last week</option>
+            <option value="last_month">Last month</option>
+          </select>
+        </div>
 
-            {/* 🔍 Search */}
-            <div className="flex items-center gap-1">
-              <span className="text-[11px] text-slate-500">Search:</span>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Patient and doctor name"
-                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              />
-            </div>
-          </div>
+        {/* 🔍 Search */}
+        <div className="flex items-center gap-1">
+          <span className="text-[11px] text-slate-500">Search:</span>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Patient and doctor name"
+            className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+        </div>
+      </div>
 
       <div className="rounded-2xl border bg-white p-4 shadow-sm">
         {isLoading && <p className="text-sm text-slate-600">Loading...</p>}
@@ -143,7 +157,7 @@ export default function Sessions() {
                       <button
                         type="button"
                         onClick={() => openView(s.session_id)}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                        className="rounded-lg border border-slate-200 bg-green-600 px-3 py-2 text-xs text-slate-100 hover:bg-green-900"
                       >
                         View
                       </button>
@@ -151,9 +165,16 @@ export default function Sessions() {
                       <button
                         type="button"
                         onClick={() => openEdit(s.session_id)} // ✅ FIXED
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                        className="rounded-lg border border-slate-200 bg-yellow-600 px-3 py-2 text-xs text-slate-100 hover:bg-yellow-900"
                       >
                         Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(s.session_id)} // ✅ FIXED
+                        className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-900"
+                      >
+                        Delete
                       </button>
                     </td>
                   </tr>
