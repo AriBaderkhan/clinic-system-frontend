@@ -9,8 +9,10 @@ export default function DoctorLayout() {
 
   const name = localStorage.getItem('name')
   const handleLogout = () => {
-    localStorage.clear(); // or removeItem("token"), removeItem("role")
-    window.location.href = "/";
+    if (window.confirm('Are you sure you want to logout?')) {
+      localStorage.clear(); // or removeItem("token"), removeItem("role")
+      window.location.href = "/";
+    }
   };
 
   const navItems = useMemo(() => {

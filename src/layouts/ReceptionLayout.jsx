@@ -14,8 +14,10 @@ const navItems = [
 
 // const name = localStorage.getItem('name')
 const handleLogout = () => {
-  localStorage.clear(); // or removeItem("token"), removeItem("role")
-  window.location.href = "/";
+  if (window.confirm('Are you sure you want to logout?')) {
+    localStorage.clear(); // or removeItem("token"), removeItem("role")
+    window.location.href = "/";
+  }
 };
 
 export default function ReceptionLayout() {
@@ -43,8 +45,8 @@ export default function ReceptionLayout() {
       >
         <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
           <div className="flex items-center gap-3">
-              <img src="../img/crown.jpg" alt="" className="flex h-9 w-9 items-center justify-center rounded-full" />
-            
+            <img src="../img/crown.jpg" alt="" className="flex h-9 w-9 items-center justify-center rounded-full" />
+
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
               <span className="text-[11px] text-slate-400">Reception Dashboard</span>
