@@ -1,7 +1,9 @@
 // src/layouts/ReceptionLayout.jsx
 import { NavLink, Outlet } from "react-router-dom";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { connectSocket, disconnectSocket } from "../realtime/socket";
+import toast from "react-hot-toast";
+import notify from '../assets/notify.mp3'
 const navItems = [
   { label: "Dashboard", path: "", end: true },
   { label: "Patients", path: "patients" },
@@ -16,6 +18,7 @@ const navItems = [
 const handleLogout = () => {
   if (window.confirm('Are you sure you want to logout?')) {
     localStorage.clear(); // or removeItem("token"), removeItem("role")
+    disconnectSocket();
     window.location.href = "/";
   }
 };
@@ -23,6 +26,32 @@ const handleLogout = () => {
 export default function ReceptionLayout() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+
+    const socket = connectSocket();
+    socket.on("connect", () => console.log("✅ socket connected", socket.id));
+
+    const onApptCompleted = (payload) => {
+      const audio = new Audio(notify);
+        audio.volume = 1;
+
+        audio.play().catch((error) => {
+          console.error("Error playing audio notification:", error);
+        });
+        setTimeout(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }, 10000);
+
+      toast.success(payload?.message, {
+        duration: 10000,
+        id: 'appointment-completed',
+      });
+    }
+
+    socket.on('appointment_completed', onApptCompleted);
+
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900">

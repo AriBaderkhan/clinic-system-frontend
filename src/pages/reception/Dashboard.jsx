@@ -259,7 +259,7 @@ function Dashboard() {
                         {a.patient_name}
                       </p>
                       <p className="mt-1 text-[12px] text-slate-500">
-                        Dr. {a.doctor_name} · {formatTime(a.scheduled_start)} ·{" "}
+                        {a.doctor_name} · {formatTime(a.scheduled_start)} ·{" "}
                         {a.appointment_type}
                       </p>
                     </div>
@@ -328,7 +328,7 @@ function Dashboard() {
                         {s.patient.full_name}
                       </p>
                       <p className="mt-1 text-[11px] text-slate-500">
-                        Dr. {s.doctor.full_name} ·{" "}
+                        {s.doctor.full_name} ·{" "}
                         {formatTime(s.appointment.start_time)} ·{" "}
                         {s.works_summary.items_count} work
                         {s.works_summary.items_count !== 1 && "s"}
