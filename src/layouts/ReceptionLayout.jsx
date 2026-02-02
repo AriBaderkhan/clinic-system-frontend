@@ -26,6 +26,8 @@ const handleLogout = () => {
 export default function ReceptionLayout() {
   const [open, setOpen] = useState(false);
 
+
+
   useEffect(() => {
 
     const socket = connectSocket();
@@ -33,24 +35,35 @@ export default function ReceptionLayout() {
 
     const onApptCompleted = (payload) => {
       const audio = new Audio(notify);
-        audio.volume = 1;
+      audio.volume = 1;
 
-        audio.play().catch((error) => {
-          console.error("Error playing audio notification:", error);
-        });
-        setTimeout(() => {
-          audio.pause();
-          audio.currentTime = 0;
-        }, 10000);
+      audio.play().catch(() => {}); // play sound
 
-      toast.success(payload?.message, {
-        duration: 10000,
-        id: 'appointment-completed',
+      toast((t) => (
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            audio.pause();
+            audio.currentTime = 0;
+            toast.dismiss(t.id);
+          }}
+        >
+          <div>{payload?.message}</div>
+          <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
+            Click to stop sound
+          </div>
+        </div>
+      ), {
+        duration: Infinity, // stays until click
+        id: "appt_completed_click_stop", // no duplicates
       });
     }
 
     socket.on('appointment_completed', onApptCompleted);
 
+    return () => {
+      socket.off("appointment_completed", onApptCompleted);
+    }
   }, []);
 
   return (
