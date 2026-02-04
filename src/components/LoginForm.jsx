@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
-  const [email, setEmail] = useState("rece@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -16,11 +16,8 @@ function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
   return (
     <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100">
       <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">
-        Admin Login
+        Clinic Managment System
       </h1>
-      <p className="mb-8 text-center text-xs text-slate-500">
-        Sign in to manage Crown Dental Clinic
-      </p>
 
       {errorMessage && (
         <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
@@ -78,7 +75,7 @@ function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
         </button>
 
         <p className="mt-3 text-center text-[11px] text-slate-400">
-          Use your admin credentials provided by the system.
+          Use your credentials provided by the system.
         </p>
       </form>
     </div>

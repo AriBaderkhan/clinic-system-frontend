@@ -6,13 +6,10 @@ function Header() {
         {/* Logo + Clinic name */}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold">
-            CD
+            CMS
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">
-              Crown Dental Clinic
-            </span>
-            <span className="text-xs text-blue-100">
               Clinic Management System
             </span>
           </div>
@@ -20,9 +17,6 @@ function Header() {
 
         {/* Right side */}
         <div className="flex flex-col items-end">
-          <span className="text-xs font-medium uppercase tracking-wide">
-            Admin Portal
-          </span>
           <span className="text-[11px] text-blue-100">
             Secure access only
           </span>
