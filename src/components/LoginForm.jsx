@@ -34,7 +34,7 @@ function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
           <input
             type="email"
             className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-            placeholder="rece@gmail.com"
+            placeholder="tradicompany01@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
