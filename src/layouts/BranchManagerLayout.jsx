@@ -1,25 +1,68 @@
-
-// src/layouts/DoctorLayout.jsx
+// src/layouts/ReceptionLayout.jsx
 import { NavLink, Outlet } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
+import { connectSocket, disconnectSocket } from "../realtime/socket";
+import toast from "react-hot-toast";
+import notify from '../assets/notify.mp3'
 
-export default function DoctorLayout() {
+const navItems = [
+  { label: "Dashboard", path: "", end: true },
+  { label: "Patients", path: "patients" },
+  { label: "Appointments", path: "appointments" },
+  { label: "Sessions", path: "sessions" },
+  { label: "Treatment Plan", path: "treatment_plan" },
+  { label: "History", path: "history" },
+  { label: "Reports", path: "reports" },
+  { label: "Branch Settings", path: "settings/branch" },
+];
+
+// const name = localStorage.getItem('name')
+const handleLogout = () => {
+  if (window.confirm('Are you sure you want to logout?')) {
+    localStorage.clear(); // or removeItem("token"), removeItem("role")
+    disconnectSocket();
+    window.location.href = "/";
+  }
+};
+
+export default function BranchManagerLayout() {
   const [open, setOpen] = useState(false);
-  const role = localStorage.getItem("role");
 
-  const name = localStorage.getItem('name')
-  const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.clear(); // or removeItem("token"), removeItem("role")
-      window.location.href = "/";
+  useEffect(() => {
+    const socket = connectSocket();
+    socket.on("connect", () => console.log("✅ socket connected", socket.id));
+
+    const onApptCompleted = (payload) => {
+      const audio = new Audio(notify);
+      audio.volume = 1;
+
+      audio.play().catch(() => { }); // play sound
+
+      toast((t) => (
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            audio.pause();
+            audio.currentTime = 0;
+            toast.dismiss(t.id);
+          }}
+        >
+          <div>{payload?.message}</div>
+          <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
+            Click to stop sound
+          </div>
+        </div>
+      ), {
+        duration: Infinity, // stays until click
+        id: "appt_completed_click_stop", // no duplicates
+      });
     }
-  };
 
-  const navItems = useMemo(() => {
-    return [
-      { label: "Dashboard", path: "/doctor", end: true },
-      { label: "Appointments", path: "/doctor/appts_per_doc" },
-    ];
+    socket.on('appointment_completed', onApptCompleted);
+
+    return () => {
+      socket.off("appointment_completed", onApptCompleted);
+    }
   }, []);
 
   return (
@@ -43,12 +86,11 @@ export default function DoctorLayout() {
       >
         <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
-              CD
-            </div>
+            <img src="../img/crown.jpg" alt="" className="flex h-9 w-9 items-center justify-center rounded-full" />
+
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-              <span className="text-[11px] text-slate-400">Doctor Dashboard</span>
+              <span className="text-[11px] text-slate-400">Branch Manager</span>
             </div>
           </div>
 
@@ -83,6 +125,7 @@ export default function DoctorLayout() {
             </NavLink>
           ))}
         </nav>
+
         <div className="border-t border-slate-800 px-3 py-3">
           <button
             onClick={() => {
@@ -94,6 +137,8 @@ export default function DoctorLayout() {
             <span>Logout</span>
           </button>
         </div>
+
+
         <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
           Powered By <span className="text-slate-200">Tradi Company</span>
         </div>
@@ -107,7 +152,7 @@ export default function DoctorLayout() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-slate-400">Dr.{name} Dashboard</span>
+            <span className="text-[11px] text-slate-400">Branch Manager</span>
           </div>
         </div>
 
@@ -145,12 +190,14 @@ export default function DoctorLayout() {
         <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
           Powered By <span className="text-slate-200">Tradi Company</span>
         </div>
+
+
+
       </aside>
 
       {/* ===== Main area ===== */}
       <div className="flex min-h-screen flex-1 flex-col">
-        {/* Topbar */}
-        <header className="flex h-14 items-center justify-between border-b bg-slate-800 px-4">
+        <header className="flex h-14 items-center justify-between border-b bg-slate-800 px-4 shadow-sm backdrop-blur">
           {/* Mobile hamburger */}
           <button
             className="rounded-md px-3 py-2 text-white hover:bg-slate-700 md:hidden"
@@ -162,11 +209,18 @@ export default function DoctorLayout() {
 
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-white">Dashboard</span>
-            <span className="text-[11px] text-slate-400">Doctor overview</span>
+            <span className="text-[11px] text-slate-400">Overview of Crown Dental Clinic</span>
           </div>
 
-          {/* spacer to balance header on mobile */}
-          <div className="w-[44px] md:hidden" />
+          <div className="flex items-center gap-3">
+            <div className="hidden text-right text-xs sm:block">
+              <div className="font-medium text-white">Branch Manager</div>
+              {/* <div className="text-slate-400">admin@clinic.com</div> */}
+            </div>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
+              BM
+            </div>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
@@ -175,4 +229,6 @@ export default function DoctorLayout() {
       </div>
     </div>
   );
+
 }
+

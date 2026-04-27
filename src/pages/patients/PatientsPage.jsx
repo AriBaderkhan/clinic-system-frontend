@@ -4,17 +4,17 @@ import { useState } from "react";
 import usePatients from "../../hooks/usePatients";
 
 function PatientsPage() {
-    const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { patients, isLoading, error, refresh, deletePatient } = usePatients({
     search: searchTerm,
   });
 
-    // const normalizedSearch = searchTerm.trim().toLowerCase();
+  // const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const navigate = useNavigate();
 
   const handleEdit = (id) => {
-    navigate(`/reception/patients/${id}/edit`);
+    navigate(`/branch/patients/${id}/edit`);
   };
 
   const handleDelete = async (id) => {
@@ -28,7 +28,7 @@ function PatientsPage() {
 
   // 🔹 NEW: row click → Patient Folder
   const handleRowClick = (id) => {
-    navigate(`/reception/patients/${id}`);
+    navigate(`patients/${id}`);
   };
 
   return (
@@ -45,7 +45,7 @@ function PatientsPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/reception/patients/add")}
+          onClick={() => navigate("/branch/patients/add")}
           className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
         >
           + Add patient
@@ -61,16 +61,16 @@ function PatientsPage() {
               ? "Loading patients…"
               : `Total patients: ${patients.length}`}
           </div>
-             <div className="flex items-center gap-1">
-              <span className="text-[11px] text-slate-500">Search:</span>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Patient, phone"
-                className="w-80 rounded-md border border-slate-700 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              />
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] text-slate-500">Search:</span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Patient, phone"
+              className="w-80 rounded-md border border-slate-700 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+          </div>
           <button
             type="button"
             onClick={refresh}

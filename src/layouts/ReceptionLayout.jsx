@@ -4,15 +4,36 @@ import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
-const navItems = [
-  { label: "Dashboard", path: "", end: true },
-  { label: "Patients", path: "patients" },
-  { label: "Appointments", path: "appointments" },
-  { label: "Sessions", path: "sessions" },
-  { label: "Treatment Plan", path: "treatment_plan" },
-  { label: "History", path: "history" },
-  { label: "Reports", path: "reports" },
-];
+import Header from "../components/Header"; // Import the Header component
+
+// Helper to check permission safely
+const hasPermission = (permission) => {
+  const userString = localStorage.getItem("user");
+  if (!userString) return false;
+  try {
+    const user = JSON.parse(userString);
+    return user.permissions?.includes(permission);
+  } catch (e) {
+    return false;
+  }
+};
+
+const getNavItems = () => {
+  const items = [
+    { label: "Dashboard", path: "", end: true },
+    { label: "Patients", path: "patients", permission: "view_patient" },
+    { label: "Appointments", path: "appointments", permission: "view_appointment" },
+    { label: "Sessions", path: "sessions", permission: "view_session" },
+    { label: "Treatment Plan", path: "treatment_plan", permission: "manage_tp" },
+    { label: "History", path: "history", permission: "view_payment" },
+    { label: "Reports", path: "reports", permission: "view_reports" },
+    { label: "Branch Settings", path: "settings/branch", permission: "manage_branch_settings" },
+  ];
+
+  // Filter based on permissions
+  const role = localStorage.getItem("role");
+  return items.filter(item => !item.permission || hasPermission(item.permission));
+};
 
 // const name = localStorage.getItem('name')
 const handleLogout = () => {
@@ -37,7 +58,7 @@ export default function ReceptionLayout() {
       const audio = new Audio(notify);
       audio.volume = 1;
 
-      audio.play().catch(() => {}); // play sound
+      audio.play().catch(() => { }); // play sound
 
       toast((t) => (
         <div
@@ -105,7 +126,7 @@ export default function ReceptionLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {navItems.map((item) => (
+          {getNavItems().map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -158,7 +179,7 @@ export default function ReceptionLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {navItems.map((item) => (
+          {getNavItems().map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -198,31 +219,8 @@ export default function ReceptionLayout() {
 
       {/* ===== Main area ===== */}
       <div className="flex min-h-screen flex-1 flex-col">
-        <header className="flex h-14 items-center justify-between border-b bg-slate-800 px-4 shadow-sm backdrop-blur">
-          {/* Mobile hamburger */}
-          <button
-            className="rounded-md px-3 py-2 text-white hover:bg-slate-700 md:hidden"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
-
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white">Dashboard</span>
-            <span className="text-[11px] text-slate-400">Overview of Crown Dental Clinic</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right text-xs sm:block">
-              <div className="font-medium text-white">Reception User</div>
-              {/* <div className="text-slate-400">admin@clinic.com</div> */}
-            </div>
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
-              A
-            </div>
-          </div>
-        </header>
+        {/* Use the new Header Component */}
+        <Header onMenuClick={() => setOpen(true)} />
 
         <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
           <Outlet />

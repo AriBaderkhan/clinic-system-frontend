@@ -24,12 +24,22 @@ export default function ReportsPage() {
     return `${y}-${m}`;
   });
 
+  const [reportType, setReportType] = useState('monthly'); // 'monthly' | 'custom'
+  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+
   const { download, isLoading, error } = useMonthlyReportPdf();
 
   const monthParam = useMemo(() => toMonthParam(monthValue), [monthValue]);
 
   const onDownload = async () => {
-    const { blob, filename } = await download({ month: monthParam });
+    let params = {};
+    if (reportType === 'monthly') {
+      params = { month: monthParam };
+    } else {
+      params = { from: dateRange.from, to: dateRange.to };
+    }
+
+    const { blob, filename } = await download(params);
 
     // force download
     const url = window.URL.createObjectURL(blob);
@@ -58,21 +68,19 @@ export default function ReportsPage() {
           <div className="inline-flex rounded-xl bg-slate-100 p-1">
             <button
               onClick={() => setTab("reports")}
-              className={`px-4 py-2 text-sm rounded-lg ${
-                tab === "reports"
-                  ? "bg-emerald-600 text-white"
-                  : "text-slate-700 hover:bg-white"
-              }`}
+              className={`px-4 py-2 text-sm rounded-lg ${tab === "reports"
+                ? "bg-emerald-600 text-white"
+                : "text-slate-700 hover:bg-white"
+                }`}
             >
               Reports
             </button>
             <button
               onClick={() => setTab("expenses")}
-              className={`px-4 py-2 text-sm rounded-lg ${
-                tab === "expenses"
-                  ? "bg-emerald-600 text-white"
-                  : "text-slate-700 hover:bg-white"
-              }`}
+              className={`px-4 py-2 text-sm rounded-lg ${tab === "expenses"
+                ? "bg-emerald-600 text-white"
+                : "text-slate-700 hover:bg-white"
+                }`}
             >
               Expenses
             </button>
@@ -90,35 +98,79 @@ export default function ReportsPage() {
                     Select month then download the PDF.
                   </div>
                 </div>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="space-y-1">
-                    <label className="block text-xs text-slate-600">Month</label>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 mb-4">
+                <div className="flex gap-4 mb-3">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input
-                      type="month"
-                      value={monthValue}
-                      onChange={(e) => setMonthValue(e.target.value)}
-                      className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                      type="radio"
+                      name="reportType"
+                      checked={reportType === 'monthly'}
+                      onChange={() => setReportType('monthly')}
                     />
-                  </div>
+                    Monthly Report
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="radio"
+                      name="reportType"
+                      checked={reportType === 'custom'}
+                      onChange={() => setReportType('custom')}
+                    />
+                    Custom Date Range
+                  </label>
+                </div>
+
+                <div className="flex flex-wrap items-end gap-3">
+                  {reportType === 'monthly' ? (
+                    <div className="space-y-1">
+                      <label className="block text-xs text-slate-600">Select Month</label>
+                      <input
+                        type="month"
+                        value={monthValue}
+                        onChange={(e) => setMonthValue(e.target.value)}
+                        className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-1">
+                        <label className="block text-xs text-slate-600">From Date</label>
+                        <input
+                          type="date"
+                          value={dateRange.from}
+                          onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                          className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-xs text-slate-600">To Date</label>
+                        <input
+                          type="date"
+                          value={dateRange.to}
+                          onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                          className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                        />
+                      </div>
+                    </>
+                  )}
 
                   <button
                     onClick={onDownload}
-                    disabled={isLoading || !monthParam}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+                    disabled={isLoading || (reportType === 'monthly' ? !monthParam : (!dateRange.from || !dateRange.to))}
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 mb-[1px]"
                   >
                     {isLoading ? "Downloading..." : "Download PDF"}
                   </button>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <div className="text-sm text-slate-700">
-                  Selected: <span className="font-semibold">{monthLabel(monthValue)}</span>
-                </div>
-                <div className="text-xs text-slate-500 mt-1">
-                  API: <span className="font-mono">/api/reports/monthly/pdf?month={monthParam}</span>
-                </div>
+              <div className="text-xs text-slate-500">
+                {reportType === 'monthly'
+                  ? `Selected: ${monthLabel(monthValue)}`
+                  : `Selected Range: ${dateRange.from} to ${dateRange.to}`
+                }
               </div>
 
               {error ? (

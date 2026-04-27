@@ -9,27 +9,27 @@ function AddPatient() {
   });
   const navigate = useNavigate();
 
-const handleCreate = async (payload) => {
+  const handleCreate = async (payload) => {
 
-  try {
-    const result = await createPatients(payload);
-    if (result.ok) {
-    navigate("/reception/patients");
-  } 
-    
-  } catch (error) {
-    console.log("Creation failed:", error);
-  }
-  // Capture the result from the hook
-  
+    try {
+      const result = await createPatients(payload);
+      if (result.ok) {
+        navigate("/branch/patients");
+      }
 
-  // Only navigate if the backend actually saved the data
- 
+    } catch (error) {
+      console.log("Creation failed:", error);
+    }
+    // Capture the result from the hook
+
+
+    // Only navigate if the backend actually saved the data
+
     // The hook already set the 'error' state, 
     // so PatientForm will automatically show the message.
-    
-  
-};
+
+
+  };
   return (
     <PatientForm
       mode="add"

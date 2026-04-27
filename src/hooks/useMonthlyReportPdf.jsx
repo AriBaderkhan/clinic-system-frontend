@@ -5,11 +5,11 @@ export default function useMonthlyReportPdf() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const download = async ({ month }) => {
+  const download = async ({ month, from, to }) => {
     setError("");
     setIsLoading(true);
     try {
-      return await downloadMonthlyReportPdf({ month });
+      return await downloadMonthlyReportPdf({ month, from, to });
     } catch (err) {
       setError(err.userMessage || "Failed to download PDF");
       throw err;

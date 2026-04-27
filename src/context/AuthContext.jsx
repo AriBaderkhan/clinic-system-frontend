@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
   const navigate = useNavigate();
@@ -19,7 +22,8 @@ export const AuthProvider = ({ children }) => {
 
     localStorage.setItem("token", newToken);
     localStorage.setItem("role", newRole);
-    
+    localStorage.setItem("user", JSON.stringify(newUserData));
+
     // Save other user details if needed
     if (newUserData?.name) localStorage.setItem("name", newUserData.name);
     if (newUserData?.email) localStorage.setItem("email", newUserData.email);
