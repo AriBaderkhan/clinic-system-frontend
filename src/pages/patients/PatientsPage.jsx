@@ -12,9 +12,11 @@ function PatientsPage() {
   // const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const navigate = useNavigate();
+  const role = localStorage.getItem("role") || "reception";
+  const prefix = role === "branch_manager" ? "/branch" : "/reception";
 
   const handleEdit = (id) => {
-    navigate(`/branch/patients/${id}/edit`);
+    navigate(`${prefix}/patients/${id}/edit`);
   };
 
   const handleDelete = async (id) => {
@@ -28,7 +30,7 @@ function PatientsPage() {
 
   // 🔹 NEW: row click → Patient Folder
   const handleRowClick = (id) => {
-    navigate(`patients/${id}`);
+    navigate(`${prefix}/patients/${id}`);
   };
 
   return (
@@ -45,7 +47,7 @@ function PatientsPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/branch/patients/add")}
+          onClick={() => navigate(`${prefix}/patients/add`)}
           className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
         >
           + Add patient

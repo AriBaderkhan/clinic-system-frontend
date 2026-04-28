@@ -8,6 +8,8 @@ import appointmentApi from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 function AppointmentPage() {
   const navigate = useNavigate();
+  const role = localStorage.getItem("role") || "reception";
+  const prefix = role === "branch_manager" ? "/branch" : "/reception";
 
   // ---------- FILTER STATE ----------
   const [dayFilter, setDayFilter] = useState("");   // '', 'today', 'yesterday', 'last_week', 'last_month'
@@ -42,7 +44,7 @@ function AppointmentPage() {
   };
 
   const handleEdit = (id) => {
-    navigate(`/reception/appointments/${id}/edit`);
+    navigate(`${prefix}/appointments/${id}/edit`);
   };
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -107,7 +109,7 @@ function AppointmentPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/reception/appointments/add")}
+          onClick={() => navigate(`${prefix}/appointments/add`)}
           className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
         >
           + Add Appointment
