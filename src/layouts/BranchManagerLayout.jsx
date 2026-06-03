@@ -1,5 +1,5 @@
 // src/layouts/ReceptionLayout.jsx
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
@@ -27,6 +27,14 @@ const handleLogout = () => {
 
 export default function BranchManagerLayout() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const isTenantViewing = !!localStorage.getItem('tenant_token');
+
+  const handleBackToTenant = () => {
+    localStorage.setItem('token', localStorage.getItem('tenant_token'));
+    localStorage.removeItem('tenant_token');
+    navigate('/tenant/branches');
+  };
 
   useEffect(() => {
     const socket = connectSocket();
@@ -126,7 +134,15 @@ export default function BranchManagerLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-slate-800 px-3 py-3">
+        <div className="border-t border-slate-800 px-3 py-3 flex flex-col gap-1">
+          {isTenantViewing && (
+            <button
+              onClick={() => { handleBackToTenant(); setOpen(false); }}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-blue-400 transition hover:bg-blue-500/10 hover:text-blue-300"
+            >
+              <span>← Back to Tenant</span>
+            </button>
+          )}
           <button
             onClick={() => {
               handleLogout();
@@ -178,7 +194,15 @@ export default function BranchManagerLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-slate-800 px-3 py-3">
+        <div className="border-t border-slate-800 px-3 py-3 flex flex-col gap-1">
+          {isTenantViewing && (
+            <button
+              onClick={handleBackToTenant}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-blue-400 transition hover:bg-blue-500/10 hover:text-blue-300"
+            >
+              <span>← Back to Tenant</span>
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"

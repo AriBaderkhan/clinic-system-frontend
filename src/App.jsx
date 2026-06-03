@@ -89,7 +89,7 @@ export default function App() {
           path="/branch"
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRoles={["branch_manager"]}>
+              <RoleRoute allowedRoles={["branch_manager", "tenant_manager"]}>
                 <BranchManagerLayout />
               </RoleRoute>
             </ProtectedRoute>

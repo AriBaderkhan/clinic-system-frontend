@@ -31,3 +31,8 @@ export const deleteBranch = async (id) => {
     const response = await api.delete(`/api/tenants/branches/${id}`);
     return response.data;
 };
+
+export const switchBranch = async (branchId) => {
+    const response = await api.post(`/api/tenants/switch-branch/${branchId}`);
+    return response.data;
+};

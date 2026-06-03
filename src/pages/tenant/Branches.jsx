@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getBranches } from '../../api/tenantApi';
+import { getBranches, switchBranch } from '../../api/tenantApi';
 import { useNavigate } from 'react-router-dom';
 
 export default function TenantBranches() {
@@ -23,6 +23,18 @@ export default function TenantBranches() {
         }
     };
 
+    const handleManage = async (branch) => {
+        try {
+            const data = await switchBranch(branch.id);
+            localStorage.setItem('tenant_token', localStorage.getItem('token'));
+            localStorage.setItem('token', data.token);
+            navigate('/branch');
+        } catch (error) {
+            console.error("Failed to switch branch", error);
+            alert(error.userMessage || "Failed to switch branch");
+        }
+    };
+
     return (
         <div className="p-4">
             <h2 className="text-xl font-bold mb-4">Active Branches</h2>
@@ -33,14 +45,7 @@ export default function TenantBranches() {
                     {branches.map((branch) => (
                         <div
                             key={branch.id}
-                            onClick={() => {
-                                // Logic to switch context to this branch? 
-                                // For now, maybe just show details or login as branch manager?
-                                // User asked: "when they click on the branch one let's say the meny bewlow branches will change to the now we have appointments all"
-                                // This implies switching the 'current branch' context.
-                                alert(`Switching to branch: ${branch.name} (Implementation Pending Step 8)`);
-                            }}
-                            className="bg-white p-6 rounded-lg shadow border hover:shadow-md cursor-pointer transition"
+                            className="bg-white p-6 rounded-lg shadow border hover:shadow-md transition"
                         >
                             <h3 className="font-bold text-lg">{branch.name}</h3>
                             <p className="text-sm text-gray-500">{branch.location}</p>
@@ -48,7 +53,12 @@ export default function TenantBranches() {
                                 <span className={`px-2 py-1 rounded text-xs ${branch.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                     {branch.status}
                                 </span>
-                                <button className="text-blue-600 text-sm font-medium">Manage &rarr;</button>
+                                <button
+                                    onClick={() => handleManage(branch)}
+                                    className="text-blue-600 text-sm font-medium hover:underline cursor-pointer"
+                                >
+                                    Manage &rarr;
+                                </button>
                             </div>
                         </div>
                     ))}
