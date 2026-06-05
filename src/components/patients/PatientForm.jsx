@@ -1,4 +1,4 @@
-// src/components/patients/PatientForm.jsx
+﻿// src/components/patients/PatientForm.jsx
 import {  useState } from "react";
 
 function PatientForm({
@@ -57,7 +57,7 @@ function PatientForm({
                 <p className="text-xs text-slate-500">{subtitle}</p>
             </div>
 
-            <div className="max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+            <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
                 {(clientError || errorMessage) && (
                     <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
                         {clientError || errorMessage}
@@ -75,7 +75,7 @@ function PatientForm({
                             name="name"
                             value={form.name}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#1DB954] focus:bg-white focus:ring-1 focus:ring-[#1DB954]"
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
                             placeholder="e.g. Ahmed Hassan"
                         />
                     </div>
@@ -90,13 +90,13 @@ function PatientForm({
                             name="phone"
                             value={form.phone}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#1DB954] focus:bg-white focus:ring-1 focus:ring-[#1DB954]"
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
                             placeholder="0750..."
                         />
                     </div>
 
                     {/* Age + Gender */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-slate-700">
                                 Age<span className="text-red-500">*</span>
@@ -107,7 +107,7 @@ function PatientForm({
                                 value={form.age}
                                 onChange={handleChange}
                                 min={0}
-                                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#1DB954] focus:bg-white focus:ring-1 focus:ring-[#1DB954]"
+                                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
                             />
                         </div>
 
@@ -119,7 +119,7 @@ function PatientForm({
                                 name="gender"
                                 value={form.gender}
                                 onChange={handleChange}
-                                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#1DB954] focus:bg-white focus:ring-1 focus:ring-[#1DB954]"
+                                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
                             >
                                 <option value="">Select gender</option>
                                 <option value="male">Male</option>
@@ -138,7 +138,7 @@ function PatientForm({
                             value={form.address}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#1DB954] focus:bg-white focus:ring-1 focus:ring-[#1DB954]"
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
                             placeholder="Erbil, Iraq"
                         />
                     </div>
@@ -147,7 +147,7 @@ function PatientForm({
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="rounded-lg bg-[#1DB954] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+                            className="rounded-lg bg-[#015478] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#015478] disabled:cursor-not-allowed disabled:opacity-70"
                         >
                             {isSubmitting ? "Saving..." : submitLabel}
                         </button>

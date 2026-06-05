@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import useMonthlyReportPdf from "../../hooks/useMonthlyReportPdf";
 
@@ -69,7 +69,7 @@ export default function ReportsPage() {
             <button
               onClick={() => setTab("reports")}
               className={`px-4 py-2 text-sm rounded-lg ${tab === "reports"
-                ? "bg-emerald-600 text-white"
+                ? "bg-[#015478] text-white"
                 : "text-slate-700 hover:bg-white"
                 }`}
             >
@@ -78,7 +78,7 @@ export default function ReportsPage() {
             <button
               onClick={() => setTab("expenses")}
               className={`px-4 py-2 text-sm rounded-lg ${tab === "expenses"
-                ? "bg-emerald-600 text-white"
+                ? "bg-[#015478] text-white"
                 : "text-slate-700 hover:bg-white"
                 }`}
             >
@@ -159,7 +159,7 @@ export default function ReportsPage() {
                   <button
                     onClick={onDownload}
                     disabled={isLoading || (reportType === 'monthly' ? !monthParam : (!dateRange.from || !dateRange.to))}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 mb-[1px]"
+                    className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-60 mb-[1px]"
                   >
                     {isLoading ? "Downloading..." : "Download PDF"}
                   </button>

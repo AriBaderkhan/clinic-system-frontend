@@ -1,4 +1,4 @@
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiCheck, FiCheckCircle, FiAlertCircle, FiEye, FiLink } from 'react-icons/fi';
+﻿import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiCheck, FiCheckCircle, FiAlertCircle, FiEye, FiLink } from 'react-icons/fi';
 import { getAllUsers, createUser, getRoles, updateUser, assignUserToBranch } from '../../api/userApi';
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
@@ -229,7 +229,7 @@ export default function TenantUsers() {
                 </div>
                 <button
                     onClick={openAddModal}
-                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
+                    className="flex items-center gap-2 bg-[#015478] hover:bg-[#015478] text-white px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
                 >
                     <FiPlus size={20} />
                     Add User
@@ -258,7 +258,7 @@ export default function TenantUsers() {
             {/* Table Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-[800px]">
+                    <table className="min-w-full w-full">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
@@ -297,7 +297,7 @@ export default function TenantUsers() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 capitalize border border-blue-100">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#015478]/10 text-[#015478] capitalize border border-[#015478]/20">
                                                 {user.role_name}
                                             </span>
                                         </td>
@@ -311,7 +311,7 @@ export default function TenantUsers() {
                                         </td>
                                         <td className="px-6 py-4">
                                             {user.is_active_global && user.is_active_branch ? (
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">Active</span>
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#015478]/10 text-[#015478] border border-[#015478]/20">Active</span>
                                             ) : (
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">Inactive</span>
                                             )}
@@ -327,14 +327,14 @@ export default function TenantUsers() {
                                                 </button>
                                                 <button
                                                     onClick={() => handleAssign(user)}
-                                                    className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                                                    className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-[#015478]/10 rounded-lg transition-all"
                                                     title="Assign to Branch"
                                                 >
                                                     <FiLink size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleEdit(user)}
-                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                    className="p-1.5 text-gray-500 hover:text-[#015478] hover:bg-[#015478]/10 rounded-lg transition-all"
                                                     title="Edit"
                                                 >
                                                     <FiEdit2 size={16} />
@@ -381,7 +381,7 @@ export default function TenantUsers() {
                             )}
                             <div className="flex justify-end gap-3 pt-6">
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all" disabled={submitting}>Cancel</button>
-                                <button type="submit" className="px-5 py-2.5 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" disabled={submitting}>{submitting ? 'Saving...' : <>{isEditing ? 'Update User' : 'Create User'} <FiCheckCircle size={18} /></>}</button>
+                                <button type="submit" className="px-5 py-2.5 rounded-lg bg-[#015478] text-white font-medium hover:bg-[#015478] shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" disabled={submitting}>{submitting ? 'Saving...' : <>{isEditing ? 'Update User' : 'Create User'} <FiCheckCircle size={18} /></>}</button>
                             </div>
                         </form>
                     </div>
@@ -396,13 +396,13 @@ export default function TenantUsers() {
                             <h2 className="text-xl font-bold text-gray-800">Assign to Branch</h2>
                             <button onClick={() => setIsAssignModalOpen(false)} className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all"><FiX size={20} /></button>
                         </div>
-                        <div className="px-6 py-4 bg-blue-50/50 border-b border-blue-100"><p className="text-sm text-gray-600">Assigning <strong>{selectedUser.full_name}</strong> to a new branch.</p></div>
+                        <div className="px-6 py-4 bg-[#015478]/10/50 border-b border-[#015478]/20"><p className="text-sm text-gray-600">Assigning <strong>{selectedUser.full_name}</strong> to a new branch.</p></div>
                         <form onSubmit={handleAssignSubmit} className="p-6 space-y-4">
                             <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Select Branch <span className="text-red-500">*</span></label><select name="branch_id" required value={assignFormData.branch_id} onChange={handleAssignInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Branch</option>{branches.map(branch => (<option key={branch.id} value={branch.id}>{branch.name}</option>))}</select></div>
                             <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Select Role <span className="text-red-500">*</span></label><select name="role_id" required value={assignFormData.role_id} onChange={handleAssignInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Role</option>{roles.map(role => (<option key={role.id} value={role.id}>{role.name}</option>))}</select></div>
                             <div className="flex justify-end gap-3 pt-6">
                                 <button type="button" onClick={() => setIsAssignModalOpen(false)} className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all" disabled={submitting}>Cancel</button>
-                                <button type="submit" className="px-5 py-2.5 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" disabled={submitting}>{submitting ? 'Assigning...' : <>Assign Branch <FiLink size={18} /></>}</button>
+                                <button type="submit" className="px-5 py-2.5 rounded-lg bg-[#015478] text-white font-medium hover:bg-[#015478] shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" disabled={submitting}>{submitting ? 'Assigning...' : <>Assign Branch <FiLink size={18} /></>}</button>
                             </div>
                         </form>
                     </div>
@@ -424,8 +424,8 @@ export default function TenantUsers() {
                                     <h3 className="text-xl font-bold text-gray-900">{selectedUser.full_name}</h3>
                                     <p className="text-gray-500">{selectedUser.email}</p>
                                     <div className="mt-1 flex gap-2">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 capitalize border border-blue-100">{selectedUser.role_name}</span>
-                                        {selectedUser.is_active_global && selectedUser.is_active_branch ? (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">Active</span>) : (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">Inactive</span>)}
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#015478]/10 text-[#015478] capitalize border border-[#015478]/20">{selectedUser.role_name}</span>
+                                        {selectedUser.is_active_global && selectedUser.is_active_branch ? (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#015478]/10 text-[#015478] border border-[#015478]/20">Active</span>) : (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">Inactive</span>)}
                                     </div>
                                 </div>
                             </div>
@@ -433,7 +433,7 @@ export default function TenantUsers() {
                                 <div className="bg-gray-50 p-3 rounded-lg"><p className="text-gray-500 text-xs uppercase tracking-wider font-semibold mb-1">Phone</p><p className="text-gray-800 font-medium">{selectedUser.phone || 'N/A'}</p></div>
                                 <div className="bg-gray-50 p-3 rounded-lg"><p className="text-gray-500 text-xs uppercase tracking-wider font-semibold mb-1">Branch</p><p className="text-gray-800 font-medium">{selectedUser.branch_name}</p></div>
                                 <div className="bg-gray-50 p-3 rounded-lg col-span-2"><p className="text-gray-500 text-xs uppercase tracking-wider font-semibold mb-1">Address</p><p className="text-gray-800 font-medium">{selectedUser.address || 'N/A'}</p></div>
-                                {selectedUser.room && (<div className="bg-blue-50 p-3 rounded-lg col-span-2 border border-blue-100"><p className="text-blue-500 text-xs uppercase tracking-wider font-semibold mb-1">Doctor's Room</p><p className="text-blue-800 font-medium">Room {selectedUser.room}</p></div>)}
+                                {selectedUser.room && (<div className="bg-[#015478]/10 p-3 rounded-lg col-span-2 border border-[#015478]/20"><p className="text-[#015478] text-xs uppercase tracking-wider font-semibold mb-1">Doctor's Room</p><p className="text-[#015478] font-medium">Room {selectedUser.room}</p></div>)}
                             </div>
                         </div>
                         <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end"><button onClick={() => setIsViewModalOpen(false)} className="px-5 py-2 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 transition-all">Close</button></div>

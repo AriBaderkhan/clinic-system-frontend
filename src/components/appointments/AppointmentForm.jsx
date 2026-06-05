@@ -1,4 +1,4 @@
-// src/components/appointments/AppointmentForm.jsx
+﻿// src/components/appointments/AppointmentForm.jsx
 import { useEffect, useState } from "react";
 import patientApi from "../../api/patientApi";
 
@@ -261,7 +261,7 @@ function AppointmentForm({
               setSelectedPatient(null);
             }}
             placeholder="Start typing: e.g. Ari..."
-            className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
           />
           {isPatientSearching && (
             <p className="mt-1 text-[11px] text-slate-500">Searching…</p>
@@ -305,7 +305,7 @@ function AppointmentForm({
           name="doctor_id"
           value={form.doctor_id}
           onChange={handleChange}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         >
           <option value="">Select doctor</option>
           {doctors.map((d) => (
@@ -327,7 +327,7 @@ function AppointmentForm({
           name="scheduled_start"
           value={form.scheduled_start}
           onChange={handleChange}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         />
         <p className="mt-1 text-[11px] text-slate-400">
           Clinic rules: normal = 1 hour spacing, urgent / walk-in can ignore.
@@ -344,7 +344,7 @@ function AppointmentForm({
           value={form.appointment_type}
           onChange={handleChange}
           disabled={mode === "edit"}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         >
           <option value="normal">Normal</option>
           <option value="urgent">Urgent</option>
@@ -357,7 +357,7 @@ function AppointmentForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#015478] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting
             ? mode === "add"

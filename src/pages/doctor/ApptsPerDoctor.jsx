@@ -1,4 +1,4 @@
-// src/pages/appointments/AppointmentsPage.jsx
+﻿// src/pages/appointments/AppointmentsPage.jsx
 import { useState } from "react";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
@@ -90,7 +90,7 @@ function ApptsPerDoctor() {
                             <select
                                 value={dayFilter}
                                 onChange={(e) => setDayFilter(e.target.value)}
-                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             >
                                 <option value="">All</option>
                                 <option value="today">Today</option>
@@ -106,7 +106,7 @@ function ApptsPerDoctor() {
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
-                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             >
                                 <option value="">All</option>
                                 <option value="normal">Normal</option>
@@ -123,7 +123,7 @@ function ApptsPerDoctor() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Patient, phone, doctor..."
-                                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             />
                         </div>
                     </div>

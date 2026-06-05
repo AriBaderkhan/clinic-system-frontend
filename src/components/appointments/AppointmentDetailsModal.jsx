@@ -1,4 +1,4 @@
-// src/components/appointments/AppointmentDetailsModal.jsx
+﻿// src/components/appointments/AppointmentDetailsModal.jsx
 import { useState } from "react";
 import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
@@ -22,7 +22,7 @@ function statusBadgeClasses(status) {
     case "in_progress":
       return "bg-purple-50 text-purple-700 border-purple-100";
     case "completed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100";
+      return "bg-[#015478]/10 text-[#015478] border-[#015478]/20";
     case "cancelled":
       return "bg-red-50 text-red-700 border-red-100";
     case "no_show":
@@ -52,7 +52,7 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
       )}
 
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
-        <div className="w-full max-w-xl rounded-2xl bg-white p-5 shadow-xl">
+        <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="mb-3 flex items-start justify-between">
             <div>
@@ -95,7 +95,7 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
           {!isLoading && !error && appointment && (
             <div className="space-y-4 text-sm text-slate-800">
               {/* Top row: Status + type + created_at */}
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
                     Status
@@ -131,7 +131,7 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
               </div>
 
               {/* Timeline */}
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
                     Check-in time
@@ -212,7 +212,7 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
                       onClick={() => setOpenSessionModal(true)}
                       className={`rounded-md px-3 py-1.5 text-[11px] font-medium ${
                         sessionId
-                          ? "bg-[#1DB954] text-white hover:bg-emerald-600"
+                          ? "bg-[#015478] text-white hover:bg-[#015478]"
                           : "bg-slate-200 text-slate-500 cursor-not-allowed"
                       }`}
                     >

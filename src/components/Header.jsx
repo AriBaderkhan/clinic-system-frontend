@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { switchBranch } from '../api/userApi';
 import toast from 'react-hot-toast';
@@ -94,7 +94,7 @@ function Header({ onMenuClick }) {
           <div className="font-medium text-white">{user?.name}</div>
           <div className="text-slate-400 capitalize">{user?.role}</div>
         </div>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
           {user?.name?.charAt(0) || 'U'}
         </div>
       </div>

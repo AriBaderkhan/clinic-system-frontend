@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getPlans, createPlan, updatePlan } from '../../api/planApi';
 // import Modal from '../../components/Modal'; // Assuming Modal exists, checking later. If not, simple overlay.
@@ -83,7 +83,7 @@ export default function PlansPage() {
                 <h2 className="text-lg font-medium text-slate-800">Subscription Plans</h2>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                    className="rounded-md bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
                 >
                     Create Plan
                 </button>
@@ -94,7 +94,7 @@ export default function PlansPage() {
                     <div key={plan.id} className="flex flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
-                            <span className="text-xl font-bold text-indigo-600">${plan.price}</span>
+                            <span className="text-xl font-bold text-[#015478]">${plan.price}</span>
                         </div>
                         <p className="mb-6 flex-1 text-sm text-slate-500">{plan.description}</p>
 
@@ -134,7 +134,7 @@ export default function PlansPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -142,13 +142,13 @@ export default function PlansPage() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Description</label>
                                 <textarea
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
                                     rows="2"
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700">Price ($)</label>
                                     <input
@@ -156,19 +156,19 @@ export default function PlansPage() {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
                                         value={formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700">Max Branches</label>
                                     <input
                                         type="number"
                                         required
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
                                         value={formData.max_branches}
                                         onChange={(e) => setFormData({ ...formData, max_branches: e.target.value })}
                                         placeholder="-1 for infinite"
@@ -179,7 +179,7 @@ export default function PlansPage() {
                                     <input
                                         type="number"
                                         required
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
                                         value={formData.max_users}
                                         onChange={(e) => setFormData({ ...formData, max_users: e.target.value })}
                                         placeholder="-1 for infinite"
@@ -197,7 +197,7 @@ export default function PlansPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+                                    className="rounded-md bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]"
                                 >
                                     Save
                                 </button>

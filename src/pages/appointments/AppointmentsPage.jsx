@@ -1,4 +1,4 @@
-// src/pages/appointments/AppointmentsPage.jsx
+﻿// src/pages/appointments/AppointmentsPage.jsx
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useAppointments from "../../hooks/useAppointments";
@@ -110,7 +110,7 @@ function AppointmentPage() {
         <button
           type="button"
           onClick={() => navigate(`${prefix}/appointments/add`)}
-          className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
+          className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#015478]"
         >
           + Add Appointment
         </button>
@@ -134,7 +134,7 @@ function AppointmentPage() {
               <select
                 value={dayFilter}
                 onChange={(e) => setDayFilter(e.target.value)}
-                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
               >
                 <option value="">All</option>
                 <option value="today">Today</option>
@@ -150,7 +150,7 @@ function AppointmentPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
               >
                 <option value="">All</option>
                 <option value="normal">Normal</option>
@@ -167,7 +167,7 @@ function AppointmentPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Patient, phone, doctor..."
-                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full max-w-xs rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
               />
             </div>
           </div>
@@ -297,7 +297,7 @@ function AppointmentPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedDetailsId(id)}
-                            className="rounded-md border border-slate-200 bg-green-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-green-900"
+                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
                           >
                             View
                           </button>

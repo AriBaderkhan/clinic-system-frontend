@@ -1,4 +1,4 @@
-// ✅ src/pages/reception/Sessions.jsx
+﻿// ✅ src/pages/reception/Sessions.jsx
 import { useMemo, useState } from "react";
 import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
@@ -84,7 +84,7 @@ export default function Sessions() {
           <select
             value={dayFilter}
             onChange={(e) => setDayFilter(e.target.value)}
-            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
           >
             <option value="">All</option>
             <option value="today">Today</option>
@@ -102,7 +102,7 @@ export default function Sessions() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Patient and doctor name"
-            className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full max-w-xs rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
           />
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function Sessions() {
                       <span
                         className={[
                           "rounded-full px-3 py-1 text-xs",
-                          s.is_paid ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700",
+                          s.is_paid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700",
                         ].join(" ")}
                       >
                         {s.is_paid ? "Paid" : "Unpaid"}
@@ -157,7 +157,7 @@ export default function Sessions() {
                       <button
                         type="button"
                         onClick={() => openView(s.session_id)}
-                        className="rounded-lg border border-slate-200 bg-green-600 px-3 py-2 text-xs text-slate-100 hover:bg-green-900"
+                        className="rounded-lg border border-slate-200 bg-[#015478] px-3 py-2 text-xs text-slate-100 hover:bg-[#013d58]"
                       >
                         View
                       </button>

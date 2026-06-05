@@ -1,4 +1,4 @@
-// src/components/appointments/PaySessionModal.jsx
+﻿// src/components/appointments/PaySessionModal.jsx
 import { useState } from "react";
 import { paySession } from "../../api/sessionApi";
 
@@ -98,7 +98,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-xl">
+      <div className="w-full max-w-2xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div>
@@ -198,7 +198,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                           className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${
                             planErrors[pid]
                               ? "border-red-400 bg-red-50"
-                              : "border-slate-200 bg-white focus:border-[#1DB954]"
+                              : "border-slate-200 bg-white focus:border-[#015478]"
                           }`}
                           placeholder="0"
                         />
@@ -239,7 +239,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               //  ${
               //   isNormalBelowMin
               //     ? "border-red-400 bg-red-50"
-              //     : "border-slate-200 bg-white focus:border-[#1DB954]"
+              //     : "border-slate-200 bg-white focus:border-[#015478]"
               // }
               placeholder={total ? String(total) : "Enter amount"}
             />
@@ -260,7 +260,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#1DB954]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#015478]"
               placeholder="e.g. paid full in cash"
             />
           </div>
@@ -278,7 +278,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               type="submit"
               // disabled={disableSubmit}
               className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white 
-                ${ disableSubmit ? "bg-[#1DB954]/50 cursor-not-allowed" : "bg-[#1DB954] hover:bg-[#18a047]"}
+                ${ disableSubmit ? "bg-[#015478]/50 cursor-not-allowed" : "bg-[#015478] hover:bg-[#013d58]"}
                   `}
             >
               {isSubmitting ? "Saving…" : "Save payment"}

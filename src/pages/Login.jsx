@@ -1,9 +1,8 @@
-// src/pages/Login.jsx
+﻿// src/pages/Login.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMinimize2, FiMonitor, FiUser, FiArrowRight } from "react-icons/fi";
 
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoginForm from "../components/LoginForm";
 import api from "../api/api"; // axios instance
@@ -120,8 +119,6 @@ function Login() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
-
       <main className="flex flex-1 items-center justify-center px-4 py-10 relative">
         <LoginForm
           onSubmit={handleLogin}
@@ -133,12 +130,12 @@ function Login() {
         {showBranchModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-6 text-white text-center">
+              <div className="bg-gradient-to-r from-[#015478] to-[#013d58] px-6 py-6 text-white text-center">
                 <div className="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-3 backdrop-blur-sm">
                   <FiMinimize2 size={32} />
                 </div>
                 <h2 className="text-2xl font-bold">Select Branch</h2>
-                <p className="text-blue-100 text-sm mt-1">Please choose which branch to access</p>
+                <p className="text-white text-sm mt-1">Please choose which branch to access</p>
               </div>
 
               <div className="p-6">
@@ -147,21 +144,21 @@ function Login() {
                     <button
                       key={branch.branch_id}
                       onClick={() => handleBranchSelect(branch.branch_id)}
-                      className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-blue-500 hover:bg-blue-50 hover:shadow-md transition-all group group-hover:scale-[1.01]"
+                      className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#015478] hover:bg-[#015478]/10 hover:shadow-md transition-all group group-hover:scale-[1.01]"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-[#015478]/20 text-[#015478] flex items-center justify-center group-hover:bg-[#015478] group-hover:text-white transition-colors">
                           <FiMonitor size={20} />
                         </div>
                         <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-blue-700">Branch {branch.branch_name}</h3>
+                          <h3 className="font-semibold text-gray-900 group-hover:text-[#015478]">Branch {branch.branch_name}</h3>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <FiUser size={12} className="text-gray-400 group-hover:text-blue-400" />
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide group-hover:text-blue-500">{branch.role_name}</p>
+                            <FiUser size={12} className="text-gray-400 group-hover:text-[#015478]" />
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide group-hover:text-[#015478]">{branch.role_name}</p>
                           </div>
                         </div>
                       </div>
-                      <FiArrowRight className="text-gray-300 group-hover:text-blue-600 transform group-hover:translate-x-1 transition-all" size={20} />
+                      <FiArrowRight className="text-gray-300 group-hover:text-[#015478] transform group-hover:translate-x-1 transition-all" size={20} />
                     </button>
                   ))}
                 </div>

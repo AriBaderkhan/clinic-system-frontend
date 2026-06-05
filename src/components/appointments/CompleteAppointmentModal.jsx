@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
 import { fetchWorkCatalog } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
@@ -293,9 +293,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="mb-4 flex items-start justify-between">
+        <div className="px-6 pt-6 pb-4 flex items-start justify-between shrink-0">
           <div>
             <h2 className="text-base font-semibold text-slate-900">Complete appointment & fill works</h2>
             <p className="mt-1 text-xs text-slate-500">
@@ -311,12 +311,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         </div>
 
         {error && (
-          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          <div className="mx-6 mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600 shrink-0">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-6 space-y-4">
           {/* Next plan + Notes */}
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -325,7 +326,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                 value={nextPlan}
                 onChange={(e) => setNextPlan(e.target.value)}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                 placeholder="Short note for next visit…"
               />
             </div>
@@ -335,7 +336,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                 placeholder="Notes about today’s treatment…"
               />
             </div>
@@ -367,7 +368,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     <select
                       value={w.work_id}
                       onChange={(e) => handleChangeWork(index, "work_id", e.target.value)}
-                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                       required
                     >
                       <option value="">Select…</option>
@@ -386,7 +387,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                       min="1"
                       value={w.quantity}
                       onChange={(e) => handleChangeWork(index, "quantity", e.target.value)}
-                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                     />
                   </div>
 
@@ -398,7 +399,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                       max="48"
                       value={w.tooth_number}
                       onChange={(e) => handleChangeWork(index, "tooth_number", e.target.value)}
-                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                      className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                       placeholder="optional"
                     />
                   </div>
@@ -436,9 +437,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
                   if (st?.plan) {
                     return (
-                      <div key={type} className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs">
+                      <div key={type} className="rounded-lg border border-[#015478]/30 bg-[#015478]/10 p-3 text-xs">
                         <div className="font-semibold">{title}</div>
-                        <div className="text-emerald-700 mt-1">Active plan found ✅</div>
+                        <div className="text-[#015478] mt-1">Active plan found ✅</div>
                         <label className="mt-2 flex items-center gap-2 text-xs">
                           <input
                             type="checkbox"
@@ -507,7 +508,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                           setAgreementTotals((prev) => ({ ...prev, [type]: e.target.value }));
                           setAgreementErrors((prev) => ({ ...prev, [type]: "" }));
                         }}
-                        className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                        className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                         placeholder={`Min: ${minTotal.toLocaleString()} IQD`}
                       />
                       <p className="text-[11px] text-slate-500">
@@ -521,8 +522,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
           )}
 
+          </div>
+
           {/* Footer */}
-          <div className="mt-4 flex items-center justify-end gap-2">
+          <div className="shrink-0 flex items-center justify-end gap-2 border-t border-slate-100 px-6 py-4">
             <button
               type="button"
               onClick={onClose}
@@ -533,7 +536,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </button>
             <button
               type="submit"
-              className="rounded-md bg-[#1DB954] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#18a045] disabled:opacity-60"
+              className="rounded-md bg-[#015478] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#18a045] disabled:opacity-60"
               disabled={saving}
             >
               {saving ? "Saving…" : "Confirm & Complete"}

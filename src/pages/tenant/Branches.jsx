@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { getBranches, switchBranch } from '../../api/tenantApi';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,12 +50,12 @@ export default function TenantBranches() {
                             <h3 className="font-bold text-lg">{branch.name}</h3>
                             <p className="text-sm text-gray-500">{branch.location}</p>
                             <div className="mt-4 flex justify-between items-center">
-                                <span className={`px-2 py-1 rounded text-xs ${branch.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                <span className={`px-2 py-1 rounded text-xs ${branch.status === 'active' ? 'bg-[#015478]/20 text-[#015478]' : 'bg-red-100 text-red-700'}`}>
                                     {branch.status}
                                 </span>
                                 <button
                                     onClick={() => handleManage(branch)}
-                                    className="text-blue-600 text-sm font-medium hover:underline cursor-pointer"
+                                    className="text-[#015478] text-sm font-medium hover:underline cursor-pointer"
                                 >
                                     Manage &rarr;
                                 </button>

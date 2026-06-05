@@ -1,4 +1,4 @@
-// src/pages/history/PaymentHistory.jsx
+﻿// src/pages/history/PaymentHistory.jsx
 import { useState } from "react";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
@@ -118,22 +118,22 @@ function PaymentHistory() {
             <table className="min-w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500">
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Date &amp; Time
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Patient
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Doctor
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Amount
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Reception
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#1DB954]">
+                  <th className="px-3 py-2 font-medium text-[#015478]">
                     Note
                   </th>
                 </tr>

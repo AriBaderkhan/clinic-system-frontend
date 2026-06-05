@@ -141,7 +141,7 @@ export default function BranchSettingsPage() {
                             {!isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                    className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
                                 >
                                     Edit Branch
                                 </button>
@@ -210,7 +210,7 @@ export default function BranchSettingsPage() {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#013d58] disabled:opacity-50"
                                     >
                                         {saving ? "Saving..." : "Save Changes"}
                                     </button>
@@ -222,7 +222,7 @@ export default function BranchSettingsPage() {
                                     <span className="block text-sm font-medium text-gray-500">Location</span>
                                     <span className="text-gray-900">{branchDetails.location}</span>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <span className="block text-sm font-medium text-gray-500">Timezone</span>
                                         <span className="text-gray-900">{branchDetails.timezone}</span>

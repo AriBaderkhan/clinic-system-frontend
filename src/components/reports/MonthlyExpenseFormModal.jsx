@@ -1,4 +1,4 @@
-// src/pages/reports/components/MonthlyExpenseFormModal.jsx
+﻿// src/pages/reports/components/MonthlyExpenseFormModal.jsx
 import { useEffect, useState } from "react";
 
 export default function MonthlyExpenseFormModal({
@@ -115,7 +115,7 @@ export default function MonthlyExpenseFormModal({
 
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Cancel</button>
-            <button type="submit" disabled={saving} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58] disabled:opacity-50">
               {saving ? "Saving..." : "Save"}
             </button>
           </div>

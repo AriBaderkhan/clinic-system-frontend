@@ -1,4 +1,4 @@
-
+﻿
 // src/layouts/DoctorLayout.jsx
 import { NavLink, Outlet } from "react-router-dom";
 import { useMemo, useState } from "react";
@@ -23,7 +23,7 @@ export default function DoctorLayout() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900">
+    <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900">
       {/* ===== Mobile overlay ===== */}
       <div
         className={[
@@ -36,25 +36,25 @@ export default function DoctorLayout() {
       {/* ===== Mobile drawer ===== */}
       <aside
         className={[
-          "fixed left-0 top-0 z-50 h-full w-72 bg-slate-900 text-slate-100",
+          "fixed left-0 top-0 z-50 h-full w-72 bg-[#7b97bd] text-slate-100",
           "transform transition-transform md:hidden",
           open ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-[#6a87ad] px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
               CD
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-              <span className="text-[11px] text-slate-400">Doctor Dashboard</span>
+              <span className="text-[11px] text-white">Doctor Dashboard</span>
             </div>
           </div>
 
           <button
             onClick={() => setOpen(false)}
-            className="rounded-md px-2 py-1 text-slate-200 hover:bg-slate-800"
+            className="rounded-md px-2 py-1 text-slate-200 hover:bg-[#6a87ad]"
             aria-label="Close menu"
           >
             ✕
@@ -71,9 +71,9 @@ export default function DoctorLayout() {
               className={({ isActive }) =>
                 [
                   "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-slate-800 hover:text-white hover:pl-3.5",
+                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
                   "border-l-4 border-transparent",
-                  isActive ? "bg-slate-800 border-l-[#1DB954] text-[#1DB954]" : "",
+                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]
                   .filter(Boolean)
                   .join(" ")
@@ -83,31 +83,31 @@ export default function DoctorLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t border-slate-800 px-3 py-3">
+        <div className="border-t border-[#6a87ad] px-3 py-3">
           <button
             onClick={() => {
               handleLogout();
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
             <span>Logout</span>
           </button>
         </div>
-        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
-          Powered By <span className="text-slate-200">Tradi Company</span>
+        <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
+          Powered By <span className="text-white">Tradi Company</span>
         </div>
       </aside>
 
       {/* ===== Desktop sidebar ===== */}
-      <aside className="hidden w-64 flex-col border-r bg-slate-900 text-slate-100 md:flex">
-        <div className="flex items-center gap-3 border-b border-slate-800 px-5 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1DB954] text-xs font-semibold text-white">
+      <aside className="hidden w-64 flex-col border-r bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
+        <div className="flex items-center gap-3 border-b border-[#6a87ad] px-5 py-4">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
             CD
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-slate-400">Dr.{name} Dashboard</span>
+            <span className="text-[11px] text-white">Dr.{name} Dashboard</span>
           </div>
         </div>
 
@@ -120,9 +120,9 @@ export default function DoctorLayout() {
               className={({ isActive }) =>
                 [
                   "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-slate-800 hover:text-white hover:pl-3.5",
+                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
                   "border-l-4 border-transparent",
-                  isActive ? "bg-slate-800 border-l-[#1DB954] text-[#1DB954]" : "",
+                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]
                   .filter(Boolean)
                   .join(" ")
@@ -133,43 +133,31 @@ export default function DoctorLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-slate-800 px-3 py-3">
+        <div className="border-t border-[#6a87ad] px-3 py-3">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
             <span>Logout</span>
           </button>
         </div>
 
-        <div className="border-t border-slate-800 px-5 py-3 text-[11px] text-slate-500">
-          Powered By <span className="text-slate-200">Tradi Company</span>
+        <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
+          Powered By <span className="text-white">Tradi Company</span>
         </div>
       </aside>
 
       {/* ===== Main area ===== */}
-      <div className="flex min-h-screen flex-1 flex-col">
-        {/* Topbar */}
-        <header className="flex h-14 items-center justify-between border-b bg-slate-800 px-4">
-          {/* Mobile hamburger */}
-          <button
-            className="rounded-md px-3 py-2 text-white hover:bg-slate-700 md:hidden"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <button
+          className="fixed top-3 left-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
 
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white">Dashboard</span>
-            <span className="text-[11px] text-slate-400">Doctor overview</span>
-          </div>
-
-          {/* spacer to balance header on mobile */}
-          <div className="w-[44px] md:hidden" />
-        </header>
-
-        <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
+        <main className="flex-1 px-4 py-4 md:px-6 md:py-6">
           <Outlet />
         </main>
       </div>

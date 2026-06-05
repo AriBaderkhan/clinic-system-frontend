@@ -1,4 +1,4 @@
-// src/pages/reports/MonthlyExpensesPage.jsx
+﻿// src/pages/reports/MonthlyExpensesPage.jsx
 import { useMemo, useState } from "react";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { formatMoney } from "../../utils/monthlyExpenses";
@@ -65,7 +65,7 @@ export default function MonthlyExpensesPage() {
 
         <button
           onClick={onClickCreate}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
         >
           + Add Expense
         </button>
@@ -79,7 +79,7 @@ export default function MonthlyExpensesPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by type or note..."
-              className="w-[320px] max-w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+              className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function MonthlyExpensesPage() {
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
         <div className="overflow-x-auto">
-          <table className="min-w-[1000px] w-full text-left text-sm">
+          <table className="min-w-full text-left text-sm">
             <thead className="border-b border-slate-200 text-xs text-slate-600">
               <tr>
                 <th className="px-5 py-3">#</th>
@@ -141,19 +141,19 @@ export default function MonthlyExpensesPage() {
                     <td className="px-5 py-4">{row.expense_date ? new Date(row.expense_date).toLocaleDateString() : '-'}</td>
                     <td className="px-5 py-4 font-medium text-slate-900">{row.type}</td>
                     <td className="px-5 py-4">{formatMoney(row.amount)}</td>
-                    <td className="px-5 py-4 text-slate-500 truncate max-w-[200px]">{row.note || '-'}</td>
+                    <td className="px-5 py-4 text-slate-500">{row.note || '-'}</td>
 
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => onClickEdit(row)}
-                          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50"
+                          className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => onDelete(row)}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                          className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-900"
                         >
                           Delete
                         </button>

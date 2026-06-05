@@ -1,4 +1,4 @@
-// src/components/sessions/SessionDetailsModal.jsx
+﻿// src/components/sessions/SessionDetailsModal.jsx
 import useSessionDetails from "../../hooks/useSessionDetails";
 
 function formatDateTime(iso) {
@@ -29,7 +29,7 @@ function SessionDetailsModal({ sessionId, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-      <div className="w-full max-w-3xl rounded-3xl bg-white shadow-xl border border-slate-200">
+      <div className="w-full max-w-3xl rounded-3xl bg-white shadow-xl border border-slate-200 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <div>
@@ -81,7 +81,7 @@ function SessionDetailsModal({ sessionId, onClose }) {
           {!isLoading && !error && session && (
             <>
               {/* Patient + Doctor + Appointment */}
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 grid-cols-1 md:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
                   <p className="text-[11px] font-medium text-slate-500">
                     Patient
@@ -120,7 +120,7 @@ function SessionDetailsModal({ sessionId, onClose }) {
               </div>
 
               {/* Totals */}
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 grid-cols-1 md:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-white p-3">
                   <p className="text-[11px] font-medium text-slate-500">
                     Minimum Total
@@ -153,7 +153,7 @@ function SessionDetailsModal({ sessionId, onClose }) {
               </div>
 
               {/* Notes / Next Plan */}
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-white p-3">
                   <p className="text-[11px] font-medium text-slate-500">
                     Doctor notes
@@ -193,7 +193,7 @@ function SessionDetailsModal({ sessionId, onClose }) {
                       Grouped by work type: quantity, teeth and total price.
                     </p>
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-700 border border-emerald-100">
+                  <span className="rounded-full bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/20">
                     {worksSummary?.works?.length || 0} items
                   </span>
                 </div>
@@ -209,16 +209,16 @@ function SessionDetailsModal({ sessionId, onClose }) {
                     <table className="min-w-full text-left text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 text-xs text-slate-500">
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Work
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Quantity
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Teeth
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Total
                           </th>
                         </tr>

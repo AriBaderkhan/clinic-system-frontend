@@ -1,4 +1,4 @@
-// src/components/sessions/SessionDetailsModal.jsx
+﻿// src/components/sessions/SessionDetailsModal.jsx
 import useSessionDetails from "../../hooks/useSessionDetails";
 
 function formatDateTime(iso) {
@@ -184,7 +184,7 @@ function SessionDetailsModalForDocs({ sessionId, onClose }) {
                       Grouped by work type: quantity, teeth and total price.
                     </p>
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-700 border border-emerald-100">
+                  <span className="rounded-full bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/20">
                     {worksSummary?.works?.length || 0} items
                   </span>
                 </div>
@@ -200,16 +200,16 @@ function SessionDetailsModalForDocs({ sessionId, onClose }) {
                     <table className="min-w-full text-left text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 text-xs text-slate-500">
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Work
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Quantity
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Teeth
                           </th>
-                          <th className="px-3 py-2 font-medium text-[#1DB954]">
+                          <th className="px-3 py-2 font-medium text-[#015478]">
                             Total
                           </th>
                         </tr>

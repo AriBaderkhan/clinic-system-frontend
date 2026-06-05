@@ -1,4 +1,4 @@
-// src/pages/DoctorDashboard.jsx
+﻿// src/pages/DoctorDashboard.jsx
 import { useState } from "react";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
@@ -127,22 +127,22 @@ export default function DoctorDashboard() {
                 <table className="min-w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-xs text-slate-500">
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Patient
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Phone
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Doctor
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Time
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Type
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#1DB954]">
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Status
                       </th>
                     </tr>
@@ -193,7 +193,7 @@ export default function DoctorDashboard() {
         {/* ================= RIGHT COLUMN ================= */}
         <div className="space-y-4">
           {/* In-progress appointments – click to fill session + works */}
-          <div className="rounded-3xl border border-emerald-100 bg-emerald-50/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+          <div className="rounded-3xl border border-[#015478]/20 bg-[#015478]/10/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-semibold text-slate-900">
@@ -223,7 +223,7 @@ export default function DoctorDashboard() {
                     key={id}
                     type="button"
                     onClick={() => setSelectedForComplete(a)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-emerald-100 bg-white px-4 py-3 text-left transition hover:shadow-sm hover:bg-emerald-50/60"
+                    className="flex w-full items-center justify-between rounded-2xl border border-[#015478]/20 bg-white px-4 py-3 text-left transition hover:shadow-sm hover:bg-[#015478]/10/60"
                   >
                     <div>
                       <p className="font-medium text-slate-800">
@@ -235,7 +235,7 @@ export default function DoctorDashboard() {
                       </p>
                     </div>
 
-                    <span className="rounded-full bg-[#1DB954]/15 px-3 py-1 text-[11px] font-medium text-[#1DB954] border border-[#1DB954]/30">
+                    <span className="rounded-full bg-[#015478]/15 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/30">
                       {a.status}
                     </span>
                   </button>

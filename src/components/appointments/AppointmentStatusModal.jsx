@@ -1,4 +1,4 @@
-// src/components/appointments/AppointmentStatusModal.jsx
+﻿// src/components/appointments/AppointmentStatusModal.jsx
 import { useMemo, useState } from "react";
 import appointmentApi from "../../api/appointmentApi";
 
@@ -88,7 +88,7 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
 
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
@@ -174,7 +174,7 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-[#1DB954] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
+                className="rounded-md bg-[#015478] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
               >
                 {isSubmitting ? "Saving…" : "Confirm"}
               </button>

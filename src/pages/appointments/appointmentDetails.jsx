@@ -1,4 +1,4 @@
-// // src/pages/appointments/AppointmentPage.jsx
+﻿// // src/pages/appointments/AppointmentPage.jsx
 // import { useNavigate } from "react-router-dom";
 // import { useState } from "react";
 // import useAppointments from "../../hooks/useAppointments";
@@ -70,7 +70,7 @@
 //         <button
 //           type="button"
 //           onClick={() => navigate("/dashboard/appointments/add")}
-//           className="rounded-lg bg-[#1DB954] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
+//           className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#015478]"
 //         >
 //           + Add Appointment
 //         </button>

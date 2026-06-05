@@ -1,4 +1,4 @@
-// ✅ EditSessionModal.jsx (FIX alive error + add "Estimated total" that updates when works change)
+﻿// ✅ EditSessionModal.jsx (FIX alive error + add "Estimated total" that updates when works change)
 import { useEffect, useMemo, useState } from "react";
 import { fetchWorkCatalog } from "../../api/workApi";
 import { apiGetNormalSessionDetails, updateNormalSession } from "../../api/sessionApi";
@@ -182,8 +182,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
 
     return (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 px-3">
-            <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl">
-                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+            <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl max-h-[90vh] flex flex-col">
+                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 shrink-0">
                     <div>
                         <p className="text-lg font-semibold text-slate-900">Edit session</p>
                         <p className="text-xs text-slate-500">Update notes, paid, and works.</p>
@@ -198,7 +198,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                     </button>
                 </div>
 
-                <div className="px-6 py-5">
+                <div className="px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto flex-1">
                     {isLoading ? (
                         <div className="text-sm text-slate-600">Loading...</div>
                     ) : (
@@ -209,7 +209,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 </div>
                             )}
 
-                            <div className="grid gap-3 md:grid-cols-3">
+                            <div className="grid gap-3 grid-cols-1 md:grid-cols-3">
                                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                                     <p className="text-[11px] text-slate-500">Patient</p>
                                     <p className="mt-1 font-semibold text-slate-900">{header.patientName || "-"}</p>
@@ -229,14 +229,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 </div>
                             </div>
 
-                            <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            <div className="mt-4 grid gap-3 grid-cols-1 md:grid-cols-2">
                                 <div>
                                     <label className="text-[11px] font-medium text-slate-700">Next plan (optional)</label>
                                     <textarea
                                         value={nextPlan}
                                         onChange={(e) => setNextPlan(e.target.value)}
                                         rows={3}
-                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                         placeholder="Short note for next visit..."
                                     />
                                 </div>
@@ -247,14 +247,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
                                         rows={3}
-                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                         placeholder="Notes about today's treatment..."
                                     />
                                 </div>
                             </div>
 
                             {/* ✅ total + paid preview */}
-                            <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            <div className="mt-4 grid gap-3 grid-cols-1 md:grid-cols-2">
                                 <div className="rounded-xl border border-slate-200 bg-white p-4">
                                     <p className="text-[11px] font-medium text-slate-700">Estimated total (IQD)</p>
                                     <p className="mt-2 text-lg font-semibold text-slate-900">{money(estimatedTotal)} IQD</p>
@@ -273,7 +273,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                         ].join(" ")}
                                         // isUnderPaid
                                         //         ? "border-red-400 focus:border-red-400 focus:ring-red-400"
-                                        //         : "border-slate-200 focus:border-[#1DB954] focus:ring-[#1DB954]",
+                                        //         : "border-slate-200 focus:border-[#015478] focus:ring-[#015478]",
                                     />
 
                                 </div>
@@ -298,13 +298,13 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 <div className="mt-3 space-y-3">
                                     {works.map((row, idx) => (
                                         <div key={idx} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                            <div className="grid gap-3 md:grid-cols-12">
+                                            <div className="grid gap-3 grid-cols-1 sm:grid-cols-12">
                                                 <div className="md:col-span-6">
                                                     <label className="text-[11px] font-medium text-slate-700">Work</label>
                                                     <select
                                                         value={row.work_id}
                                                         onChange={(e) => updateWorkRow(idx, { work_id: e.target.value })}
-                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                     >
                                                         <option value="">Select...</option>
                                                         {catalog.map((c) => (
@@ -322,7 +322,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                                         min={1}
                                                         value={row.quantity}
                                                         onChange={(e) => updateWorkRow(idx, { quantity: e.target.value })}
-                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                     />
                                                 </div>
 
@@ -334,7 +334,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                                         max={48}
                                                         value={row.tooth_number ?? ""}
                                                         onChange={(e) => updateWorkRow(idx, { tooth_number: e.target.value })}
-                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#1DB954] focus:outline-none focus:ring-1 focus:ring-[#1DB954]"
+                                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                         placeholder="optional"
                                                     />
                                                 </div>
@@ -354,32 +354,33 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 </div>
                             </div>
 
-                            <div className="mt-5 flex items-center justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                                    disabled={isSaving}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleSave}
-                                    disabled={isSaving }
-                                    className={[
-                                        "rounded-xl px-6 py-2 text-sm font-semibold text-white",
-                                        isSaving 
-                                            ? "bg-gray-300 cursor-not-allowed"
-                                            : "bg-[#1DB954] hover:opacity-90",
-                                    ].join(" ")}
-                                >
-                                    {isSaving ? "Saving..." : "Save changes"}
-                                </button>
-
-                            </div>
                         </>
                     )}
+                </div>
+
+                {/* Footer — fixed at bottom */}
+                <div className="shrink-0 flex items-center justify-end gap-2 border-t border-slate-100 px-6 py-4">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                        disabled={isSaving}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className={[
+                            "rounded-xl px-6 py-2 text-sm font-semibold text-white",
+                            isSaving
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-[#015478] hover:opacity-90",
+                        ].join(" ")}
+                    >
+                        {isSaving ? "Saving..." : "Save changes"}
+                    </button>
                 </div>
             </div>
         </div>
