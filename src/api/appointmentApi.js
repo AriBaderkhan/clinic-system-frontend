@@ -21,10 +21,3 @@ export const noShowAppointment = (appointmentId, data) => api.patch(`/api/appoin
 
 export const getSessionByAppointmentId = (appointmentId) =>
   api.get(`/api/appointments/${appointmentId}/session`);
-const appointmentApi= {
-    createAppointment, getAllAppointments, getAppointmentById, editAppointment, deleteAppointment, 
-    checkInAppointment, inProgressAppointment, completeAppointmentWithSession, cancelAppointment, noShowAppointment,
-    getActiveTodayAppointments, getSessionByAppointmentId
-}
-
-export default appointmentApi;

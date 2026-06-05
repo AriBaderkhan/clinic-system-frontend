@@ -1,5 +1,4 @@
-﻿// src/pages/DoctorDashboard.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
@@ -14,9 +13,6 @@ export default function DoctorDashboard() {
     error: todayError,
     refresh: refreshToday,
   } = useActiveApptsTodayPerDoctor();
-
-  // NEW: unpaid sessions for reception pay box
-
 
   const [selectedForStatusDashboard, setSelectedForStatusDashboard] =
     useState(null);

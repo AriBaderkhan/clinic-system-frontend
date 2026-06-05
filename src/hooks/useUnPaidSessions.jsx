@@ -1,17 +1,16 @@
-// src/hooks/useUnpaidSessions.js
 import { useEffect, useState } from "react";
 import { getUnpaidSessions } from "../api/sessionApi";
 
 export default function useUnpaidSessions() {
   const [sessions, setSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const fetchUnpaid = async () => {
     setIsLoading(true);
-    setError(null);
+    setError("");
     try {
-      const res = await getUnpaidSessions(); // { message, data }
+      const res = await getUnpaidSessions();
       setSessions(res.data || []);
     } catch (err) {
       setError(err.userMessage);

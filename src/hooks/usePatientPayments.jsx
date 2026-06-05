@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import patientApi from "../api/patientApi";
+import { getPatientPayments } from "../api/patientApi";
 
-function usePatientPayments(patientId) {
+export default function usePatientPayments(patientId) {
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(!!patientId);
   const [error, setError] = useState("");
@@ -9,37 +9,35 @@ function usePatientPayments(patientId) {
   useEffect(() => {
     if (!patientId) return;
 
-    let cancelled = false;
+    let isMounted = true;
 
     async function fetchData() {
       try {
         setIsLoading(true);
         setError("");
 
-        const res = await patientApi.getPatientPayments(patientId);
+        const res = await getPatientPayments(patientId);
         const data = res.data?.data || res.data || [];
 
-        if (!cancelled) {
+        if (isMounted) {
           setPayments(Array.isArray(data) ? data : []);
         }
       } catch (err) {
-        if (!cancelled) {
+        if (isMounted) {
           setError(err.userMessage);
           setPayments([]);
         }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     }
 
     fetchData();
 
     return () => {
-      cancelled = true;
+      isMounted = false;
     };
   }, [patientId]);
 
   return { payments, isLoading, error };
 }
-
-export default usePatientPayments;

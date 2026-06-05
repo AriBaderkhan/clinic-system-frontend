@@ -1,8 +1,7 @@
-﻿// src/components/appointments/AppointmentForm.jsx
-import { useEffect, useState } from "react";
-import patientApi from "../../api/patientApi";
+﻿import { useEffect, useState } from "react";
+import { searchPatients } from "../../api/patientApi";
 
-function AppointmentForm({
+export default function AppointmentForm({
   mode = "add",             // "add" | "edit"
   initialData,              // used only in edit
   doctors = [],
@@ -38,15 +37,6 @@ function AppointmentForm({
       initialData?.scheduled_start?.slice(0, 16) ?? "", // datetime-local format
   });
 
-  // useEffect(() => {
-  //   if (!initialData || mode !== "edit") return;
-  //   setForm({
-  //     doctor_id: initialData.doctor_id ? String(initialData.doctor_id) : "",
-  //     appointment_type: initialData.appointment_type ?? "normal",
-  //     scheduled_start: initialData.scheduled_start.slice(0, 16),
-  //   });
-  // }, [initialData, mode]);
-
   useEffect(() => {
     if (!initialData || mode !== "edit") return;
 
@@ -65,41 +55,6 @@ function AppointmentForm({
 
     setPatientQuery(`${initialData.patient_name} – ${initialData.patient_phone}`);
   }, [initialData, mode]);
-
-  // 🔍 debounce patient search (ADD mode only)
-  // useEffect(() => {
-  //   // if (mode === "edit") return;
-
-  //   const q = patientQuery.trim();
-  //   setPatientError("");
-
-  //   if (!q || q.length < 2) {
-  //     setPatientResults([]);
-  //     return;
-  //   }
-
-  //   const timer = setTimeout(async () => {
-  //     try {
-  //       setIsPatientSearching(true);
-  //       const res = await patientApi.searchPatients(q);
-  //       const data = res.data;
-
-  //       const list = Array.isArray(data)
-  //         ? data
-  //         : data.patients || data.data || [];
-
-  //       setPatientResults(list);
-  //     } catch (err) {
-  //       console.error("Patient search failed:", err);
-  //       setPatientError("Could not search patients. Try again.");
-  //       setPatientResults([]);
-  //     } finally {
-  //       setIsPatientSearching(false);
-  //     }
-  //   }, 300);
-
-  //   return () => clearTimeout(timer);
-  // }, [patientQuery, mode]);
 
   useEffect(() => {
     const q = patientQuery.trim();
@@ -120,7 +75,7 @@ function AppointmentForm({
     const timer = setTimeout(async () => {
       try {
         setIsPatientSearching(true);
-        const res = await patientApi.searchPatients(q);
+        const res = await searchPatients(q);
         const data = res.data;
 
         const list = Array.isArray(data)
@@ -129,7 +84,6 @@ function AppointmentForm({
 
         setPatientResults(list);
       } catch (err) {
-        console.error("Patient search failed:", err);
         setPatientError("Could not search patients. Try again.");
         setPatientResults([]);
       } finally {
@@ -150,52 +104,6 @@ function AppointmentForm({
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   let patient_id;
-
-  //   if (mode === "add") {
-  //     if (!selectedPatient?.id) {
-  //       setPatientError("Please select a patient from the list.");
-  //       return;
-  //     }
-  //     patient_id = selectedPatient.id;
-  //   } else {
-  //     if (!selectedPatient?.id) {
-  //       setPatientError("Please select a patient from the list.");
-  //       return;
-  //     }
-  //     patient_id = selectedPatient.id;
-  //   }
-
-
-  //   if (!form.doctor_id || !form.scheduled_start) {
-  //     setPatientError("Doctor and date/time are required.");
-  //     return;
-  //   }
-
-  //   const basePayload = {
-  //     doctor_id: Number(form.doctor_id),
-  //     scheduled_start: new Date(form.scheduled_start).toISOString(),
-  //   };
-
-  //   let payload;
-
-  //   if (mode === "add") {
-  //     payload = {
-  //       ...basePayload,
-  //       patient_id: Number(patient_id),
-  //       appointment_type: form.appointment_type, // only send in ADD
-  //     };
-  //   } else {
-  //     // EDIT -> only doctor + time
-  //     payload = { ...basePayload, patient_id: Number(patient_id) };
-  //   }
-
-  //   await onSubmit(payload);
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -233,9 +141,6 @@ function AppointmentForm({
       payload = basePayload;
     }
 
-    console.log("🔍 Mode:", mode);
-    console.log("🔍 Selected Patient:", selectedPatient);
-    console.log("🔍 Payload being sent:", payload);
     await onSubmit(payload);
   };
 
@@ -282,19 +187,7 @@ function AppointmentForm({
             </ul>
           )}
         </div>
-      )
-        // : (
-        //   <div className="space-y-1">
-        //     <label className="block text-xs font-medium text-slate-700">
-        //       Patient
-        //     </label>
-        //     <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800">
-        //       {initialData?.patient_name} –{" "}
-        //       <span className="text-slate-500">{initialData?.patient_phone}</span>
-        //     </div>
-        //   </div>
-        // )
-        : null}
+      ) : null}
 
       {/* DOCTOR SELECT */}
       <div className="space-y-1">
@@ -371,5 +264,3 @@ function AppointmentForm({
     </form>
   );
 }
-
-export default AppointmentForm;

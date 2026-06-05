@@ -1,11 +1,8 @@
-﻿// src/layouts/ReceptionLayout.jsx
-import { NavLink, Outlet } from "react-router-dom";
+﻿import { NavLink, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
-import Header from "../components/Header"; // Import the Header component
-
 // Helper to check permission safely
 const hasPermission = (permission) => {
   const userString = localStorage.getItem("user");
@@ -52,7 +49,6 @@ export default function ReceptionLayout() {
   useEffect(() => {
 
     const socket = connectSocket();
-    socket.on("connect", () => console.log("✅ socket connected", socket.id));
 
     const onApptCompleted = (payload) => {
       const audio = new Audio(notify);

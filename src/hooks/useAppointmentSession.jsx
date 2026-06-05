@@ -1,8 +1,7 @@
-// src/hooks/useAppointmentSession.js
 import { useEffect, useState } from "react";
-import appointmentApi from "../api/appointmentApi";
+import { getSessionByAppointmentId } from "../api/appointmentApi";
 
-function useAppointmentSession(appointmentId, open) {
+export default function useAppointmentSession(appointmentId, open) {
   const [sessionId, setSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,13 +14,10 @@ function useAppointmentSession(appointmentId, open) {
       setError("");
       setSessionId(null);
 
-      const res = await appointmentApi.getSessionByAppointmentId(appointmentId);
-      // backend: { message, data: { session_id } }
+      const res = await getSessionByAppointmentId(appointmentId);
       const sid = res?.data?.data?.session_id;
-
       setSessionId(sid || null);
     } catch (err) {
-      // If 404 => no session yet. That's NOT an error for UI.
       if (err?.response?.status === 404) {
         setSessionId(null);
         setError("");
@@ -36,10 +32,7 @@ function useAppointmentSession(appointmentId, open) {
 
   useEffect(() => {
     if (open && appointmentId) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, appointmentId]);
 
-  return { sessionId, isLoading, error, reload: load };
+  return { sessionId, isLoading, error, refresh: load };
 }
-
-export default useAppointmentSession;

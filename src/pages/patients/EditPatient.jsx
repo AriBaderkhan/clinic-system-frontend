@@ -1,17 +1,15 @@
-// src/pages/patients/EditPatient.jsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import PatientForm from "../../components/patients/PatientForm";
 import usePatients from "../../hooks/usePatients";
-import patientApi from "../../api/patientApi";
+import { getPatientById } from "../../api/patientApi";
 
-function EditPatient() {
+export default function EditPatient() {
   const { patientId } = useParams();
   const navigate = useNavigate();
 
-  const { updatePatient, isSubmitting, error } = usePatients({
-    skipFetch: true,
-  });
+  const { updatePatient, isSubmitting } = usePatients({ skipFetch: true });
 
   const [patient, setPatient] = useState(null);
   const [isLoadingPatient, setIsLoadingPatient] = useState(true);
@@ -26,7 +24,7 @@ function EditPatient() {
         setIsLoadingPatient(true);
         setLoadError("");
 
-        const res = await patientApi.getPatientById(patientId);
+        const res = await getPatientById(patientId);
         // assume backend: { message, patient: {...} }
         const data = res.data?.patient || res.data;
         if (isMounted) setPatient(data);
@@ -46,7 +44,10 @@ function EditPatient() {
 
   const handleUpdate = async (payload) => {
     const result = await updatePatient(patientId, payload);
-    if (!result.ok) return; // error is already handled in hook
+    if (!result.ok) {
+      toast.error(result.error || "Could not update patient.");
+      return;
+    }
     navigate("/reception/patients");
   };
 
@@ -74,9 +75,6 @@ function EditPatient() {
       initialData={patient}
       onSubmit={handleUpdate}
       isSubmitting={isSubmitting}
-      errorMessage={error}
     />
   );
 }
-
-export default EditPatient;

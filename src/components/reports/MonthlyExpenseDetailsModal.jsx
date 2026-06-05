@@ -1,4 +1,3 @@
-// src/pages/reports/components/MonthlyExpenseDetailsModal.jsx
 import {
   calcTotalExpenses,
   formatMonth,
@@ -24,7 +23,7 @@ export default function MonthlyExpenseDetailsModal({ open, loading, data, onClos
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <div>

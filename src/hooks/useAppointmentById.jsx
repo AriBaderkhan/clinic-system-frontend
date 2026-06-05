@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import appointmentApi from "../api/appointmentApi";
+import { getAppointmentById } from "../api/appointmentApi";
 
-function useAppointmentById(appointmentId) {
+export default function useAppointmentById(appointmentId) {
   const [appointment, setAppointment] = useState(null);
   const [isLoading, setIsLoading] = useState(Boolean(appointmentId));
   const [error, setError] = useState("");
@@ -9,41 +9,36 @@ function useAppointmentById(appointmentId) {
   useEffect(() => {
     if (!appointmentId) return;
 
-    let cancelled = false;
+    let isMounted = true;
 
     async function fetchAppointment() {
       try {
         setIsLoading(true);
         setError("");
 
-        const res = await appointmentApi.getAppointmentById(appointmentId);
-        // backend: { message, appointment }
+        const res = await getAppointmentById(appointmentId);
         const data = res.data;
         const appt = data?.appointment || data?.data || data;
 
-        if (!cancelled) {
+        if (isMounted) {
           setAppointment(appt);
         }
       } catch (err) {
-        if (!cancelled) {
+        if (isMounted) {
           setError(err.userMessage);
           setAppointment(null);
         }
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     }
 
     fetchAppointment();
 
     return () => {
-      cancelled = true;
+      isMounted = false;
     };
   }, [appointmentId]);
 
   return { appointment, isLoading, error };
 }
-
-export default useAppointmentById;

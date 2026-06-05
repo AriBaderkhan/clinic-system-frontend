@@ -1,5 +1,4 @@
-// src/api/sessionApi.js
-import api from "./api"; // your configured axios
+import api from "./api";
 
 export async function getUnpaidSessions() {
   const res = await api.get("/api/sessions/unpaid");

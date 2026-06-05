@@ -1,4 +1,3 @@
-// src/hooks/useMonthlyExpenses.js
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createMonthlyExpense,

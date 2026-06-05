@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
 import { fetchWorkCatalog } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
@@ -123,7 +124,6 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           }
         })
         .catch((err) => {
-          console.error("getActiveTreatmentPlan error", err);
           setPlans((prev) => ({ ...prev, [type]: { loading: false, plan: null } }));
           // don’t block user, but show warning
           setError("Failed to check active treatment plan. Try again.");
@@ -281,8 +281,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       onCompleted?.();
       onClose();
     } catch (err) {
-      console.error(err);
-      setError(err.userMessage);
+      toast.error(err.userMessage || "Failed to complete appointment.");
     } finally {
       setSaving(false);
     }
@@ -292,7 +291,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const inputTypes = [...selectedTreatmentTypes].filter((t) => !plans[t]?.plan);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 flex items-start justify-between shrink-0">

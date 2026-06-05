@@ -1,5 +1,3 @@
-// src/utils/monthlyExpenses.js
-
 export function calcTotalExpenses(row) {
   const fields = [
     "materials",

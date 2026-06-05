@@ -1,7 +1,6 @@
-﻿// src/components/LoginForm.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 
-function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
+export default function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -81,5 +80,3 @@ function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
     </div>
   );
 }
-
-export default LoginForm;

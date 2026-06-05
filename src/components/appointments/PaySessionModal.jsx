@@ -1,5 +1,5 @@
-﻿// src/components/appointments/PaySessionModal.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
+import toast from "react-hot-toast";
 import { paySession } from "../../api/sessionApi";
 
 function formatMoney(n) {
@@ -11,7 +11,6 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const [note, setNote] = useState("");
   const [planAmounts, setPlanAmounts] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   if (!session) return null;
 
@@ -70,7 +69,6 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (disableSubmit) return;
 
@@ -83,21 +81,19 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
     try {
       setIsSubmitting(true);
 
-      // IMPORTANT: this must RETURN a response, otherwise you stay on "Saving..."
       await paySession(session.session_id, payload);
 
       onPaid?.();
       onClose?.();
     } catch (err) {
-      console.log(err)
-      setError(err.userMessage || "Failed to save payment. Please try again.");
+      toast.error(err.userMessage || "Failed to save payment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-2xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
@@ -213,13 +209,6 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                 );
               })}
             </div>
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
-            {error}
           </div>
         )}
 

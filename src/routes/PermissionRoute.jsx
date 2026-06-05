@@ -5,7 +5,7 @@ import { Navigate, useLocation } from "react-router-dom";
  * If yes, renders children.
  * If no, redirects (default /dashboard) or renders null (if used for hiding buttons).
  */
-function PermissionRoute({ children, requiredPermission, redirectPath = "/dashboard", hideOnly = false }) {
+export default function PermissionRoute({ children, requiredPermission, redirectPath = "/dashboard", hideOnly = false }) {
     const userString = localStorage.getItem("user");
     let userPermissions = [];
 
@@ -32,5 +32,3 @@ function PermissionRoute({ children, requiredPermission, redirectPath = "/dashbo
 
     return <Navigate to={redirectPath} replace />;
 }
-
-export default PermissionRoute;

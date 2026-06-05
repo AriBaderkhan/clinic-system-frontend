@@ -1,5 +1,4 @@
-// src/api/paymentApi.js
-import api from "./api"; 
+import api from "./api";
 
 // GET /payments/history
 export async function fetchPaymentHistory() {

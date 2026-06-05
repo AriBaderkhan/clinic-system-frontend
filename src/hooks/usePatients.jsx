@@ -1,8 +1,7 @@
-// src/hooks/usePatients.jsx
 import { useCallback, useEffect, useState } from "react";
-import patientApi from "../api/patientApi";
+import { getAllPatients, createPatient, editPatient, deletePatient } from "../api/patientApi";
 
-function usePatients(options = {}) {
+export default function usePatients(options = {}) {
   const { skipFetch = false } = options;
 
   const [patients, setPatients] = useState([]);
@@ -17,7 +16,7 @@ function usePatients(options = {}) {
       setIsLoading(true);
       setError("");
 
-      const res = await patientApi.getAllPatients(q );
+      const res = await getAllPatients(q );
 
       // backend sends: { message, patients: [...] }
       const data = res.data;
@@ -41,7 +40,7 @@ function usePatients(options = {}) {
         setIsSubmitting(true);
         setError("");
 
-        const res = await patientApi.createPatient(payload);
+        const res = await createPatient(payload);
 
         if (!skipFetch) {
           await fetchPatients();
@@ -67,7 +66,7 @@ function usePatients(options = {}) {
         setIsSubmitting(true);
         setError("");
 
-        const res = await patientApi.editPatient(patientId, payload);
+        const res = await editPatient(patientId, payload);
 
         if (!skipFetch) {
           await fetchPatients();
@@ -91,7 +90,7 @@ function usePatients(options = {}) {
         setIsSubmitting(true);
         setError("");
 
-        await patientApi.deletePatient(patientId);
+        await deletePatient(patientId);
 
         if (!skipFetch) {
           await fetchPatients();
@@ -126,4 +125,3 @@ function usePatients(options = {}) {
   };
 }
 
-export default usePatients;

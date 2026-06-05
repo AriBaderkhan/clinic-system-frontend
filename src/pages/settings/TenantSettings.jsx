@@ -93,7 +93,7 @@ export default function TenantSettingsPage() {
             await loadTenant();
             await refreshSettings();
         } catch (error) {
-            setTenantError(error.userMessage || "Failed to update settings");
+            toast.error(error.userMessage || "Failed to update settings");
         } finally {
             setSavingTenant(false);
         }
@@ -167,7 +167,7 @@ export default function TenantSettingsPage() {
             setIsBranchModalOpen(false);
             await loadBranches();
         } catch (error) {
-            setBranchError(error.userMessage || "Failed to save branch");
+            toast.error(error.userMessage || "Failed to save branch");
         } finally {
             setSavingBranch(false);
         }

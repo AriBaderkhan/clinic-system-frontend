@@ -1,6 +1,6 @@
-﻿// src/components/appointments/AppointmentStatusModal.jsx
-import { useMemo, useState } from "react";
-import appointmentApi from "../../api/appointmentApi";
+﻿import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { checkInAppointment, inProgressAppointment, cancelAppointment, noShowAppointment } from "../../api/appointmentApi";
 
 // ---- Allowed transitions ----
 function getAllowedNextStatuses(current) {
@@ -22,7 +22,7 @@ const LABELS = {
   no_show: "No show",
 };
 
-function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
+export default function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
@@ -45,7 +45,6 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
 
     if (!appointmentId) {
       setError("Invalid appointment id.");
-      console.log(error)
       return;
     }
 
@@ -64,30 +63,26 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
 
       // ---- Call correct API based on new status ----
       if (selectedStatus === "checked_in") {
-        await appointmentApi.checkInAppointment(appointmentId);
+        await checkInAppointment(appointmentId);
       } else if (selectedStatus === "in_progress") {
-        await appointmentApi.inProgressAppointment(appointmentId);
+        await inProgressAppointment(appointmentId);
       } else if (selectedStatus === "cancelled") {
-        await appointmentApi.cancelAppointment(appointmentId, {
-          cancel_reason: reason,
-        });
+        await cancelAppointment(appointmentId, { cancel_reason: reason });
       } else if (selectedStatus === "no_show") {
-        await appointmentApi.noShowAppointment(appointmentId, {
-          cancel_reason: reason,
-        });
+        await noShowAppointment(appointmentId, { cancel_reason: reason });
       }
 
       await onUpdated();
       onClose();
     } catch (err) {
-      setError(err.userMessage);
+      toast.error(err.userMessage || "Failed to update appointment status.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
 
         {/* Header */}
@@ -185,5 +180,3 @@ function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
     </div>
   );
 }
-
-export default AppointmentStatusModal;

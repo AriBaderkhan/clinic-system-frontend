@@ -1,5 +1,5 @@
-﻿// ✅ EditSessionModal.jsx (FIX alive error + add "Estimated total" that updates when works change)
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { fetchWorkCatalog } from "../../api/workApi";
 import { apiGetNormalSessionDetails, updateNormalSession } from "../../api/sessionApi";
 
@@ -28,7 +28,6 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
 
     const [works, setWorks] = useState([]);
 
-    // ✅ live estimated total from works
     const estimatedTotal = useMemo(() => {
         let sum = 0;
         for (const w of works) {
@@ -41,9 +40,6 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
         }
         return sum;
     }, [works, catalog]);
-
-    // const paidNumber = Number(totalPaid || 0);
-    // const isUnderPaid = paidNumber < estimatedTotal;
 
     useEffect(() => {
         let alive = true;
@@ -100,7 +96,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                 if (!alive) return;
                 setError(err.userMessage);
             } finally {
-                if (alive) setIsLoading(false); // ✅ FIXED (no "return;" inside finally)
+                if (alive) setIsLoading(false);
             }
         }
 
@@ -148,8 +144,6 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
             return;
         }
 
-        // ✅ prevent paying more than estimated total
-
         const oldPaid = Number(base?.session?.totals?.total_paid || 0);
         if (totalPaid !== "" && paidNum !== oldPaid) payload.total_paid = paidNum;
 
@@ -174,14 +168,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
             onUpdated?.();
             onClose();
         } catch (err) {
-            setError(err.userMessage);
+            toast.error(err.userMessage || "Failed to save session.");
         } finally {
             setIsSaving(false);
         }
     }
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 px-3">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm px-3">
             <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl max-h-[90vh] flex flex-col">
                 <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 shrink-0">
                     <div>
@@ -253,7 +247,6 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 </div>
                             </div>
 
-                            {/* ✅ total + paid preview */}
                             <div className="mt-4 grid gap-3 grid-cols-1 md:grid-cols-2">
                                 <div className="rounded-xl border border-slate-200 bg-white p-4">
                                     <p className="text-[11px] font-medium text-slate-700">Estimated total (IQD)</p>
@@ -268,12 +261,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                         min={0}
                                         value={totalPaid}
                                         onChange={(e) => setTotalPaid(e.target.value)}
-                                        className={[
-                                            "mt-2 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-1",
-                                        ].join(" ")}
-                                        // isUnderPaid
-                                        //         ? "border-red-400 focus:border-red-400 focus:ring-red-400"
-                                        //         : "border-slate-200 focus:border-[#015478] focus:ring-[#015478]",
+                                        className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                     />
 
                                 </div>

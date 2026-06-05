@@ -1,6 +1,4 @@
-﻿
-// src/layouts/DoctorLayout.jsx
-import { NavLink, Outlet } from "react-router-dom";
+﻿import { NavLink, Outlet } from "react-router-dom";
 import { useMemo, useState } from "react";
 
 export default function DoctorLayout() {

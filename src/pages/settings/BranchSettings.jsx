@@ -75,7 +75,7 @@ export default function BranchSettingsPage() {
 
             setIsEditing(false);
         } catch (error) {
-            setError(error.userMessage || "Failed to update branch");
+            toast.error(error.userMessage || "Failed to update branch");
         } finally {
             setSaving(false);
         }

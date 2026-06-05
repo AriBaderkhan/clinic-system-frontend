@@ -1,4 +1,3 @@
-// src/hooks/usePatientTreatmentPlans.js
 import { useEffect, useState } from "react";
 import { getPatientTreatmentPlans } from "../api/treatmentPlanApi";
 
@@ -10,22 +9,22 @@ export default function usePatientTreatmentPlans(patientId) {
   useEffect(() => {
     if (!patientId) return;
 
-    let ignore = false;
+    let isMounted = true;
     (async () => {
       try {
         setIsLoading(true);
         setError("");
         const data = await getPatientTreatmentPlans(patientId);
-        if (!ignore) setPlans(Array.isArray(data) ? data : []);
+        if (isMounted) setPlans(Array.isArray(data) ? data : []);
       } catch (err) {
-        if (!ignore) setError(err.userMessage);
+        if (isMounted) setError(err.userMessage);
       } finally {
-        if (!ignore) setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     })();
 
     return () => {
-      ignore = true;
+      isMounted = false;
     };
   }, [patientId]);
 

@@ -1,5 +1,4 @@
-﻿// src/layouts/ReceptionLayout.jsx
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+﻿import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
@@ -38,7 +37,6 @@ export default function BranchManagerLayout() {
 
   useEffect(() => {
     const socket = connectSocket();
-    socket.on("connect", () => console.log("✅ socket connected", socket.id));
 
     const onApptCompleted = (payload) => {
       const audio = new Audio(notify);

@@ -1,10 +1,9 @@
-﻿// src/pages/appointments/AppointmentsPage.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 
 
-function ApptsPerDoctor() {
+export default function ApptsPerDoctor() {
 
 
     // ---------- FILTER STATE ----------
@@ -257,4 +256,3 @@ function ApptsPerDoctor() {
     );
 }
 
-export default ApptsPerDoctor;

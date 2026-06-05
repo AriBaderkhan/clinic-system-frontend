@@ -1,5 +1,4 @@
-﻿// src/pages/reports/MonthlyExpensesPage.jsx
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { formatMoney } from "../../utils/monthlyExpenses";
 import MonthlyExpenseFormModal from "../../components/reports/MonthlyExpenseFormModal";

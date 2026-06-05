@@ -1,5 +1,5 @@
-﻿// ✅ src/pages/reception/Sessions.jsx
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import EditSessionModal from "../../components/sessions/EditSessionModal";
@@ -35,8 +35,8 @@ export default function Sessions() {
   }
 
   function openEdit(id) {
-    setSelectedId(id);       // ✅ IMPORTANT: set id first
-    setIsEditOpen(true);     // ✅ then open modal
+    setSelectedId(id);
+    setIsEditOpen(true);
   }
 
   function closeEdit() {
@@ -53,7 +53,7 @@ export default function Sessions() {
       await deleteSession(sessionId);
       await refresh();
     } catch (err) {
-      err.userMessage
+      toast.error(err.userMessage || "Failed to delete session.");
     }
   };
 
@@ -94,7 +94,6 @@ export default function Sessions() {
           </select>
         </div>
 
-        {/* 🔍 Search */}
         <div className="flex items-center gap-1">
           <span className="text-[11px] text-slate-500">Search:</span>
           <input
@@ -164,14 +163,14 @@ export default function Sessions() {
 
                       <button
                         type="button"
-                        onClick={() => openEdit(s.session_id)} // ✅ FIXED
+                        onClick={() => openEdit(s.session_id)}
                         className="rounded-lg border border-slate-200 bg-yellow-600 px-3 py-2 text-xs text-slate-100 hover:bg-yellow-900"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(s.session_id)} // ✅ FIXED
+                        onClick={() => handleDelete(s.session_id)}
                         className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-900"
                       >
                         Delete
@@ -193,7 +192,6 @@ export default function Sessions() {
         )}
       </div>
 
-      {/* ✅ View modal */}
       {selectedId && (
         <SessionDetailsModal
           sessionId={selectedId}
@@ -201,7 +199,6 @@ export default function Sessions() {
         />
       )}
 
-      {/* ✅ Edit modal (MUST be inside return, not floating in the file) */}
       {isEditOpen && selectedId && (
         <EditSessionModal
           sessionId={selectedId}

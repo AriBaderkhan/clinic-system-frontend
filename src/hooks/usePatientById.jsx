@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import patientApi from "../api/patientApi";
+import { getPatientById } from "../api/patientApi";
 
-function usePatientById(patientId) {
+export default function usePatientById(patientId) {
   const [patient, setPatient] = useState(null);
   const [isLoading, setIsLoading] = useState(!!patientId);
   const [error, setError] = useState("");
@@ -9,37 +9,35 @@ function usePatientById(patientId) {
   useEffect(() => {
     if (!patientId) return;
 
-    let cancelled = false;
+    let isMounted = true;
 
     async function fetchPatient() {
       try {
         setIsLoading(true);
         setError("");
 
-        const res = await patientApi.getPatientById(patientId);
+        const res = await getPatientById(patientId);
         const data = res.data?.patient || res.data?.data || res.data;
 
-        if (!cancelled) {
+        if (isMounted) {
           setPatient(data || null);
         }
       } catch (err) {
-        if (!cancelled) {
+        if (isMounted) {
           setError(err.userMessage);
           setPatient(null);
         }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     }
 
     fetchPatient();
 
     return () => {
-      cancelled = true;
+      isMounted = false;
     };
   }, [patientId]);
 
   return { patient, isLoading, error };
 }
-
-export default usePatientById;

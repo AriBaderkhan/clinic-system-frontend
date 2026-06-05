@@ -1,5 +1,4 @@
-﻿// src/pages/patients/PatientFolderPage.jsx
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import usePatientById from "../../hooks/usePatientById";

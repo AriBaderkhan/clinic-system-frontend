@@ -1,5 +1,4 @@
-﻿// src/pages/treatment_plan/TreatmentPlanPage.jsx
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 
 function formatDateTime(iso) {

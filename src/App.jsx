@@ -182,7 +182,19 @@ export default function App() {
         {/* ===================== FALLBACK ===================== */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 10000,
+          error: {
+            style: { background: '#fff', color: '#dc2626', border: '1px solid #fecaca' },
+          },
+          success: {
+            duration: 4000,
+            style: { background: '#fff', color: '#15803d', border: '1px solid #bbf7d0' },
+          },
+        }}
+      />
     </>
   );
 }
@@ -192,7 +204,7 @@ export default function App() {
    ========================================================= */
 function DashboardRedirect() {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // ✅ you have this
+  const role = localStorage.getItem("role");
 
   if (!token || !role) return <Navigate to="/" replace />;
 

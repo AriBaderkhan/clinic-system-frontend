@@ -1,7 +1,6 @@
-﻿// src/components/patients/PatientForm.jsx
-import {  useState } from "react";
+﻿import { useState } from "react";
 
-function PatientForm({
+export default function PatientForm({
     initialData = null,
     mode = "add",
     onSubmit,
@@ -157,5 +156,3 @@ function PatientForm({
         </div>
     );
 }
-
-export default PatientForm;

@@ -26,7 +26,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.log(error);
     const data = error?.response?.data;
 
     // 🔴 Build ONE final user-safe message everywhere

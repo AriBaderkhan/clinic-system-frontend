@@ -1,4 +1,3 @@
-// src/hooks/useTreatmentPlanSessions.js
 import { useState } from "react";
 import { getSessionsForTreatmentPlan } from "../api/treatmentPlanApi";
 

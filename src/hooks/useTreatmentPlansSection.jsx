@@ -1,4 +1,3 @@
-// src/hooks/useTreatmentPlansSection.js
 import { useEffect, useMemo, useState } from "react";
 import {
   deleteTreatmentPlan,

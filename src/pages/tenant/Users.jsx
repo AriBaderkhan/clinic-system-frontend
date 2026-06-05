@@ -56,8 +56,7 @@ export default function TenantUsers() {
             setRoles(rolesData || []);
             setBranches(branchesData || []);
         } catch (error) {
-            console.error("Failed to load data", error);
-            toast.error("Failed to load users data");
+            toast.error(error.userMessage || "Failed to load users data");
         } finally {
             setLoading(false);
         }
@@ -169,11 +168,7 @@ export default function TenantUsers() {
             setSelectedUser(null);
             loadData();
         } catch (error) {
-            console.error("Save User Error:", error);
-            const errorMessage = typeof error.response?.data === 'string'
-                ? error.response.data
-                : error.response?.data?.message || "Failed to save user";
-            toast.error(errorMessage);
+            toast.error(error.userMessage || "Failed to save user");
         } finally {
             setSubmitting(false);
         }
@@ -202,11 +197,7 @@ export default function TenantUsers() {
             setAssignFormData({ branch_id: '', role_id: '' });
             loadData();
         } catch (error) {
-            console.error("Assign Branch Error:", error);
-            const errorMessage = typeof error.response?.data === 'string'
-                ? error.response.data
-                : error.response?.data?.message || "Failed to assign branch";
-            toast.error(errorMessage);
+            toast.error(error.userMessage || "Failed to assign branch");
         } finally {
             setSubmitting(false);
         }

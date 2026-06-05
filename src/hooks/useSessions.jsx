@@ -1,4 +1,3 @@
-// src/hooks/useSessions.js
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGetAllSessions } from "../api/sessionApi";
 

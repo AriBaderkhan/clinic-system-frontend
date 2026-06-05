@@ -1,5 +1,4 @@
-﻿// src/pages/Login.jsx
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMinimize2, FiMonitor, FiUser, FiArrowRight } from "react-icons/fi";
 
@@ -7,7 +6,7 @@ import Footer from "../components/Footer";
 import LoginForm from "../components/LoginForm";
 import api from "../api/api"; // axios instance
 
-function Login() {
+export default function Login() {
   /* New: Capture where they came from */
   const navigate = useNavigate();
   const location = useLocation();
@@ -96,11 +95,7 @@ function Login() {
       processLoginSuccess(res.data);
 
     } catch (err) {
-      console.error("Login Check:", err);
-      // If it's a 403 Forbidden, maybe they just need to select a branch but the API didn't standardize the response?
-      // Assuming API handles it with 200 + flag as per backend code.
-
-      const msg = err.response?.data?.message || err.userMessage || "Login failed. Please try again.";
+      const msg = err.userMessage || err.response?.data?.message || "Login failed. Please try again.";
       setErrorMessage(msg);
 
     } finally {
@@ -181,5 +176,3 @@ function Login() {
     </div>
   );
 }
-
-export default Login;

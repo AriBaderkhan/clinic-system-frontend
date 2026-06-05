@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { getBranches, switchBranch } from '../../api/tenantApi';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function TenantBranches() {
     const [branches, setBranches] = useState([]);
@@ -17,7 +18,7 @@ export default function TenantBranches() {
             const data = await getBranches();
             setBranches(data);
         } catch (error) {
-            console.error("Failed to load branches", error);
+            toast.error(error.userMessage || "Failed to load branches");
         } finally {
             setLoading(false);
         }
@@ -30,8 +31,7 @@ export default function TenantBranches() {
             localStorage.setItem('token', data.token);
             navigate('/branch');
         } catch (error) {
-            console.error("Failed to switch branch", error);
-            alert(error.userMessage || "Failed to switch branch");
+            toast.error(error.userMessage || "Failed to switch branch");
         }
     };
 

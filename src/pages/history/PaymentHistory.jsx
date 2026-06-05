@@ -1,5 +1,4 @@
-﻿// src/pages/history/PaymentHistory.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 
@@ -21,7 +20,7 @@ function formatDateTime(iso) {
   return `${datePart} • ${timePart}`;
 }
 
-function PaymentHistory() {
+export default function PaymentHistory() {
   const { payments, isLoading, error, refresh } = usePaymentHistory();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
@@ -183,4 +182,3 @@ function PaymentHistory() {
   );
 }
 
-export default PaymentHistory;

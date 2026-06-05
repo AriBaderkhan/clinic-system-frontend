@@ -1,8 +1,7 @@
-// src/hooks/useAppointments.jsx
 import { useCallback, useEffect, useState } from "react";
-import doctorApi from "../api/doctorApi";
+import { getAllApptsPerDoc } from "../api/doctorApi";
 
-function useApptsPerDoc(filters = {}) {
+export default function useApptsPerDoc(filters = {}) {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -10,7 +9,7 @@ function useApptsPerDoc(filters = {}) {
   const cleanFilters = {
     day: filters.day || undefined,
     type: filters.type || undefined,
-    q: filters.search || undefined, // 🔍 match controller: req.query.q
+    q: filters.search || undefined,
   };
 
   const fetchAppointments = useCallback(async () => {
@@ -18,7 +17,7 @@ function useApptsPerDoc(filters = {}) {
       setIsLoading(true);
       setError("");
 
-      const res = await doctorApi.getAllApptsPerDoc(cleanFilters);
+      const res = await getAllApptsPerDoc(cleanFilters);
       const data = res.data;
 
       const list = Array.isArray(data)
@@ -46,4 +45,3 @@ function useApptsPerDoc(filters = {}) {
   };
 }
 
-export default useApptsPerDoc

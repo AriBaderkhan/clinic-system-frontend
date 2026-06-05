@@ -1,12 +1,12 @@
-﻿// src/pages/appointments/AppointmentsPage.jsx
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import useAppointments from "../../hooks/useAppointments";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
-import appointmentApi from "../../api/appointmentApi";
+import { deleteAppointment } from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
-function AppointmentPage() {
+export default function AppointmentPage() {
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
   const prefix = role === "branch_manager" ? "/branch" : "/reception";
@@ -25,7 +25,6 @@ function AppointmentPage() {
   const [selectedForStatus, setSelectedForStatus] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
   const [selectedDetailsId, setSelectedDetailsId] = useState(null);
-  const [actionError, setActionError] = useState("");
 
   // ---------- ACTIONS ----------
   const handleDelete = async (id) => {
@@ -35,11 +34,10 @@ function AppointmentPage() {
     if (!confirmDelete) return;
 
     try {
-      setActionError("");
-      await appointmentApi.deleteAppointment(id);
+      await deleteAppointment(id);
       await refresh();
     } catch (err) {
-      setActionError(err.userMessage || "Failed to delete appointment. Please try again.");
+      toast.error(err.userMessage || "Failed to delete appointment. Please try again.");
     }
   };
 
@@ -67,7 +65,6 @@ function AppointmentPage() {
       );
   });
 
-  let x = 1
   return (
     <div className="space-y-6">
       {/* Modals */}
@@ -159,7 +156,6 @@ function AppointmentPage() {
               </select>
             </div>
 
-            {/* 🔍 Search */}
             <div className="flex items-center gap-1">
               <span className="text-[11px] text-slate-500">Search:</span>
               <input
@@ -196,16 +192,10 @@ function AppointmentPage() {
         </div>
 
 
-        {/* Errors */}
+        {/* Load error */}
         {error && (
           <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
             {error}
-          </div>
-        )}
-
-        {actionError && (
-          <div className="mb-3 rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-xs text-orange-700">
-            {actionError}
           </div>
         )}
 
@@ -238,7 +228,7 @@ function AppointmentPage() {
               </thead>
               <tbody>
 
-                {filteredAppointments.map((a) => {
+                {filteredAppointments.map((a, idx) => {
                   const id = a.id ?? a.appointment_id;
 
                   return (
@@ -247,7 +237,7 @@ function AppointmentPage() {
                       className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                     >
                       <td className="px-3 py-2 text-slate-800">
-                        {x++}
+                        {idx + 1}
                       </td>
                       <td className="px-3 py-2 text-slate-800">
                         {a.patient_name}
@@ -328,5 +318,3 @@ function AppointmentPage() {
     </div>
   );
 }
-
-export default AppointmentPage;

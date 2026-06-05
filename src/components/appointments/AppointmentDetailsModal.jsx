@@ -1,5 +1,4 @@
-﻿// src/components/appointments/AppointmentDetailsModal.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
 import SessionDetailsModalForDocs from "../../components/sessions/SessionDetailsModalForDocs";
@@ -32,7 +31,7 @@ function statusBadgeClasses(status) {
   }
 }
 
-function AppointmentDetailsModal({ appointmentId, onClose }) {
+export default function AppointmentDetailsModal({ appointmentId, onClose }) {
   const { appointment, isLoading, error } = useAppointmentById(appointmentId);
 
   // ---- session lookup by appointment id ----
@@ -51,7 +50,7 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
         />
       )}
 
-      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
         <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="mb-3 flex items-start justify-between">
@@ -234,5 +233,3 @@ function AppointmentDetailsModal({ appointmentId, onClose }) {
     </>
   );
 }
-
-export default AppointmentDetailsModal;

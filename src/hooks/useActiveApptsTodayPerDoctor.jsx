@@ -1,8 +1,7 @@
-// src/hooks/useActiveTodayAppointments.jsx
 import { useEffect, useState, useCallback } from "react";
-import doctorApi from "../api/doctorApi";
+import { getActiveTodayApptsPerDoc } from "../api/doctorApi";
 
-function useActiveApptsTodayPerDoctor() {
+export default function useActiveApptsTodayPerDoctor() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,7 +11,7 @@ function useActiveApptsTodayPerDoctor() {
       setIsLoading(true);
       setError("");
 
-      const res = await doctorApi.getActiveTodayApptsPerDoc();
+      const res = await getActiveTodayApptsPerDoc();
       const data = res.data;
 
       const list = Array.isArray(data)
@@ -40,4 +39,3 @@ function useActiveApptsTodayPerDoctor() {
   };
 }
 
-export default useActiveApptsTodayPerDoctor;

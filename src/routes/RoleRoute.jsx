@@ -1,7 +1,6 @@
-// src/routes/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
 
-function RoleRoute({ children, allowedRoles }) {
+export default function RoleRoute({ children, allowedRoles }) {
   // later this will be real token from backend login
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -18,5 +17,3 @@ function RoleRoute({ children, allowedRoles }) {
   // if token exists → allow access
   return children;
 }
-
-export default RoleRoute;

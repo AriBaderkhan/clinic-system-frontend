@@ -1,8 +1,7 @@
-// src/hooks/useActiveTodayAppointments.jsx
 import { useEffect, useState, useCallback } from "react";
-import appointmentApi from "../api/appointmentApi";
+import { getActiveTodayAppointments } from "../api/appointmentApi";
 
-function useActiveTodayAppointments() {
+export default function useActiveTodayAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,7 +11,7 @@ function useActiveTodayAppointments() {
       setIsLoading(true);
       setError("");
 
-      const res = await appointmentApi.getActiveTodayAppointments();
+      const res = await getActiveTodayAppointments();
       const data = res.data;
 
       const list = Array.isArray(data)
@@ -40,4 +39,3 @@ function useActiveTodayAppointments() {
   };
 }
 
-export default useActiveTodayAppointments;

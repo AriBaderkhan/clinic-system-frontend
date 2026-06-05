@@ -1,17 +1,16 @@
-// src/hooks/useSessionDetails.jsx
 import { useEffect, useState } from "react";
 import { fetchSessionDetails } from "../api/historyApi";
 
-function useSessionDetails(sessionId, open) {
+export default function useSessionDetails(sessionId, open) {
   const [details, setDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   async function load() {
     if (!sessionId) return;
     try {
       setIsLoading(true);
-      setError(null);
+      setError("");
       const data = await fetchSessionDetails(sessionId);
       setDetails(data);
     } catch (err) {
@@ -22,18 +21,8 @@ function useSessionDetails(sessionId, open) {
   }
 
   useEffect(() => {
-    if (open && sessionId) {
-      load();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (open && sessionId) load();
   }, [open, sessionId]);
 
-  return {
-    details,
-    isLoading,
-    error,
-    reload: load,
-  };
+  return { details, isLoading, error, refresh: load };
 }
-
-export default useSessionDetails;

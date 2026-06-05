@@ -47,7 +47,6 @@ export default function AdminDashboard() {
                 setSubForm(prev => ({ ...prev, plan_id: plansData[0].id }));
             }
         } catch (error) {
-            console.error(error);
             toast.error(error.userMessage || 'Failed to load data');
         } finally {
             setLoading(false);
@@ -172,7 +171,7 @@ export default function AdminDashboard() {
 
             {/* Register Modal */}
             {isRegisterOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                         <h3 className="mb-4 text-lg font-medium text-slate-900">Register New Tenant</h3>
                         <form onSubmit={handleRegisterSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -244,7 +243,7 @@ export default function AdminDashboard() {
 
             {/* Subscription Modal */}
             {isSubscriptionOpen && selectedTenant && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
                         <h3 className="mb-4 text-lg font-medium text-slate-900">Update Subscription</h3>
                         <p className="mb-4 text-sm text-slate-500">

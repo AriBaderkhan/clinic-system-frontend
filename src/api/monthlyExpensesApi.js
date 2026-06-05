@@ -1,4 +1,3 @@
-// src/api/monthlyExpensesApi.js
 import api from "./api";
 
 const BASE = "/api/monthly-expenses";

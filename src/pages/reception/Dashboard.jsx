@@ -1,5 +1,4 @@
-﻿// src/pages/Dashboard.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 import usePatients from "../../hooks/usePatients";
 import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useUnpaidSessions from "../../hooks/useUnPaidSessions"; // NEW
@@ -7,7 +6,7 @@ import AppointmentStatusModal from "../../components/appointments/AppointmentSta
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import PaySessionModal from "../../components/appointments/PaySessionModal"; // NEW
 
-function Dashboard() {
+export default function Dashboard() {
   const { patients, isLoading } = usePatients();
 
   const {
@@ -17,7 +16,6 @@ function Dashboard() {
     refresh: refreshToday,
   } = useActiveTodayAppointments();
 
-  // NEW: unpaid sessions for reception pay box
   const {
     sessions: unpaidSessions,
     isLoading: isUnpaidLoading,
@@ -88,7 +86,7 @@ function Dashboard() {
         {/* ================= LEFT COLUMN ================= */}
         <div className="space-y-4">
           {/* Box 1: Total patients */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          {/* <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-slate-500">
@@ -102,7 +100,9 @@ function Dashboard() {
                 👥
               </div>
             </div>
-          </div>
+          </div> */}
+
+          {/* for now total patient is disabled*/}
 
           {/* Box 2: Today appointments (all active statuses) */}
           <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
@@ -363,4 +363,3 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;

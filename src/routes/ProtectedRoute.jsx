@@ -1,7 +1,6 @@
-// src/routes/ProtectedRoute.jsx
 import { Navigate, useLocation } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children }) {
   const location = useLocation()
   // later this will be real token from backend login
   const token = localStorage.getItem("token");
@@ -16,5 +15,3 @@ function ProtectedRoute({ children }) {
   // if token exists → allow access
   return children;
 }
-
-export default ProtectedRoute;

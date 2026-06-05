@@ -1,5 +1,4 @@
-// src/api/treatmentPlanApi.js
-import api from "./api"; // your axios instance (the same used in other api files)
+import api from "./api";
 
 export async function getActiveTreatmentPlan(patientId, type) {
   const res = await api.get("/api/treatment-plans/active", {

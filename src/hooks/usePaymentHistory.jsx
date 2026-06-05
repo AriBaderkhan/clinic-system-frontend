@@ -1,17 +1,15 @@
-// src/hooks/usePaymentHistory.jsx
 import { useEffect, useState } from "react";
 import { fetchPaymentHistory } from "../api/historyApi";
 
-function usePaymentHistory() {
+export default function usePaymentHistory() {
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   async function load() {
     try {
       setIsLoading(true);
-      setError(null);
-
+      setError("");
       const data = await fetchPaymentHistory();
       setPayments(data);
     } catch (err) {
@@ -25,12 +23,5 @@ function usePaymentHistory() {
     load();
   }, []);
 
-  return {
-    payments,
-    isLoading,
-    error,
-    refresh: load,
-  };
+  return { payments, isLoading, error, refresh: load };
 }
-
-export default usePaymentHistory;
