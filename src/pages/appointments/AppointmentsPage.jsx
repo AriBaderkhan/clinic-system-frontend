@@ -9,7 +9,7 @@ import CompleteAppointmentModal from "../../components/appointments/CompleteAppo
 export default function AppointmentPage() {
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
-  const prefix = role === "branch_manager" ? "/branch" : "/reception";
+  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
 
   // ---------- FILTER STATE ----------
   const [dayFilter, setDayFilter] = useState("");   // '', 'today', 'yesterday', 'last_week', 'last_month'

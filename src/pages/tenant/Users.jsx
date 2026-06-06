@@ -135,15 +135,16 @@ export default function TenantUsers() {
 
         try {
             setSubmitting(true);
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            // const user = JSON.parse(localStorage.getItem('user') || '{}');
 
             const payload = {
                 ...formData,
                 role_id: Number(formData.role_id),
                 branch_id: Number(formData.branch_id),
-                tenant_id: user.tenant_id
+                // tenant_id: user.tenant_id
             };
 
+            console.log(payload);
             // Remove room if empty to avoid validation error (Joi expects number)
             if (!payload.room) {
                 delete payload.room;
@@ -386,7 +387,7 @@ export default function TenantUsers() {
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Assign Role <span className="text-red-500">*</span></label><select name="role_id" required value={formData.role_id} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Role</option>{roles.map(role => (<option key={role.id} value={role.id}>{role.name}</option>))}</select></div>
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Assign Branch <span className="text-red-500">*</span></label><select name="branch_id" required value={formData.branch_id} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Branch</option>{branches.map(branch => (<option key={branch.id} value={branch.id}>{branch.name}</option>))}</select></div>
                             </div>
-                            {roles.find(r => r.id === Number(formData.role_id))?.name?.toLowerCase() === 'doctor' && (
+                            {roles.find(r => Number(r.id) === Number(formData.role_id))?.name?.toLowerCase() === 'doctor' && (
                                 <div className="space-y-1 pt-2"><label className="text-sm font-medium text-gray-700">Room Number (Doctor)</label><input type="number" name="room" value={formData.room} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" placeholder="Room 101" /></div>
                             )}
                             <div className="flex justify-end gap-3 pt-6">

@@ -13,7 +13,7 @@ export default function PatientsPage() {
 
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
-  const prefix = role === "branch_manager" ? "/branch" : "/reception";
+  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
 
   const handleEdit = (id) => {
     navigate(`${prefix}/patients/${id}/edit`);
