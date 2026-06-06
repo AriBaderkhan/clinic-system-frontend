@@ -1,5 +1,6 @@
 ﻿import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import usePatients from "../../hooks/usePatients";
 
 export default function PatientsPage() {
@@ -24,7 +25,10 @@ export default function PatientsPage() {
     );
     if (!confirm) return;
 
-    await deletePatient(id);
+    const result = await deletePatient(id);
+    if (!result.ok) {
+      toast.error(result.error || "Could not delete patient. Please try again.");
+    }
   };
 
   const handleRowClick = (id) => {

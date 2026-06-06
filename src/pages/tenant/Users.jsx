@@ -1,5 +1,5 @@
 ﻿import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiCheck, FiCheckCircle, FiAlertCircle, FiEye, FiLink } from 'react-icons/fi';
-import { getAllUsers, createUser, getRoles, updateUser, assignUserToBranch } from '../../api/userApi';
+import { getAllUsers, createUser, getRoles, updateUser, assignUserToBranch, deactivateUser } from '../../api/userApi';
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { getBranches } from '../../api/tenantApi';
@@ -203,6 +203,20 @@ export default function TenantUsers() {
         }
     };
 
+    const handleDeactivate = async (user) => {
+        const confirmed = window.confirm(
+            `Deactivate ${user.full_name}? They will no longer be able to log in or be assigned new appointments. All their history will be preserved.`
+        );
+        if (!confirmed) return;
+        try {
+            await deactivateUser(user.id);
+            toast.success(`${user.full_name} has been deactivated.`);
+            loadData();
+        } catch (error) {
+            toast.error(error.userMessage || "Failed to deactivate user.");
+        }
+    };
+
     const openAddModal = () => {
         setIsEditing(false);
         setSelectedUser(null);
@@ -275,7 +289,7 @@ export default function TenantUsers() {
                                 </tr>
                             ) : (
                                 filteredUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <tr key={user.id} className={`hover:bg-gray-50/50 transition-colors ${!user.is_active_global ? "opacity-50 bg-gray-50" : ""}`}>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center">
                                                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
@@ -330,7 +344,12 @@ export default function TenantUsers() {
                                                 >
                                                     <FiEdit2 size={16} />
                                                 </button>
-                                                <button className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                                                <button
+                                                    onClick={() => handleDeactivate(user)}
+                                                    className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                    title="Deactivate"
+                                                    disabled={!user.is_active_global}
+                                                >
                                                     <FiTrash2 size={16} />
                                                 </button>
                                             </div>

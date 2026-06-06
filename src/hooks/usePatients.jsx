@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getAllPatients, createPatient, editPatient, deletePatient } from "../api/patientApi";
+import { getAllPatients, createPatient, editPatient, deletePatient as deletePatientApi } from "../api/patientApi";
 
 export default function usePatients(options = {}) {
   const { skipFetch = false } = options;
@@ -90,7 +90,7 @@ export default function usePatients(options = {}) {
         setIsSubmitting(true);
         setError("");
 
-        await deletePatient(patientId);
+        await deletePatientApi(patientId);
 
         if (!skipFetch) {
           await fetchPatients();
@@ -98,7 +98,6 @@ export default function usePatients(options = {}) {
 
         return { ok: true };
       } catch (err) {
-        setError(err.userMessage || "Could not delete patient. Please try again.");
         return { ok: false, error: err.userMessage || "Could not delete patient. Please try again." };
       } finally {
         setIsSubmitting(false);

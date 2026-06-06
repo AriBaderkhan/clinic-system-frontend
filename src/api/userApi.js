@@ -31,6 +31,11 @@ export const getUserById = async (id) => {
     return response.data.data;
 };
 
+export const deactivateUser = async (id) => {
+    const response = await api.delete(`/api/users/${id}`);
+    return response.data;
+};
+
 export const switchBranch = async (data) => {
     const response = await api.post('/switch-branch', data);
     return response.data;
