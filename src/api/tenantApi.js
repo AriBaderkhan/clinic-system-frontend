@@ -36,3 +36,8 @@ export const switchBranch = async (branchId) => {
     const response = await api.post(`/api/tenants/switch-branch/${branchId}`);
     return response.data;
 };
+
+export const getTenantDashboard = async () => {
+    const response = await api.get('/api/tenants/dashboard');
+    return response.data.data;
+};

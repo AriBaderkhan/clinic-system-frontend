@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getTenantDashboard } from '../../api/tenantApi';
 
 export default function TenantDashboard() {
+    const [stats, setStats] = useState(null);
+
+    useEffect(() => {
+        getTenantDashboard().then(setStats).catch(() => {});
+    }, []);
+
     return (
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Welcome, Tenant Manager</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <h3 className="font-semibold text-gray-500">Active Branches</h3>
-                    <p className="text-3xl font-bold mt-2">--</p>
+                    <p className="text-3xl font-bold mt-2">{stats ? stats.active_branches : '--'}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <h3 className="font-semibold text-gray-500">Total Users</h3>
-                    <p className="text-3xl font-bold mt-2">--</p>
+                    <p className="text-3xl font-bold mt-2">{stats ? stats.total_users : '--'}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <h3 className="font-semibold text-gray-500">License Status</h3>
