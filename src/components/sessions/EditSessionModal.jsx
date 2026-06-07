@@ -54,7 +54,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                     apiGetNormalSessionDetails(sessionId),
                 ]);
 
-                const catalogRows = Array.isArray(catalogRes) ? catalogRes : (catalogRes?.data || []);
+                const catalogRows = catalogRes?.data?.data || [];
                 const payload = sessionRes?.data || sessionRes;
                 const sessionData = payload?.data ? payload.data : payload;
 

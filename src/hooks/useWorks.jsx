@@ -12,7 +12,7 @@ export default function useWorks({ skipFetch = false } = {}) {
     setError(null);
     try {
       const res = await getWorks();
-      setWorks(res.data);
+      setWorks(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (err) {
       setError(err.userMessage || "Failed to load works");
     } finally {
