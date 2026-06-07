@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
-import { fetchWorkCatalog } from "../../api/workApi";
+import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 
 function formatTime(iso) {
@@ -50,7 +50,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     (async () => {
       try {
         setLoadingCatalog(true);
-        const data = await fetchWorkCatalog();
+        const res = await getWorks();
+        const data = res.data?.works || res.data?.data || res.data;
         setCatalog(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.userMessage);

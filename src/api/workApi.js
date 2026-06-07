@@ -1,9 +1,7 @@
 import api from "./api";
 
-export async function fetchWorkCatalog() {
-  // backend later: simple GET that returns an array of works
-  // [{ id, code, name, min_price, ... }]
-  const res = await api.get("/api/work-catalog");
-  return res.data;
-}
-
+export const getWorks = () => api.get("/api/works");
+export const getWorkById = (id) => api.get(`/api/works/${id}`);
+export const createWork = (data) => api.post("/api/works", data);
+export const updateWork = (id, data) => api.put(`/api/works/${id}`, data);
+export const deleteWork = (id) => api.delete(`/api/works/${id}`);

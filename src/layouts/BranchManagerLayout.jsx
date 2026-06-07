@@ -12,6 +12,7 @@ const navItems = [
   { label: "Treatment Plan", path: "treatment_plan" },
   // { label: "History", path: "history" },
   { label: "Reports", path: "reports" },
+  { label: "Works", path: "works" },
   { label: "Branch Settings", path: "settings/branch" },
 ];
 
