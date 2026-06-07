@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { fetchWorkCatalog } from "../../api/workApi";
+import { getWorks } from "../../api/workApi";
 import { apiGetNormalSessionDetails, updateNormalSession } from "../../api/sessionApi";
 
 function toNumberOrEmpty(v) {
@@ -50,7 +50,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
 
             try {
                 const [catalogRes, sessionRes] = await Promise.all([
-                    fetchWorkCatalog(),
+                    getWorks(),
                     apiGetNormalSessionDetails(sessionId),
                 ]);
 
