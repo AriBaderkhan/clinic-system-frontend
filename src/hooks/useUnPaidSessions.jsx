@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getUnpaidSessions } from "../api/sessionApi";
 
-export default function useUnpaidSessions() {
+export default function useUnpaidSessions({ limit } = {}) {
   const [sessions, setSessions] = useState([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -10,8 +11,11 @@ export default function useUnpaidSessions() {
     setIsLoading(true);
     setError("");
     try {
-      const res = await getUnpaidSessions();
+      const params = {};
+      if (limit) params.limit = limit;
+      const res = await getUnpaidSessions(params);
       setSessions(res.data || []);
+      setTotal(res.total ?? (res.data || []).length);
     } catch (err) {
       setError(err.userMessage);
     } finally {
@@ -21,7 +25,8 @@ export default function useUnpaidSessions() {
 
   useEffect(() => {
     fetchUnpaid();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { sessions, isLoading, error, refresh: fetchUnpaid };
+  return { sessions, total, isLoading, error, refresh: fetchUnpaid };
 }

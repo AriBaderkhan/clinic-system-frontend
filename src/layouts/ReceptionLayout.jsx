@@ -214,7 +214,7 @@ export default function ReceptionLayout() {
       </aside>
 
       {/* ===== Main area ===== */}
-      <div className="flex flex-1 flex-col overflow-y-auto">
+      <div id="main-scroll" className="flex flex-1 flex-col overflow-y-auto">
         <button
           className="fixed top-3 left-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
           onClick={() => setOpen(true)}

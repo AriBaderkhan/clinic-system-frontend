@@ -219,7 +219,7 @@ export default function BranchManagerLayout() {
       </aside>
 
       {/* ===== Main area ===== */}
-      <div className="flex flex-1 flex-col overflow-y-auto">
+      <div id="main-scroll" className="flex flex-1 flex-col overflow-y-auto">
           {/* Mobile hamburger — no header bar, just floating button */}
           <button
             className="fixed top-3 left-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"

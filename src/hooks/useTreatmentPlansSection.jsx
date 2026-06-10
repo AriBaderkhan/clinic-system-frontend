@@ -10,12 +10,24 @@ import {
 export default function useTreatmentPlansSection() {
   const [tps, setTps] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1, page: 1, limit: 20 });
 
   const [filters, setFilters] = useState({
-    isPaid: undefined,      // true | false | undefined
-    isCompleted: undefined, // true | false | undefined
+    isPaid: undefined,
+    isCompleted: undefined,
     q: "",
   });
+
+  const filtersKey = JSON.stringify({
+    isPaid: filters.isPaid,
+    isCompleted: filters.isCompleted,
+    q: filters.q || "",
+  });
+
+  useEffect(() => {
+    setPage(1);
+  }, [filtersKey]);
 
   const [expandedTpId, setExpandedTpId] = useState(null);
   const [tpSessions, setTpSessions] = useState({}); // { [tpId]: sessions[] }
@@ -32,11 +44,22 @@ export default function useTreatmentPlansSection() {
   const [paidDraft, setPaidDraft] = useState("");
   const [savingPaid, setSavingPaid] = useState(false);
 
-  const fetchTps = async () => {
+  const fetchTps = async (overridePage) => {
     setLoading(true);
     try {
-      const data = await getAllTreatmentPlansForSection(filters);
-      setTps(data);
+      const currentPage = overridePage ?? page;
+      const res = await getAllTreatmentPlansForSection({
+        ...filters,
+        page: currentPage,
+        limit: 20,
+      });
+      setTps(res.data ?? []);
+      if (res.pagination) {
+        setPagination(res.pagination);
+      } else {
+        const list = res.data ?? [];
+        setPagination({ total: list.length, totalPages: 1, page: 1, limit: 20 });
+      }
     } finally {
       setLoading(false);
     }
@@ -45,7 +68,7 @@ export default function useTreatmentPlansSection() {
   useEffect(() => {
     fetchTps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.isPaid, filters.isCompleted, filters.q]);
+  }, [filters.isPaid, filters.isCompleted, filters.q, page]);
 
   const refreshTpSessions = async (tpId) => {
     const sessions = await getSessionsForTreatmentPlan(tpId);
@@ -176,6 +199,10 @@ export default function useTreatmentPlansSection() {
       filters,
       setFilters,
 
+      page,
+      setPage,
+      pagination,
+
       expandedTpId,
       toggleExpand,
       tpSessions,
@@ -203,6 +230,8 @@ export default function useTreatmentPlansSection() {
       tps,
       loading,
       filters,
+      page,
+      pagination,
       expandedTpId,
       tpSessions,
       sessionsLoading,

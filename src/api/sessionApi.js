@@ -1,8 +1,8 @@
 import api from "./api";
 
-export async function getUnpaidSessions() {
-  const res = await api.get("/api/sessions/unpaid");
-  return res.data; // { message, data }
+export async function getUnpaidSessions(params = {}) {
+  const res = await api.get("/api/sessions/unpaid", { params });
+  return res.data; // { message, data, total }
 }
 
 export async function paySession(sessionId, payload) {

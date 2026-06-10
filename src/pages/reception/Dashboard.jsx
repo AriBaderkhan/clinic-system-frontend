@@ -1,10 +1,11 @@
 ﻿import { useState } from "react";
 import usePatients from "../../hooks/usePatients";
 import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
-import useUnpaidSessions from "../../hooks/useUnPaidSessions"; // NEW
+import useUnpaidSessions from "../../hooks/useUnPaidSessions";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
-import PaySessionModal from "../../components/appointments/PaySessionModal"; // NEW
+import PaySessionModal from "../../components/appointments/PaySessionModal";
+import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsModal";
 
 export default function Dashboard() {
   const { patients, isLoading } = usePatients();
@@ -18,15 +19,17 @@ export default function Dashboard() {
 
   const {
     sessions: unpaidSessions,
+    total: unpaidTotal,
     isLoading: isUnpaidLoading,
     error: unpaidError,
     refresh: refreshUnpaid,
-  } = useUnpaidSessions();
+  } = useUnpaidSessions({ limit: 5 });
 
   const [selectedForStatusDashboard, setSelectedForStatusDashboard] =
     useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
-  const [selectedForPayment, setSelectedForPayment] = useState(null); // NEW
+  const [selectedForPayment, setSelectedForPayment] = useState(null);
+  const [showAllUnpaid, setShowAllUnpaid] = useState(false);
 
   // only in_progress appointments (for right column)
   const inProgressAppointments = todayAppointments.filter(
@@ -61,13 +64,16 @@ export default function Dashboard() {
         />
       )}
 
-      {/* NEW: Pay session modal */}
       {selectedForPayment && (
         <PaySessionModal
           session={selectedForPayment}
           onClose={() => setSelectedForPayment(null)}
           onPaid={refreshUnpaid}
         />
+      )}
+
+      {showAllUnpaid && (
+        <AllUnpaidSessionsModal onClose={() => setShowAllUnpaid(false)} />
       )}
 
       {/* Top intro */}
@@ -273,25 +279,32 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* NEW: Unpaid sessions pay box */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+          {/* Unpaid sessions pay box */}
+          <div className="rounded-3xl border border-[#015478]/15 bg-[#015478]/5 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-slate-900">
                   Sessions waiting for payment
                 </h2>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-[#015478]/60">
                   Newly completed sessions that reception needs to charge.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700">
-                  {unpaidSessions.length} unpaid
+                <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700 border border-amber-200">
+                  {isUnpaidLoading ? "…" : unpaidTotal} unpaid
                 </span>
                 <button
                   type="button"
+                  onClick={() => setShowAllUnpaid(true)}
+                  className="rounded-md border border-[#015478]/30 bg-white px-3 py-1.5 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10"
+                >
+                  View all
+                </button>
+                <button
+                  type="button"
                   onClick={refreshUnpaid}
-                  className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
+                  className="rounded-md border border-[#015478]/20 bg-white px-3 py-1.5 text-[11px] text-slate-600 hover:bg-[#015478]/10"
                 >
                   Refresh
                 </button>
@@ -305,50 +318,39 @@ export default function Dashboard() {
             )}
 
             {isUnpaidLoading && !unpaidError && (
-              <p className="text-xs text-slate-500">Loading unpaid sessions…</p>
+              <p className="text-xs text-[#015478]/60">Loading unpaid sessions…</p>
             )}
 
             {!isUnpaidLoading &&
               !unpaidError &&
               unpaidSessions.length === 0 && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#015478]/60">
                   No unpaid sessions right now.
                 </p>
               )}
 
             {unpaidSessions.length > 0 && (
-              <div className="mt-2 space-y-3 max-h-64 overflow-y-auto pr-1 text-sm">
+              <div className="mt-2 space-y-1.5 text-sm">
                 {unpaidSessions.map((s) => (
                   <div
                     key={s.session_id}
-                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                    className="flex items-center justify-between rounded-xl border border-[#015478]/10 bg-white px-3.5 py-2"
                   >
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-slate-800">
                         {s.patient.full_name}
                       </p>
-                      <p className="mt-1 text-[11px] text-slate-500">
-                        {s.doctor.full_name} ·{" "}
-                        {formatTime(s.appointment.start_time)} ·{" "}
-                        {s.works_summary.items_count} work
-                        {s.works_summary.items_count !== 1 && "s"}
-                      </p>
-                      <p className="mt-1 text-[11px] text-slate-600">
-                        Total:{" "}
-                        <span className="font-semibold">
-                          {Number(s.totals.total).toLocaleString()}
-                        </span>{" "}
-                        · Min total:{" "}
-                        <span className="font-semibold">
-                          {Number(s.totals.min_total).toLocaleString()}
-                        </span>
+                      <p className="text-xs text-slate-500">
+                        {s.doctor.full_name} · {formatTime(s.appointment.start_time)} ·{" "}
+                        {s.works_summary.items_count} work{s.works_summary.items_count !== 1 && "s"}
+                        {" "}· <span className="font-medium text-slate-700">{Number(s.totals.total).toLocaleString()}</span>
                       </p>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => setSelectedForPayment(s)}
-                      className="rounded-full bg-[#015478] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#013d58]"
+                      className="ml-3 flex-shrink-0 rounded-full bg-[#015478] px-3.5 py-1 text-[10px] font-semibold text-white hover:bg-[#013d58]"
                     >
                       Pay
                     </button>

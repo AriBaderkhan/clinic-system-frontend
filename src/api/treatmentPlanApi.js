@@ -20,15 +20,11 @@ export async function getSessionsForTreatmentPlan(treatmentPlanId) {
 }
 
 // 1) list all TPs (for reception section) with filters + search
-export async function getAllTreatmentPlansForSection({ isPaid, isCompleted, q }) {
+export async function getAllTreatmentPlansForSection({ isPaid, isCompleted, q, page, limit }) {
   const res = await api.get("/api/treatment-plans", {
-    params: {
-      isPaid,        // true/false/undefined
-      isCompleted,   // true/false/undefined
-      q,             // search by patient name
-    },
+    params: { isPaid, isCompleted, q, page, limit },
   });
-  return res.data?.data ?? [];
+  return res.data ?? {};
 }
 
 // 2) edit TP (type / agreed_total)

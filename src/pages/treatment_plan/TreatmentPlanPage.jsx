@@ -1,4 +1,16 @@
 ﻿import { useMemo } from "react";
+
+function getPageNumbers(currentPage, totalPages) {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages = [1];
+    if (currentPage > 3) pages.push("...");
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+    }
+    if (currentPage < totalPages - 2) pages.push("...");
+    pages.push(totalPages);
+    return pages;
+}
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 
 function formatDateTime(iso) {
@@ -17,6 +29,10 @@ export default function TreatmentPlanPage() {
         loading,
         filters,
         setFilters,
+
+        page,
+        setPage,
+        pagination,
 
         expandedTpId,
         toggleExpand,
@@ -42,6 +58,17 @@ export default function TreatmentPlanPage() {
         savingPaid,
     } = useTreatmentPlansSection();
 
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        const el = document.getElementById("main-scroll");
+        if (el) el.scrollTop = 0;
+    };
+
+    const pageNumbers = getPageNumbers(page, pagination.totalPages);
+    const showPagination = pagination.totalPages > 1;
+    const rowStart = (page - 1) * pagination.limit + 1;
+    const rowEnd = Math.min(page * pagination.limit, pagination.total);
+
     const typeButtons = useMemo(() => ["All", "ortho", "implant", "rct", "re_rct"], []);
 
     return (
@@ -52,41 +79,72 @@ export default function TreatmentPlanPage() {
                 <p className="text-xs text-slate-500">Manage and track all patient treatment plans.</p>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap items-center gap-3">
-                <select
-                    value={filters.isPaid === undefined ? "" : filters.isPaid ? "true" : "false"}
-                    onChange={(e) => {
-                        const v = e.target.value;
-                        setFilters((prev) => ({ ...prev, isPaid: v === "" ? undefined : v === "true" }));
-                    }}
-                    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#015478]"
-                >
-                    <option value="">Paid: All</option>
-                    <option value="true">Paid</option>
-                    <option value="false">Not Paid</option>
-                </select>
+            {/* Filter bar */}
+            <div className="rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
 
-                <select
-                    value={filters.isCompleted === undefined ? "" : filters.isCompleted ? "true" : "false"}
-                    onChange={(e) => {
-                        const v = e.target.value;
-                        setFilters((prev) => ({ ...prev, isCompleted: v === "" ? undefined : v === "true" }));
-                    }}
-                    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#015478]"
-                >
-                    <option value="">Completed: All</option>
-                    <option value="true">Completed</option>
-                    <option value="false">Not Completed</option>
-                </select>
+                {/* Search */}
+                <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
+                    <label className="text-xs font-semibold text-[#015478]">Search</label>
+                    <input
+                        placeholder="Patient name..."
+                        value={filters.q}
+                        onChange={(e) => setFilters((prev) => ({ ...prev, q: e.target.value }))}
+                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                    />
+                </div>
 
-                <input
-                    placeholder="Search patient name..."
-                    value={filters.q}
-                    onChange={(e) => setFilters((prev) => ({ ...prev, q: e.target.value }))}
-                    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#015478] w-full max-w-xs"
-                />
+                {/* Pay status */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[#015478]">Pay Status</label>
+                    <select
+                        value={filters.isPaid === undefined ? "" : filters.isPaid ? "true" : "false"}
+                        onChange={(e) => {
+                            const v = e.target.value;
+                            setFilters((prev) => ({ ...prev, isPaid: v === "" ? undefined : v === "true" }));
+                        }}
+                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                    >
+                        <option value="">All</option>
+                        <option value="true">Paid</option>
+                        <option value="false">Not Paid</option>
+                    </select>
+                </div>
+
+                {/* Complete status */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[#015478]">Complete Status</label>
+                    <select
+                        value={filters.isCompleted === undefined ? "" : filters.isCompleted ? "true" : "false"}
+                        onChange={(e) => {
+                            const v = e.target.value;
+                            setFilters((prev) => ({ ...prev, isCompleted: v === "" ? undefined : v === "true" }));
+                        }}
+                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                    >
+                        <option value="">All</option>
+                        <option value="true">Completed</option>
+                        <option value="false">Not Completed</option>
+                    </select>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setFilters({ isPaid: undefined, isCompleted: undefined, q: "" })}
+                        className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
+                    >
+                        Clear
+                    </button>
+                </div>
             </div>
+
+            {/* Count info */}
+            <p className="text-xs text-slate-400">
+                {loading
+                    ? "Loading treatment plans…"
+                    : `Total: ${pagination.total} · Showing ${pagination.total === 0 ? 0 : rowStart}–${rowEnd}`}
+            </p>
 
             {/* Table */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -351,6 +409,50 @@ export default function TreatmentPlanPage() {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* Pagination bar */}
+                {showPagination && (
+                    <div className="flex flex-col items-center gap-2 border-t border-slate-100 px-4 py-4">
+                        <div className="flex flex-wrap items-center justify-center gap-1">
+                            <button
+                                onClick={() => handlePageChange(page - 1)}
+                                disabled={page === 1}
+                                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Prev
+                            </button>
+
+                            {pageNumbers.map((p, i) =>
+                                p === "..." ? (
+                                    <span key={`ellipsis-${i}`} className="px-1 text-[11px] text-slate-400">…</span>
+                                ) : (
+                                    <button
+                                        key={p}
+                                        onClick={() => handlePageChange(p)}
+                                        className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
+                                            p === page
+                                                ? "border-[#015478] bg-[#015478] text-white"
+                                                : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                )
+                            )}
+
+                            <button
+                                onClick={() => handlePageChange(page + 1)}
+                                disabled={page === pagination.totalPages}
+                                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Next
+                            </button>
+                        </div>
+                        <span className="text-[11px] text-slate-400">
+                            Showing {rowStart}–{rowEnd} of {pagination.total} treatment plans
+                        </span>
                     </div>
                 )}
             </div>

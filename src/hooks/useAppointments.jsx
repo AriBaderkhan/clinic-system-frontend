@@ -5,33 +5,52 @@ export default function useAppointments(filters = {}) {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1, page: 1, limit: 20 });
 
-  const cleanFilters = {
-    day: filters.day || undefined,
-    type: filters.type || undefined,
-    q: filters.search || undefined,
-  };
+  const filtersKey = JSON.stringify({
+    day: filters.day || "",
+    type: filters.type || "",
+    search: filters.search || "",
+  });
+
+  useEffect(() => {
+    setPage(1);
+  }, [filtersKey]);
+
+  const isSearching = !!(filters.search && filters.search.trim().length > 0);
+  const pageLimit = isSearching ? 25 : 20;
 
   const fetchAppointments = useCallback(async () => {
     try {
       setIsLoading(true);
       setError("");
 
-      const res = await getAllAppointments(cleanFilters);
-      const data = res.data;
+      const params = {
+        ...(filters.day ? { day: filters.day } : {}),
+        ...(filters.type ? { type: filters.type } : {}),
+        ...(filters.search ? { q: filters.search } : {}),
+        page,
+        limit: pageLimit,
+      };
 
-      const list = Array.isArray(data)
-        ? data
-        : data.appointments || data.data || [];
+      const res = await getAllAppointments(params);
+      const data = res.data;
+      const list = Array.isArray(data) ? data : data.data || data.appointments || [];
 
       setAppointments(list);
+      if (data.pagination) {
+        setPagination(data.pagination);
+      } else {
+        setPagination({ total: list.length, totalPages: 1, page: 1, limit: 20 });
+      }
     } catch (err) {
-      setError(err.userMessage);
+      setError(err.userMessage || "Failed to load appointments");
       setAppointments([]);
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(cleanFilters)]);
+  }, [filtersKey, page]);
 
   useEffect(() => {
     fetchAppointments();
@@ -42,6 +61,9 @@ export default function useAppointments(filters = {}) {
     isLoading,
     error,
     refresh: fetchAppointments,
+    page,
+    setPage,
+    pagination,
+    isSearching,
   };
 }
-

@@ -1,7 +1,7 @@
 import api from "./api";
 
 export const createPatient = (data) => api.post("/api/patients", data);
-export const getAllPatients = (q) => api.get("/api/patients", { params: { q } });
+export const getAllPatients = (params = {}) => api.get("/api/patients", { params });
 export const getPatientById = (patientId) => api.get(`/api/patients/${patientId}`);
 export const editPatient = (patientId, data) => api.put(`/api/patients/${patientId}`, data);
 export const deletePatient = (patientId) => api.delete(`/api/patients/${patientId}`);

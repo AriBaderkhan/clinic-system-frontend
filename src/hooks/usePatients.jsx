@@ -5,33 +5,42 @@ export default function usePatients(options = {}) {
   const { skipFetch = false } = options;
 
   const [patients, setPatients] = useState([]);
-  const [isLoading, setIsLoading] = useState(!skipFetch); // true only when we will fetch
+  const [isLoading, setIsLoading] = useState(!skipFetch);
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // for create/update/delete
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1, page: 1, limit: 20 });
 
   const q = options.search?.trim() || "";
+  const pageLimit = 20;
+
+  useEffect(() => {
+    setPage(1);
+  }, [q]);
 
   const fetchPatients = useCallback(async () => {
     try {
       setIsLoading(true);
       setError("");
 
-      const res = await getAllPatients(q );
+      const res = await getAllPatients({ q: q || undefined, page, limit: pageLimit });
 
-      // backend sends: { message, patients: [...] }
       const data = res.data;
-      const list = Array.isArray(data)
-        ? data
-        : data.patients || data.data || [];
+      const list = Array.isArray(data) ? data : data.patients || data.data || [];
 
       setPatients(list);
+      if (data.pagination) {
+        setPagination(data.pagination);
+      } else {
+        setPagination({ total: list.length, totalPages: 1, page: 1, limit: pageLimit });
+      }
     } catch (err) {
       setError(err.userMessage || "Could not load patients. Please try again.");
       setPatients([]);
     } finally {
       setIsLoading(false);
     }
-  }, [q]);
+  }, [q, page]);
 
   // CREATE patient (used by AddPatient page)
   const createPatients = useCallback(
@@ -121,6 +130,9 @@ export default function usePatients(options = {}) {
     updatePatient,
     deletePatient,
     isSubmitting,
+    page,
+    setPage,
+    pagination,
   };
 }
 
