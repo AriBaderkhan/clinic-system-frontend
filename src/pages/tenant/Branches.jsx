@@ -16,7 +16,7 @@ export default function TenantBranches() {
         try {
             setLoading(true);
             const data = await getBranches();
-            setBranches(data);
+            setBranches(data.data || []);
         } catch (error) {
             toast.error(error.userMessage || "Failed to load branches");
         } finally {

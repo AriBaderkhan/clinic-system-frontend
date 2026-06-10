@@ -52,9 +52,9 @@ export default function TenantUsers() {
                 getRoles(),
                 getBranches()
             ]);
-            setUsers(usersData || []);
-            setRoles(rolesData || []);
-            setBranches(branchesData || []);
+            setUsers(usersData.data || []);
+            setRoles(rolesData.data || []);
+            setBranches(branchesData.data || []);
         } catch (error) {
             toast.error(error.userMessage || "Failed to load users data");
         } finally {

@@ -5,7 +5,7 @@ export default function TenantDashboard() {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        getTenantDashboard().then(setStats).catch(() => {});
+        getTenantDashboard().then(res => setStats(res.data)).catch(() => {});
     }, []);
 
     return (

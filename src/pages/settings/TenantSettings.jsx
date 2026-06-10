@@ -49,7 +49,8 @@ export default function TenantSettingsPage() {
         try {
             setLoadingTenant(true);
             setTenantError("");
-            const data = await getTenant();
+            const res = await getTenant();
+            const data = res.data;
             setTenant(data);
             setTenantForm({
                 name: data.name || "",
@@ -67,8 +68,8 @@ export default function TenantSettingsPage() {
     const loadBranches = async () => {
         try {
             setLoadingBranches(true);
-            const data = await getBranches();
-            setBranches(data);
+            const res = await getBranches();
+            setBranches(res.data || []);
         } catch (error) {
             toast.error("Failed to load branches");
         } finally {
