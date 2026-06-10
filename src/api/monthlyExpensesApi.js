@@ -2,28 +2,27 @@ import api from "./api";
 
 const BASE = "/api/monthly-expenses";
 
-export async function createMonthlyExpense(payload) {
-  const { data } = await api.post(BASE, payload);
-  return data;
-}
+export const createMonthlyExpense = async (payload) => {
+    const res = await api.post(BASE, payload);
+    return res.data;
+};
 
-export async function getAllMonthlyExpenses(params = {}) {
-  // optional later: ?year=2025 or ?from=...&to=...
-  const { data } = await api.get(BASE, { params });
-  return data;
-}
+export const getAllMonthlyExpenses = async (params = {}) => {
+    const res = await api.get(BASE, { params });
+    return res.data;
+};
 
-export async function getMonthlyExpenseById(expensesId) {
-  const { data } = await api.get(`${BASE}/${expensesId}`);
-  return data;
-}
+export const getMonthlyExpenseById = async (expensesId) => {
+    const res = await api.get(`${BASE}/${expensesId}`);
+    return res.data;
+};
 
-export async function updateMonthlyExpense(expensesId, payload) {
-  const { data } = await api.put(`${BASE}/${expensesId}`, payload);
-  return data;
-}
+export const updateMonthlyExpense = async (expensesId, payload) => {
+    const res = await api.put(`${BASE}/${expensesId}`, payload);
+    return res.data;
+};
 
-export async function deleteMonthlyExpense(expensesId) {
-  const { data } = await api.delete(`${BASE}/${expensesId}`);
-  return data;
-}
+export const deleteMonthlyExpense = async (expensesId) => {
+    const res = await api.delete(`${BASE}/${expensesId}`);
+    return res.data;
+};

@@ -1,50 +1,43 @@
 import api from "./api";
 
-export async function getActiveTreatmentPlan(patientId, type) {
-  const res = await api.get("/api/treatment-plans/active", {
-    params: { patientId, type },
-  });
-  // backend should return { success:true, data: planOrNull }
-  return res.data?.data ?? null;
-}
+export const getActiveTreatmentPlan = async (patientId, type) => {
+    const res = await api.get("/api/treatment-plans/active", {
+        params: { patientId, type },
+    });
+    return res.data;
+};
 
-export async function getPatientTreatmentPlans(patientId) {
-  const res = await api.get(`/api/patients/${patientId}/treatment-plans`);
-  return res.data?.data ?? [];
-}
+export const getPatientTreatmentPlans = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}/treatment-plans`);
+    return res.data;
+};
 
-// list sessions for one treatment plan
-export async function getSessionsForTreatmentPlan(treatmentPlanId) {
-  const res = await api.get(`/api/treatment-plans/${treatmentPlanId}/sessions`);
-  return res.data?.data ?? [];
-}
+export const getSessionsForTreatmentPlan = async (treatmentPlanId) => {
+    const res = await api.get(`/api/treatment-plans/${treatmentPlanId}/sessions`);
+    return res.data;
+};
 
-// 1) list all TPs (for reception section) with filters + search
-export async function getAllTreatmentPlansForSection({ isPaid, isCompleted, q, page, limit }) {
-  const res = await api.get("/api/treatment-plans", {
-    params: { isPaid, isCompleted, q, page, limit },
-  });
-  return res.data ?? {};
-}
+export const getAllTreatmentPlansForSection = async ({ isPaid, isCompleted, q, page, limit }) => {
+    const res = await api.get("/api/treatment-plans", {
+        params: { isPaid, isCompleted, q, page, limit },
+    });
+    return res.data;
+};
 
-// 2) edit TP (type / agreed_total)
-export async function editTreatmentPlan(tpId, payload) {
-  // payload can be { type } or { agreed_total } or { type, agreed_total }
-  const res = await api.patch(`/api/treatment-plans/${tpId}`, payload);
-  return res.data?.data ?? null;
-}
+export const editTreatmentPlan = async (tpId, payload) => {
+    const res = await api.patch(`/api/treatment-plans/${tpId}`, payload);
+    return res.data;
+};
 
-// 3) delete TP
-export async function deleteTreatmentPlan(tpId) {
-  const res = await api.delete(`/api/treatment-plans/${tpId}`);
-  return res.data ?? null; // 204 => usually no body
-}
+export const deleteTreatmentPlan = async (tpId) => {
+    const res = await api.delete(`/api/treatment-plans/${tpId}`);
+    return res.data;
+};
 
-// 4) edit paid in one TP session
-export async function updatePaidForTpSession(tpId, sessionId, amount) {
-  const res = await api.patch(
-    `/api/treatment-plans/${tpId}/sessions/${sessionId}/paid`,
-    { amount }
-  );
-  return res.data?.data ?? null;
-}
+export const updatePaidForTpSession = async (tpId, sessionId, amount) => {
+    const res = await api.patch(
+        `/api/treatment-plans/${tpId}/sessions/${sessionId}/paid`,
+        { amount }
+    );
+    return res.data;
+};

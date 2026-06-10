@@ -11,8 +11,7 @@ export default function useDoctors() {
       setIsLoading(true);
       setError("");
       const res = await getAllDoctors();
-      const data = res.data;
-      setDoctors(Array.isArray(data) ? data : data.docs || data.data || []);
+      setDoctors(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage || "Could not load doctors.");
     } finally {
@@ -26,4 +25,3 @@ export default function useDoctors() {
 
   return { doctors, isLoading, error, refresh: fetchDoctors };
 }
-

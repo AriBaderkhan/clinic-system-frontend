@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPatientAppointments } from "../api/patientApi";
 
 export default function usePatientAppointments(patientId) {
@@ -6,38 +6,24 @@ export default function usePatientAppointments(patientId) {
   const [isLoading, setIsLoading] = useState(!!patientId);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const fetchAppointments = useCallback(async () => {
     if (!patientId) return;
-
-    let isMounted = true;
-
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        setError("");
-
-        const res = await getPatientAppointments(patientId);
-        const data = res.data?.data || res.data || [];
-
-        if (isMounted) {
-          setAppointments(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.userMessage);
-          setAppointments([]);
-        }
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
+    try {
+      setIsLoading(true);
+      setError("");
+      const res = await getPatientAppointments(patientId);
+      setAppointments(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      setError(err.userMessage || "Could not load appointments.");
+      setAppointments([]);
+    } finally {
+      setIsLoading(false);
     }
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
   }, [patientId]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   return { appointments, isLoading, error };
 }

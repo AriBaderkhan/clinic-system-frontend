@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getWorks } from "../../api/workApi";
-import { apiGetNormalSessionDetails, updateNormalSession } from "../../api/sessionApi";
+import { getNormalSessionDetails, updateNormalSession } from "../../api/sessionApi";
 
 function toNumberOrEmpty(v) {
     if (v === null || v === undefined) return "";
@@ -51,7 +51,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
             try {
                 const [catalogRes, sessionRes] = await Promise.all([
                     getWorks(),
-                    apiGetNormalSessionDetails(sessionId),
+                    getNormalSessionDetails(sessionId),
                 ]);
 
                 const catalogRows = catalogRes?.data?.data || [];
@@ -374,3 +374,4 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getSessionByAppointmentId } from "../api/appointmentApi";
 
 export default function useAppointmentSession(appointmentId, open) {
@@ -6,33 +6,30 @@ export default function useAppointmentSession(appointmentId, open) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function load() {
-    if (!appointmentId) return;
-
+  const fetchSession = useCallback(async () => {
+    if (!appointmentId || !open) return;
     try {
       setIsLoading(true);
       setError("");
       setSessionId(null);
-
       const res = await getSessionByAppointmentId(appointmentId);
-      const sid = res?.data?.data?.session_id;
-      setSessionId(sid || null);
+      setSessionId(res?.data?.session_id ?? null);
     } catch (err) {
       if (err?.response?.status === 404) {
         setSessionId(null);
         setError("");
         return;
       }
-      setError(err.userMessage);
+      setError(err.userMessage || "Could not load session.");
       setSessionId(null);
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [appointmentId, open]);
 
   useEffect(() => {
-    if (open && appointmentId) load();
-  }, [open, appointmentId]);
+    fetchSession();
+  }, [fetchSession]);
 
-  return { sessionId, isLoading, error, refresh: load };
+  return { sessionId, isLoading, error, refresh: fetchSession };
 }

@@ -35,15 +35,13 @@ export default function useAppointments(filters = {}) {
       };
 
       const res = await getAllAppointments(params);
-      const data = res.data;
-      const list = Array.isArray(data) ? data : data.data || data.appointments || [];
-
-      setAppointments(list);
-      if (data.pagination) {
-        setPagination(data.pagination);
-      } else {
-        setPagination({ total: list.length, totalPages: 1, page: 1, limit: 20 });
-      }
+      setAppointments(res.data ?? []);
+      setPagination({
+        total: res.total ?? 0,
+        page,
+        limit: pageLimit,
+        totalPages: Math.ceil((res.total ?? 0) / pageLimit) || 1,
+      });
     } catch (err) {
       setError(err.userMessage || "Failed to load appointments");
       setAppointments([]);

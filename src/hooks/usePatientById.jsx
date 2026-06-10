@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPatientById } from "../api/patientApi";
 
 export default function usePatientById(patientId) {
@@ -6,38 +6,24 @@ export default function usePatientById(patientId) {
   const [isLoading, setIsLoading] = useState(!!patientId);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const fetchPatient = useCallback(async () => {
     if (!patientId) return;
-
-    let isMounted = true;
-
-    async function fetchPatient() {
-      try {
-        setIsLoading(true);
-        setError("");
-
-        const res = await getPatientById(patientId);
-        const data = res.data?.patient || res.data?.data || res.data;
-
-        if (isMounted) {
-          setPatient(data || null);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.userMessage);
-          setPatient(null);
-        }
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
+    try {
+      setIsLoading(true);
+      setError("");
+      const res = await getPatientById(patientId);
+      setPatient(res.data ?? null);
+    } catch (err) {
+      setError(err.userMessage || "Could not load patient.");
+      setPatient(null);
+    } finally {
+      setIsLoading(false);
     }
-
-    fetchPatient();
-
-    return () => {
-      isMounted = false;
-    };
   }, [patientId]);
+
+  useEffect(() => {
+    fetchPatient();
+  }, [fetchPatient]);
 
   return { patient, isLoading, error };
 }

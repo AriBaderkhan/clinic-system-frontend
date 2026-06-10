@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchSessionDetails } from "../api/historyApi";
 
 export default function useSessionDetails(sessionId, open) {
@@ -6,23 +6,23 @@ export default function useSessionDetails(sessionId, open) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function load() {
-    if (!sessionId) return;
+  const fetchDetails = useCallback(async () => {
+    if (!sessionId || !open) return;
     try {
       setIsLoading(true);
       setError("");
-      const data = await fetchSessionDetails(sessionId);
-      setDetails(data);
+      const res = await fetchSessionDetails(sessionId);
+      setDetails(res.data ?? null);
     } catch (err) {
-      setError(err.userMessage);
+      setError(err.userMessage || "Could not load session details.");
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [sessionId, open]);
 
   useEffect(() => {
-    if (open && sessionId) load();
-  }, [open, sessionId]);
+    fetchDetails();
+  }, [fetchDetails]);
 
-  return { details, isLoading, error, refresh: load };
+  return { details, isLoading, error, refresh: fetchDetails };
 }

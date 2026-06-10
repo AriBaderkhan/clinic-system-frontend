@@ -10,15 +10,8 @@ export default function useActiveTodayAppointments() {
     try {
       setIsLoading(true);
       setError("");
-
       const res = await getActiveTodayAppointments();
-      const data = res.data;
-
-      const list = Array.isArray(data)
-        ? data
-        : data.appointments || data.data || [];
-
-      setAppointments(list);
+      setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage);
       setAppointments([]);
@@ -31,11 +24,5 @@ export default function useActiveTodayAppointments() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  return {
-    appointments,
-    isLoading,
-    error,
-    refresh: fetchAppointments,
-  };
+  return { appointments, isLoading, error, refresh: fetchAppointments };
 }
-

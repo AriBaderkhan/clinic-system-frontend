@@ -1,38 +1,36 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { getSessionsForTreatmentPlan } from "../api/treatmentPlanApi";
 
 export default function useTreatmentPlanSessions() {
-  // cache: { [planId]: { loading, error, sessions } }
   const [cache, setCache] = useState({});
 
-  const load = async (planId) => {
+  const load = useCallback(async (planId) => {
     const key = String(planId);
 
-    // don’t refetch if already loaded successfully
-    if (cache[key]?.sessions && !cache[key]?.error) return;
+    let shouldFetch = true;
+    setCache((prev) => {
+      if (prev[key]?.sessions?.length && !prev[key]?.error) {
+        shouldFetch = false;
+        return prev;
+      }
+      return { ...prev, [key]: { loading: true, error: "", sessions: prev[key]?.sessions || [] } };
+    });
 
-    setCache((prev) => ({
-      ...prev,
-      [key]: { loading: true, error: "", sessions: prev[key]?.sessions || [] },
-    }));
+    if (!shouldFetch) return;
 
     try {
-      const data = await getSessionsForTreatmentPlan(planId);
+      const res = await getSessionsForTreatmentPlan(planId);
       setCache((prev) => ({
         ...prev,
-        [key]: { loading: false, error: "", sessions: Array.isArray(data) ? data : [] },
+        [key]: { loading: false, error: "", sessions: Array.isArray(res.data) ? res.data : [] },
       }));
     } catch (err) {
       setCache((prev) => ({
         ...prev,
-        [key]: {
-          loading: false,
-          error: err.userMessage,
-          sessions: [],
-        },
+        [key]: { loading: false, error: err.userMessage || "Could not load sessions.", sessions: [] },
       }));
     }
-  };
+  }, []);
 
   return { cache, load };
 }

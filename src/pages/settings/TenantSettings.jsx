@@ -128,8 +128,6 @@ export default function TenantSettingsPage() {
             name: branch.name || "",
             location: branch.location || "",
             timezone: branch.timezone || "",
-            location: branch.location || "",
-            timezone: branch.timezone || "",
             currency_code: branch.currency_code || "",
             status: branch.status !== undefined ? branch.status : true
         });
@@ -503,3 +501,4 @@ export default function TenantSettingsPage() {
         </div>
     );
 }
+

@@ -10,15 +10,8 @@ export default function useActiveApptsTodayPerDoctor() {
     try {
       setIsLoading(true);
       setError("");
-
       const res = await getActiveTodayApptsPerDoc();
-      const data = res.data;
-
-      const list = Array.isArray(data)
-        ? data
-        : data.appointments || data.data || [];
-
-      setAppointments(list);
+      setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage);
       setAppointments([]);
@@ -31,11 +24,5 @@ export default function useActiveApptsTodayPerDoctor() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  return {
-    appointments,
-    isLoading,
-    error,
-    refresh: fetchAppointments,
-  };
+  return { appointments, isLoading, error, refresh: fetchAppointments };
 }
-

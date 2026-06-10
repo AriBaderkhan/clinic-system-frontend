@@ -1,11 +1,46 @@
 import api from "./api";
 
-export const createPatient = (data) => api.post("/api/patients", data);
-export const getAllPatients = (params = {}) => api.get("/api/patients", { params });
-export const getPatientById = (patientId) => api.get(`/api/patients/${patientId}`);
-export const editPatient = (patientId, data) => api.put(`/api/patients/${patientId}`, data);
-export const deletePatient = (patientId) => api.delete(`/api/patients/${patientId}`);
-export const searchPatients = (q) => api.get("/api/patients/search", { params: { q } });
-export const getPatientAppointments = (patientId) => api.get(`/api/patients/${patientId}/appointments`);
-export const getPatientSessions = (patientId) => api.get(`/api/patients/${patientId}/sessions`);
-export const getPatientPayments = (patientId) => api.get(`/api/patients/${patientId}/payments`);
+export const createPatient = async (data) => {
+    const res = await api.post("/api/patients", data);
+    return res.data;
+};
+
+export const getAllPatients = async (params = {}) => {
+    const res = await api.get("/api/patients", { params });
+    return res.data;
+};
+
+export const getPatientById = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}`);
+    return res.data;
+};
+
+export const editPatient = async (patientId, data) => {
+    const res = await api.put(`/api/patients/${patientId}`, data);
+    return res.data;
+};
+
+export const deletePatient = async (patientId) => {
+    const res = await api.delete(`/api/patients/${patientId}`);
+    return res.data;
+};
+
+export const searchPatients = async (q) => {
+    const res = await api.get("/api/patients/search", { params: { q } });
+    return res.data;
+};
+
+export const getPatientAppointments = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}/appointments`);
+    return res.data;
+};
+
+export const getPatientSessions = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}/sessions`);
+    return res.data;
+};
+
+export const getPatientPayments = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}/payments`);
+    return res.data;
+};

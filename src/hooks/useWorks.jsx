@@ -1,18 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getWorks, createWork, updateWork, deleteWork } from "../api/workApi";
 
 export default function useWorks({ skipFetch = false } = {}) {
   const [works, setWorks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchWorks = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
     try {
+      setIsLoading(true);
+      setError("");
       const res = await getWorks();
-      setWorks(Array.isArray(res.data.data) ? res.data.data : []);
+      setWorks(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage || "Failed to load works");
     } finally {
@@ -24,9 +24,9 @@ export default function useWorks({ skipFetch = false } = {}) {
     if (!skipFetch) fetchWorks();
   }, [fetchWorks, skipFetch]);
 
-  const create = async (data) => {
-    setIsSubmitting(true);
+  const create = useCallback(async (data) => {
     try {
+      setIsSubmitting(true);
       const res = await createWork(data);
       await fetchWorks();
       return { ok: true, data: res.data };
@@ -35,11 +35,11 @@ export default function useWorks({ skipFetch = false } = {}) {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [fetchWorks]);
 
-  const update = async (id, data) => {
-    setIsSubmitting(true);
+  const update = useCallback(async (id, data) => {
     try {
+      setIsSubmitting(true);
       const res = await updateWork(id, data);
       await fetchWorks();
       return { ok: true, data: res.data };
@@ -48,9 +48,9 @@ export default function useWorks({ skipFetch = false } = {}) {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [fetchWorks]);
 
-  const remove = async (id) => {
+  const remove = useCallback(async (id) => {
     try {
       await deleteWork(id);
       await fetchWorks();
@@ -58,7 +58,7 @@ export default function useWorks({ skipFetch = false } = {}) {
     } catch (err) {
       return { ok: false, error: err.userMessage || "Failed to delete work" };
     }
-  };
+  }, [fetchWorks]);
 
   return { works, isLoading, error, refresh: fetchWorks, create, update, remove, isSubmitting };
 }

@@ -24,16 +24,13 @@ export default function usePatients(options = {}) {
       setError("");
 
       const res = await getAllPatients({ q: q || undefined, page, limit: pageLimit });
-
-      const data = res.data;
-      const list = Array.isArray(data) ? data : data.patients || data.data || [];
-
-      setPatients(list);
-      if (data.pagination) {
-        setPagination(data.pagination);
-      } else {
-        setPagination({ total: list.length, totalPages: 1, page: 1, limit: pageLimit });
-      }
+      setPatients(res.data ?? []);
+      setPagination({
+        total: res.total ?? 0,
+        page,
+        limit: pageLimit,
+        totalPages: Math.ceil((res.total ?? 0) / pageLimit) || 1,
+      });
     } catch (err) {
       setError(err.userMessage || "Could not load patients. Please try again.");
       setPatients([]);
@@ -42,25 +39,17 @@ export default function usePatients(options = {}) {
     }
   }, [q, page]);
 
-  // CREATE patient (used by AddPatient page)
   const createPatients = useCallback(
     async (payload) => {
       try {
         setIsSubmitting(true);
         setError("");
-
         const res = await createPatient(payload);
-
-        if (!skipFetch) {
-          await fetchPatients();
-        }
-        const data = res.data;
-        // Return a success object instead of nothing
-        return { ok: true, data };
+        if (!skipFetch) await fetchPatients();
+        return { ok: true, data: res.data };
       } catch (err) {
         setError(err.userMessage || "Could not create patient. Please try again.");
         return { ok: false, error: err.userMessage || "Could not create patient. Please try again." };
-
       } finally {
         setIsSubmitting(false);
       }
@@ -68,19 +57,13 @@ export default function usePatients(options = {}) {
     [fetchPatients, skipFetch]
   );
 
-  // ----- UPDATE -----
   const updatePatient = useCallback(
     async (patientId, payload) => {
       try {
         setIsSubmitting(true);
         setError("");
-
         const res = await editPatient(patientId, payload);
-
-        if (!skipFetch) {
-          await fetchPatients();
-        }
-
+        if (!skipFetch) await fetchPatients();
         return { ok: true, data: res.data };
       } catch (err) {
         setError(err.userMessage || "Could not update patient. Please try again.");
@@ -92,19 +75,13 @@ export default function usePatients(options = {}) {
     [fetchPatients, skipFetch]
   );
 
-  // ----- DELETE -----
   const deletePatient = useCallback(
     async (patientId) => {
       try {
         setIsSubmitting(true);
         setError("");
-
         await deletePatientApi(patientId);
-
-        if (!skipFetch) {
-          await fetchPatients();
-        }
-
+        if (!skipFetch) await fetchPatients();
         return { ok: true };
       } catch (err) {
         return { ok: false, error: err.userMessage || "Could not delete patient. Please try again." };
@@ -114,11 +91,9 @@ export default function usePatients(options = {}) {
     },
     [fetchPatients, skipFetch]
   );
-  // initial load for list pages
+
   useEffect(() => {
-    if (!skipFetch) {
-      fetchPatients();
-    }
+    if (!skipFetch) fetchPatients();
   }, [fetchPatients, skipFetch]);
 
   return {
@@ -135,4 +110,3 @@ export default function usePatients(options = {}) {
     pagination,
   };
 }
-

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { apiGetAllSessions } from "../api/sessionApi";
+import { getAllSessions } from "../api/sessionApi";
 
 export default function useSessions(filters = {}) {
   const [sessions, setSessions] = useState([]);
@@ -21,24 +21,22 @@ export default function useSessions(filters = {}) {
 
   const fetchSessions = useCallback(async () => {
     try {
-      setError("");
       setIsLoading(true);
-
+      setError("");
       const params = {
         ...(filters.day ? { day: filters.day } : {}),
         ...(filters.search ? { q: filters.search } : {}),
         page,
         limit: pageLimit,
       };
-
-      const data = await apiGetAllSessions(params);
-      setSessions(data.sessions || []);
-      if (data.pagination) {
-        setPagination(data.pagination);
-      } else {
-        const list = data.sessions || [];
-        setPagination({ total: list.length, totalPages: 1, page: 1, limit: pageLimit });
-      }
+      const res = await getAllSessions(params);
+      setSessions(res.data ?? []);
+      setPagination({
+        total: res.total ?? 0,
+        page,
+        limit: pageLimit,
+        totalPages: Math.ceil((res.total ?? 0) / pageLimit) || 1,
+      });
     } catch (err) {
       setError(err.userMessage || "Failed to load sessions");
       setSessions([]);

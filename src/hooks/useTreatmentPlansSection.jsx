@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deleteTreatmentPlan,
   editTreatmentPlan,
@@ -30,95 +30,82 @@ export default function useTreatmentPlansSection() {
   }, [filtersKey]);
 
   const [expandedTpId, setExpandedTpId] = useState(null);
-  const [tpSessions, setTpSessions] = useState({}); // { [tpId]: sessions[] }
+  const [tpSessions, setTpSessions] = useState({});
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
   const [editingTpId, setEditingTpId] = useState(null);
-
-  // const [tpDraft, setTpDraft] = useState({ type: "", agreed_total: "" });
   const [tpDraft, setTpDraft] = useState({ type: "", agreed_total: "", is_completed: false });
-
   const [savingTp, setSavingTp] = useState(false);
 
   const [editingPaid, setEditingPaid] = useState({ tpId: null, sessionId: null });
   const [paidDraft, setPaidDraft] = useState("");
   const [savingPaid, setSavingPaid] = useState(false);
 
-  const fetchTps = async (overridePage) => {
-    setLoading(true);
+  const pageLimit = 20;
+
+  const fetchTps = useCallback(async (overridePage) => {
     try {
+      setLoading(true);
       const currentPage = overridePage ?? page;
       const res = await getAllTreatmentPlansForSection({
         ...filters,
         page: currentPage,
-        limit: 20,
+        limit: pageLimit,
       });
       setTps(res.data ?? []);
-      if (res.pagination) {
-        setPagination(res.pagination);
-      } else {
-        const list = res.data ?? [];
-        setPagination({ total: list.length, totalPages: 1, page: 1, limit: 20 });
-      }
+      setPagination({
+        total: res.total ?? 0,
+        page: currentPage,
+        limit: pageLimit,
+        totalPages: Math.ceil((res.total ?? 0) / pageLimit) || 1,
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [filtersKey, page]);
 
   useEffect(() => {
     fetchTps();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.isPaid, filters.isCompleted, filters.q, page]);
+  }, [fetchTps]);
 
-  const refreshTpSessions = async (tpId) => {
-    const sessions = await getSessionsForTreatmentPlan(tpId);
-    setTpSessions((prev) => ({ ...prev, [tpId]: sessions }));
-  };
+  const refreshTpSessions = useCallback(async (tpId) => {
+    const res = await getSessionsForTreatmentPlan(tpId);
+    setTpSessions((prev) => ({ ...prev, [tpId]: Array.isArray(res.data) ? res.data : [] }));
+  }, []);
 
-  const toggleExpand = async (tpId) => {
+  const toggleExpand = useCallback(async (tpId) => {
     if (expandedTpId === tpId) {
       setExpandedTpId(null);
       return;
     }
 
     setExpandedTpId(tpId);
-
     if (tpSessions[tpId]) return;
 
-    setSessionsLoading(true);
     try {
-      const sessions = await getSessionsForTreatmentPlan(tpId);
-      setTpSessions((prev) => ({ ...prev, [tpId]: sessions }));
+      setSessionsLoading(true);
+      const res = await getSessionsForTreatmentPlan(tpId);
+      setTpSessions((prev) => ({ ...prev, [tpId]: Array.isArray(res.data) ? res.data : [] }));
     } finally {
       setSessionsLoading(false);
     }
-  };
+  }, [expandedTpId, tpSessions]);
 
-  // const startEditTp = (tp) => {
-  //   setEditingTpId(tp.id);
-  //   setTpDraft({
-  //     type: tp.type ?? "",
-  //     agreed_total: String(tp.agreed_total ?? ""),
-  //   });
-  // };
-
-  const startEditTp = (tp) => {
+  const startEditTp = useCallback((tp) => {
     setEditingTpId(tp.id);
     setTpDraft({
       type: tp.type ?? "",
       agreed_total: String(tp.agreed_total ?? ""),
       is_completed: !!tp.is_completed,
     });
-  };
+  }, []);
 
-
-  const cancelEditTp = () => {
+  const cancelEditTp = useCallback(() => {
     setEditingTpId(null);
     setTpDraft({ type: "", agreed_total: "", is_completed: false });
+  }, []);
 
-  };
-
-  const saveEditTp = async (tp) => {
+  const saveEditTp = useCallback(async (tp) => {
     const payload = {};
 
     if (tpDraft.type && tpDraft.type !== tp.type) payload.type = tpDraft.type;
@@ -136,17 +123,17 @@ export default function useTreatmentPlansSection() {
       return;
     }
 
-    setSavingTp(true);
     try {
+      setSavingTp(true);
       await editTreatmentPlan(tp.id, payload);
       await fetchTps();
       cancelEditTp();
     } finally {
       setSavingTp(false);
     }
-  };
+  }, [tpDraft, cancelEditTp, fetchTps]);
 
-  const handleDeleteTp = async (tpId) => {
+  const handleDeleteTp = useCallback(async (tpId) => {
     const ok = window.confirm("Delete this treatment plan?");
     if (!ok) return;
 
@@ -159,88 +146,52 @@ export default function useTreatmentPlansSection() {
       delete copy[tpId];
       return copy;
     });
-  };
+  }, [fetchTps]);
 
-  const startEditPaid = (tpId, sessionId, currentPaid) => {
+  const startEditPaid = useCallback((tpId, sessionId, currentPaid) => {
     setEditingPaid({ tpId, sessionId });
     setPaidDraft(String(currentPaid ?? 0));
-  };
+  }, []);
 
-  const cancelEditPaid = () => {
+  const cancelEditPaid = useCallback(() => {
     setEditingPaid({ tpId: null, sessionId: null });
     setPaidDraft("");
-  };
+  }, []);
 
-  const saveEditPaid = async () => {
+  const saveEditPaid = useCallback(async () => {
     const { tpId, sessionId } = editingPaid;
     if (!tpId || !sessionId) return;
 
     const amount = Number(String(paidDraft).replace(/,/g, "").trim());
     if (!Number.isFinite(amount) || amount < 0) return;
 
-    setSavingPaid(true);
     try {
+      setSavingPaid(true);
       await updatePaidForTpSession(tpId, sessionId, amount);
-
-      // refresh both
       await refreshTpSessions(tpId);
       await fetchTps();
-
       cancelEditPaid();
     } finally {
       setSavingPaid(false);
     }
-  };
+  }, [editingPaid, paidDraft, refreshTpSessions, fetchTps, cancelEditPaid]);
 
   const api = useMemo(
     () => ({
-      tps,
-      loading,
-      filters,
-      setFilters,
-
-      page,
-      setPage,
-      pagination,
-
-      expandedTpId,
-      toggleExpand,
-      tpSessions,
-      sessionsLoading,
-
-      editingTpId,
-      startEditTp,
-      cancelEditTp,
-      saveEditTp,
-      tpDraft,
-      setTpDraft,
-      savingTp,
-
+      tps, loading, filters, setFilters,
+      page, setPage, pagination,
+      expandedTpId, toggleExpand, tpSessions, sessionsLoading,
+      editingTpId, startEditTp, cancelEditTp, saveEditTp, tpDraft, setTpDraft, savingTp,
       handleDeleteTp,
-
-      editingPaid,
-      startEditPaid,
-      cancelEditPaid,
-      saveEditPaid,
-      paidDraft,
-      setPaidDraft,
-      savingPaid,
+      editingPaid, startEditPaid, cancelEditPaid, saveEditPaid, paidDraft, setPaidDraft, savingPaid,
     }),
     [
-      tps,
-      loading,
-      filters,
-      page,
-      pagination,
-      expandedTpId,
-      tpSessions,
-      sessionsLoading,
-      editingTpId,
-      tpDraft,
-      savingTp,
-      editingPaid,
-      paidDraft,
-      savingPaid,
+      tps, loading, filters, page, pagination,
+      expandedTpId, tpSessions, sessionsLoading,
+      editingTpId, tpDraft, savingTp,
+      editingPaid, paidDraft, savingPaid,
+      toggleExpand, startEditTp, cancelEditTp, saveEditTp, handleDeleteTp,
+      startEditPaid, cancelEditPaid, saveEditPaid,
     ]
   );
 
