@@ -1,5 +1,7 @@
 ﻿import { NavLink, Outlet } from "react-router-dom";
 import { useMemo, useState } from "react";
+import ThemeToggle from "../components/ThemeToggle";
+import { clearStorageKeepingTheme } from "../utils/theme";
 
 export default function DoctorLayout() {
   const [open, setOpen] = useState(false);
@@ -8,7 +10,7 @@ export default function DoctorLayout() {
   const name = localStorage.getItem('name')
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.clear(); // or removeItem("token"), removeItem("role")
+      clearStorageKeepingTheme(); // keeps dark/light preference
       window.location.href = "/";
     }
   };
@@ -17,6 +19,7 @@ export default function DoctorLayout() {
     return [
       { label: "Dashboard", path: "/doctor", end: true },
       { label: "Appointments", path: "/doctor/appts_per_doc" },
+      { label: "Calendar", path: "/doctor/calendar" },
     ];
   }, []);
 
@@ -82,6 +85,7 @@ export default function DoctorLayout() {
           ))}
         </nav>
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <ThemeToggle />
           <button
             onClick={() => {
               handleLogout();
@@ -132,6 +136,7 @@ export default function DoctorLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"

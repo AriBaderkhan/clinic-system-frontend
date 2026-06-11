@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { createAppointment } from "../../api/appointmentApi";
 import useDoctors from "../../hooks/useDoctors";
@@ -7,6 +7,14 @@ import AppointmentForm from "../../components/appointments/AppointmentForm";
 
 export default function AddAppointment() {
   const navigate = useNavigate();
+  const role = localStorage.getItem("role") || "reception";
+  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
+
+  // date prefill from calendar day click (?date=YYYY-MM-DD)
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const defaultScheduledStart = /^\d{4}-\d{2}-\d{2}$/.test(dateParam || "") ? `${dateParam}T09:00` : "";
+
   const { doctors, isLoading, error: doctorsError } = useDoctors();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -14,7 +22,7 @@ export default function AddAppointment() {
     try {
       setIsSubmitting(true);
       await createAppointment(payload);
-      navigate("/reception/appointments");
+      navigate(`${prefix}/appointments`);
     } catch (err) {
       toast.error(err.userMessage || "Could not create appointment. Please try again.");
     } finally {
@@ -43,6 +51,7 @@ export default function AddAppointment() {
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             error={doctorsError}
+            defaultScheduledStart={defaultScheduledStart}
           />
         )}
       </div>

@@ -1,5 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ThemeToggle from "../components/ThemeToggle";
+import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
     { label: "Dashboard", path: "", end: true },
@@ -12,7 +14,7 @@ export default function AdminLayout() {
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
-            localStorage.clear();
+            clearStorageKeepingTheme(); // keeps dark/light preference
             window.location.href = "/";
         }
     };
@@ -80,6 +82,7 @@ export default function AdminLayout() {
                 </nav>
 
                 <div className="border-t border-[#6a87ad] px-3 py-3">
+                    <ThemeToggle />
                     <button
                         onClick={() => { handleLogout(); setOpen(false); }}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
@@ -118,6 +121,7 @@ export default function AdminLayout() {
                 </nav>
 
                 <div className="border-t border-[#6a87ad] px-3 py-3">
+                    <ThemeToggle />
                     <button
                         onClick={handleLogout}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"

@@ -21,6 +21,7 @@ import PatientFolderPage from "./pages/patients/PatientFolderPage";
 import AppointmentsPage from "./pages/appointments/AppointmentsPage";
 import AddAppointment from "./pages/appointments/AddAppointment";
 import EditAppointment from "./pages/appointments/EditAppointment";
+import AppointmentsCalendarPage from "./pages/appointments/AppointmentsCalendarPage";
 
 import PaymentHistory from "./pages/history/PaymentHistory";
 import ReportsPage from "./pages/reports/ReportsPage";
@@ -103,6 +104,7 @@ export default function App() {
           <Route path="patients/:patientId" element={<PatientFolderPage />} />
 
           <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="appointments/calendar" element={<AppointmentsCalendarPage />} />
           <Route path="appointments/add" element={<AddAppointment />} />
           <Route path="appointments/:appointmentId/edit" element={<EditAppointment />} />
 
@@ -133,6 +135,7 @@ export default function App() {
           <Route path="patients/:patientId" element={<PermissionRoute requiredPermission="view_patient"><PatientFolderPage /></PermissionRoute>} />
 
           <Route path="appointments" element={<PermissionRoute requiredPermission="view_appointment"><AppointmentsPage /></PermissionRoute>} />
+          <Route path="appointments/calendar" element={<PermissionRoute requiredPermission="view_appointment"><AppointmentsCalendarPage /></PermissionRoute>} />
           <Route path="appointments/add" element={<PermissionRoute requiredPermission="create_appointment"><AddAppointment /></PermissionRoute>} />
           <Route path="appointments/:appointmentId/edit" element={<PermissionRoute requiredPermission="update_appointment"><EditAppointment /></PermissionRoute>} />
 
@@ -162,6 +165,7 @@ export default function App() {
         >
           <Route index element={<DoctorDashboard />} />
           <Route path="appts_per_doc" element={<ApptsPerDoctor />} />
+          <Route path="calendar" element={<AppointmentsCalendarPage />} />
         </Route>
 
         {/* ===================== PLATFORM ADMIN ===================== */}

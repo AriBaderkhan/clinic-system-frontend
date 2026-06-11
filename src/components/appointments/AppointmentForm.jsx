@@ -1,6 +1,16 @@
 ﻿import { useEffect, useState } from "react";
 import { searchPatients } from "../../api/patientApi";
 
+// "YYYY-MM-DDTHH:mm" -> { date, hour (1-12), minute, period }
+function parseDateTimeLocal(value) {
+  if (!value || !value.includes("T")) return { date: "", hour: "", minute: "", period: "AM" };
+  const [date, time] = value.split("T");
+  const [H, M] = time.split(":").map(Number);
+  const period = H >= 12 ? "PM" : "AM";
+  const hour12 = H % 12 === 0 ? 12 : H % 12;
+  return { date, hour: String(hour12), minute: String(M).padStart(2, "0"), period };
+}
+
 export default function AppointmentForm({
   mode = "add",             // "add" | "edit"
   initialData,              // used only in edit
@@ -8,6 +18,7 @@ export default function AppointmentForm({
   onSubmit,
   isSubmitting = false,
   error,
+  defaultScheduledStart = "",  // prefill date/time in add mode (e.g. from calendar day click)
 }) {
   // ------------------ PATIENT SEARCH ------------------
   const [patientQuery, setPatientQuery] = useState(
@@ -29,21 +40,32 @@ export default function AppointmentForm({
   const [patientError, setPatientError] = useState("");
 
   // ------------------ OTHER FIELDS ------------------
+  const initialDT = parseDateTimeLocal(
+    initialData?.scheduled_start?.slice(0, 16) ?? defaultScheduledStart ?? ""
+  );
+
   const [form, setForm] = useState({
     patient_id: initialData?.patient_id ? String(initialData.patient_id) : "",
     doctor_id: initialData?.doctor_id ? String(initialData.doctor_id) : "",
     appointment_type: initialData?.appointment_type ?? "normal",
-    scheduled_start:
-      initialData?.scheduled_start?.slice(0, 16) ?? "", // datetime-local format
+    date: initialDT.date,
+    hour: initialDT.hour,
+    minute: initialDT.minute,
+    period: initialDT.period,
   });
 
   useEffect(() => {
     if (!initialData || mode !== "edit") return;
 
+    const dt = parseDateTimeLocal(initialData.scheduled_start.slice(0, 16));
+
     setForm({
       doctor_id: initialData.doctor_id ? String(initialData.doctor_id) : "",
       appointment_type: initialData.appointment_type ?? "normal",
-      scheduled_start: initialData.scheduled_start.slice(0, 16),
+      date: dt.date,
+      hour: dt.hour,
+      minute: dt.minute,
+      period: dt.period,
     });
 
     // ADD THIS PART - Make sure selectedPatient is set correctly in edit mode
@@ -118,15 +140,33 @@ export default function AppointmentForm({
 
     patient_id = selectedPatient.id;
 
-    if (!form.doctor_id || !form.scheduled_start) {
-      setPatientError("Doctor and date/time are required.");
+    if (!form.doctor_id || !form.date || form.hour === "" || form.minute === "") {
+      setPatientError("Doctor, date and time are required.");
       return;
     }
+
+    const hourNum = Number(form.hour);
+    const minuteNum = Number(form.minute);
+
+    if (!Number.isInteger(hourNum) || hourNum < 1 || hourNum > 12) {
+      setPatientError("Hour must be between 1 and 12.");
+      return;
+    }
+    if (!Number.isInteger(minuteNum) || minuteNum < 0 || minuteNum > 59) {
+      setPatientError("Minutes must be between 0 and 59.");
+      return;
+    }
+
+    // 3:30 + PM -> 15:30
+    let hour24 = hourNum % 12;
+    if (form.period === "PM") hour24 += 12;
+
+    const scheduledStart = `${form.date}T${String(hour24).padStart(2, "0")}:${String(minuteNum).padStart(2, "0")}`;
 
     const basePayload = {
       patient_id: Number(patient_id),  // Always include patient_id
       doctor_id: Number(form.doctor_id),
-      scheduled_start: new Date(form.scheduled_start).toISOString(),
+      scheduled_start: new Date(scheduledStart).toISOString(),
     };
 
     let payload;
@@ -215,15 +255,50 @@ export default function AppointmentForm({
         <label className="block text-xs font-medium text-slate-700">
           Appointment Date &amp; Time
         </label>
-        <input
-          type="datetime-local"
-          name="scheduled_start"
-          value={form.scheduled_start}
-          onChange={handleChange}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            className="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+          />
+
+          <div className="flex items-center gap-1.5">
+            <input
+              type="number"
+              name="hour"
+              min="1"
+              max="12"
+              placeholder="3"
+              value={form.hour}
+              onChange={handleChange}
+              className="w-16 rounded-md border border-slate-200 px-2 py-2 text-center text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+            />
+            <span className="text-sm font-semibold text-slate-400">:</span>
+            <input
+              type="number"
+              name="minute"
+              min="0"
+              max="59"
+              placeholder="30"
+              value={form.minute}
+              onChange={handleChange}
+              className="w-16 rounded-md border border-slate-200 px-2 py-2 text-center text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+            />
+            <select
+              name="period"
+              value={form.period}
+              onChange={handleChange}
+              className="rounded-md border border-slate-200 px-2 py-2 text-sm font-semibold text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
         <p className="mt-1 text-[11px] text-slate-400">
-          Clinic rules: normal = 1 hour spacing, urgent / walk-in can ignore.
+          Example: 3 : 30 PM = 15:30 · Clinic rules: normal = 1 hour spacing, urgent / walk-in can ignore.
         </p>
       </div>
 

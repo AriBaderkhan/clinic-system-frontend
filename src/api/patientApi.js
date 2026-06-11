@@ -35,8 +35,8 @@ export const getPatientAppointments = async (patientId) => {
     return res.data;
 };
 
-export const getPatientSessions = async (patientId) => {
-    const res = await api.get(`/api/patients/${patientId}/sessions`);
+export const getPatientSessions = async (patientId, params = {}) => {
+    const res = await api.get(`/api/patients/${patientId}/sessions`, { params });
     return res.data;
 };
 

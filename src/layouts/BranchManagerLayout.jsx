@@ -3,11 +3,14 @@ import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
+import ThemeToggle from "../components/ThemeToggle";
+import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
   { label: "Dashboard", path: "", end: true },
   { label: "Patients", path: "patients" },
-  { label: "Appointments", path: "appointments" },
+  { label: "Appointments", path: "appointments", end: true },
+  { label: "Calendar", path: "appointments/calendar" },
   { label: "Sessions", path: "sessions" },
   { label: "Treatment Plan", path: "treatment_plan" },
   // { label: "History", path: "history" },
@@ -19,7 +22,7 @@ const navItems = [
 // const name = localStorage.getItem('name')
 const handleLogout = () => {
   if (window.confirm('Are you sure you want to logout?')) {
-    localStorage.clear(); // or removeItem("token"), removeItem("role")
+    clearStorageKeepingTheme(); // keeps dark/light preference
     disconnectSocket();
     window.location.href = "/";
   }
@@ -142,6 +145,7 @@ export default function BranchManagerLayout() {
               <span>← Back to Tenant</span>
             </button>
           )}
+          <ThemeToggle />
           <button
             onClick={() => {
               handleLogout();
@@ -202,6 +206,7 @@ export default function BranchManagerLayout() {
               <span>← Back to Tenant</span>
             </button>
           )}
+          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"

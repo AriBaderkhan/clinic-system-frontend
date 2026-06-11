@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
+import ThemeToggle from "../components/ThemeToggle";
+import { clearStorageKeepingTheme } from "../utils/theme";
 // Helper to check permission safely
 const hasPermission = (permission) => {
   const userString = localStorage.getItem("user");
@@ -19,7 +21,8 @@ const getNavItems = () => {
   const items = [
     { label: "Dashboard", path: "", end: true },
     { label: "Patients", path: "patients", permission: "view_patient" },
-    { label: "Appointments", path: "appointments", permission: "view_appointment" },
+    { label: "Appointments", path: "appointments", permission: "view_appointment", end: true },
+    { label: "Calendar", path: "appointments/calendar", permission: "view_appointment" },
     { label: "Sessions", path: "sessions", permission: "view_session" },
     { label: "Treatment Plan", path: "treatment_plan", permission: "manage_tp" },
     // { label: "History", path: "history", permission: "view_payment" },
@@ -35,7 +38,7 @@ const getNavItems = () => {
 // const name = localStorage.getItem('name')
 const handleLogout = () => {
   if (window.confirm('Are you sure you want to logout?')) {
-    localStorage.clear(); // or removeItem("token"), removeItem("role")
+    clearStorageKeepingTheme(); // keeps dark/light preference
     disconnectSocket();
     window.location.href = "/";
   }
@@ -145,6 +148,7 @@ export default function ReceptionLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <ThemeToggle />
           <button
             onClick={() => {
               handleLogout();
@@ -197,6 +201,7 @@ export default function ReceptionLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"

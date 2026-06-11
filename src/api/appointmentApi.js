@@ -25,6 +25,11 @@ export const deleteAppointment = async (appointmentId) => {
     return res.data;
 };
 
+export const getCalendarAppointments = async (params = {}) => {
+    const res = await api.get('/api/appointments/calendar', { params });
+    return res.data;
+};
+
 export const getActiveTodayAppointments = async () => {
     const res = await api.get('/api/appointments/active/today');
     return res.data;
