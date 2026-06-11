@@ -106,7 +106,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-medium text-slate-800">All Tenants</h2>
                 <button
                     onClick={() => setIsRegisterOpen(true)}
@@ -244,7 +244,7 @@ export default function AdminDashboard() {
             {/* Subscription Modal */}
             {isSubscriptionOpen && selectedTenant && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+                    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                         <h3 className="mb-4 text-lg font-medium text-slate-900">Update Subscription</h3>
                         <p className="mb-4 text-sm text-slate-500">
                             Updating plan for <span className="font-semibold">{selectedTenant.name}</span>.

@@ -27,8 +27,8 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
   const worksSummary = details?.works_summary;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-3xl rounded-3xl bg-white shadow-xl border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="w-full max-w-3xl rounded-3xl bg-white shadow-xl border border-slate-200 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <div>
@@ -59,7 +59,7 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
         </div>
 
         {/* Body */}
-        <div className="max-h-[70vh] overflow-y-auto px-5 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
           {/* Loading / error */}
           {isLoading && (
             <p className="text-xs text-slate-500">Loading session details…</p>

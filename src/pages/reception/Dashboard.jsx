@@ -290,7 +290,7 @@ export default function Dashboard() {
                   Newly completed sessions that reception needs to charge.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700 border border-amber-200">
                   {isUnpaidLoading ? "…" : unpaidTotal} unpaid
                 </span>

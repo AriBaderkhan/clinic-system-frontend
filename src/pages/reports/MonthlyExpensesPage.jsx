@@ -54,7 +54,7 @@ export default function MonthlyExpensesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-lg font-semibold text-slate-900">Monthly Expenses</h1>
           <p className="text-xs text-slate-500">

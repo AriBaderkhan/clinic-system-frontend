@@ -138,7 +138,7 @@ export default function FeaturesPage() {
             {/* Right Column: Matrix */}
             <div className="lg:col-span-2">
                 <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="mb-6 flex items-center justify-between">
+                    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <h3 className="text-lg font-medium text-slate-800">Assign Features to Plan</h3>
                         <select
                             className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"

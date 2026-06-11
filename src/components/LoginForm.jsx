@@ -13,7 +13,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
   };
 
   return (
-    <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100">
+    <div className="w-full max-w-lg rounded-3xl bg-white p-5 sm:p-8 shadow-2xl shadow-blue-100">
       <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">
         Clinic Managment System
       </h1>

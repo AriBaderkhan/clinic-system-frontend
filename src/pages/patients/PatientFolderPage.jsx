@@ -135,7 +135,7 @@ export default function PatientFolderPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 pb-1 text-xs">
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-1 text-xs">
         {["appointments", "sessions", "payments", "treatment_plans"].map((tab) => (
           <button
             key={tab}

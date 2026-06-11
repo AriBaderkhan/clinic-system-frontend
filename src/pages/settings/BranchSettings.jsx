@@ -136,7 +136,7 @@ export default function BranchSettingsPage() {
                     <div className="text-center p-4">Loading branch details...</div>
                 ) : branchDetails ? (
                     <>
-                        <div className="flex justify-between items-center mb-6 border-b pb-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 border-b pb-4">
                             <h2 className="text-xl font-semibold">{branchDetails.name}</h2>
                             {!isEditing && (
                                 <button
