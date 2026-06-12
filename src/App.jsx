@@ -34,6 +34,7 @@ import ApptsPerDoctor from './pages/doctor/ApptsPerDoctor'
 import TenantSettingsPage from "./pages/settings/TenantSettings";
 import BranchSettingsPage from "./pages/settings/BranchSettings";
 import WorksPage from "./pages/works/WorksPage";
+import LabsPage from "./pages/labs/LabsPage";
 
 // Tenant pages
 import TenantLayout from "./layouts/TenantLayout";
@@ -114,6 +115,7 @@ export default function App() {
           <Route path="reports" element={<ReportsPage />} />
           <Route path="settings/branch" element={<BranchSettingsPage />} />
           <Route path="works" element={<WorksPage />} />
+          <Route path="lab" element={<LabsPage />} />
         </Route>
 
         {/* ===================== RECEPTION ===================== */}
@@ -145,6 +147,7 @@ export default function App() {
           <Route path="reports" element={<PermissionRoute requiredPermission="view_reports"><ReportsPage /></PermissionRoute>} />
           <Route path="sessions" element={<PermissionRoute requiredPermission="view_session"><SessionsPage /></PermissionRoute>} />
           <Route path="treatment_plan" element={<PermissionRoute requiredPermission="manage_tp"><TreatmentPlanPage /></PermissionRoute>} />
+          <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
           <Route path="settings/branch" element={
             <RoleRoute allowedRoles={["branch_manager"]}>
               <BranchSettingsPage />

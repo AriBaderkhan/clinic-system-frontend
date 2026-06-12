@@ -1,24 +1,7 @@
 ﻿import { useState } from "react";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
-
-function formatDateTime(iso) {
-  if (!iso) return "-";
-  const date = new Date(iso);
-
-  const datePart = date.toLocaleDateString([], {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-
-  const timePart = date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  return `${datePart} • ${timePart}`;
-}
+import { formatDateTime } from "../../utils/dateTime";
 
 export default function PaymentHistory() {
   const { payments, isLoading, error, refresh } = usePaymentHistory();

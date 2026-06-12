@@ -3,11 +3,7 @@ import toast from "react-hot-toast";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
 import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
-
-function formatTime(iso) {
-  if (!iso) return "-";
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { formatTime, formatDate } from "../../utils/dateTime";
 
 const TREATMENT_TYPES = ["ortho", "implant", "rct","re_rct"];
 
@@ -301,7 +297,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             <p className="mt-1 text-xs text-slate-500">
               {appointment.patient_name} · {appointment.patient_phone}
               <br />
-              {appointment.doctor_name} · {new Date(appointment.scheduled_start).toLocaleDateString()} ·{" "}
+              {appointment.doctor_name} · {formatDate(appointment.scheduled_start)} ·{" "}
               {formatTime(appointment.scheduled_start)} · {appointment.appointment_type}
             </p>
           </div>

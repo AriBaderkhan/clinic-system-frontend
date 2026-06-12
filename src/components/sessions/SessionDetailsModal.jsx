@@ -1,19 +1,5 @@
 ﻿import useSessionDetails from "../../hooks/useSessionDetails";
-
-function formatDateTime(iso) {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  const datePart = d.toLocaleDateString([], {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const timePart = d.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return `${datePart} • ${timePart}`;
-}
+import { formatDateTime } from "../../utils/dateTime";
 
 export default function SessionDetailsModal({ sessionId, onClose }) {
   const { details, isLoading, error, refresh } = useSessionDetails(

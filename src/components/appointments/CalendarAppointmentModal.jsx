@@ -3,20 +3,7 @@ import usePatientSessions from "../../hooks/usePatientSessions";
 import SessionDetailsModalForDocs from "../sessions/SessionDetailsModalForDocs";
 import { getDoctorColor } from "../../utils/doctorColors";
 
-function formatDateTime(value) {
-  if (!value) return "-";
-  try {
-    return new Date(value).toLocaleString([], {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return String(value);
-  }
-}
+import { formatDateTime } from "../../utils/dateTime";
 
 function formatMoney(value) {
   const n = Number(value) || 0;

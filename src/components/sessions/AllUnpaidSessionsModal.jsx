@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUnpaidSessions } from "../../api/sessionApi";
 import PaySessionModal from "../appointments/PaySessionModal";
-
-function formatTime(iso) {
-  if (!iso) return "-";
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { formatTime } from "../../utils/dateTime";
 
 function formatMoney(n) {
   return Number(n || 0).toLocaleString();

@@ -6,6 +6,7 @@ import AppointmentStatusModal from "../../components/appointments/AppointmentSta
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import PaySessionModal from "../../components/appointments/PaySessionModal";
 import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsModal";
+import { formatTime } from "../../utils/dateTime";
 
 export default function Dashboard() {
   const { patients, isLoading } = usePatients();
@@ -35,15 +36,6 @@ export default function Dashboard() {
   const inProgressAppointments = todayAppointments.filter(
     (a) => a.status === "in_progress"
   );
-
-  // helper to show only time (no date)
-  const formatTime = (iso) => {
-    if (!iso) return "-";
-    return new Date(iso).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="space-y-6">

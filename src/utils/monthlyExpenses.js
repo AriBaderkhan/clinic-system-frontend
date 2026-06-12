@@ -1,3 +1,5 @@
+import { formatDateTime as appFormatDateTime } from "./dateTime";
+
 export function calcTotalExpenses(row) {
   const fields = [
     "materials",
@@ -29,7 +31,7 @@ export function formatDateTime(v) {
   if (!v) return "-";
   const d = new Date(v);
   if (Number.isNaN(d.getTime())) return String(v);
-  return d.toLocaleString();
+  return appFormatDateTime(v);
 }
 
 export function toMonthKey(dateLike) {

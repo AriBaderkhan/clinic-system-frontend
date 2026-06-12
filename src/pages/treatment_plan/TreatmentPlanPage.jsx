@@ -12,12 +12,7 @@ function getPageNumbers(currentPage, totalPages) {
     return pages;
 }
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
-
-function formatDateTime(iso) {
-    if (!iso) return "-";
-    const d = new Date(iso);
-    return d.toLocaleDateString() + " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { formatDateTime } from "../../utils/dateTime";
 
 function formatMoney(n) {
     return Number(n || 0).toLocaleString();

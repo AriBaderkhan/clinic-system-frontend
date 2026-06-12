@@ -6,6 +6,7 @@ import AppointmentStatusModal from "../../components/appointments/AppointmentSta
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { deleteAppointment } from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
+import { formatDateTime } from "../../utils/dateTime";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -226,7 +227,7 @@ export default function AppointmentPage() {
                       <td className="px-3 py-2 text-slate-700">{a.patient_phone}</td>
                       <td className="px-3 py-2 text-slate-700 capitalize">{a.doctor_name}</td>
                       <td className="px-3 py-2 text-slate-700">
-                        {a.scheduled_start ? new Date(a.scheduled_start).toLocaleString() : "-"}
+                        {formatDateTime(a.scheduled_start)}
                       </td>
                       <td className="px-3 py-2 text-slate-700">
                         {a.appointment_type}

@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { checkInAppointment, inProgressAppointment, cancelAppointment, noShowAppointment } from "../../api/appointmentApi";
+import { formatDateTime } from "../../utils/dateTime";
 
 // ---- Allowed transitions ----
 function getAllowedNextStatuses(current) {
@@ -95,7 +96,7 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
               {appointment.patient_name} · {appointment.patient_phone}
               <br />
               {appointment.doctor_name} ·{" "}
-              {new Date(appointment.scheduled_start).toLocaleString()}
+              {formatDateTime(appointment.scheduled_start)}
             </p>
           </div>
           <button

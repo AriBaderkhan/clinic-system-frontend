@@ -3,14 +3,7 @@ import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
 import SessionDetailsModalForDocs from "../../components/sessions/SessionDetailsModalForDocs";
 
-function formatDateTime(value) {
-  if (!value) return "-";
-  try {
-    return new Date(value).toLocaleString();
-  } catch {
-    return String(value);
-  }
-}
+import { formatDateTime } from "../../utils/dateTime";
 
 function statusBadgeClasses(status) {
   switch (status) {

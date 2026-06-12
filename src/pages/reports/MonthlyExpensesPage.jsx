@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { formatMoney } from "../../utils/monthlyExpenses";
+import { formatDate } from "../../utils/dateTime";
 import MonthlyExpenseFormModal from "../../components/reports/MonthlyExpenseFormModal";
 
 export default function MonthlyExpensesPage() {
@@ -137,7 +138,7 @@ export default function MonthlyExpensesPage() {
                 filtered.map((row, idx) => (
                   <tr key={row.id} className="border-b border-slate-100 last:border-b-0">
                     <td className="px-5 py-4">{idx + 1}</td>
-                    <td className="px-5 py-4">{row.expense_date ? new Date(row.expense_date).toLocaleDateString() : '-'}</td>
+                    <td className="px-5 py-4">{formatDate(row.expense_date)}</td>
                     <td className="px-5 py-4 font-medium text-slate-900">{row.type}</td>
                     <td className="px-5 py-4">{formatMoney(row.amount)}</td>
                     <td className="px-5 py-4 text-slate-500">{row.note || '-'}</td>

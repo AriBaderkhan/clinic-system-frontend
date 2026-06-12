@@ -30,10 +30,7 @@ function dateKey(date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function formatTime(value) {
-  if (!value) return "";
-  return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { formatTime } from "../../utils/dateTime";
 
 export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay }) {
   const [view, setView] = useState("month"); // month | week

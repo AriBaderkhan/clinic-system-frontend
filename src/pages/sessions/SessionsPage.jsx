@@ -4,6 +4,7 @@ import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import EditSessionModal from "../../components/sessions/EditSessionModal";
 import { deleteSession } from "../../api/sessionApi";
+import { formatDateTime } from "../../utils/dateTime";
 
 function money(n) {
   const v = Number(n || 0);
@@ -179,7 +180,7 @@ export default function Sessions() {
                       <td className="px-3 py-2 font-medium text-slate-800">{s.patient_name}</td>
                       <td className="px-3 py-2 text-slate-700">{s.doctor_name}</td>
                       <td className="px-3 py-2 text-slate-700">
-                        {s.appointment_end_time ? new Date(s.appointment_end_time).toLocaleString() : "-"}
+                        {formatDateTime(s.appointment_end_time)}
                       </td>
                       <td className="px-3 py-2 text-slate-800">{money(s.total)} IQD</td>
                       <td className="px-3 py-2 text-slate-800">{money(s.total_paid)} IQD</td>

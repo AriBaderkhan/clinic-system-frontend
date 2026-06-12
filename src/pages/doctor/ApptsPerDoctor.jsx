@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
+import { formatDateTime } from "../../utils/dateTime";
 
 
 export default function ApptsPerDoctor() {
@@ -213,9 +214,7 @@ export default function ApptsPerDoctor() {
                                             </td>
 
                                             <td className="px-3 py-2 text-slate-700">
-                                                {a.scheduled_start
-                                                    ? new Date(a.scheduled_start).toLocaleString()
-                                                    : "-"}
+                                                {formatDateTime(a.scheduled_start)}
                                             </td>
 
                                             <td className="px-3 py-2 text-slate-700">

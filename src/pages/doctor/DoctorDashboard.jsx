@@ -4,6 +4,7 @@
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
+import { formatTime } from "../../utils/dateTime";
 
 
 export default function DoctorDashboard() {
@@ -23,15 +24,6 @@ export default function DoctorDashboard() {
   const inProgressAppointments = todayAppointments.filter(
     (a) => a.status === "in_progress"
   );
-
-  // helper to show only time (no date)
-  const formatTime = (iso) => {
-    if (!iso) return "-";
-    return new Date(iso).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="space-y-6">
