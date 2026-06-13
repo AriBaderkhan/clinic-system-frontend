@@ -6,7 +6,7 @@ import AppointmentStatusModal from "../../components/appointments/AppointmentSta
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { deleteAppointment } from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -21,6 +21,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 export default function AppointmentPage() {
+  const { formatDateTime } = useSettings();
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
   const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";

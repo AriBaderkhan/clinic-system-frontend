@@ -30,9 +30,10 @@ function dateKey(date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-import { formatTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay }) {
+  const { formatTime } = useSettings();
   const [view, setView] = useState("month"); // month | week
   const [anchorDate, setAnchorDate] = useState(() => startOfDay(new Date()));
   const [expandedDay, setExpandedDay] = useState(null); // dateKey of the "+N more" expanded cell

@@ -1,9 +1,10 @@
 ﻿import { useState } from "react";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 export default function PaymentHistory() {
+  const { formatDateTime } = useSettings();
   const { payments, isLoading, error, refresh } = usePaymentHistory();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 

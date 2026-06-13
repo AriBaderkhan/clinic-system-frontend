@@ -11,13 +11,14 @@ import useTreatmentPlanSessions from "../../hooks/useTreatmentPlanSessions";
 
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function formatMoney(n) {
   return Number(n || 0).toLocaleString();
 }
 
 export default function PatientFolderPage() {
+  const { formatDateTime } = useSettings();
   const { patientId } = useParams();
 
   const [activeTab, setActiveTab] = useState("appointments");

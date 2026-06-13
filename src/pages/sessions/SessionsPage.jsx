@@ -4,7 +4,7 @@ import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import EditSessionModal from "../../components/sessions/EditSessionModal";
 import { deleteSession } from "../../api/sessionApi";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function money(n) {
   const v = Number(n || 0);
@@ -24,6 +24,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 export default function Sessions() {
+  const { formatDateTime } = useSettings();
   const [selectedId, setSelectedId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [dayFilter, setDayFilter] = useState("");

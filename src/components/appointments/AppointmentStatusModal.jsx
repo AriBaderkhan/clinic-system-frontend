@@ -1,7 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { checkInAppointment, inProgressAppointment, cancelAppointment, noShowAppointment } from "../../api/appointmentApi";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 // ---- Allowed transitions ----
 function getAllowedNextStatuses(current) {
@@ -24,6 +24,7 @@ const LABELS = {
 };
 
 export default function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
+  const { formatDateTime } = useSettings();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");

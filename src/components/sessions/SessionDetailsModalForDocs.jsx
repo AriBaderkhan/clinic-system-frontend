@@ -1,7 +1,8 @@
 ﻿import useSessionDetails from "../../hooks/useSessionDetails";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
+  const { formatDateTime } = useSettings();
   const { details, isLoading, error, refresh } = useSessionDetails(
     sessionId,
     true

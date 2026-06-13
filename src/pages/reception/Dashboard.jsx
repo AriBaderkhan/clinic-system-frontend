@@ -6,9 +6,10 @@ import AppointmentStatusModal from "../../components/appointments/AppointmentSta
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import PaySessionModal from "../../components/appointments/PaySessionModal";
 import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsModal";
-import { formatTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 export default function Dashboard() {
+  const { formatTime } = useSettings();
   const { patients, isLoading } = usePatients();
 
   const {

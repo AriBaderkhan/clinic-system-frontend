@@ -3,7 +3,7 @@ import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
 import SessionDetailsModalForDocs from "../../components/sessions/SessionDetailsModalForDocs";
 
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function statusBadgeClasses(status) {
   switch (status) {
@@ -25,6 +25,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function AppointmentDetailsModal({ appointmentId, onClose }) {
+  const { formatDateTime } = useSettings();
   const { appointment, isLoading, error } = useAppointmentById(appointmentId);
 
   // ---- session lookup by appointment id ----

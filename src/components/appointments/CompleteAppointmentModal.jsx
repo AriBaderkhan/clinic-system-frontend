@@ -3,11 +3,12 @@ import toast from "react-hot-toast";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
 import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
-import { formatTime, formatDate } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 const TREATMENT_TYPES = ["ortho", "implant", "rct","re_rct"];
 
 export default function CompleteAppointmentModal({ appointment, onClose, onCompleted }) {
+  const { formatTime, formatDate } = useSettings();
   const [nextPlan, setNextPlan] = useState("");
   const [notes, setNotes] = useState("");
   const [works, setWorks] = useState([{ work_id: "", quantity: 1, tooth_number: "" }]);

@@ -1,10 +1,11 @@
 ﻿import { useMemo, useState } from "react";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { formatMoney } from "../../utils/monthlyExpenses";
-import { formatDate } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 import MonthlyExpenseFormModal from "../../components/reports/MonthlyExpenseFormModal";
 
 export default function MonthlyExpensesPage() {
+  const { formatDate } = useSettings();
   const { items, isLoading, error, refresh, create, update, remove, getOne } = useMonthlyExpenses();
 
   const [query, setQuery] = useState("");

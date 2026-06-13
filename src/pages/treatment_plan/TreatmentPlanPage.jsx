@@ -12,13 +12,14 @@ function getPageNumbers(currentPage, totalPages) {
     return pages;
 }
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function formatMoney(n) {
     return Number(n || 0).toLocaleString();
 }
 
 export default function TreatmentPlanPage() {
+    const { formatDateTime } = useSettings();
     const {
         tps,
         loading,

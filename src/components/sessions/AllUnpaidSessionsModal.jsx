@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { getUnpaidSessions } from "../../api/sessionApi";
 import PaySessionModal from "../appointments/PaySessionModal";
-import { formatTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function formatMoney(n) {
   return Number(n || 0).toLocaleString();
 }
 
 export default function AllUnpaidSessionsModal({ onClose }) {
+  const { formatTime } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

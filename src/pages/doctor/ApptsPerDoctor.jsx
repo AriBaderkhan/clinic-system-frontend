@@ -1,10 +1,11 @@
 ﻿import { useState } from "react";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 
 export default function ApptsPerDoctor() {
+    const { formatDateTime } = useSettings();
 
 
     // ---------- FILTER STATE ----------

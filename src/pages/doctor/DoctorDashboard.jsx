@@ -4,7 +4,7 @@
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
-import { formatTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function statusBadgeClasses(status) {
   switch (status) {
@@ -26,6 +26,8 @@ export default function DoctorDashboard() {
     error: todayError,
     refresh: refreshToday,
   } = useActiveApptsTodayPerDoctor();
+
+  const { formatTime } = useSettings();
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);

@@ -3,7 +3,7 @@ import usePatientSessions from "../../hooks/usePatientSessions";
 import SessionDetailsModalForDocs from "../sessions/SessionDetailsModalForDocs";
 import { getDoctorColor } from "../../utils/doctorColors";
 
-import { formatDateTime } from "../../utils/dateTime";
+import { useSettings } from "../../context/SettingContext";
 
 function formatMoney(value) {
   const n = Number(value) || 0;
@@ -30,6 +30,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function CalendarAppointmentModal({ appointment, onClose }) {
+  const { formatDateTime } = useSettings();
   const { sessions, isLoading, error } = usePatientSessions(appointment?.patient_id, 5);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
