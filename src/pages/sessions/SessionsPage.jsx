@@ -169,6 +169,7 @@ export default function Sessions() {
                   <th className="px-3 py-2 font-medium">Total</th>
                   <th className="px-3 py-2 font-medium">Paid</th>
                   <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 font-medium">Notes</th>
                   <th className="px-3 py-2 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -192,6 +193,15 @@ export default function Sessions() {
                         ].join(" ")}>
                           {s.is_paid ? "Paid" : "Unpaid"}
                         </span>
+                      </td>
+                      <td className="px-3 py-2 text-slate-600 max-w-[220px]">
+                        {s.payment_note ? (
+                          <span className="block truncate" title={s.payment_note}>
+                            {s.payment_note}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex items-center justify-end gap-2 text-xs">

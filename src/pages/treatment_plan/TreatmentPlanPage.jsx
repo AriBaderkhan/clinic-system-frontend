@@ -309,6 +309,7 @@ export default function TreatmentPlanPage() {
                                                                             <tr className="border-b border-slate-200 text-[11px] text-slate-500">
                                                                                 <th className="px-3 py-2">Finished</th>
                                                                                 <th className="px-3 py-2">Paid in this session</th>
+                                                                                <th className="px-3 py-2">Payment note</th>
                                                                                 <th className="px-3 py-2">Next plan</th>
                                                                                 <th className="px-3 py-2">Notes</th>
                                                                                 <th className="px-3 py-2 text-right">Action</th>
@@ -317,7 +318,7 @@ export default function TreatmentPlanPage() {
                                                                         <tbody>
                                                                             {sessions.length === 0 && (
                                                                                 <tr>
-                                                                                    <td colSpan={5} className="px-3 py-2 text-slate-500">No sessions</td>
+                                                                                    <td colSpan={6} className="px-3 py-2 text-slate-500">No sessions</td>
                                                                                 </tr>
                                                                             )}
                                                                             {sessions.map((s) => {
@@ -346,6 +347,13 @@ export default function TreatmentPlanPage() {
                                                                                             )}
                                                                                         </td>
 
+                                                                                        <td className="px-3 py-2 text-slate-600 max-w-[200px]">
+                                                                                            {s.payment_note ? (
+                                                                                                <span className="block truncate" title={s.payment_note}>{s.payment_note}</span>
+                                                                                            ) : (
+                                                                                                <span className="text-slate-300">—</span>
+                                                                                            )}
+                                                                                        </td>
                                                                                         <td className="px-3 py-2 text-slate-700">{s.next_plan || "-"}</td>
                                                                                         <td className="px-3 py-2 text-slate-700">{s.notes || "-"}</td>
 
