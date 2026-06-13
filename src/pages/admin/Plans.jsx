@@ -123,7 +123,10 @@ export default function PlansPage() {
 
             {/* Simple Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
+                >
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                         <h3 className="mb-4 text-lg font-medium text-slate-900">
                             {editingPlan ? 'Edit Plan' : 'Create New Plan'}

@@ -47,7 +47,10 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
         />
       )}
 
-      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div
+        className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
         <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
           {/* Header strip with doctor color */}
           <div

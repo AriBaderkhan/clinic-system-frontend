@@ -175,7 +175,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
     }
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-3">
+        <div
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-3"
+            onClick={(e) => e.target === e.currentTarget && onClose()}
+        >
             <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl max-h-[90vh] flex flex-col">
                 <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 shrink-0">
                     <div>

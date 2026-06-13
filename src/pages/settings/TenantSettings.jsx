@@ -387,7 +387,10 @@ export default function TenantSettingsPage() {
 
             {/* ================= BRANCH MODAL ================= */}
             {isBranchModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                    onClick={(e) => e.target === e.currentTarget && setIsBranchModalOpen(false)}
+                >
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                             <h3 className="text-lg font-semibold text-gray-800">

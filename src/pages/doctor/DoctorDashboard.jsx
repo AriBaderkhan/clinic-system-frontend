@@ -2,10 +2,22 @@
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
-import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
+import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import { formatTime } from "../../utils/dateTime";
 
+function statusBadgeClasses(status) {
+  switch (status) {
+    case "scheduled":
+      return "bg-sky-50 text-sky-700 border-sky-100";
+    case "checked_in":
+      return "bg-amber-50 text-amber-700 border-amber-100";
+    case "in_progress":
+      return "bg-purple-50 text-purple-700 border-purple-100";
+    default:
+      return "bg-slate-50 text-slate-600 border-slate-100";
+  }
+}
 
 export default function DoctorDashboard() {
   const {
@@ -15,8 +27,7 @@ export default function DoctorDashboard() {
     refresh: refreshToday,
   } = useActiveApptsTodayPerDoctor();
 
-  const [selectedForStatusDashboard, setSelectedForStatusDashboard] =
-    useState(null);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
  
 
@@ -28,11 +39,10 @@ export default function DoctorDashboard() {
   return (
     <div className="space-y-6">
       {/* Modals */}
-      {selectedForStatusDashboard && (
-        <AppointmentStatusModal
-          appointment={selectedForStatusDashboard}
-          onClose={() => setSelectedForStatusDashboard(null)}
-          onUpdated={refreshToday}
+      {selectedAppointment && (
+        <CalendarAppointmentModal
+          appointment={selectedAppointment}
+          onClose={() => setSelectedAppointment(null)}
         />
       )}
 
@@ -133,6 +143,9 @@ export default function DoctorDashboard() {
                       <th className="px-3 py-2 font-medium text-[#015478]">
                         Status
                       </th>
+                      <th className="px-3 py-2 font-medium text-[#015478] text-right">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,12 +173,22 @@ export default function DoctorDashboard() {
                             {a.appointment_type}
                           </td>
                           <td className="px-3 py-2 text-slate-700">
+                            <span
+                              className={
+                                "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
+                                statusBadgeClasses(a.status)
+                              }
+                            >
+                              {a.status?.replace("_", " ")}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2 text-right">
                             <button
                               type="button"
-                              onClick={() => setSelectedForStatusDashboard(a)}
-                              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] capitalize text-slate-700 hover:bg-slate-100"
+                              onClick={() => setSelectedAppointment(a)}
+                              className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
                             >
-                              {a.status}
+                              View
                             </button>
                           </td>
                         </tr>

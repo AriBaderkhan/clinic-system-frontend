@@ -365,7 +365,10 @@ export default function TenantUsers() {
 
             {/* Add/Edit User Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
+                >
                     {/* ... (Add User Modal Content) ... */}
                     {/* Re-using existing modal content from previous steps */}
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
@@ -401,7 +404,10 @@ export default function TenantUsers() {
 
             {/* Assign Branch Modal */}
             {isAssignModalOpen && selectedUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={(e) => e.target === e.currentTarget && setIsAssignModalOpen(false)}
+                >
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                             <h2 className="text-xl font-bold text-gray-800">Assign to Branch</h2>
@@ -422,7 +428,10 @@ export default function TenantUsers() {
 
             {/* View User Modal */}
             {isViewModalOpen && selectedUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={(e) => e.target === e.currentTarget && setIsViewModalOpen(false)}
+                >
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                             <h2 className="text-xl font-bold text-gray-800">User Details</h2>

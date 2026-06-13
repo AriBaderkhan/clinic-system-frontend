@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { searchLabs, getLabById } from "../../api/labApi";
+import { searchLabs, getLabById, getLabOrderById } from "../../api/labApi";
 import { getAllAppointments } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
 
@@ -36,12 +36,13 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
   const [apptResults, setApptResults] = useState([]);
   const [isApptSearching, setIsApptSearching] = useState(false);
 
-  // ------------------ OTHER FIELDS ------------------
-  const [form, setForm] = useState({
-    work_id: initialData?.work_id ? String(initialData.work_id) : "",
-    quantity: initialData?.quantity ? String(initialData.quantity) : "1",
-    notes: initialData?.notes ?? "",
-  });
+  // ------------------ TREATMENT ROWS + NOTES ------------------
+  const [rows, setRows] = useState(
+    initialData?.items?.length > 0
+      ? initialData.items.map((it) => ({ work_id: String(it.work_id), quantity: String(it.quantity) }))
+      : [{ work_id: "", quantity: "1" }]
+  );
+  const [notes, setNotes] = useState(initialData?.notes ?? "");
 
   // debounced lab search (add mode only — lab can't change on edit)
   useEffect(() => {
@@ -91,6 +92,22 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
     return () => clearTimeout(timer);
   }, [apptQuery, selectedAppt, mode]);
 
+  // edit mode: load this order's existing items into the rows
+  useEffect(() => {
+    if (mode !== "edit" || !initialData?.id) return;
+    (async () => {
+      try {
+        const res = await getLabOrderById(initialData.id);
+        const items = res.data?.items ?? [];
+        if (items.length > 0) {
+          setRows(items.map((it) => ({ work_id: String(it.work_id), quantity: String(it.quantity) })));
+        }
+      } catch {
+        /* keep default row */
+      }
+    })();
+  }, [mode, initialData?.id]);
+
   // load the price list whenever a lab is selected
   useEffect(() => {
     if (!selectedLab?.id) {
@@ -115,7 +132,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
     setSelectedLab(lab);
     setLabQuery(lab.name);
     setLabResults([]);
-    setForm((prev) => ({ ...prev, work_id: "" })); // treatments differ per lab
+    setRows([{ work_id: "", quantity: "1" }]); // treatments differ per lab
   };
 
   const handleApptSelect = (a) => {
@@ -124,16 +141,23 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
     setApptResults([]);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const updateRow = (idx, field, value) => {
+    setRows((prev) => prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r)));
+  };
+  const addRow = () => setRows((prev) => [...prev, { work_id: "", quantity: "1" }]);
+  const removeRow = (idx) =>
+    setRows((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== idx)));
+
+  // a treatment already chosen in another row can't be picked again
+  const usedWorkIds = rows.map((r) => r.work_id).filter(Boolean);
+
+  const costOf = (workId) => {
+    const t = labTreatments.find((t) => String(t.work_id) === String(workId));
+    return t ? Number(t.cost) : 0;
   };
 
-  // live total: quantity x lab's cost for this treatment
-  const selectedTreatment = labTreatments.find((t) => String(t.work_id) === form.work_id);
-  const unitCost = selectedTreatment ? Number(selectedTreatment.cost) : 0;
-  const quantity = Number(form.quantity) || 0;
-  const total = unitCost * quantity;
+  // live total = sum of (cost × quantity) over all rows
+  const total = rows.reduce((sum, r) => sum + costOf(r.work_id) * (Number(r.quantity) || 0), 0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -147,20 +171,21 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
       setError("Please select an appointment from the list.");
       return;
     }
-    if (!form.work_id) {
-      setError("Treatment is required.");
-      return;
+
+    const items = [];
+    for (const r of rows) {
+      if (!r.work_id || Number(r.quantity) < 1) {
+        setError("Every treatment row needs a treatment and a quantity of at least 1.");
+        return;
+      }
+      items.push({ work_id: Number(r.work_id), quantity: Number(r.quantity) });
     }
-    if (quantity < 1) {
-      setError("Quantity must be at least 1.");
+    if (items.length === 0) {
+      setError("Add at least one treatment.");
       return;
     }
 
-    const payload = {
-      work_id: Number(form.work_id),
-      quantity,
-      notes: form.notes.trim() || null,
-    };
+    const payload = { items, notes: notes.trim() || null };
 
     if (mode === "add") {
       payload.lab_id = Number(selectedLab.id);
@@ -171,7 +196,10 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="mb-4 flex items-start justify-between">
@@ -290,55 +318,78 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
             )}
           </div>
 
-          {/* TREATMENT (only this lab's price list) + QUANTITY */}
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-700">Treatment</label>
-              <select
-                name="work_id"
-                value={form.work_id}
-                onChange={handleChange}
-                disabled={!selectedLab || isTreatmentsLoading}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478] disabled:bg-slate-100 disabled:text-slate-500"
+          {/* TREATMENTS (repeatable rows, only this lab's price list) */}
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-[11px] font-medium uppercase text-slate-500">Treatments</label>
+              <button
+                type="button"
+                onClick={addRow}
+                disabled={!selectedLab || labTreatments.length === 0}
+                className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="">
-                  {!selectedLab
-                    ? "Select a lab first"
-                    : isTreatmentsLoading
-                    ? "Loading treatments…"
-                    : labTreatments.length === 0
-                    ? "This lab has no treatments configured"
-                    : "Select treatment"}
-                </option>
-                {labTreatments.map((t) => (
-                  <option key={t.work_id} value={String(t.work_id)}>
-                    {t.work_name} – {formatMoney(t.cost)}
-                  </option>
-                ))}
-              </select>
+                + Add Treatment
+              </button>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-700">Quantity</label>
-              <input
-                type="number"
-                name="quantity"
-                min="1"
-                value={form.quantity}
-                onChange={handleChange}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
-              />
-            </div>
+            {!selectedLab ? (
+              <p className="text-xs text-slate-500">Select a lab first to choose treatments.</p>
+            ) : isTreatmentsLoading ? (
+              <p className="text-xs text-slate-500">Loading treatments…</p>
+            ) : labTreatments.length === 0 ? (
+              <p className="text-xs text-slate-500">This lab has no treatments configured.</p>
+            ) : (
+              <div className="space-y-2">
+                {rows.map((row, idx) => (
+                  <div key={idx} className="flex flex-wrap items-center gap-2">
+                    <select
+                      value={row.work_id}
+                      onChange={(e) => updateRow(idx, "work_id", e.target.value)}
+                      className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                    >
+                      <option value="">Select treatment</option>
+                      {labTreatments.map((t) => (
+                        <option
+                          key={t.work_id}
+                          value={String(t.work_id)}
+                          disabled={usedWorkIds.includes(String(t.work_id)) && row.work_id !== String(t.work_id)}
+                        >
+                          {t.work_name} – {formatMoney(t.cost)}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      min="1"
+                      value={row.quantity}
+                      onChange={(e) => updateRow(idx, "quantity", e.target.value)}
+                      placeholder="Qty"
+                      className="w-20 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                    />
+
+                    <span className="w-24 text-right text-xs text-slate-600">
+                      {formatMoney(costOf(row.work_id) * (Number(row.quantity) || 0))}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => removeRow(idx)}
+                      disabled={rows.length === 1}
+                      className="rounded-md border border-red-200 bg-red-600 px-2.5 py-2 text-[11px] text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* LIVE TOTAL */}
           <div className="rounded-xl border border-[#015478]/10 bg-[#015478]/5 px-4 py-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-xs text-slate-600">
-                {selectedTreatment
-                  ? `${formatMoney(unitCost)} × ${quantity}`
-                  : "Pick a treatment to see the total"}
-              </span>
+              <span className="text-xs text-slate-600">Order total</span>
               <span className="text-base font-semibold text-[#015478]">
                 {formatMoney(total)}
               </span>
@@ -349,9 +400,8 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
           <div className="space-y-1">
             <label className="block text-xs font-medium text-slate-700">Notes (optional)</label>
             <textarea
-              name="notes"
-              value={form.notes}
-              onChange={handleChange}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder="Shade, special instructions..."
               className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"

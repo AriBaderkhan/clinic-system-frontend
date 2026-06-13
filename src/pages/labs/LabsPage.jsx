@@ -158,7 +158,7 @@ export default function LabsPage() {
   };
 
   const onDeleteOrder = async (order) => {
-    const ok = window.confirm(`Delete this order (${order.work_name} ×${order.quantity} from ${order.lab_name})?`);
+    const ok = window.confirm(`Delete this order (${order.items_summary || "items"} from ${order.lab_name})?`);
     if (!ok) return;
     try {
       await deleteLabOrder(order.id);
@@ -373,8 +373,7 @@ export default function LabsPage() {
                     <th className="px-3 py-2 font-medium">Lab</th>
                     <th className="px-3 py-2 font-medium">Patient</th>
                     <th className="px-3 py-2 font-medium">Doctor</th>
-                    <th className="px-3 py-2 font-medium">Treatment</th>
-                    <th className="px-3 py-2 font-medium">Qty</th>
+                    <th className="px-3 py-2 font-medium">Treatments</th>
                     <th className="px-3 py-2 font-medium">Total</th>
                     <th className="px-3 py-2 font-medium">Status</th>
                     <th className="px-3 py-2 font-medium">Ready</th>
@@ -392,33 +391,20 @@ export default function LabsPage() {
                       <td className="px-3 py-2 font-medium text-slate-800">{o.lab_name}</td>
                       <td className="px-3 py-2 text-slate-700">{o.patient_name}</td>
                       <td className="px-3 py-2 text-slate-700 capitalize">{o.doctor_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{o.work_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{o.quantity}</td>
+                      <td className="px-3 py-2 text-slate-700">{o.items_summary || "-"}</td>
                       <td className="px-3 py-2 font-medium text-slate-800">{formatMoney(o.total_cost)}</td>
                       <td className="px-3 py-2">
-                        {["delivered", "cancelled"].includes(o.status) ? (
-                          // final statuses are locked — no click
-                          <span
-                            title="Final status — cannot be changed"
-                            className={
-                              "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
-                              statusBadgeClasses(o.status)
-                            }
-                          >
-                            {o.status}
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setOrderForStatus(o)}
-                            className={
-                              "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize hover:opacity-80 " +
-                              statusBadgeClasses(o.status)
-                            }
-                          >
-                            {o.status}
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => setOrderForStatus(o)}
+                          title="Click to change status"
+                          className={
+                            "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize hover:opacity-80 " +
+                            statusBadgeClasses(o.status)
+                          }
+                        >
+                          {o.status}
+                        </button>
                       </td>
                       <td className="px-3 py-2 text-slate-700 whitespace-nowrap">{formatDateTime(o.ready_date)}</td>
                       <td className="px-3 py-2 text-slate-700 whitespace-nowrap">{formatDateTime(o.delivered_date)}</td>

@@ -57,7 +57,10 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
   }, [orderId]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
@@ -65,7 +68,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             <h2 className="text-sm font-semibold text-slate-900">Order details</h2>
             {order && (
               <p className="mt-1 text-[11px] text-slate-500">
-                {order.lab_name} · {order.patient_name} · {order.work_name} ×{order.quantity}
+                {order.lab_name} · {order.patient_name}
               </p>
             )}
           </div>
@@ -125,14 +128,36 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
               </div>
             )}
 
-            {/* What */}
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-              <Field label="Treatment">{order.work_name}</Field>
-              <Field label="Quantity">{order.quantity}</Field>
-              <Field label="Unit cost">{formatMoney(order.unit_cost)}</Field>
-              <Field label="Total">
-                <span className="font-semibold text-[#015478]">{formatMoney(order.total_cost)}</span>
-              </Field>
+            {/* Treatments (line items) */}
+            <div className="rounded-xl border border-slate-100 bg-white">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 text-[11px] text-slate-500">
+                    <th className="px-3 py-2 font-medium">Treatment</th>
+                    <th className="px-3 py-2 font-medium">Qty</th>
+                    <th className="px-3 py-2 font-medium">Unit</th>
+                    <th className="px-3 py-2 font-medium text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(order.items || []).map((it) => (
+                    <tr key={it.id} className="border-b border-slate-50 last:border-0">
+                      <td className="px-3 py-2 text-slate-800">{it.work_name}</td>
+                      <td className="px-3 py-2 text-slate-700">{it.quantity}</td>
+                      <td className="px-3 py-2 text-slate-700">{formatMoney(it.unit_cost)}</td>
+                      <td className="px-3 py-2 text-right text-slate-800">{formatMoney(it.total_cost)}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-[#015478]/5">
+                    <td className="px-3 py-2 text-xs font-semibold text-slate-600" colSpan={3}>
+                      Order total
+                    </td>
+                    <td className="px-3 py-2 text-right text-sm font-semibold text-[#015478]">
+                      {formatMoney(order.total_cost)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             {/* Timeline */}

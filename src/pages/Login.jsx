@@ -123,7 +123,10 @@ export default function Login() {
 
         {/* Branch Selection Modal */}
         {showBranchModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            onClick={(e) => e.target === e.currentTarget && setShowBranchModal(false)}
+          >
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
               <div className="bg-gradient-to-r from-[#015478] to-[#013d58] px-6 py-6 text-white text-center">
                 <div className="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-3 backdrop-blur-sm">

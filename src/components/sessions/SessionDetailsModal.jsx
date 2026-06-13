@@ -13,7 +13,10 @@ export default function SessionDetailsModal({ sessionId, onClose }) {
   const worksSummary = details?.works_summary;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="w-full max-w-3xl rounded-3xl bg-white shadow-xl border border-slate-200 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
@@ -216,6 +219,11 @@ export default function SessionDetailsModal({ sessionId, onClose }) {
                           >
                             <td className="px-3 py-2 text-slate-800">
                               {w.work_name}
+                              {w.is_plan && (
+                                <span className="ml-2 rounded-full border border-purple-100 bg-purple-50 px-2 py-0.5 text-[10px] font-medium capitalize text-purple-700">
+                                  {w.plan_type || "plan"}
+                                </span>
+                              )}
                             </td>
                             <td className="px-3 py-2 text-slate-700">
                               {w.quantity}x

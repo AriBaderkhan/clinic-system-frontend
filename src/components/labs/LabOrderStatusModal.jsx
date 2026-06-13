@@ -45,14 +45,17 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="w-full max-w-md rounded-2xl bg-white p-4 sm:p-5 shadow-xl">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">Change order status</h2>
             <p className="mt-1 text-[11px] text-slate-500">
-              {order.lab_name} · {order.patient_name} · {order.work_name} ×{order.quantity}
+              {order.lab_name} · {order.patient_name} · {order.items_summary || ""}
             </p>
           </div>
           <button

@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
-import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
+import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import { formatDateTime } from "../../utils/dateTime";
 
 
@@ -19,7 +19,7 @@ export default function ApptsPerDoctor() {
     });
 
 
-    const [selectedDetailsId, setSelectedDetailsId] = useState(null);
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
 
 
     // ---------- ACTIONS ----------
@@ -50,10 +50,10 @@ export default function ApptsPerDoctor() {
             {/* Modals */}
 
 
-            {selectedDetailsId && (
-                <AppointmentDetailsModal
-                    appointmentId={selectedDetailsId}
-                    onClose={() => setSelectedDetailsId(null)}
+            {selectedAppointment && (
+                <CalendarAppointmentModal
+                    appointment={selectedAppointment}
+                    onClose={() => setSelectedAppointment(null)}
                 />
             )}
 
@@ -234,7 +234,7 @@ export default function ApptsPerDoctor() {
                                                 <div className="flex items-center justify-end gap-2 text-xs">
                                                     <button
                                                         type="button"
-                                                        onClick={() => setSelectedDetailsId(id)}
+                                                        onClick={() => setSelectedAppointment(a)}
                                                         className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
                                                     >
                                                         View

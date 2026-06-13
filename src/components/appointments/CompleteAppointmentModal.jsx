@@ -288,7 +288,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const inputTypes = [...selectedTreatmentTypes].filter((t) => !plans[t]?.plan);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 flex items-start justify-between shrink-0">
