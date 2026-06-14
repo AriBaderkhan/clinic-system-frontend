@@ -1,6 +1,7 @@
 ﻿import { NavLink, Outlet } from "react-router-dom";
 import { useMemo, useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
+import BranchSwitcher from "../components/BranchSwitcher";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 export default function DoctorLayout() {
@@ -85,6 +86,7 @@ export default function DoctorLayout() {
           ))}
         </nav>
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={() => {
@@ -136,6 +138,7 @@ export default function DoctorLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={handleLogout}

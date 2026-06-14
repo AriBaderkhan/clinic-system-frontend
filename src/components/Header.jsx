@@ -22,7 +22,7 @@ function Header({ onMenuClick }) {
       const res = await switchBranch({ branch_id: branchId });
 
       // Update local storage
-      localStorage.setItem('token', res.token1);
+      localStorage.setItem('token', res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
       localStorage.setItem('role', res.user.role);
 

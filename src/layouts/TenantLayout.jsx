@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
+import BranchSwitcher from "../components/BranchSwitcher";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
@@ -84,6 +85,7 @@ export default function TenantLayout() {
                 </nav>
 
                 <div className="border-t border-[#6a87ad] px-3 py-3">
+                    <BranchSwitcher />
                     <ThemeToggle />
                     <button
                         onClick={() => { handleLogout(); setOpen(false); }}
@@ -123,6 +125,7 @@ export default function TenantLayout() {
                 </nav>
 
                 <div className="border-t border-[#6a87ad] px-3 py-3">
+                    <BranchSwitcher />
                     <ThemeToggle />
                     <button
                         onClick={handleLogout}

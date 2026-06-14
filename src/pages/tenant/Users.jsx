@@ -128,7 +128,7 @@ export default function TenantUsers() {
             return;
         }
 
-        if (!formData.role_id || !formData.branch_id) {
+        if (!isEditing && (!formData.role_id || !formData.branch_id)) {
             toast.error("Please select a role and a branch");
             return;
         }
@@ -151,9 +151,12 @@ export default function TenantUsers() {
             }
 
             if (isEditing) {
-                // Update
+                // Update — identity/profile only. Branch & role are managed via
+                // the "Assign to Branch" action, so don't send them here.
                 if (!payload.password) delete payload.password; // Don't send empty password
                 delete payload.confirmPassword;
+                delete payload.role_id;
+                delete payload.branch_id;
 
                 await updateUser(selectedUser.id, payload);
                 toast.success("User updated successfully!");
@@ -256,7 +259,7 @@ export default function TenantUsers() {
                 </div>
                 <div className="flex gap-2">
                     <div className="px-3 py-1 bg-gray-50 rounded-md text-sm text-gray-600 border">
-                        Total Users: <span className="font-semibold text-gray-900">{users.length}</span>
+                        Total Users: <span className="font-semibold text-gray-900">{new Set(users.map(u => u.id)).size}</span>
                     </div>
                 </div>
             </div>
@@ -386,10 +389,17 @@ export default function TenantUsers() {
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">{isEditing ? 'New Password (Optional)' : 'Password'} {!isEditing && <span className="text-red-500">*</span>}</label><input type="password" name="password" required={!isEditing} minLength={3} value={formData.password} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" /></div>
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Confirm Password {!isEditing && <span className="text-red-500">*</span>}</label><input type="password" name="confirmPassword" required={!isEditing} minLength={3} value={formData.confirmPassword} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" /></div>
                             </div>
+                            {!isEditing && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Assign Role <span className="text-red-500">*</span></label><select name="role_id" required value={formData.role_id} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Role</option>{roles.map(role => (<option key={role.id} value={role.id}>{role.name}</option>))}</select></div>
                                 <div className="space-y-1"><label className="text-sm font-medium text-gray-700">Assign Branch <span className="text-red-500">*</span></label><select name="branch_id" required value={formData.branch_id} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white"><option value="">Select Branch</option>{branches.map(branch => (<option key={branch.id} value={branch.id}>{branch.name}</option>))}</select></div>
                             </div>
+                            )}
+                            {isEditing && (
+                                <p className="pt-4 border-t border-gray-100 text-xs text-gray-500">
+                                    To change this user&apos;s branch or role, use the <span className="font-medium">Assign to Branch</span> action (the link icon) on their row.
+                                </p>
+                            )}
                             {roles.find(r => Number(r.id) === Number(formData.role_id))?.name?.toLowerCase() === 'doctor' && (
                                 <div className="space-y-1 pt-2"><label className="text-sm font-medium text-gray-700">Room Number (Doctor)</label><input type="number" name="room" value={formData.room} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" placeholder="Room 101" /></div>
                             )}

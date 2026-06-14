@@ -85,7 +85,8 @@ export default function Login() {
 
       // Check for Branch Selection Requirement
       if (res.data.requiresBranchSelection) {
-        setAvailableBranches(res.data.branches || []);
+        // backend sends the branch list under `data` ({ ok, requiresBranchSelection, data })
+        setAvailableBranches(res.data.data || res.data.branches || []);
         setLoginCredentials({ email, password });
         setShowBranchModal(true);
         return; // Stop here, wait for user selection

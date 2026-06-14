@@ -4,6 +4,7 @@ import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
 import ThemeToggle from "../components/ThemeToggle";
+import BranchSwitcher from "../components/BranchSwitcher";
 import { clearStorageKeepingTheme } from "../utils/theme";
 // Helper to check permission safely
 const hasPermission = (permission) => {
@@ -149,6 +150,7 @@ export default function ReceptionLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={() => {
@@ -202,6 +204,7 @@ export default function ReceptionLayout() {
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={handleLogout}

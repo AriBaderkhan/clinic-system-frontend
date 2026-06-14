@@ -4,6 +4,7 @@ import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
 import ThemeToggle from "../components/ThemeToggle";
+import BranchSwitcher from "../components/BranchSwitcher";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
@@ -146,6 +147,7 @@ export default function BranchManagerLayout() {
               <span>← Back to Tenant</span>
             </button>
           )}
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={() => {
@@ -207,6 +209,7 @@ export default function BranchManagerLayout() {
               <span>← Back to Tenant</span>
             </button>
           )}
+          <BranchSwitcher />
           <ThemeToggle />
           <button
             onClick={handleLogout}

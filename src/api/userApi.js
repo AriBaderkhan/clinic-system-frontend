@@ -36,6 +36,7 @@ export const deactivateUser = async (id) => {
 };
 
 export const switchBranch = async (data) => {
-    const res = await api.post('/api/auth/switch-branch', data);
+    // auth routes are mounted at root on the backend (app.use(authRoute)) -> /switch-branch
+    const res = await api.post('/switch-branch', data);
     return res.data;
 };
