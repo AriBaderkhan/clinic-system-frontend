@@ -4,10 +4,9 @@ export const getActiveTreatmentPlan = async (patientId, type) => {
     const res = await api.get("/api/treatment-plans/active", {
         params: { patientId, type },
     });
-    // endpoint returns { ok, data: <plan|null> } — return the plan itself so that
-    // "no active plan" comes back as null (not a truthy { ok, data:null } envelope,
-    // which made the modal wrongly show "Active plan found" and hide the agreement field).
-    return res.data?.data ?? null;
+    // endpoint returns { ok, data: <plan[]> } — the LIST of active plans of this
+    // type (a patient can have several at once). Return the array (or []).
+    return res.data?.data ?? [];
 };
 
 export const getPatientTreatmentPlans = async (patientId) => {
