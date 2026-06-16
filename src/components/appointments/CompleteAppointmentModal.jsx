@@ -88,14 +88,24 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const dPerToothPlan = dPlan && !dWhole;
   const teethNeeded = dWhole ? 0 : dPerToothPlan ? 1 : Number(draft.quantity) || 1;
 
+  // Clinical rule: a tooth can't have two active plans of the SAME type at once.
+  // Block starting a NEW plan on a tooth that already has an active plan of this type.
+  const conflictPlan =
+    dPlan && draft.plan_mode === "new" && draft.teeth[0]
+      ? activePlanForTooth(draft.teeth[0], dCode)
+      : null;
+
   const canAdd = (() => {
     if (!dMeta) return false;
-    const teethOk = dWhole || draft.teeth.length === teethNeeded;
+    if (conflictPlan) return false;
     let planOk = true;
     if (dPlan && draft.plan_mode === "new") {
       const v = Number(draft.agreed_total);
       planOk = Number.isFinite(v) && v >= dMeta.min_price;
     }
+    // tooth: OPTIONAL for plan treatments (0 or 1) and whole-mouth;
+    // for normal per-tooth works it must equal the chosen quantity.
+    const teethOk = dPlan || dWhole ? true : draft.teeth.length === teethNeeded;
     return teethOk && planOk;
   })();
 
@@ -103,11 +113,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     const meta = getMeta(value);
     const code = meta?.code;
     const isPlan = !!code && PLAN_CODES.has(code);
-    const whole = !!code && WHOLE_MOUTH_CODES.has(code);
     let plan_mode = "new";
     let agreed_total = isPlan && meta ? meta.min_price : "";
-    // whole-mouth plan (ortho): default to continuing an existing one if any
-    if (isPlan && whole) {
+    // default to continuing an existing plan of this type if one exists
+    if (isPlan) {
       const list = plans[code]?.list || [];
       if (list.length > 0) { plan_mode = String(list[0].id); agreed_total = ""; }
     }
@@ -126,8 +135,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     if (WHOLE_MOUTH_CODES.has(code)) return;
     const perToothPlan = PLAN_CODES.has(code) && !WHOLE_MOUTH_CODES.has(code);
     if (perToothPlan) {
-      const existing = activePlanForTooth(n, code);
-      setDraft((d) => ({ ...d, teeth: [n], plan_mode: existing ? String(existing.id) : "new", agreed_total: existing ? "" : meta.min_price }));
+      // optional single tooth. If the tapped tooth already has an active plan of
+      // this type, auto-switch to "continue" it (convenience). Otherwise just
+      // select the tooth and keep the New/Continue chosen in the dropdown.
+      setDraft((d) => {
+        if (d.teeth.includes(n)) return { ...d, teeth: [] }; // deselect
+        const existing = activePlanForTooth(n, code);
+        if (existing) return { ...d, teeth: [n], plan_mode: String(existing.id), agreed_total: "" };
+        return { ...d, teeth: [n] };
+      });
       return;
     }
     setDraft((d) => {
@@ -188,7 +204,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       if (c.wholeMouth) {
         works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null });
       } else if (c.isPlan) {
-        works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0], treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null });
+        works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0] ?? null, treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null });
       } else {
         for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t, treatment_plan_id: null, agreed_total: null });
       }
@@ -346,20 +362,25 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
               {/* agreement / continue */}
               {dPlan && (
                 <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 p-2.5 text-xs">
-                  {/* whole-mouth plan (ortho): pick new vs continue here (no tooth) */}
-                  {dWhole && (
-                    <select value={draft.plan_mode} onChange={(e) => setPlanModeManual(e.target.value)} className={`${inputCls} mb-2`}>
-                      {(plans[dCode]?.list || []).map((p) => {
-                        const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
-                        return <option key={p.id} value={String(p.id)}>Continue · since {p.created_at ? formatDate(p.created_at) : ""} · remaining {rem.toLocaleString()} IQD</option>;
-                      })}
-                      <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
-                    </select>
+                  {/* New vs Continue — works for legacy plans that have no tooth too */}
+                  <select value={draft.plan_mode} onChange={(e) => setPlanModeManual(e.target.value)} className={`${inputCls} mb-2`}>
+                    {(plans[dCode]?.list || []).map((p) => {
+                      const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
+                      const where = p.teeth ? `tooth ${p.teeth}` : "no tooth";
+                      return <option key={p.id} value={String(p.id)}>Continue · {where} · remaining {rem.toLocaleString()} IQD</option>;
+                    })}
+                    <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
+                  </select>
+
+                  {conflictPlan && (
+                    <p className="mb-1 text-[11px] font-medium text-red-600">
+                      Tooth {draft.teeth[0]} already has an active {dCode.toUpperCase()} — choose “Continue”, or mark the existing one completed first. You can’t open two on the same tooth.
+                    </p>
                   )}
 
                   {draftExistingPlan ? (
                     <p className="text-slate-700">
-                      Continuing <b className="uppercase">{dCode}</b>{draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : ""} · remaining{" "}
+                      Continuing <b className="uppercase">{dCode}</b>{draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : " · tooth optional"} · remaining{" "}
                       <b>{(Number(draftExistingPlan.agreed_total) - Number(draftExistingPlan.total_paid || 0)).toLocaleString()} IQD</b> — no new agreement.
                     </p>
                   ) : (
@@ -385,7 +406,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     {confirmed.map((c) => (
                       <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                         <span className="font-semibold">{c.name}</span>
-                        <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : `tooth ${c.teeth.join(", ")}`}</span>
+                        <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : c.teeth.length ? `tooth ${c.teeth.join(", ")}` : "no tooth"}</span>
                         {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new plan ${Number(c.agreed_total).toLocaleString()} IQD` : "· continue"}</span>}
                         <button type="button" onClick={() => editTreatment(c.uid)} title="Edit" className="ml-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
                         <button type="button" onClick={() => removeTreatment(c.uid)} title="Remove" className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
@@ -419,7 +440,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           <div className="flex min-h-0 flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-4">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
-              {!dWhole && draft.work_id && <span className="text-xs text-slate-500">{draft.teeth.length} / {teethNeeded} selected</span>}
+              {!dWhole && draft.work_id && (
+                <span className="text-xs text-slate-500">
+                  {dPlan
+                    ? draft.teeth.length ? `tooth ${draft.teeth[0]}` : "tooth optional"
+                    : `${draft.teeth.length} / ${teethNeeded} selected`}
+                </span>
+              )}
             </div>
 
             <div className="relative flex flex-1 items-center justify-center">
