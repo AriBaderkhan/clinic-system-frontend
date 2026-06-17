@@ -1,5 +1,7 @@
-﻿import useSessionDetails from "../../hooks/useSessionDetails";
+﻿import { useState } from "react";
+import useSessionDetails from "../../hooks/useSessionDetails";
 import { useSettings } from "../../context/SettingContext";
+import EditSessionModal from "./EditSessionModal";
 
 export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
   const { formatDateTime } = useSettings();
@@ -7,6 +9,7 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
     sessionId,
     true
   );
+  const [editing, setEditing] = useState(false);
 
   if (!sessionId) return null;
 
@@ -32,6 +35,13 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="rounded-md bg-[#015478] px-3 py-1.5 text-[11px] font-medium text-white hover:bg-[#013d58]"
+            >
+              Edit works & images
+            </button>
             <button
               type="button"
               onClick={refresh}
@@ -282,6 +292,18 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
           )}
         </div>
       </div>
+
+      {editing && (
+        <EditSessionModal
+          sessionId={sessionId}
+          hideMoney
+          onClose={() => setEditing(false)}
+          onUpdated={() => {
+            setEditing(false);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
