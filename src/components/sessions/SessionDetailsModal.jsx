@@ -12,6 +12,7 @@ export default function SessionDetailsModal({ sessionId, onClose }) {
 
   const session = details?.session;
   const worksSummary = details?.works_summary;
+  const images = details?.images || [];
 
   return (
     <div
@@ -244,6 +245,45 @@ export default function SessionDetailsModal({ sessionId, onClose }) {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Case images */}
+              <div className="rounded-3xl border border-slate-200 bg-white p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Case images</p>
+                    <p className="text-[11px] text-slate-500">
+                      X-rays / photos uploaded for this session. Click to open.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/20">
+                    {images.length} images
+                  </span>
+                </div>
+
+                {images.length === 0 ? (
+                  <p className="text-xs text-slate-500">No images for this session.</p>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+                    {images.map((img) => (
+                      <a
+                        key={img.id}
+                        href={img.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Open full image"
+                        className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 hover:border-[#015478]"
+                      >
+                        <img
+                          src={img.url}
+                          alt="Case image"
+                          loading="lazy"
+                          className="h-full w-full object-cover transition group-hover:scale-105"
+                        />
+                      </a>
+                    ))}
                   </div>
                 )}
               </div>

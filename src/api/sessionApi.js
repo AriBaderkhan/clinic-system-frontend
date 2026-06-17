@@ -29,3 +29,23 @@ export const deleteSession = async (sessionId) => {
     const res = await api.delete(`/api/sessions/${sessionId}`);
     return res.data;
 };
+
+// ── Case images ──────────────────────────────────────────────────────────
+export const uploadSessionImages = async (sessionId, files) => {
+    const form = new FormData();
+    Array.from(files).forEach((f) => form.append("images", f));
+    const res = await api.post(`/api/sessions/${sessionId}/images`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+};
+
+export const getSessionImages = async (sessionId) => {
+    const res = await api.get(`/api/sessions/${sessionId}/images`);
+    return res.data;
+};
+
+export const deleteSessionImage = async (sessionId, imageId) => {
+    const res = await api.delete(`/api/sessions/${sessionId}/images/${imageId}`);
+    return res.data;
+};
