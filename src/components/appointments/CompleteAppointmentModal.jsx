@@ -7,7 +7,7 @@ import { useSettings } from "../../context/SettingContext";
 
 const TREATMENT_TYPES = ["ortho", "implant", "rct", "re_rct"];
 const PLAN_CODES = new Set(TREATMENT_TYPES);
-const WHOLE_MOUTH_CODES = new Set(["scaling_polish", "ortho"]);
+const WHOLE_MOUTH_CODES = new Set(["scaling_polish", "ortho","laser"]);
 
 const UPPER = [[18, 17, 16, 15, 14, 13, 12, 11], [21, 22, 23, 24, 25, 26, 27, 28]];
 const LOWER = [[48, 47, 46, 45, 44, 43, 42, 41], [31, 32, 33, 34, 35, 36, 37, 38]];
@@ -86,7 +86,6 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const dWhole = !!dCode && WHOLE_MOUTH_CODES.has(dCode);
   const dPlan = !!dCode && PLAN_CODES.has(dCode);
   const dPerToothPlan = dPlan && !dWhole;
-  const teethNeeded = dWhole ? 0 : dPerToothPlan ? 1 : Number(draft.quantity) || 1;
 
   // Clinical rule: a tooth can't have two active plans of the SAME type at once.
   // Block starting a NEW plan on a tooth that already has an active plan of this type.
@@ -103,10 +102,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       const v = Number(draft.agreed_total);
       planOk = Number.isFinite(v) && v >= dMeta.min_price;
     }
-    // tooth: OPTIONAL for plan treatments (0 or 1) and whole-mouth;
-    // for normal per-tooth works it must equal the chosen quantity.
-    const teethOk = dPlan || dWhole ? true : draft.teeth.length === teethNeeded;
-    return teethOk && planOk;
+    // tooth is OPTIONAL for every treatment now
+    return planOk;
   })();
 
   const selectWork = (value) => {
@@ -170,6 +167,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         work_id: Number(draft.work_id),
         code, name: meta.name, min_price: meta.min_price,
         wholeMouth: whole, isPlan,
+        quantity: whole || isPlan ? 1 : Number(draft.quantity) || 1,
         teeth: whole ? [] : [...draft.teeth],
         plan_mode: isPlan ? draft.plan_mode : null,
         agreed_total: isPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
@@ -205,8 +203,11 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null });
       } else if (c.isPlan) {
         works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0] ?? null, treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null });
-      } else {
+      } else if (c.teeth.length > 0) {
         for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t, treatment_plan_id: null, agreed_total: null });
+      } else {
+        // no tooth selected → one entry with the chosen quantity, no tooth
+        works.push({ work_id: c.work_id, quantity: c.quantity || 1, tooth_number: null, treatment_plan_id: null, agreed_total: null });
       }
     }
     if (works.length === 0) return setError("Add at least one treatment first.");
@@ -442,9 +443,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
               <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
               {!dWhole && draft.work_id && (
                 <span className="text-xs text-slate-500">
-                  {dPlan
-                    ? draft.teeth.length ? `tooth ${draft.teeth[0]}` : "tooth optional"
-                    : `${draft.teeth.length} / ${teethNeeded} selected`}
+                  {draft.teeth.length
+                    ? `tooth ${draft.teeth.join(", ")}`
+                    : "tooth optional"}
                 </span>
               )}
             </div>
