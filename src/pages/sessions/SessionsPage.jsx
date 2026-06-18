@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import EditSessionModal from "../../components/sessions/EditSessionModal";
+import TreatmentPlanPage from "../treatment_plan/TreatmentPlanPage";
 import { deleteSession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 
@@ -25,6 +26,7 @@ function getPageNumbers(currentPage, totalPages) {
 
 export default function Sessions() {
   const { formatDateTime } = useSettings();
+  const [tab, setTab] = useState("sessions");
   const [selectedId, setSelectedId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [dayFilter, setDayFilter] = useState("");
@@ -72,6 +74,36 @@ export default function Sessions() {
 
   return (
     <div className="space-y-6">
+      {/* Tabs */}
+      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200">
+        <button
+          type="button"
+          onClick={() => setTab("sessions")}
+          className={`-mb-px rounded-t-lg px-4 py-2 text-sm font-semibold transition-colors ${
+            tab === "sessions"
+              ? "border-b-2 border-[#015478] text-[#015478]"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          Sessions
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("plans")}
+          className={`-mb-px rounded-t-lg px-4 py-2 text-sm font-semibold transition-colors ${
+            tab === "plans"
+              ? "border-b-2 border-[#015478] text-[#015478]"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          Treatment Plans
+        </button>
+      </div>
+
+      {tab === "plans" ? (
+        <TreatmentPlanPage />
+      ) : (
+        <>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -83,7 +115,7 @@ export default function Sessions() {
       </div>
 
       {/* Card */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+      <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
 
         {/* Filter bar */}
         <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
@@ -296,6 +328,8 @@ export default function Sessions() {
             refresh();
           }}
         />
+      )}
+        </>
       )}
     </div>
   );

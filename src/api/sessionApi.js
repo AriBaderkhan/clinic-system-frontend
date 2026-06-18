@@ -49,3 +49,9 @@ export const deleteSessionImage = async (sessionId, imageId) => {
     const res = await api.delete(`/api/sessions/${sessionId}/images/${imageId}`);
     return res.data;
 };
+
+// update ONLY the tooth of treatment-plan works (money-neutral)
+export const updatePlanWorkTeeth = async (sessionId, updates) => {
+    const res = await api.patch(`/api/sessions/${sessionId}/plan-works/tooth`, { updates });
+    return res.data;
+};
