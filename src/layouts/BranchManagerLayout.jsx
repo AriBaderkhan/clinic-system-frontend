@@ -13,7 +13,6 @@ const navItems = [
   { label: "Appointments", path: "appointments", end: true },
   { label: "Calendar", path: "appointments/calendar" },
   { label: "Sessions", path: "sessions" },
-  { label: "Treatment Plan", path: "treatment_plan" },
   { label: "Lab", path: "lab" },
   // { label: "History", path: "history" },
   { label: "Reports", path: "reports" },

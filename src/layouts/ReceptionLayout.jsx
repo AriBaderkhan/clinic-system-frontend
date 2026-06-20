@@ -25,7 +25,6 @@ const getNavItems = () => {
     { label: "Appointments", path: "appointments", permission: "view_appointment", end: true },
     { label: "Calendar", path: "appointments/calendar", permission: "view_appointment" },
     { label: "Sessions", path: "sessions", permission: "view_session" },
-    { label: "Treatment Plan", path: "treatment_plan", permission: "manage_tp" },
     { label: "Lab", path: "lab", permission: "manage_lab" },
     // { label: "History", path: "history", permission: "view_payment" },
     { label: "Reports", path: "reports", permission: "view_reports" },

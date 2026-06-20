@@ -153,6 +153,7 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
       {editing && (
         <EditSessionModal
           sessionId={sessionId}
+          canEditPayment={false}
           onClose={() => setEditing(false)}
           onUpdated={() => { setEditing(false); refresh(); }}
         />

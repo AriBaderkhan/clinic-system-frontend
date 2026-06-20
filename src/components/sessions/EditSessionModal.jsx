@@ -39,7 +39,7 @@ function buildNormalWorks(confirmed) {
 }
 const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}`).sort());
 
-export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
+export default function EditSessionModal({ sessionId, onClose, onUpdated, canEditPayment = true }) {
     const { formatDate, formatTime, formatMoney, settings } = useSettings();
     const curr = settings?.currency_code || "";
 
@@ -254,7 +254,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
         if (works.length > 0 && (hasNewPlan || normalSig !== origWorksSig)) payload.works = works;
 
         const oldPaid = Number(base?.session?.totals?.total_paid || 0);
-        if (totalPaid !== "" && Number(totalPaid) !== oldPaid) {
+        if (canEditPayment && totalPaid !== "" && Number(totalPaid) !== oldPaid) {
             const v = Number(totalPaid);
             if (!Number.isFinite(v) || v < 0) return setError("Total paid must be a number ≥ 0");
             payload.total_paid = v;
@@ -387,18 +387,20 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                 )}
                             </div>
 
-                            {/* Money */}
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                    <p className="text-[11px] font-medium text-slate-600">Session total</p>
-                                    <p className="mt-1 text-base font-semibold text-slate-900">{formatMoney(liveTotal)}</p>
-                                    <p className="text-[10px] text-slate-400">Updates with the treatments · saved to the session.</p>
+                            {/* Money — hidden for doctors (works + images only, no money) */}
+                            {canEditPayment && (
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                                        <p className="text-[11px] font-medium text-slate-600">Session total</p>
+                                        <p className="mt-1 text-base font-semibold text-slate-900">{formatMoney(liveTotal)}</p>
+                                        <p className="text-[10px] text-slate-400">Updates with the treatments · saved to the session.</p>
+                                    </div>
+                                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                                        <label className="text-[11px] font-medium text-slate-600">Total paid{curr ? ` (${curr})` : ""}</label>
+                                        <input type="number" min={0} step="0.01" value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
+                                    </div>
                                 </div>
-                                <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                    <label className="text-[11px] font-medium text-slate-600">Total paid{curr ? ` (${curr})` : ""}</label>
-                                    <input type="number" min={0} step="0.01" value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
-                                </div>
-                            </div>
+                            )}
 
                             {/* Existing plan works (tooth only) */}
                             {planWorks.length > 0 && (
