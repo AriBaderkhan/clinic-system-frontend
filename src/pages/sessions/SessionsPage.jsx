@@ -211,15 +211,27 @@ export default function Sessions() {
                       <td className="px-3 py-2 text-slate-700">
                         {formatDateTime(s.appointment_end_time)}
                       </td>
-                      <td className="px-3 py-2 text-slate-800">{formatMoney(s.total, s.currency_code)}</td>
-                      <td className="px-3 py-2 text-slate-800">{formatMoney(s.total_paid, s.currency_code)}</td>
+                      <td className="px-3 py-2 text-slate-800">
+                        {s.has_normal_works === false ? (
+                          <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">Treatment plan</span>
+                        ) : (
+                          formatMoney(s.total, s.currency_code)
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-slate-800">
+                        {s.has_normal_works === false ? <span className="text-slate-400">—</span> : formatMoney(s.total_paid, s.currency_code)}
+                      </td>
                       <td className="px-3 py-2">
-                        <span className={[
-                          "rounded-full px-3 py-1 text-xs",
-                          s.is_paid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700",
-                        ].join(" ")}>
-                          {s.is_paid ? "Paid" : "Unpaid"}
-                        </span>
+                        {s.has_normal_works === false ? (
+                          <span className="text-slate-400">—</span>
+                        ) : (
+                          <span className={[
+                            "rounded-full px-3 py-1 text-xs",
+                            s.is_paid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700",
+                          ].join(" ")}>
+                            {s.is_paid ? "Paid" : "Unpaid"}
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-slate-600 max-w-[220px]">
                         {s.payment_note ? (
