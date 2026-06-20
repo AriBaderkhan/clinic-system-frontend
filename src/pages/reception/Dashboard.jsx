@@ -336,7 +336,7 @@ export default function Dashboard() {
                       <p className="text-xs text-slate-500">
                         {s.doctor.full_name} · {formatTime(s.appointment.start_time)} ·{" "}
                         {s.works_summary.items_count} work{s.works_summary.items_count !== 1 && "s"}
-                        {" "}· <span className="font-medium text-slate-700">{formatMoney(s.totals.total)}</span>
+                        {" "}· <span className="font-medium text-slate-700">{formatMoney(s.totals.total, s.currency_code)}</span>
                       </p>
                     </div>
 
