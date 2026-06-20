@@ -13,12 +13,8 @@ import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(n) {
-  return Number(n || 0).toLocaleString();
-}
-
 export default function PatientFolderPage() {
-  const { formatDateTime } = useSettings();
+  const { formatDateTime, formatMoney } = useSettings();
   const { patientId } = useParams();
 
   const [activeTab, setActiveTab] = useState("appointments");
@@ -118,7 +114,7 @@ export default function PatientFolderPage() {
               <p>
                 Total payments:{" "}
                 <span className="font-semibold text-[#015478]">
-                  {totalPaidForPatient.toLocaleString()}
+                  {formatMoney(totalPaidForPatient)}
                 </span>
               </p>
             </div>
@@ -230,7 +226,7 @@ export default function PatientFolderPage() {
                         <td className="px-3 py-2 text-slate-700 capitalize">
                           {s.status || s.appointment_status || "-"}
                         </td>
-                        <td className="px-3 py-2 text-slate-700">{formatMoney(s.total)}</td>
+                        <td className="px-3 py-2 text-slate-700">{formatMoney(s.total, s.currency_code)}</td>
                         <td className="px-3 py-2 text-slate-700">
                           {s.is_paid ? (
                             <span className="rounded-full bg-[#015478]/10 px-2 py-0.5 text-[11px] font-medium text-[#015478]">
@@ -288,7 +284,7 @@ export default function PatientFolderPage() {
                         className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                       >
                         <td className="px-3 py-2 text-slate-800">{formatDateTime(p.created_at)}</td>
-                        <td className="px-3 py-2 text-slate-700">{formatMoney(p.amount)}</td>
+                        <td className="px-3 py-2 text-slate-700">{formatMoney(p.amount, p.currency_code)}</td>
                         <td className="px-3 py-2 text-slate-700">{p.method || "-"}</td>
                         <td className="px-3 py-2 text-slate-700">{p.doctor_name}</td>
                         <td className="px-3 py-2 text-slate-700">{p.processed_by}</td>
@@ -368,9 +364,9 @@ export default function PatientFolderPage() {
                             <td className="px-3 py-2 font-medium text-slate-800">
                               {String(tp.type || "").toUpperCase()}
                             </td>
-                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.agreed_total)}</td>
-                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.total_paid)}</td>
-                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining)}</td>
+                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.agreed_total, tp.currency_code)}</td>
+                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.total_paid, tp.currency_code)}</td>
+                            <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining, tp.currency_code)}</td>
                             <td className="px-3 py-2">
                               {tp.is_paid ? (
                                 <span className="rounded-full bg-[#015478]/10 px-2 py-0.5 text-[11px] font-medium text-[#015478]">
@@ -441,7 +437,7 @@ export default function PatientFolderPage() {
                                                 {formatDateTime(s.finished_at)}
                                               </td>
                                               <td className="px-2 py-2 text-slate-800 font-medium">
-                                                {formatMoney(s.paid_for_this_plan_in_this_session)}
+                                                {formatMoney(s.paid_for_this_plan_in_this_session, tp.currency_code)}
                                               </td>
                                               <td className="px-2 py-2 text-slate-700">{s.next_plan || "-"}</td>
                                               <td className="px-2 py-2 text-slate-700">{s.notes || "-"}</td>

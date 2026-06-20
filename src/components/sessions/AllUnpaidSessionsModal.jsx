@@ -3,12 +3,8 @@ import { getUnpaidSessions } from "../../api/sessionApi";
 import PaySessionModal from "../appointments/PaySessionModal";
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(n) {
-  return Number(n || 0).toLocaleString();
-}
-
 export default function AllUnpaidSessionsModal({ onClose }) {
-  const { formatTime } = useSettings();
+  const { formatTime, formatMoney } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -164,9 +160,9 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                       </p>
                       <p className="mt-0.5 text-[11px] text-slate-600">
                         Total:{" "}
-                        <span className="font-semibold">{formatMoney(s.totals?.total)}</span>{" "}
+                        <span className="font-semibold">{formatMoney(s.totals?.total, s.currency_code)}</span>{" "}
                         · Min:{" "}
-                        <span className="font-semibold">{formatMoney(s.totals?.min_total)}</span>
+                        <span className="font-semibold">{formatMoney(s.totals?.min_total, s.currency_code)}</span>
                       </p>
                     </div>
 

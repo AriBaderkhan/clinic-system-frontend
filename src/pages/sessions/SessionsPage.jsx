@@ -7,11 +7,6 @@ import TreatmentPlanPage from "../treatment_plan/TreatmentPlanPage";
 import { deleteSession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 
-function money(n) {
-  const v = Number(n || 0);
-  return v.toLocaleString();
-}
-
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
   const pages = [1];
@@ -25,7 +20,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 export default function Sessions() {
-  const { formatDateTime } = useSettings();
+  const { formatDateTime, formatMoney } = useSettings();
   const [tab, setTab] = useState("sessions");
   const [selectedId, setSelectedId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -216,8 +211,8 @@ export default function Sessions() {
                       <td className="px-3 py-2 text-slate-700">
                         {formatDateTime(s.appointment_end_time)}
                       </td>
-                      <td className="px-3 py-2 text-slate-800">{money(s.total)} IQD</td>
-                      <td className="px-3 py-2 text-slate-800">{money(s.total_paid)} IQD</td>
+                      <td className="px-3 py-2 text-slate-800">{formatMoney(s.total, s.currency_code)}</td>
+                      <td className="px-3 py-2 text-slate-800">{formatMoney(s.total_paid, s.currency_code)}</td>
                       <td className="px-3 py-2">
                         <span className={[
                           "rounded-full px-3 py-1 text-xs",

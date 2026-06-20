@@ -9,7 +9,7 @@ import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsM
 import { useSettings } from "../../context/SettingContext";
 
 export default function Dashboard() {
-  const { formatTime } = useSettings();
+  const { formatTime, formatMoney } = useSettings();
   const { patients, isLoading } = usePatients();
 
   const {
@@ -336,7 +336,7 @@ export default function Dashboard() {
                       <p className="text-xs text-slate-500">
                         {s.doctor.full_name} · {formatTime(s.appointment.start_time)} ·{" "}
                         {s.works_summary.items_count} work{s.works_summary.items_count !== 1 && "s"}
-                        {" "}· <span className="font-medium text-slate-700">{Number(s.totals.total).toLocaleString()}</span>
+                        {" "}· <span className="font-medium text-slate-700">{formatMoney(s.totals.total)}</span>
                       </p>
                     </div>
 

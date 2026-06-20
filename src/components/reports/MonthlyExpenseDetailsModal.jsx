@@ -1,12 +1,11 @@
 import {
   calcTotalExpenses,
   formatMonth,
-  formatMoney,
 } from "../../utils/monthlyExpenses";
 import { useSettings } from "../../context/SettingContext";
 
 export default function MonthlyExpenseDetailsModal({ open, loading, data, onClose }) {
-  const { formatDateTime } = useSettings();
+  const { formatDateTime, formatMoney } = useSettings();
   if (!open) return null;
 
   const row = data || {};

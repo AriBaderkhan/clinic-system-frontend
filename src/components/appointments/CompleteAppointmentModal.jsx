@@ -19,7 +19,7 @@ function parseTeeth(s) {
 }
 
 export default function CompleteAppointmentModal({ appointment, onClose, onCompleted }) {
-  const { formatTime, formatDate } = useSettings();
+  const { formatTime, formatDate, formatMoney } = useSettings();
 
   const [nextPlan, setNextPlan] = useState("");
   const [notes, setNotes] = useState("");
@@ -444,7 +444,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     {(plans[dCode]?.list || []).map((p) => {
                       const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
                       const where = p.teeth ? `tooth ${p.teeth}` : "no tooth";
-                      return <option key={p.id} value={String(p.id)}>Continue · {where} · remaining {rem.toLocaleString()} IQD</option>;
+                      return <option key={p.id} value={String(p.id)}>Continue · {where} · remaining {formatMoney(rem)}</option>;
                     })}
                     <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
                   </select>
@@ -458,14 +458,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                   {draftExistingPlan ? (
                     <p className="text-slate-700">
                       Continuing <b className="uppercase">{dCode}</b>{draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : " · tooth optional"} · remaining{" "}
-                      <b>{(Number(draftExistingPlan.agreed_total) - Number(draftExistingPlan.total_paid || 0)).toLocaleString()} IQD</b> — no new agreement.
+                      <b>{formatMoney(Number(draftExistingPlan.agreed_total) - Number(draftExistingPlan.total_paid || 0))}</b> — no new agreement.
                     </p>
                   ) : (
                     <div>
                       <label className="block text-[11px] font-medium text-slate-600 mb-0.5">New <span className="uppercase">{dCode}</span> agreement total</label>
                       <input type="number" min={dMeta?.min_price || 0} value={draft.agreed_total}
                         onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls}
-                        placeholder={`Min ${(dMeta?.min_price || 0).toLocaleString()} IQD`} />
+                        step="0.01"
+                        placeholder={`Min ${formatMoney(dMeta?.min_price || 0)}`} />
                     </div>
                   )}
                 </div>
@@ -484,7 +485,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                       <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                         <span className="font-semibold">{c.name}</span>
                         <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : c.teeth.length ? `tooth ${c.teeth.join(", ")}` : "no tooth"}</span>
-                        {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new plan ${Number(c.agreed_total).toLocaleString()} IQD` : "· continue"}</span>}
+                        {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new plan ${formatMoney(Number(c.agreed_total))}` : "· continue"}</span>}
                         <button type="button" onClick={() => editTreatment(c.uid)} title="Edit" className="ml-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
                         <button type="button" onClick={() => removeTreatment(c.uid)} title="Remove" className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                       </span>
@@ -503,7 +504,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
                     return (
                       <label key={p.id} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px]">
-                        <span>{p.teeth ? `tooth ${p.teeth}` : "tooth not set"} · remaining {rem.toLocaleString()} IQD</span>
+                        <span>{p.teeth ? `tooth ${p.teeth}` : "tooth not set"} · remaining {formatMoney(rem)}</span>
                         <input type="checkbox" checked={completedPlanIds.includes(p.id)} onChange={() => toggleCompleted(p.id)} />
                       </label>
                     );

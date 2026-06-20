@@ -24,12 +24,6 @@ function getPageNumbers(currentPage, totalPages) {
   return pages;
 }
 
-function formatMoney(value) {
-  const n = Number(value) || 0;
-  return n.toLocaleString();
-}
-
-
 function statusBadgeClasses(status) {
   switch (status) {
     case "ordered":
@@ -99,7 +93,7 @@ export default function LabsPage() {
   const [activeTab, setActiveTab] = useState("orders"); // orders | labs
 
   // dates/times are shown in the branch's configured timezone (branch/tenant settings)
-  const { settings, formatDateTime: formatDateTimeTz } = useSettings();
+  const { settings, formatDateTime: formatDateTimeTz, formatMoney } = useSettings();
   const formatDateTime = (value) => (value ? formatDateTimeTz(value) : "-");
   const formatDate = (value) =>
     value ? new Date(value).toLocaleDateString("en-US", { timeZone: settings.timezone }) : "-";
@@ -392,7 +386,7 @@ export default function LabsPage() {
                       <td className="px-3 py-2 text-slate-700">{o.patient_name}</td>
                       <td className="px-3 py-2 text-slate-700 capitalize">{o.doctor_name}</td>
                       <td className="px-3 py-2 text-slate-700">{o.items_summary || "-"}</td>
-                      <td className="px-3 py-2 font-medium text-slate-800">{formatMoney(o.total_cost)}</td>
+                      <td className="px-3 py-2 font-medium text-slate-800">{formatMoney(o.total_cost, o.currency_code)}</td>
                       <td className="px-3 py-2">
                         <button
                           type="button"

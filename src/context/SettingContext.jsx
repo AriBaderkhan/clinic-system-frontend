@@ -18,6 +18,12 @@ const SettingContext = createContext();
 const TZ_KEY = "appTimezone";
 const CURRENCY_KEY = "appCurrency";
 
+// Currencies that have no minor unit in everyday use → displayed without decimals.
+const ZERO_DECIMAL_CURRENCIES = new Set([
+    "IQD", "JPY", "KRW", "VND", "CLP", "ISK", "HUF", "UGX", "TZS",
+    "XOF", "XAF", "XPF", "PYG", "RWF", "KMF", "DJF", "GNF", "VUV", "MGA",
+]);
+
 function readCached(key, fallback) {
     try {
         return localStorage.getItem(key) || fallback;
@@ -127,12 +133,24 @@ export const SettingProvider = ({ children }) => {
 
     const formatMoney = useCallback(
         (amount, currencyOverride) => {
-            if (amount === null || amount === undefined) return "";
-            const curr = currencyOverride || currency_code;
+            if (amount === null || amount === undefined || amount === "") return "";
+            const curr = currencyOverride || currency_code || "USD";
+            const n = Number(amount);
+            if (Number.isNaN(n)) return "";
+            // Currencies people use as whole units (no cents) — show 0 decimals.
+            const noDecimals = ZERO_DECIMAL_CURRENCIES.has(curr);
+            const min = noDecimals ? 0 : 2;
             try {
-                return new Intl.NumberFormat("en-US", { style: "currency", currency: curr }).format(amount);
+                return new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: curr,
+                    currencyDisplay: "narrowSymbol", // $ instead of US$, € , ₹, etc.
+                    minimumFractionDigits: min,
+                    maximumFractionDigits: 2,
+                }).format(n);
             } catch {
-                return `${amount}`;
+                // unknown/odd code → grouped number + code suffix
+                return `${n.toLocaleString("en-US", { minimumFractionDigits: min, maximumFractionDigits: 2 })} ${curr}`;
             }
         },
         [currency_code]

@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 import { getLabOrderById } from "../../api/labApi";
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(value) {
-  const n = Number(value) || 0;
-  return n.toLocaleString();
-}
-
 function statusBadgeClasses(status) {
   switch (status) {
     case "ordered":
@@ -33,7 +28,7 @@ function Field({ label, children }) {
 
 export default function LabOrderDetailsModal({ orderId, onClose }) {
   // shown in the branch's configured timezone
-  const { formatDateTime: formatDateTimeTz } = useSettings();
+  const { formatDateTime: formatDateTimeTz, formatMoney } = useSettings();
   const formatDateTime = (value) => (value ? formatDateTimeTz(value) : "-");
 
   const [order, setOrder] = useState(null);
@@ -144,8 +139,8 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
                     <tr key={it.id} className="border-b border-slate-50 last:border-0">
                       <td className="px-3 py-2 text-slate-800">{it.work_name}</td>
                       <td className="px-3 py-2 text-slate-700">{it.quantity}</td>
-                      <td className="px-3 py-2 text-slate-700">{formatMoney(it.unit_cost)}</td>
-                      <td className="px-3 py-2 text-right text-slate-800">{formatMoney(it.total_cost)}</td>
+                      <td className="px-3 py-2 text-slate-700">{formatMoney(it.unit_cost, order.currency_code)}</td>
+                      <td className="px-3 py-2 text-right text-slate-800">{formatMoney(it.total_cost, order.currency_code)}</td>
                     </tr>
                   ))}
                   <tr className="bg-[#015478]/5">
@@ -153,7 +148,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
                       Order total
                     </td>
                     <td className="px-3 py-2 text-right text-sm font-semibold text-[#015478]">
-                      {formatMoney(order.total_cost)}
+                      {formatMoney(order.total_cost, order.currency_code)}
                     </td>
                   </tr>
                 </tbody>

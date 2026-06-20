@@ -1,12 +1,10 @@
 ﻿import { useState } from "react";
 import toast from "react-hot-toast";
 import { paySession } from "../../api/sessionApi";
-
-function formatMoney(n) {
-  return Number(n || 0).toLocaleString();
-}
+import { useSettings } from "../../context/SettingContext";
 
 export default function PaySessionModal({ session, onClose, onPaid }) {
+  const { formatMoney } = useSettings();
   const [normalAmount, setNormalAmount] = useState("");
   const [note, setNote] = useState("");
   const [planAmounts, setPlanAmounts] = useState({});
@@ -14,6 +12,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
 
   if (!session) return null;
 
+  const curr = session?.currency_code;
   const minTotal = Number(session?.totals?.min_total || 0);
   const total = Number(session?.totals?.total || 0);
 
@@ -48,7 +47,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
     }
 
     if (amt > remaining) {
-      planErrors[pid] = `Cannot exceed remaining (${formatMoney(remaining)}).`;
+      planErrors[pid] = `Cannot exceed remaining (${formatMoney(remaining, curr)}).`;
       continue;
     }
 
@@ -134,7 +133,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                   <span>
                     {w.work_name} <span className="text-slate-500">{w.quantity}x</span>
                   </span>
-                  <span className="font-medium">{formatMoney(w.total_price)}</span>
+                  <span className="font-medium">{formatMoney(w.total_price, curr)}</span>
                 </li>
               ))}
             </ul>
@@ -144,10 +143,10 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
 
           <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-2 text-[11px]">
             <span className="text-slate-600">
-              Min total: <span className="font-semibold">{formatMoney(minTotal)}</span>
+              Min total: <span className="font-semibold">{formatMoney(minTotal, curr)}</span>
             </span>
             <span className="text-slate-600">
-              Total: <span className="font-semibold">{formatMoney(total)}</span>
+              Total: <span className="font-semibold">{formatMoney(total, curr)}</span>
             </span>
           </div>
         </div>
@@ -178,9 +177,9 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                           {String(p.type || "").toUpperCase()} plan
                         </p>
                         <p className="text-[11px] text-slate-600">
-                          Agreed: <b>{formatMoney(p.agreed_total)}</b> · Paid:{" "}
-                          <b>{formatMoney(p.total_paid)}</b> · Remaining:{" "}
-                          <b>{formatMoney(remaining)}</b>
+                          Agreed: <b>{formatMoney(p.agreed_total, curr)}</b> · Paid:{" "}
+                          <b>{formatMoney(p.total_paid, curr)}</b> · Remaining:{" "}
+                          <b>{formatMoney(remaining, curr)}</b>
                         </p>
                       </div>
 

@@ -3,14 +3,9 @@ import { searchLabs, getLabById, getLabOrderById } from "../../api/labApi";
 import { getAllAppointments } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(value) {
-  const n = Number(value) || 0;
-  return n.toLocaleString();
-}
-
 export default function LabOrderFormModal({ mode = "add", initialData, onClose, onSubmit, isSubmitting = false }) {
   // appointment times shown in the branch's configured timezone
-  const { formatDateTime: formatDateTimeTz } = useSettings();
+  const { formatDateTime: formatDateTimeTz, formatMoney } = useSettings();
   const formatApptLabel = (a) =>
     `${a.patient_name} · Dr. ${a.doctor_name} · ${a.scheduled_start ? formatDateTimeTz(a.scheduled_start) : "-"}`;
 

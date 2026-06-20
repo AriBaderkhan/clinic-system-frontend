@@ -40,7 +40,8 @@ function buildNormalWorks(confirmed) {
 const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}`).sort());
 
 export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
-    const { formatDate, formatTime } = useSettings();
+    const { formatDate, formatTime, formatMoney, settings } = useSettings();
+    const curr = settings?.currency_code || "";
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -350,14 +351,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                         <select value={draft.plan_mode} onChange={(e) => setPlanMode(e.target.value)} className={`${inputCls} mb-2`}>
                                             {existingForType.map((p) => {
                                                 const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
-                                                return <option key={p.id} value={String(p.id)}>Continue · {p.teeth ? `tooth ${p.teeth}` : "no tooth"} · remaining {rem.toLocaleString()} IQD</option>;
+                                                return <option key={p.id} value={String(p.id)}>Continue · {p.teeth ? `tooth ${p.teeth}` : "no tooth"} · remaining {formatMoney(rem)}</option>;
                                             })}
                                             <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
                                         </select>
                                         {draft.plan_mode === "new" ? (
                                             <div>
                                                 <label className="block text-[11px] font-medium text-slate-600 mb-0.5">New <span className="uppercase">{dCode}</span> agreement total</label>
-                                                <input type="number" min={dMeta?.min_price || 0} value={draft.agreed_total} onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls} placeholder={`Min ${(dMeta?.min_price || 0).toLocaleString()} IQD`} />
+                                                <input type="number" min={dMeta?.min_price || 0} step="0.01" value={draft.agreed_total} onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls} placeholder={`Min ${formatMoney(dMeta?.min_price || 0)}`} />
                                             </div>
                                         ) : (
                                             <p className="text-slate-700">Continuing <b className="uppercase">{dCode}</b>{dWhole ? "" : draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : " · pick a tooth"} — no new agreement.</p>
@@ -377,7 +378,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                                             <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                                                 <span className="font-semibold">{c.name}</span>
                                                 <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : c.teeth.length ? `tooth ${c.teeth.join(", ")}` : `${c.quantity}x · no tooth`}</span>
-                                                {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new ${Number(c.agreed_total).toLocaleString()} IQD` : "· continue"}</span>}
+                                                {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new ${formatMoney(Number(c.agreed_total))}` : "· continue"}</span>}
                                                 <button type="button" onClick={() => editTreatment(c.uid)} title="Edit" className="ml-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
                                                 <button type="button" onClick={() => removeTreatment(c.uid)} title="Remove" className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                                             </span>
@@ -390,12 +391,12 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated }) {
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="rounded-xl border border-slate-200 bg-white p-3">
                                     <p className="text-[11px] font-medium text-slate-600">Session total</p>
-                                    <p className="mt-1 text-base font-semibold text-slate-900">{liveTotal.toLocaleString()} IQD</p>
+                                    <p className="mt-1 text-base font-semibold text-slate-900">{formatMoney(liveTotal)}</p>
                                     <p className="text-[10px] text-slate-400">Updates with the treatments · saved to the session.</p>
                                 </div>
                                 <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                    <label className="text-[11px] font-medium text-slate-600">Total paid (IQD)</label>
-                                    <input type="number" min={0} value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
+                                    <label className="text-[11px] font-medium text-slate-600">Total paid{curr ? ` (${curr})` : ""}</label>
+                                    <input type="number" min={0} step="0.01" value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
                                 </div>
                             </div>
 

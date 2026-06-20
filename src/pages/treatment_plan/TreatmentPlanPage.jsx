@@ -14,12 +14,8 @@ function getPageNumbers(currentPage, totalPages) {
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(n) {
-    return Number(n || 0).toLocaleString();
-}
-
 export default function TreatmentPlanPage() {
-    const { formatDateTime } = useSettings();
+    const { formatDateTime, formatMoney } = useSettings();
     const {
         tps,
         loading,
@@ -207,12 +203,12 @@ export default function TreatmentPlanPage() {
                                                             className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                         />
                                                     ) : (
-                                                        <span className="text-slate-700">{formatMoney(tp.agreed_total)}</span>
+                                                        <span className="text-slate-700">{formatMoney(tp.agreed_total, tp.currency_code)}</span>
                                                     )}
                                                 </td>
 
-                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.total_paid)}</td>
-                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining)}</td>
+                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.total_paid, tp.currency_code)}</td>
+                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining, tp.currency_code)}</td>
 
                                                 <td className="px-3 py-2">
                                                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${isPaid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700"}`}>
@@ -343,7 +339,7 @@ export default function TreatmentPlanPage() {
                                                                                                     className="w-36 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                                                                 />
                                                                                             ) : (
-                                                                                                <span className="font-medium text-slate-800">{formatMoney(paidValue)}</span>
+                                                                                                <span className="font-medium text-slate-800">{formatMoney(paidValue, tp.currency_code)}</span>
                                                                                             )}
                                                                                         </td>
 

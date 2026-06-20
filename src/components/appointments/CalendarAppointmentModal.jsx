@@ -5,11 +5,6 @@ import { getDoctorColor } from "../../utils/doctorColors";
 
 import { useSettings } from "../../context/SettingContext";
 
-function formatMoney(value) {
-  const n = Number(value) || 0;
-  return n.toLocaleString();
-}
-
 function statusBadgeClasses(status) {
   switch (status) {
     case "scheduled":
@@ -30,7 +25,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function CalendarAppointmentModal({ appointment, onClose }) {
-  const { formatDateTime } = useSettings();
+  const { formatDateTime, formatMoney } = useSettings();
   const { sessions, isLoading, error } = usePatientSessions(appointment?.patient_id, 5);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
@@ -129,8 +124,8 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                           {formatDateTime(s.created_at)}
                         </p>
                         <p className="mt-0.5 truncate text-[11px] text-slate-500 capitalize">
-                          Dr. {s.doctor_name} · Total: {formatMoney(s.total)} · Paid:{" "}
-                          {formatMoney(s.total_paid)}
+                          Dr. {s.doctor_name} · Total: {formatMoney(s.total, s.currency_code)} · Paid:{" "}
+                          {formatMoney(s.total_paid, s.currency_code)}
                         </p>
                       </div>
 

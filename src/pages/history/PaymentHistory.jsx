@@ -4,7 +4,7 @@ import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import { useSettings } from "../../context/SettingContext";
 
 export default function PaymentHistory() {
-  const { formatDateTime } = useSettings();
+  const { formatDateTime, formatMoney } = useSettings();
   const { payments, isLoading, error, refresh } = usePaymentHistory();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
@@ -50,7 +50,7 @@ export default function PaymentHistory() {
             Total collected (all time)
           </p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">
-            {totalAmount.toLocaleString("en-US")} IQD
+            {formatMoney(totalAmount)}
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export default function PaymentHistory() {
                       {p.doctor_name}
                     </td>
                     <td className="px-3 py-2 text-slate-800">
-                      {Number(p.amount || 0).toLocaleString("en-US")} IQD
+                      {formatMoney(p.amount, p.currency_code)}
                     </td>
                     <td className="px-3 py-2 text-slate-700">
                       {p.processed_by || "-"}

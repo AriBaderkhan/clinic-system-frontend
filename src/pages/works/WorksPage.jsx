@@ -1,10 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import useWorks from "../../hooks/useWorks";
-
-function money(n) {
-  return Number(n || 0).toLocaleString();
-}
+import { useSettings } from "../../context/SettingContext";
 
 const emptyForm = {
   code: "",
@@ -17,6 +14,7 @@ const emptyForm = {
 
 // ── View Modal ────────────────────────────────────────────────────────────────
 function ViewModal({ work, onClose }) {
+  const { formatMoney } = useSettings();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
@@ -30,7 +28,7 @@ function ViewModal({ work, onClose }) {
         <div className="space-y-3 text-sm">
           <DetailRow label="Code" value={<span className="font-mono">{work.code}</span>} />
           <DetailRow label="Name" value={work.name} />
-          <DetailRow label="Min Price" value={`${money(work.min_price)} IQD`} />
+          <DetailRow label="Min Price" value={formatMoney(work.min_price)} />
           <DetailRow
             label="Allow Installments"
             value={
@@ -40,7 +38,7 @@ function ViewModal({ work, onClose }) {
             }
           />
           {work.allow_installments && (
-            <DetailRow label="Min Installment Amount" value={`${money(work.min_installment_amount)} IQD`} />
+            <DetailRow label="Min Installment Amount" value={formatMoney(work.min_installment_amount)} />
           )}
           <DetailRow
             label="Status"
@@ -75,6 +73,8 @@ function DetailRow({ label, value }) {
 
 // ── Form Modal (create + edit) ────────────────────────────────────────────────
 function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
+  const { settings } = useSettings();
+  const curr = settings?.currency_code || "";
   const [form, setForm] = useState(
     mode === "edit"
       ? { ...initial, min_installment_amount: initial.min_installment_amount ?? "" }
@@ -134,11 +134,12 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
             />
           </FormField>
 
-          <FormField label="Min Price (IQD)">
+          <FormField label={`Min Price${curr ? ` (${curr})` : ""}`}>
             <input
               required
               type="number"
               min={0}
+              step="0.01"
               value={form.min_price}
               onChange={(e) => set("min_price", e.target.value)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
@@ -162,11 +163,12 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
           </div>
 
           {form.allow_installments && (
-            <FormField label="Min Installment Amount (IQD)">
+            <FormField label={`Min Installment Amount${curr ? ` (${curr})` : ""}`}>
               <input
                 required
                 type="number"
                 min={0}
+                step="0.01"
                 value={form.min_installment_amount}
                 onChange={(e) => set("min_installment_amount", e.target.value)}
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
@@ -218,6 +220,7 @@ function FormField({ label, children }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function WorksPage() {
+  const { formatMoney } = useSettings();
   const { works, isLoading, error, refresh, create, update, remove, isSubmitting } = useWorks();
   const [viewWork, setViewWork] = useState(null);
   const [editWork, setEditWork] = useState(null);
@@ -303,14 +306,14 @@ export default function WorksPage() {
                     <td className="px-3 py-3 text-slate-500">{idx + 1}</td>
                     <td className="px-3 py-3 font-mono font-medium text-slate-800">{w.code}</td>
                     <td className="px-3 py-3 text-slate-700">{w.name}</td>
-                    <td className="px-3 py-3 text-slate-800">{money(w.min_price)} IQD</td>
+                    <td className="px-3 py-3 text-slate-800">{formatMoney(w.min_price)}</td>
                     <td className="px-3 py-3">
                       <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#015478]/10 text-[#015478]" : "bg-slate-100 text-slate-500"}`}>
                         {w.allow_installments ? "Yes" : "No"}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-slate-700">
-                      {w.allow_installments ? `${money(w.min_installment_amount)} IQD` : "—"}
+                      {w.allow_installments ? formatMoney(w.min_installment_amount) : "—"}
                     </td>
                     <td className="px-3 py-3">
                       <span className={`rounded-full px-3 py-1 text-xs ${w.is_active ? "bg-[#015478]/10 text-[#015478]" : "bg-red-100 text-red-700"}`}>

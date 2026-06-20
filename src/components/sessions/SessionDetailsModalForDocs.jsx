@@ -3,6 +3,7 @@ import useSessionDetails from "../../hooks/useSessionDetails";
 import { useSettings } from "../../context/SettingContext";
 import EditSessionModal from "./EditSessionModal";
 import TeethDiagram, { worksToTeeth } from "./TeethDiagram";
+import CaseImagesGrid from "./CaseImagesGrid";
 
 export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
   const { formatDateTime } = useSettings();
@@ -144,23 +145,7 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
             </div>
 
             {/* Case images — bottom, full width */}
-            <div className="rounded-xl border border-slate-200 bg-white p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-900">Case images</p>
-                <span className="rounded-full bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/20">{images.length} images</span>
-              </div>
-              {images.length === 0 ? (
-                <p className="text-xs text-slate-500">No images for this session.</p>
-              ) : (
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-8">
-                  {images.map((img) => (
-                    <a key={img.id} href={img.url} target="_blank" rel="noopener noreferrer" title="Open full image" className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 hover:border-[#015478]">
-                      <img src={img.url} alt="Case image" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+            <CaseImagesGrid images={images} />
           </div>
         )}
       </div>
