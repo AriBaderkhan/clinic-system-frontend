@@ -27,6 +27,7 @@ import PaymentHistory from "./pages/history/PaymentHistory";
 import ReportsPage from "./pages/reports/ReportsPage";
 import SessionsPage from './pages/sessions/SessionsPage'
 import TreatmentPlanPage from './pages/treatment_plan/TreatmentPlanPage'
+import RemindersPage from './pages/reminders/RemindersPage'
 
 // Doctor pages
 import DoctorDashboard from './pages/doctor/DoctorDashboard'
@@ -111,6 +112,7 @@ export default function App() {
 
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="treatment_plan" element={<TreatmentPlanPage />} />
+          <Route path="appointments/reminders" element={<RemindersPage />} />
           <Route path="history" element={<PaymentHistory />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="settings/branch" element={<BranchSettingsPage />} />
@@ -146,6 +148,7 @@ export default function App() {
           {/* Reception allowed */}
           <Route path="reports" element={<PermissionRoute requiredPermission="view_reports"><ReportsPage /></PermissionRoute>} />
           <Route path="sessions" element={<PermissionRoute requiredPermission="view_session"><SessionsPage /></PermissionRoute>} />
+          <Route path="appointments/reminders" element={<PermissionRoute requiredPermission="send_reminders"><RemindersPage /></PermissionRoute>} />
           <Route path="treatment_plan" element={<PermissionRoute requiredPermission="manage_tp"><TreatmentPlanPage /></PermissionRoute>} />
           <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
           <Route path="settings/branch" element={

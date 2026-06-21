@@ -23,7 +23,8 @@ const getNavItems = () => {
     { label: "Dashboard", path: "", end: true },
     { label: "Patients", path: "patients", permission: "view_patient" },
     { label: "Appointments", path: "appointments", permission: "view_appointment", end: true },
-    { label: "Calendar", path: "appointments/calendar", permission: "view_appointment" },
+    { label: "Calendar", path: "appointments/calendar", permission: "view_appointment", indent: true },
+    { label: "Reminders", path: "appointments/reminders", permission: "send_reminders", indent: true },
     { label: "Sessions", path: "sessions", permission: "view_session" },
     { label: "Lab", path: "lab", permission: "manage_lab" },
     // { label: "History", path: "history", permission: "view_payment" },
@@ -134,8 +135,9 @@ export default function ReceptionLayout() {
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
+                  "flex items-center gap-2 rounded-lg transition",
+                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
+                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
                   "border-l-4 border-transparent",
                   isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]
@@ -188,8 +190,9 @@ export default function ReceptionLayout() {
               end={item.end}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
+                  "flex items-center gap-2 rounded-lg transition",
+                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
+                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
                   "border-l-4 border-transparent",
                   isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
-import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
@@ -11,7 +10,8 @@ const navItems = [
   { label: "Dashboard", path: "", end: true },
   { label: "Patients", path: "patients" },
   { label: "Appointments", path: "appointments", end: true },
-  { label: "Calendar", path: "appointments/calendar" },
+  { label: "Calendar", path: "appointments/calendar", indent: true },
+  { label: "Reminders", path: "appointments/reminders", indent: true },
   { label: "Sessions", path: "sessions" },
   { label: "Lab", path: "lab" },
   // { label: "History", path: "history" },
@@ -123,8 +123,9 @@ export default function BranchManagerLayout() {
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
+                  "flex items-center gap-2 rounded-lg transition",
+                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
+                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
                   "border-l-4 border-transparent",
                   isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]
@@ -147,7 +148,6 @@ export default function BranchManagerLayout() {
             </button>
           )}
           <BranchSwitcher />
-          <ThemeToggle />
           <button
             onClick={() => {
               handleLogout();
@@ -185,8 +185,9 @@ export default function BranchManagerLayout() {
               end={item.end}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-2 rounded-lg px-3 py-2",
-                  "transition text-slate-200 hover:bg-[#6a87ad] hover:text-white hover:pl-3.5",
+                  "flex items-center gap-2 rounded-lg transition",
+                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
+                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
                   "border-l-4 border-transparent",
                   isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
                 ]
@@ -209,7 +210,6 @@ export default function BranchManagerLayout() {
             </button>
           )}
           <BranchSwitcher />
-          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
