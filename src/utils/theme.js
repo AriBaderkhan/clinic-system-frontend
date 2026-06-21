@@ -15,6 +15,24 @@ export function initTheme() {
 
 // logout uses localStorage.clear() which would also wipe the theme — use this instead
 export function clearStorageKeepingTheme() {
+  // Best-effort: tell the server to REVOKE this session's refresh token so it
+  // can't be reused after logout. Fire-and-forget with keepalive so it still
+  // completes as the page navigates away — never block logout on it.
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    const base = import.meta.env.VITE_API_BASE_URL;
+    if (refreshToken && base) {
+      fetch(`${base}/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+        keepalive: true,
+      }).catch(() => {});
+    }
+  } catch {
+    // ignore — logout must always proceed
+  }
+
   const theme = localStorage.getItem("theme");
   localStorage.clear();
   if (theme) localStorage.setItem("theme", theme);

@@ -40,6 +40,7 @@ export default function Login() {
 
     // Store auth data
     localStorage.setItem("token", token);
+    if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
 
     // FIX: Force role to lowercase to ensure matching with App.jsx routes (e.g. "Reception" -> "reception")
     // Check if role is an object (from new backend) or string (fallback)

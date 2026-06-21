@@ -31,8 +31,9 @@ export default function BranchSwitcher() {
     try {
       setSwitching(true);
       const res = await switchBranch({ branch_id: branchId });
-      // backend re-issues a token + user scoped to the chosen branch
+      // backend re-issues a token + refresh token + user scoped to the chosen branch
       localStorage.setItem("token", res.token);
+      if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.user));
       if (res.user?.role) {
         localStorage.setItem("role", String(res.user.role).toLowerCase());
