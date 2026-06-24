@@ -5,6 +5,7 @@ import { uploadSessionImages } from "../../api/sessionApi";
 import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 import { useSettings } from "../../context/SettingContext";
+import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
 
 const TREATMENT_TYPES = ["ortho", "implant", "rct", "re_rct"];
 const PLAN_CODES = new Set(TREATMENT_TYPES);
@@ -41,6 +42,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
   // case images chosen before completion: { id, file, preview }
   const [images, setImages] = useState([]);
+
+  // optional prescription written during the visit
+  const [prescription, setPrescription] = useState([]);
 
   // free the object URLs we created for previews when the modal unmounts
   useEffect(() => () => images.forEach((im) => URL.revokeObjectURL(im.preview)), [images]);
@@ -200,21 +204,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const toggleCompleted = (planId) =>
     setCompletedPlanIds((prev) => (prev.includes(planId) ? prev.filter((id) => id !== planId) : [...prev, planId]));
 
-  const MAX_IMAGES = 12;
   const ALLOWED_IMG = ["image/jpeg", "image/png", "image/webp"];
 
   const onPickImages = (e) => {
     const picked = Array.from(e.target.files || []);
     e.target.value = ""; // allow re-picking the same file later
     setImages((prev) => {
-      const room = MAX_IMAGES - prev.length;
-      if (room <= 0) {
-        toast.error(`You can attach up to ${MAX_IMAGES} images.`);
-        return prev;
-      }
+      // No cap — the doctor can attach as many case images as they want.
       const valid = picked
         .filter((f) => ALLOWED_IMG.includes(f.type) && f.size <= 10 * 1024 * 1024)
-        .slice(0, room)
         .map((f) => ({ id: `${Date.now()}-${Math.random()}`, file: f, preview: URL.createObjectURL(f) }));
       if (valid.length < picked.length) {
         toast.error("Some files were skipped (only JPG/PNG/WEBP up to 10MB).");
@@ -251,7 +249,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     try {
       setSaving(true);
       // 1) complete the appointment / create the session (unchanged logic)
-      const res = await completeAppointmentWithSession(apptId, { next_plan: nextPlan || null, notes: notes || null, works, completedPlanIds });
+      const rx = prescription.filter((r) => r.drug_name && r.drug_name.trim());
+      const res = await completeAppointmentWithSession(apptId, { next_plan: nextPlan || null, notes: notes || null, works, completedPlanIds, prescription: rx });
 
       // 2) link any chosen images to the freshly created session
       const sessionId = res?.data?.session?.id;
@@ -381,49 +380,57 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
         {error && <div className="mx-5 mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 shrink-0">{error}</div>}
 
-        {/* Body: 2 columns, no page scroll */}
-        <div className="grid min-h-0 flex-1 gap-3 p-4 lg:grid-cols-[minmax(280px,0.72fr),2.1fr]">
-          {/* ===== LEFT: controls ===== */}
-          <div className="flex min-h-0 flex-col gap-3 overflow-hidden">
-            {/* Next plan + Notes */}
-            <div className="grid grid-cols-2 gap-2">
-              <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2}
-                className={`${inputCls} resize-none`} placeholder="Next plan (optional)…" />
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-                className={`${inputCls} resize-none`} placeholder="Notes (optional)…" />
+        {/* Body: clean top-down flow — less scrolling, full-width sections */}
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
+          {/* Patient complaint (from booking) — full width on top */}
+          {appointment.complaint && (
+            <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">⚠ Complaint</p>
+              <p className="mt-0.5 whitespace-pre-wrap text-[13px] font-medium text-slate-800">{appointment.complaint}</p>
             </div>
+          )}
 
-            {/* Case images (optional) */}
-            <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
-              <div className="mb-1.5 flex items-center justify-between">
-                <p className="text-[11px] font-semibold text-[#015478]">Case images (optional)</p>
-                <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
-                  + Add images
-                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
-                    onChange={onPickImages} disabled={saving} />
-                </label>
-              </div>
-              {images.length === 0 ? (
-                <p className="text-[11px] text-slate-500">Attach x-rays/photos (JPG, PNG, WEBP · up to 10MB each).</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {images.map((im) => (
-                    <div key={im.id} className="relative h-16 w-16 overflow-hidden rounded-md border border-slate-200">
-                      <img src={im.preview} alt="" className="h-full w-full object-cover" />
-                      <button type="button" onClick={() => removeImage(im.id)} disabled={saving}
-                        title="Remove"
-                        className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
-                    </div>
-                  ))}
+          {/* Patient medical info — blood type / allergies / chronic diseases */}
+          {(appointment.patient_blood_type || appointment.patient_allergies || appointment.patient_chronic_diseases) && (
+            <div className="grid gap-2 sm:grid-cols-3">
+              {appointment.patient_blood_type && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Blood type</p>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type}</p>
+                </div>
+              )}
+              {appointment.patient_allergies && (
+                <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">⚠ Allergies</p>
+                  <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_allergies}</p>
+                </div>
+              )}
+              {appointment.patient_chronic_diseases && (
+                <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Chronic diseases</p>
+                  <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_chronic_diseases}</p>
                 </div>
               )}
             </div>
+          )}
 
+          {/* Next plan + Notes — full width on top */}
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2}
+              className={`${inputCls} resize-none`} placeholder="Next plan (optional)…" />
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
+              className={`${inputCls} resize-none`} placeholder="Notes (optional)…" />
+          </div>
+
+          {/* Middle: treatment controls (left) | teeth chart (right) */}
+          <div className="grid gap-3 lg:grid-cols-[minmax(280px,0.85fr),2fr] lg:items-start">
+          {/* ===== LEFT: controls ===== */}
+          <div className="flex flex-col gap-3">
             {/* Choose treatment */}
             <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
               <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">1 · Choose treatment</p>
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
+              <div className="flex flex-wrap items-end gap-2">
+                <div className="min-w-[160px] flex-1">
                   <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} disabled={loadingCatalog} className={inputCls}>
                     <option value="">{loadingCatalog ? "Loading…" : "Select treatment…"}</option>
                     {catalog.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
@@ -474,9 +481,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
 
             {/* Saved treatments (chips) */}
-            <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+            <div className="flex flex-col rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
               <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">Saved treatments ({confirmed.length})</p>
-              <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="max-h-48 overflow-y-auto">
                 {confirmed.length === 0 ? (
                   <p className="text-[11px] text-slate-500">Choose a treatment → pick teeth → “Add”. Items appear here.</p>
                 ) : (
@@ -512,10 +519,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                 </div>
               </div>
             )}
+
+            {/* Prescription (optional) — sits in the remaining space below treatments */}
+            <div className="rounded-xl border border-slate-200 bg-white p-3">
+              <PrescriptionEditor items={prescription} onChange={setPrescription} patientName={appointment.patient_name} />
+            </div>
           </div>
 
           {/* ===== RIGHT: teeth chart (hero) ===== */}
-          <div className="flex min-h-0 flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-4">
+          <div className="flex flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-4 lg:min-h-[420px]">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
               {!dWhole && draft.work_id && (
@@ -551,6 +563,33 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
               )}
             </div>
             <p className="mt-2 text-center text-[11px] text-slate-400">Highlighted tooth = already has an active plan · tap to select</p>
+          </div>
+          </div>
+
+          {/* Case images (optional) — full width at the bottom, responsive grid */}
+          <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-[11px] font-semibold text-[#015478]">Case images (optional)</p>
+              <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
+                + Add images
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
+                  onChange={onPickImages} disabled={saving} />
+              </label>
+            </div>
+            {images.length === 0 ? (
+              <p className="text-[11px] text-slate-500">Attach x-rays/photos (JPG, PNG, WEBP · up to 10MB each).</p>
+            ) : (
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+                {images.map((im) => (
+                  <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-slate-200">
+                    <img src={im.preview} alt="" className="h-full w-full object-cover" />
+                    <button type="button" onClick={() => removeImage(im.id)} disabled={saving}
+                      title="Remove"
+                      className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

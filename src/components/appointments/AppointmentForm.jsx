@@ -52,6 +52,7 @@ export default function AppointmentForm({
     hour: initialDT.hour,
     minute: initialDT.minute,
     period: initialDT.period,
+    complaint: initialData?.complaint ?? "",
   });
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function AppointmentForm({
       hour: dt.hour,
       minute: dt.minute,
       period: dt.period,
+      complaint: initialData.complaint ?? "",
     });
 
     // ADD THIS PART - Make sure selectedPatient is set correctly in edit mode
@@ -167,6 +169,7 @@ export default function AppointmentForm({
       patient_id: Number(patient_id),  // Always include patient_id
       doctor_id: Number(form.doctor_id),
       scheduled_start: new Date(scheduledStart).toISOString(),
+      complaint: form.complaint?.trim() || null,
     };
 
     let payload;
@@ -318,6 +321,21 @@ export default function AppointmentForm({
           <option value="urgent">Urgent</option>
           <option value="walk_in">Walk-in</option>
         </select>
+      </div>
+
+      {/* COMPLAINT */}
+      <div className="space-y-1">
+        <label className="block text-xs font-medium text-slate-700">
+          Complaint <span className="text-slate-400">(optional)</span>
+        </label>
+        <textarea
+          name="complaint"
+          value={form.complaint}
+          onChange={handleChange}
+          rows={2}
+          placeholder="e.g. Toothache upper right, sensitivity to cold"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+        />
       </div>
 
       {/* SUBMIT */}

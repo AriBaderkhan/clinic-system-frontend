@@ -154,6 +154,56 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 </div>
               </div>
 
+              {/* Complaint */}
+              {appointment.complaint && (
+                <div className="space-y-1">
+                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                    Complaint
+                  </p>
+                  <p className="whitespace-pre-wrap text-xs text-slate-700">
+                    {appointment.complaint}
+                  </p>
+                </div>
+              )}
+
+              {/* Medical info — blood type / allergies / chronic diseases */}
+              {(appointment.patient_blood_type ||
+                appointment.patient_allergies ||
+                appointment.patient_chronic_diseases) && (
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {appointment.patient_blood_type && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                        Blood type
+                      </p>
+                      <p className="mt-0.5 text-sm font-semibold text-slate-800">
+                        {appointment.patient_blood_type}
+                      </p>
+                    </div>
+                  )}
+                  {appointment.patient_allergies && (
+                    <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">
+                        ⚠ Allergies
+                      </p>
+                      <p className="mt-0.5 text-xs font-medium text-slate-800">
+                        {appointment.patient_allergies}
+                      </p>
+                    </div>
+                  )}
+                  {appointment.patient_chronic_diseases && (
+                    <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                        Chronic diseases
+                      </p>
+                      <p className="mt-0.5 text-xs font-medium text-slate-800">
+                        {appointment.patient_chronic_diseases}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Cancel / no-show reason */}
               {(appointment.status === "cancelled" ||
                 appointment.status === "no_show") && (

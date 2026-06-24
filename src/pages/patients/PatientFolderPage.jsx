@@ -87,37 +87,70 @@ export default function PatientFolderPage() {
         </p>
       </div>
 
-      {/* Patient info card */}
+      {/* Patient info card — general + medical info together at the top */}
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         {isPatientLoading && <p className="text-xs text-slate-500">Loading patient…</p>}
         {patientError && <p className="text-xs text-red-600">{patientError}</p>}
         {patient && (
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">{patient.name}</p>
-              <p className="mt-1 text-xs text-slate-600">
-                Phone: <span className="font-medium">{patient.phone}</span>
-                {patient.age && (
-                  <>
-                    {" · "}Age: <span className="font-medium">{patient.age}</span>
-                  </>
-                )}
-                {patient.gender && (
-                  <>
-                    {" · "}Gender:{" "}
-                    <span className="font-medium capitalize">{patient.gender}</span>
-                  </>
-                )}
-              </p>
+          <div className="space-y-4">
+            {/* General info */}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">{patient.name}</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Phone: <span className="font-medium">{patient.phone}</span>
+                  {patient.age && (
+                    <>
+                      {" · "}Age: <span className="font-medium">{patient.age}</span>
+                    </>
+                  )}
+                  {patient.gender && (
+                    <>
+                      {" · "}Gender:{" "}
+                      <span className="font-medium capitalize">{patient.gender}</span>
+                    </>
+                  )}
+                  {patient.blood_type && (
+                    <>
+                      {" · "}Blood:{" "}
+                      <span className="font-medium">{patient.blood_type}</span>
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="text-right text-xs text-slate-500">
+                <p>
+                  Total payments:{" "}
+                  <span className="font-semibold text-[#015478]">
+                    {formatMoney(totalPaidForPatient)}
+                  </span>
+                </p>
+              </div>
             </div>
-            <div className="text-right text-xs text-slate-500">
-              <p>
-                Total payments:{" "}
-                <span className="font-semibold text-[#015478]">
-                  {formatMoney(totalPaidForPatient)}
-                </span>
-              </p>
-            </div>
+
+            {/* Medical info — same card, highlighted so it can't be missed */}
+            {(patient.blood_type || patient.allergies || patient.chronic_diseases) && (
+              <div className="grid gap-2 border-t border-slate-100 pt-3 sm:grid-cols-3">
+                {patient.blood_type && (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Blood type</p>
+                    <p className="mt-0.5 text-sm font-semibold text-slate-800">{patient.blood_type}</p>
+                  </div>
+                )}
+                {patient.allergies && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-red-600">⚠ Allergies</p>
+                    <p className="mt-0.5 text-sm font-medium text-red-800">{patient.allergies}</p>
+                  </div>
+                )}
+                {patient.chronic_diseases && (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-600">Chronic diseases</p>
+                    <p className="mt-0.5 text-sm font-medium text-amber-800">{patient.chronic_diseases}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

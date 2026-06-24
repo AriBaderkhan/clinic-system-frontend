@@ -143,6 +143,9 @@ export default function DoctorDashboard() {
                         Type
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
+                        Complaint
+                      </th>
+                      <th className="px-3 py-2 font-medium text-[#015478]">
                         Status
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478] text-right">
@@ -173,6 +176,15 @@ export default function DoctorDashboard() {
                           </td>
                           <td className="px-3 py-2 text-slate-700">
                             {a.appointment_type}
+                          </td>
+                          <td className="px-3 py-2 text-slate-700 max-w-[280px] align-top">
+                            {a.complaint ? (
+                              <span className="block whitespace-pre-wrap break-words">
+                                {a.complaint}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
                           </td>
                           <td className="px-3 py-2 text-slate-700">
                             <span

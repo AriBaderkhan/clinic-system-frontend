@@ -12,12 +12,18 @@ import {
 } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 import TeethDiagram from "./TeethDiagram";
+import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
+
+// stable signature of the prescription so we only send it when it actually changed
+const prescSig = (items) =>
+    JSON.stringify((items || [])
+        .filter((i) => i.drug_name && i.drug_name.trim())
+        .map((i) => [i.drug_name.trim(), i.dosage || "", i.frequency || "", i.duration || "", i.instructions || ""]));
 
 const TREATMENT_TYPES = ["ortho", "implant", "rct", "re_rct"];
 const PLAN_CODES = new Set(TREATMENT_TYPES);
 const WHOLE_MOUTH_CODES = new Set(["scaling_polish", "ortho", "laser"]);
 const ABBR = { rct: "RCT", re_rct: "RE-RCT", implant: "IMP", ortho: "ORT" };
-const MAX_IMAGES = 12;
 const ALLOWED_IMG = ["image/jpeg", "image/png", "image/webp"];
 
 const metaFrom = (catalog, id) => {
@@ -64,6 +70,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDelete, setImagesToDelete] = useState([]);
     const [newImages, setNewImages] = useState([]);
+
+    const [prescription, setPrescription] = useState([]);
+    const [origPrescSig, setOrigPrescSig] = useState("[]");
 
     useEffect(() => () => newImages.forEach((im) => URL.revokeObjectURL(im.preview)), [newImages]);
 
@@ -113,6 +122,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                     (sessionData?.plan_works || []).map((p) => ({ ...p, tooth_number: p.tooth_number ?? "", _origTooth: p.tooth_number ?? "" }))
                 );
                 setExistingImages(imagesRes?.data || []);
+
+                const pItems = sessionData?.session?.prescription?.items || [];
+                setPrescription(pItems.map((i) => ({ drug_name: i.drug_name || "", dosage: i.dosage || "", frequency: i.frequency || "", duration: i.duration || "", instructions: i.instructions || "" })));
+                setOrigPrescSig(prescSig(pItems));
             } catch (err) {
                 if (alive) setError(err.userMessage || "Could not load session.");
             } finally {
@@ -217,11 +230,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const onPickImages = (e) => {
         const picked = Array.from(e.target.files || []);
         e.target.value = "";
-        const room = MAX_IMAGES - (existingImages.length - imagesToDelete.length + newImages.length);
-        if (room <= 0) return toast.error(`You can keep up to ${MAX_IMAGES} images.`);
+        // No cap — keep/add as many case images as needed.
         const valid = picked
             .filter((f) => ALLOWED_IMG.includes(f.type) && f.size <= 10 * 1024 * 1024)
-            .slice(0, room)
             .map((f) => ({ id: `${Date.now()}-${Math.random()}`, file: f, preview: URL.createObjectURL(f) }));
         if (valid.length < picked.length) toast.error("Some files were skipped (only JPG/PNG/WEBP up to 10MB).");
         setNewImages((prev) => [...prev, ...valid]);
@@ -258,6 +269,11 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             const v = Number(totalPaid);
             if (!Number.isFinite(v) || v < 0) return setError("Total paid must be a number ≥ 0");
             payload.total_paid = v;
+        }
+
+        // prescription — only send if it changed (cleaned of empty drug rows)
+        if (prescSig(prescription) !== origPrescSig) {
+            payload.prescription = prescription.filter((r) => r.drug_name && r.drug_name.trim());
         }
 
         const planToothUpdates = planWorks
@@ -320,9 +336,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 {isLoading ? (
                     <div className="p-6 text-sm text-slate-500">Loading…</div>
                 ) : (
-                    <div className="grid min-h-0 flex-1 gap-3 p-3 sm:p-4 lg:grid-cols-[minmax(300px,0.85fr),2fr]">
+                    <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+                      <div className="grid gap-3 lg:grid-cols-[minmax(300px,0.85fr),2fr] lg:items-start">
                         {/* LEFT */}
-                        <div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
+                        <div className="flex flex-col gap-3">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Next plan (optional)…" />
                                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Notes (optional)…" />
@@ -426,42 +443,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                 </div>
                             )}
 
-                            {/* Case images */}
-                            <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
-                                <div className="mb-1.5 flex items-center justify-between">
-                                    <p className="text-[11px] font-semibold text-[#015478]">Case images</p>
-                                    <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
-                                        + Add images
-                                        <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={onPickImages} disabled={isSaving} />
-                                    </label>
-                                </div>
-                                {existingImages.length === 0 && newImages.length === 0 ? (
-                                    <p className="text-[11px] text-slate-500">JPG, PNG or WEBP · up to 10MB each.</p>
-                                ) : (
-                                    <div className="flex flex-wrap gap-2">
-                                        {existingImages.map((img) => {
-                                            const marked = imagesToDelete.includes(img.id);
-                                            return (
-                                                <div key={img.id} className={`relative h-16 w-16 overflow-hidden rounded-md border ${marked ? "border-red-300 opacity-40" : "border-slate-200"}`}>
-                                                    <img src={img.url} alt="" className="h-full w-full object-cover" />
-                                                    <button type="button" onClick={() => toggleDeleteExisting(img.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">{marked ? "↺" : "✕"}</button>
-                                                </div>
-                                            );
-                                        })}
-                                        {newImages.map((im) => (
-                                            <div key={im.id} className="relative h-16 w-16 overflow-hidden rounded-md border border-emerald-300">
-                                                <img src={im.preview} alt="" className="h-full w-full object-cover" />
-                                                <span className="absolute left-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">new</span>
-                                                <button type="button" onClick={() => removeNewImage(im.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                            {/* Prescription */}
+                            <div className="rounded-xl border border-slate-200 bg-white p-3">
+                                <PrescriptionEditor items={prescription} onChange={setPrescription} patientName={header.patientName} />
                             </div>
                         </div>
 
                         {/* RIGHT: tooth chart */}
-                        <div className="flex min-h-0 flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-3 sm:p-4">
+                        <div className="flex flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-3 sm:p-4 lg:min-h-[420px]">
                             <div className="mb-2 flex items-center justify-between">
                                 <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
                                 {dMeta && !dWhole && (<span className="text-xs text-slate-500">{draft.teeth.length ? `tooth ${draft.teeth.join(", ")}` : "tooth optional"}</span>)}
@@ -473,6 +462,40 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             </div>
                             <p className="mt-2 text-center text-[11px] text-slate-400">Amber = treatment-plan tooth · pick a treatment then tap teeth</p>
                         </div>
+                      </div>
+
+                      {/* Case images — full width at the bottom, responsive grid (like the add flow) */}
+                      <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
+                        <div className="mb-2 flex items-center justify-between">
+                          <p className="text-[11px] font-semibold text-[#015478]">Case images</p>
+                          <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
+                            + Add images
+                            <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={onPickImages} disabled={isSaving} />
+                          </label>
+                        </div>
+                        {existingImages.length === 0 && newImages.length === 0 ? (
+                          <p className="text-[11px] text-slate-500">JPG, PNG or WEBP · up to 10MB each.</p>
+                        ) : (
+                          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+                            {existingImages.map((img) => {
+                              const marked = imagesToDelete.includes(img.id);
+                              return (
+                                <div key={img.id} className={`relative aspect-square overflow-hidden rounded-md border ${marked ? "border-red-300 opacity-40" : "border-slate-200"}`}>
+                                  <img src={img.url} alt="" className="h-full w-full object-cover" />
+                                  <button type="button" onClick={() => toggleDeleteExisting(img.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">{marked ? "↺" : "✕"}</button>
+                                </div>
+                              );
+                            })}
+                            {newImages.map((im) => (
+                              <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-emerald-300">
+                                <img src={im.preview} alt="" className="h-full w-full object-cover" />
+                                <span className="absolute left-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">new</span>
+                                <button type="button" onClick={() => removeNewImage(im.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                 )}
 

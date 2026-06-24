@@ -4,6 +4,7 @@ import { useSettings } from "../../context/SettingContext";
 import EditSessionModal from "./EditSessionModal";
 import TeethDiagram, { worksToTeeth } from "./TeethDiagram";
 import CaseImagesGrid from "./CaseImagesGrid";
+import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
 
 export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
   const { formatDateTime } = useSettings();
@@ -15,6 +16,7 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
   const session = details?.session;
   const worksSummary = details?.works_summary;
   const images = details?.images || [];
+  const rxItems = session?.prescription?.items || [];
   const { teeth: markedTeeth, labels: toothLabels } = worksToTeeth(worksSummary?.works);
   const noToothWorks = (worksSummary?.works || []).filter((w) => !w.teeth || w.teeth.length === 0);
   const hasWorks = worksSummary?.works?.length > 0;
@@ -46,6 +48,38 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
           <div className="p-6 text-sm text-slate-500">Session details not available.</div>
         ) : (
           <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+            {/* Complaint (from booking) — full width on top */}
+            {session.appointment?.complaint && (
+              <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">⚠ Complaint</p>
+                <p className="mt-0.5 whitespace-pre-line break-words text-[13px] font-medium text-slate-800">{session.appointment.complaint}</p>
+              </div>
+            )}
+
+            {/* Patient medical info — blood type / allergies / chronic diseases */}
+            {(session.patient?.blood_type || session.patient?.allergies || session.patient?.chronic_diseases) && (
+              <div className="grid gap-2 sm:grid-cols-3">
+                {session.patient.blood_type && (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Blood type</p>
+                    <p className="mt-0.5 text-sm font-semibold text-slate-800">{session.patient.blood_type}</p>
+                  </div>
+                )}
+                {session.patient.allergies && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">⚠ Allergies</p>
+                    <p className="mt-0.5 text-[13px] font-medium text-slate-800">{session.patient.allergies}</p>
+                  </div>
+                )}
+                {session.patient.chronic_diseases && (
+                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Chronic diseases</p>
+                    <p className="mt-0.5 text-[13px] font-medium text-slate-800">{session.patient.chronic_diseases}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Notes — above all, full width */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -143,6 +177,13 @@ export default function SessionDetailsModalForDocs({ sessionId, onClose }) {
                 <p className="mt-2 text-center text-[11px] text-slate-400">Highlighted = worked this session · tagged = treatment-plan tooth</p>
               </div>
             </div>
+
+            {/* Prescription (read-only) — printable */}
+            {rxItems.length > 0 && (
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <PrescriptionEditor items={rxItems} onChange={() => {}} patientName={session.patient.full_name} readOnly />
+              </div>
+            )}
 
             {/* Case images — bottom, full width */}
             <CaseImagesGrid images={images} />
