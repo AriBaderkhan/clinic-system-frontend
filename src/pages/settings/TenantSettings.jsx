@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from "react";
 import { getTenant, updateTenant, getBranches, createBranch, updateBranch, deleteBranch } from "../../api/tenantApi";
 import { useSettings } from "../../context/SettingContext";
+import SubscriptionSection from "../../components/subscription/SubscriptionSection";
 import toast from "react-hot-toast";
 
 export default function TenantSettingsPage() {
@@ -314,6 +315,14 @@ export default function TenantSettingsPage() {
                         </div>
                     )}
                 </div>
+            </section>
+
+            <div className="border-t border-gray-200"></div>
+
+            {/* ================= SUBSCRIPTION SECTION ================= */}
+            <section>
+                <h2 className="mb-4 text-xl font-bold text-gray-800">Subscription</h2>
+                <SubscriptionSection />
             </section>
 
             <div className="border-t border-gray-200"></div>

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
 import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
+import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 // Helper to check permission safely
 const hasPermission = (permission) => {
@@ -24,7 +25,7 @@ const getNavItems = () => {
     { label: "Patients", path: "patients", permission: "view_patient" },
     { label: "Appointments", path: "appointments", permission: "view_appointment", end: true },
     { label: "Calendar", path: "appointments/calendar", permission: "view_appointment", indent: true },
-    { label: "Reminders", path: "appointments/reminders", permission: "send_reminders", indent: true },
+    { label: "Reminders", path: "appointments/reminders", permission: "send_reminders", indent: true, feature: "reminders" },
     { label: "Sessions", path: "sessions", permission: "view_session" },
     { label: "Lab", path: "lab", permission: "manage_lab" },
     // { label: "History", path: "history", permission: "view_payment" },
@@ -48,6 +49,10 @@ const handleLogout = () => {
 
 export default function ReceptionLayout() {
   const [open, setOpen] = useState(false);
+  const { hasFeature } = useSubscription();
+
+  // permission-filtered items, then hide any whose plan feature isn't included
+  const navItems = getNavItems().filter((item) => !item.feature || hasFeature(item.feature));
 
 
 
@@ -127,7 +132,7 @@ export default function ReceptionLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {getNavItems().map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -183,7 +188,7 @@ export default function ReceptionLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {getNavItems().map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}

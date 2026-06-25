@@ -49,6 +49,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import PlansPage from "./pages/admin/Plans";
 import FeaturesPage from "./pages/admin/Features";
+import SubscriptionRequestsPage from "./pages/admin/SubscriptionRequests";
 
 export default function App() {
   return (
@@ -189,6 +190,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="plans" element={<PlansPage />} />
           <Route path="features" element={<FeaturesPage />} />
+          <Route path="subscriptions" element={<SubscriptionRequestsPage />} />
         </Route>
 
         {/* ===================== FALLBACK ===================== */}

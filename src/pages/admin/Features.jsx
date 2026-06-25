@@ -29,9 +29,11 @@ export default function FeaturesPage() {
         try {
             setLoading(true);
             const [featuresData, plansData] = await Promise.all([getFeatures(), getPlans()]);
-            setFeatures(featuresData);
-            setPlans(plansData);
-            if (plansData.length > 0) setSelectedPlanId(plansData[0].id);
+            const featuresList = featuresData.data ?? [];
+            const plansList = plansData.data ?? [];
+            setFeatures(featuresList);
+            setPlans(plansList);
+            if (plansList.length > 0) setSelectedPlanId(plansList[0].id);
         } catch (error) {
             toast.error(error.userMessage || 'Failed to load data');
         } finally {
@@ -42,7 +44,7 @@ export default function FeaturesPage() {
     const loadPlanFeatures = async (planId) => {
         try {
             const data = await getPlanFeatures(planId);
-            setPlanFeatures(data);
+            setPlanFeatures(data.data ?? []);
         } catch (error) {
             toast.error(error.userMessage || 'Failed to load plan features');
         }
@@ -55,7 +57,7 @@ export default function FeaturesPage() {
             toast.success('Feature created');
             setNewFeature({ name: '', code: '', description: '' });
             const data = await getFeatures(); // reload
-            setFeatures(data);
+            setFeatures(data.data ?? []);
         } catch (error) {
             toast.error(error.userMessage || 'Failed to create feature');
         }

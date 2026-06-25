@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getPlans, createPlan, updatePlan } from '../../api/planApi';
+import { getFeatures, getPlanFeatures, assignFeatureToPlan, removeFeatureFromPlan } from '../../api/featureApi';
 // import Modal from '../../components/Modal'; // Assuming Modal exists, checking later. If not, simple overlay.
 // Reverting to simpler implementation without custom Modal component for now to be safe, or inline it.
 
@@ -9,6 +10,13 @@ export default function PlansPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState(null);
+
+    // ── Manage-features modal ──
+    const [featuresPlan, setFeaturesPlan] = useState(null); // the plan being edited
+    const [allFeatures, setAllFeatures] = useState([]);
+    const [assignedIds, setAssignedIds] = useState(new Set());
+    const [featuresLoading, setFeaturesLoading] = useState(false);
+    const [togglingId, setTogglingId] = useState(null);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -27,7 +35,7 @@ export default function PlansPage() {
         try {
             setLoading(true);
             const data = await getPlans();
-            setPlans(data);
+            setPlans(data.data ?? []);
         } catch (error) {
             toast.error(error.userMessage || 'Failed to load plans');
         } finally {
@@ -75,6 +83,38 @@ export default function PlansPage() {
         }
     };
 
+    // ── Manage features per plan ──
+    const openFeaturesModal = async (plan) => {
+        setFeaturesPlan(plan);
+        setFeaturesLoading(true);
+        try {
+            const [all, assigned] = await Promise.all([getFeatures(), getPlanFeatures(plan.id)]);
+            setAllFeatures(all.data ?? []);
+            setAssignedIds(new Set((assigned.data ?? []).map((f) => f.id)));
+        } catch (error) {
+            toast.error(error.userMessage || 'Failed to load features');
+        } finally {
+            setFeaturesLoading(false);
+        }
+    };
+
+    const toggleFeature = async (featureId, checked) => {
+        try {
+            setTogglingId(featureId);
+            if (checked) await assignFeatureToPlan(featuresPlan.id, featureId);
+            else await removeFeatureFromPlan(featuresPlan.id, featureId);
+            setAssignedIds((prev) => {
+                const next = new Set(prev);
+                if (checked) next.add(featureId); else next.delete(featureId);
+                return next;
+            });
+        } catch (error) {
+            toast.error(error.userMessage || 'Failed to update feature');
+        } finally {
+            setTogglingId(null);
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -115,6 +155,12 @@ export default function PlansPage() {
                                 className="w-full rounded-md border border-slate-300 bg-white py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                             >
                                 Edit
+                            </button>
+                            <button
+                                onClick={() => openFeaturesModal(plan)}
+                                className="w-full rounded-md bg-[#015478] py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                            >
+                                Features
                             </button>
                         </div>
                     </div>
@@ -206,6 +252,59 @@ export default function PlansPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Manage-features modal */}
+            {featuresPlan && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={(e) => e.target === e.currentTarget && setFeaturesPlan(null)}
+                >
+                    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-lg font-medium text-slate-900">
+                                Features — <span className="text-[#015478]">{featuresPlan.name}</span>
+                            </h3>
+                            <button onClick={() => setFeaturesPlan(null)} className="text-xl font-bold text-slate-400 hover:text-slate-600">&times;</button>
+                        </div>
+
+                        {featuresLoading ? (
+                            <p className="text-sm text-slate-500">Loading features…</p>
+                        ) : allFeatures.length === 0 ? (
+                            <p className="text-sm text-slate-500">No features defined yet. Create some on the Features page.</p>
+                        ) : (
+                            <div className="space-y-2">
+                                {allFeatures.map((f) => {
+                                    const checked = assignedIds.has(f.id);
+                                    return (
+                                        <label key={f.id} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50">
+                                            <span className="min-w-0">
+                                                <span className="block text-sm font-medium text-slate-800">{f.name}</span>
+                                                <span className="block text-xs text-slate-400">{f.code}</span>
+                                            </span>
+                                            <input
+                                                type="checkbox"
+                                                checked={checked}
+                                                disabled={togglingId === f.id}
+                                                onChange={(e) => toggleFeature(f.id, e.target.checked)}
+                                                className="h-4 w-4 rounded border-slate-300 text-[#015478] focus:ring-[#015478]"
+                                            />
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        <div className="mt-5 flex justify-end">
+                            <button
+                                onClick={() => setFeaturesPlan(null)}
+                                className="rounded-md bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                            >
+                                Done
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

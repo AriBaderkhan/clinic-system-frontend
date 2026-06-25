@@ -4,14 +4,17 @@ import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
 import BranchSwitcher from "../components/BranchSwitcher";
+import SubscriptionBanner from "../components/SubscriptionBanner";
+import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
+// `feature` items are hidden unless the tenant's plan includes that feature code.
 const navItems = [
   { label: "Dashboard", path: "", end: true },
   { label: "Patients", path: "patients" },
   { label: "Appointments", path: "appointments", end: true },
   { label: "Calendar", path: "appointments/calendar", indent: true },
-  { label: "Reminders", path: "appointments/reminders", indent: true },
+  { label: "Reminders", path: "appointments/reminders", indent: true, feature: "reminders" },
   { label: "Sessions", path: "sessions" },
   { label: "Lab", path: "lab" },
   // { label: "History", path: "history" },
@@ -32,7 +35,11 @@ const handleLogout = () => {
 export default function BranchManagerLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { hasFeature } = useSubscription();
   const isTenantViewing = !!localStorage.getItem('tenant_token');
+
+  // hide nav items whose feature the plan doesn't include
+  const visibleNav = navItems.filter((item) => !item.feature || hasFeature(item.feature));
 
   const handleBackToTenant = () => {
     localStorage.setItem('token', localStorage.getItem('tenant_token'));
@@ -115,7 +122,7 @@ export default function BranchManagerLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {navItems.map((item) => (
+          {visibleNav.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -178,7 +185,7 @@ export default function BranchManagerLayout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-          {navItems.map((item) => (
+          {visibleNav.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -238,6 +245,7 @@ export default function BranchManagerLayout() {
           </button>
 
         <main className="flex-1 overflow-y-auto px-4 pt-14 pb-4 md:px-6 md:py-6">
+          <SubscriptionBanner />
           <Outlet />
         </main>
       </div>

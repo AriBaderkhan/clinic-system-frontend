@@ -39,12 +39,14 @@ export default function AdminDashboard() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [tenantsData, plansData] = await Promise.all([getAllTenants(), getPlans()]);
-            setTenants(tenantsData);
-            setPlans(plansData);
-            if (plansData.length > 0) {
-                setRegisterForm(prev => ({ ...prev, plan_id: plansData[0].id }));
-                setSubForm(prev => ({ ...prev, plan_id: plansData[0].id }));
+            const [tenantsRes, plansRes] = await Promise.all([getAllTenants(), getPlans()]);
+            const tenantsList = tenantsRes.data ?? [];
+            const plansList = plansRes.data ?? [];
+            setTenants(tenantsList);
+            setPlans(plansList);
+            if (plansList.length > 0) {
+                setRegisterForm(prev => ({ ...prev, plan_id: plansList[0].id }));
+                setSubForm(prev => ({ ...prev, plan_id: plansList[0].id }));
             }
         } catch (error) {
             toast.error(error.userMessage || 'Failed to load data');

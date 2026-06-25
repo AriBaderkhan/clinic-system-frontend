@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
+import SubscriptionBanner from "../components/SubscriptionBanner";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
@@ -149,6 +150,7 @@ export default function TenantLayout() {
                     ☰
                 </button>
                 <main className="flex-1 px-4 pt-14 pb-4 md:px-6 md:py-6">
+                    <SubscriptionBanner />
                     <Outlet />
                 </main>
             </div>

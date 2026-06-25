@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import useMonthlyReportPdf from "../../hooks/useMonthlyReportPdf";
+import { useSubscription } from "../../context/SubscriptionContext";
 
 function toMonthParam(value) {
   // value is "2025-12" from <input type="month" />
@@ -26,6 +27,9 @@ export default function ReportsPage() {
 
   const [reportType, setReportType] = useState('monthly'); // 'monthly' | 'custom'
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
+
+  const { hasFeature } = useSubscription();
+  const canCustomRange = hasFeature('custom_report');
 
   const { download, isLoading, error } = useMonthlyReportPdf();
 
@@ -111,15 +115,17 @@ export default function ReportsPage() {
                     />
                     Monthly Report
                   </label>
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input
-                      type="radio"
-                      name="reportType"
-                      checked={reportType === 'custom'}
-                      onChange={() => setReportType('custom')}
-                    />
-                    Custom Date Range
-                  </label>
+                  {canCustomRange && (
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="reportType"
+                        checked={reportType === 'custom'}
+                        onChange={() => setReportType('custom')}
+                      />
+                      Custom Date Range
+                    </label>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap items-end gap-3">

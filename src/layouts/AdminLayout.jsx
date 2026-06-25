@@ -7,6 +7,7 @@ const navItems = [
     { label: "Dashboard", path: "", end: true },
     { label: "Plans", path: "plans" },
     { label: "Features", path: "features" },
+    { label: "Subscriptions", path: "subscriptions" },
 ];
 
 export default function AdminLayout() {
