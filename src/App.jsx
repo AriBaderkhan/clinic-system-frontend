@@ -43,6 +43,7 @@ import BranchManagerLayout from "./layouts/BranchManagerLayout";
 import TenantDashboard from "./pages/tenant/Dashboard";
 import TenantBranches from "./pages/tenant/Branches";
 import TenantUsers from "./pages/tenant/Users";
+import AuditLogPage from "./pages/audit/AuditLogPage";
 
 // Admin Platform pages
 import AdminLayout from "./layouts/AdminLayout";
@@ -87,6 +88,7 @@ export default function App() {
           <Route path="settings" element={<TenantSettingsPage />} />
           <Route path="users" element={<TenantUsers />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="audit" element={<AuditLogPage />} />
         </Route>
 
         {/* ===================== BRANCH MANAGER ===================== */}

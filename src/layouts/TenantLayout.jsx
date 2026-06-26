@@ -3,6 +3,7 @@ import { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
 import SubscriptionBanner from "../components/SubscriptionBanner";
+import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
@@ -11,10 +12,15 @@ const navItems = [
     { label: "Settings", path: "settings" },
     { label: "Users", path: "users" },
     { label: "Reports", path: "reports" },
+    { label: "Activity Log", path: "audit", feature: "audit_log" },
 ];
 
 export default function TenantLayout() {
     const [open, setOpen] = useState(false);
+    const { hasFeature } = useSubscription();
+
+    // Hide nav items whose plan feature isn't included (e.g. Activity Log → Pro).
+    const visibleNav = navItems.filter((item) => !item.feature || hasFeature(item.feature));
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -72,7 +78,7 @@ export default function TenantLayout() {
                 </div>
 
                 <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-                    {navItems.map((item) => (
+                    {visibleNav.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
@@ -113,7 +119,7 @@ export default function TenantLayout() {
                 </div>
 
                 <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
-                    {navItems.map((item) => (
+                    {visibleNav.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
