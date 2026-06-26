@@ -5,6 +5,12 @@ export const getPlans = async () => {
     return res.data;
 };
 
+// Public pricing (no auth) — plans with their features. For the signup page.
+export const getPublicPlans = async () => {
+    const res = await api.get('/api/plans/public');
+    return res.data;
+};
+
 export const createPlan = async (data) => {
     const res = await api.post('/api/plans', data);
     return res.data;

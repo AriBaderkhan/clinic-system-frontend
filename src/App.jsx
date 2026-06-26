@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import OfflineNotice from "./pages/OfflineNotice";
+import RegisterPage from "./pages/register/RegisterPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
@@ -51,6 +52,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import PlansPage from "./pages/admin/Plans";
 import FeaturesPage from "./pages/admin/Features";
 import SubscriptionRequestsPage from "./pages/admin/SubscriptionRequests";
+import RegistrationsPage from "./pages/admin/Registrations";
 
 export default function App() {
   return (
@@ -61,6 +63,7 @@ export default function App() {
 
         {/* ===================== PUBLIC ===================== */}
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Role home redirect */}
         <Route
@@ -193,6 +196,7 @@ export default function App() {
           <Route path="plans" element={<PlansPage />} />
           <Route path="features" element={<FeaturesPage />} />
           <Route path="subscriptions" element={<SubscriptionRequestsPage />} />
+          <Route path="registrations" element={<RegistrationsPage />} />
         </Route>
 
         {/* ===================== FALLBACK ===================== */}
