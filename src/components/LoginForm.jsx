@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
   const [email, setEmail] = useState("");
@@ -61,6 +62,11 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
             >
               {showPassword ? "Hide" : "Show"}
             </button>
+          </div>
+          <div className="text-right">
+            <Link to="/forgot-password" className="text-xs font-medium text-[#015478] hover:underline">
+              Forgot password?
+            </Link>
           </div>
         </div>
 

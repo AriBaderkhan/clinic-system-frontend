@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { getMyProfile } from "../api/profileApi";
 
 const AuthContext = createContext();
 
@@ -14,7 +15,19 @@ export const AuthProvider = ({ children }) => {
   });
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const [profile, setProfile] = useState(null); // { full_name, email, phone, address, role, image_url }
   const navigate = useNavigate();
+
+  // The caller's own profile (powers the avatar everywhere). Call after edits.
+  const refreshProfile = useCallback(async () => {
+    if (!localStorage.getItem("token")) return;
+    try {
+      const res = await getMyProfile();
+      setProfile(res.data ?? null);
+    } catch {
+      // never break the app if it fails
+    }
+  }, []);
 
   // Sync state with localStorage purely for initial load
   // (In a more advanced version, you might validate the token with the backend here)
@@ -75,16 +88,17 @@ export const AuthProvider = ({ children }) => {
   // Refresh on load and whenever the user comes back to the tab.
   useEffect(() => {
     refreshPermissions();
-    const onFocus = () => refreshPermissions();
+    refreshProfile();
+    const onFocus = () => { refreshPermissions(); refreshProfile(); };
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
-  }, [refreshPermissions]);
+  }, [refreshPermissions, refreshProfile]);
 
   // Helper boolean
   const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, role, user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ token, role, user, profile, isAuthenticated, login, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

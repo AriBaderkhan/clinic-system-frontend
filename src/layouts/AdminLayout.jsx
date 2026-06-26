@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
+import ProfileMenu from "../components/ProfileMenu";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 const navItems = [
@@ -9,6 +10,7 @@ const navItems = [
     { label: "Features", path: "features" },
     { label: "Subscriptions", path: "subscriptions" },
     { label: "Registrations", path: "registrations" },
+    { label: "Announcements", path: "announcements" },
 ];
 
 export default function AdminLayout() {
@@ -52,9 +54,7 @@ export default function AdminLayout() {
             >
                 <div className="flex items-center justify-between border-b border-[#6a87ad] px-5 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
-                            XA
-                        </div>
+                        <ProfileMenu />
                         <div className="flex flex-col">
                             <span className="text-sm font-semibold tracking-tight">Platform Admin</span>
                             <span className="text-[11px] text-white/70">System Administrator</span>
@@ -100,9 +100,7 @@ export default function AdminLayout() {
             {/* Desktop sidebar */}
             <aside className="hidden w-64 flex-col border-r bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
                 <div className="flex items-center gap-3 border-b border-[#6a87ad] px-5 py-4">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
-                        XA
-                    </div>
+                    <ProfileMenu />
                     <div className="flex flex-col">
                         <span className="text-sm font-semibold tracking-tight">Platform Admin</span>
                         <span className="text-[11px] text-white/70">System Administrator</span>

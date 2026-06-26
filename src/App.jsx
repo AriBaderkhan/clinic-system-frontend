@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import OfflineNotice from "./pages/OfflineNotice";
 import RegisterPage from "./pages/register/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ProfilePage from "./pages/profile/ProfilePage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
@@ -53,6 +55,7 @@ import PlansPage from "./pages/admin/Plans";
 import FeaturesPage from "./pages/admin/Features";
 import SubscriptionRequestsPage from "./pages/admin/SubscriptionRequests";
 import RegistrationsPage from "./pages/admin/Registrations";
+import AnnouncementsPage from "./pages/admin/Announcements";
 
 export default function App() {
   return (
@@ -64,6 +67,17 @@ export default function App() {
         {/* ===================== PUBLIC ===================== */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+        {/* Own profile — any authenticated role */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Role home redirect */}
         <Route
@@ -197,6 +211,7 @@ export default function App() {
           <Route path="features" element={<FeaturesPage />} />
           <Route path="subscriptions" element={<SubscriptionRequestsPage />} />
           <Route path="registrations" element={<RegistrationsPage />} />
+          <Route path="announcements" element={<AnnouncementsPage />} />
         </Route>
 
         {/* ===================== FALLBACK ===================== */}

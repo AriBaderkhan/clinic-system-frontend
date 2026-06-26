@@ -239,7 +239,7 @@ export default function RegisterPage() {
                                         value={form.email}
                                         onChange={(e) => onEmailChange(e.target.value)}
                                         disabled={emailVerified}
-                                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none disabled:bg-slate-100"
+                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none disabled:opacity-60"
                                         placeholder="you@example.com"
                                     />
                                     {emailVerified ? (
@@ -259,7 +259,7 @@ export default function RegisterPage() {
                                             maxLength={6}
                                             value={code}
                                             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm tracking-widest focus:border-[#015478] focus:outline-none"
+                                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#015478] focus:outline-none"
                                             placeholder="6-digit code"
                                         />
                                         <button type="button" onClick={handleVerifyCode} disabled={verifying}
@@ -345,7 +345,7 @@ function Field({ label, value, onChange, type = "text", required, hint, error })
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#015478]"}`}
+                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#015478]"}`}
             />
             {error ? <p className="mt-1 text-xs text-red-500">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
         </div>

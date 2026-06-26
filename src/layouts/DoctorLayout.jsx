@@ -2,6 +2,8 @@
 import { useMemo, useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
+import ProfileMenu from "../components/ProfileMenu";
+import AnnouncementsBell from "../components/AnnouncementsBell";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
 export default function DoctorLayout() {
@@ -45,13 +47,12 @@ export default function DoctorLayout() {
       >
         <div className="flex items-center justify-between border-b border-[#6a87ad] px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
-              CD
-            </div>
+            <ProfileMenu />
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
               <span className="text-[11px] text-white">Doctor Dashboard</span>
             </div>
+            <div className="ml-auto"><AnnouncementsBell /></div>
           </div>
 
           <button
@@ -106,13 +107,12 @@ export default function DoctorLayout() {
       {/* ===== Desktop sidebar ===== */}
       <aside className="hidden w-64 flex-col border-r bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
         <div className="flex items-center gap-3 border-b border-[#6a87ad] px-5 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#015478] text-xs font-semibold text-white">
-            CD
-          </div>
+          <ProfileMenu />
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
             <span className="text-[11px] text-white">Dr.{name} Dashboard</span>
           </div>
+          <div className="ml-auto"><AnnouncementsBell /></div>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
