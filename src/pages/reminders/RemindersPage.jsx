@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getUpcomingReminders, markReminderSent } from "../../api/reminderApi";
 
@@ -17,6 +18,7 @@ const fmtWhen = (iso) =>
   }).format(new Date(iso));
 
 export default function RemindersPage() {
+  const { t } = useTranslation();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,7 +35,7 @@ export default function RemindersPage() {
       const res = await getUpcomingReminders();
       setList(res.data || []);
     } catch (err) {
-      setError(err.userMessage || "Failed to load reminders");
+      setError(err.userMessage || t("appt.rem_load_failed"));
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ export default function RemindersPage() {
   const sendWhatsapp = async () => {
     if (!active) return;
     if (!active.phone_valid) {
-      toast.error("This phone number looks invalid — please fix it on the patient first.");
+      toast.error(t("appt.rem_invalid_phone"));
       return;
     }
     // open WhatsApp with the (possibly edited) message ready to send
@@ -77,10 +79,10 @@ export default function RemindersPage() {
       });
       // remove from list so it disappears (stays gone after refresh too)
       setList((prev) => prev.filter((r) => r.appointment_id !== active.appointment_id));
-      toast.success("Reminder marked as sent");
+      toast.success(t("appt.rem_marked_sent"));
       setActive(null);
     } catch (err) {
-      toast.error(err.userMessage || "Could not mark as sent");
+      toast.error(err.userMessage || t("appt.rem_mark_failed"));
     }
   };
 
@@ -88,21 +90,21 @@ export default function RemindersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Appointment Reminders
+          {t("appt.rem_title")}
         </h1>
         <p className="text-xs text-slate-500">
-          Appointments in the next 48 hours — send a WhatsApp reminder.
+          {t("appt.rem_subtitle")}
         </p>
       </div>
 
-      {loading && <div className="py-10 text-center text-slate-500">Loading…</div>}
+      {loading && <div className="py-10 text-center text-slate-500">{t("appt.loading_short")}</div>}
       {error && !loading && (
         <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       {!loading && !error && list.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-300 py-12 text-center text-slate-500">
-          No appointments need a reminder right now. 🎉
+          {t("appt.rem_empty")}
         </div>
       )}
 
@@ -111,10 +113,10 @@ export default function RemindersPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-700/40">
               <tr>
-                <th className="px-4 py-3">Patient</th>
-                <th className="px-4 py-3">Phone</th>
-                <th className="px-4 py-3">When</th>
-                <th className="px-4 py-3 text-right">Action</th>
+                <th className="px-4 py-3">{t("appt.rem_col_patient")}</th>
+                <th className="px-4 py-3">{t("appt.rem_col_phone")}</th>
+                <th className="px-4 py-3">{t("appt.rem_col_when")}</th>
+                <th className="px-4 py-3 text-end">{t("appt.rem_col_action")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -126,8 +128,8 @@ export default function RemindersPage() {
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
                     {r.phone_raw}
                     {!r.phone_valid && (
-                      <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
-                        ⚠ check number
+                      <span className="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+                        {t("appt.rem_check_number")}
                       </span>
                     )}
                   </td>
@@ -137,7 +139,7 @@ export default function RemindersPage() {
                       onClick={() => openPrepare(r)}
                       className="rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#013d58]"
                     >
-                      📲 Prepare message
+                      {t("appt.rem_prepare")}
                     </button>
                   </td>
                 </tr>
@@ -156,7 +158,7 @@ export default function RemindersPage() {
           <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-800">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-semibold text-slate-900 dark:text-slate-100">
-                Reminder · {active.patient_name}
+                {t("appt.rem_modal_title", { name: active.patient_name })}
               </h2>
               <button onClick={() => setActive(null)} className="text-slate-400 hover:text-slate-600">✕</button>
             </div>
@@ -195,13 +197,13 @@ export default function RemindersPage() {
                   onClick={() => setActive(null)}
                   className="rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={sendWhatsapp}
                   className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
                 >
-                  Send via WhatsApp
+                  {t("appt.rem_send")}
                 </button>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useWorks from "../../hooks/useWorks";
 import { useSettings } from "../../context/SettingContext";
@@ -14,6 +15,7 @@ const emptyForm = {
 
 // ── View Modal ────────────────────────────────────────────────────────────────
 function ViewModal({ work, onClose }) {
+  const { t } = useTranslation();
   const { formatMoney } = useSettings();
   return (
     <div
@@ -22,29 +24,29 @@ function ViewModal({ work, onClose }) {
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">Work Details</h2>
+          <h2 className="text-lg font-semibold text-slate-800">{t("clin.work_details")}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
         </div>
         <div className="space-y-3 text-sm">
-          <DetailRow label="Code" value={<span className="font-mono">{work.code}</span>} />
-          <DetailRow label="Name" value={work.name} />
-          <DetailRow label="Min Price" value={formatMoney(work.min_price)} />
+          <DetailRow label={t("clin.code")} value={<span className="font-mono">{work.code}</span>} />
+          <DetailRow label={t("clin.name")} value={work.name} />
+          <DetailRow label={t("clin.min_price")} value={formatMoney(work.min_price)} />
           <DetailRow
-            label="Allow Installments"
+            label={t("clin.allow_installments")}
             value={
               <span className={`rounded-full px-3 py-1 text-xs ${work.allow_installments ? "bg-[#015478]/10 text-[#015478]" : "bg-slate-100 text-slate-500"}`}>
-                {work.allow_installments ? "Yes" : "No"}
+                {work.allow_installments ? t("clin.yes") : t("clin.no")}
               </span>
             }
           />
           {work.allow_installments && (
-            <DetailRow label="Min Installment Amount" value={formatMoney(work.min_installment_amount)} />
+            <DetailRow label={t("clin.min_installment_amount")} value={formatMoney(work.min_installment_amount)} />
           )}
           <DetailRow
-            label="Status"
+            label={t("clin.status")}
             value={
               <span className={`rounded-full px-3 py-1 text-xs ${work.is_active ? "bg-[#015478]/10 text-[#015478]" : "bg-red-100 text-red-700"}`}>
-                {work.is_active ? "Active" : "Inactive"}
+                {work.is_active ? t("clin.active") : t("clin.inactive")}
               </span>
             }
           />
@@ -54,7 +56,7 @@ function ViewModal({ work, onClose }) {
             onClick={onClose}
             className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
           >
-            Close
+            {t("common.close")}
           </button>
         </div>
       </div>
@@ -73,6 +75,7 @@ function DetailRow({ label, value }) {
 
 // ── Form Modal (create + edit) ────────────────────────────────────────────────
 function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const curr = settings?.currency_code || "";
   const [form, setForm] = useState(
@@ -108,33 +111,33 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-800">
-            {mode === "edit" ? "Edit Work" : "Create Work"}
+            {mode === "edit" ? t("clin.edit_work") : t("clin.create_work")}
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FormField label="Code">
+          <FormField label={t("clin.code")}>
             <input
               required
               value={form.code}
               onChange={(e) => set("code", e.target.value)}
-              placeholder="e.g. CROWN"
+              placeholder={t("clin.code_ph")}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
             />
           </FormField>
 
-          <FormField label="Name">
+          <FormField label={t("clin.name")}>
             <input
               required
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              placeholder="e.g. Crown Placement"
+              placeholder={t("clin.name_ph")}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
             />
           </FormField>
 
-          <FormField label={`Min Price${curr ? ` (${curr})` : ""}`}>
+          <FormField label={`${t("clin.min_price")}${curr ? ` (${curr})` : ""}`}>
             <input
               required
               type="number"
@@ -158,12 +161,12 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               className="h-4 w-4 accent-[#015478]"
             />
             <label htmlFor="allow_installments" className="text-sm text-slate-700">
-              Allow Installments
+              {t("clin.allow_installments")}
             </label>
           </div>
 
           {form.allow_installments && (
-            <FormField label={`Min Installment Amount${curr ? ` (${curr})` : ""}`}>
+            <FormField label={`${t("clin.min_installment_amount")}${curr ? ` (${curr})` : ""}`}>
               <input
                 required
                 type="number"
@@ -184,7 +187,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               onChange={(e) => set("is_active", e.target.checked)}
               className="h-4 w-4 accent-[#015478]"
             />
-            <label htmlFor="is_active" className="text-sm text-slate-700">Active</label>
+            <label htmlFor="is_active" className="text-sm text-slate-700">{t("clin.active")}</label>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
@@ -193,14 +196,14 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               onClick={onClose}
               className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58] disabled:opacity-60"
             >
-              {isSubmitting ? "Saving..." : mode === "edit" ? "Save Changes" : "Create"}
+              {isSubmitting ? t("clin.saving") : mode === "edit" ? t("clin.save_changes") : t("clin.create")}
             </button>
           </div>
         </form>
@@ -220,6 +223,7 @@ function FormField({ label, children }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function WorksPage() {
+  const { t } = useTranslation();
   const { formatMoney } = useSettings();
   const { works, isLoading, error, refresh, create, update, remove, isSubmitting } = useWorks();
   const [viewWork, setViewWork] = useState(null);
@@ -229,7 +233,7 @@ export default function WorksPage() {
   const handleCreate = async (payload) => {
     const result = await create(payload);
     if (result.ok) {
-      toast.success("Work created successfully");
+      toast.success(t("clin.work_created_ok"));
       setIsCreateOpen(false);
     } else {
       toast.error(result.error);
@@ -239,7 +243,7 @@ export default function WorksPage() {
   const handleUpdate = async (payload) => {
     const result = await update(editWork.id, payload);
     if (result.ok) {
-      toast.success("Work updated successfully");
+      toast.success(t("clin.work_updated_ok"));
       setEditWork(null);
     } else {
       toast.error(result.error);
@@ -247,7 +251,7 @@ export default function WorksPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to deactivate this work?")) return;
+    if (!window.confirm(t("clin.deactivate_confirm"))) return;
     const result = await remove(id);
     if (!result.ok) toast.error(result.error);
   };
@@ -256,8 +260,8 @@ export default function WorksPage() {
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Work Catalog</h1>
-          <p className="text-sm text-slate-500">Manage procedures and services for this branch.</p>
+          <h1 className="text-xl font-semibold text-slate-900">{t("clin.catalog_title")}</h1>
+          <p className="text-sm text-slate-500">{t("clin.catalog_subtitle")}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -265,20 +269,20 @@ export default function WorksPage() {
             onClick={refresh}
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
           >
-            Refresh
+            {t("clin.refresh")}
           </button>
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
             className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]"
           >
-            + Create Work
+            {t("clin.create_work_btn")}
           </button>
         </div>
       </div>
 
       <div className="rounded-2xl border bg-white p-4 shadow-sm">
-        {isLoading && <p className="text-sm text-slate-600">Loading...</p>}
+        {isLoading && <p className="text-sm text-slate-600">{t("clin.loading")}</p>}
         {!!error && (
           <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
@@ -291,13 +295,13 @@ export default function WorksPage() {
               <thead>
                 <tr className="border-b text-left text-xs font-semibold text-slate-500">
                   <th className="px-3 py-3">#</th>
-                  <th className="px-3 py-3">Code</th>
-                  <th className="px-3 py-3">Name</th>
-                  <th className="px-3 py-3">Min Price</th>
-                  <th className="px-3 py-3">Installments</th>
-                  <th className="px-3 py-3">Min Installment</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3 text-right">Actions</th>
+                  <th className="px-3 py-3">{t("clin.col_code")}</th>
+                  <th className="px-3 py-3">{t("clin.col_name")}</th>
+                  <th className="px-3 py-3">{t("clin.col_min_price")}</th>
+                  <th className="px-3 py-3">{t("clin.col_installments")}</th>
+                  <th className="px-3 py-3">{t("clin.col_min_installment")}</th>
+                  <th className="px-3 py-3">{t("clin.col_status")}</th>
+                  <th className="px-3 py-3 text-end">{t("clin.col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -309,7 +313,7 @@ export default function WorksPage() {
                     <td className="px-3 py-3 text-slate-800">{formatMoney(w.min_price)}</td>
                     <td className="px-3 py-3">
                       <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#015478]/10 text-[#015478]" : "bg-slate-100 text-slate-500"}`}>
-                        {w.allow_installments ? "Yes" : "No"}
+                        {w.allow_installments ? t("clin.yes") : t("clin.no")}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-slate-700">
@@ -317,7 +321,7 @@ export default function WorksPage() {
                     </td>
                     <td className="px-3 py-3">
                       <span className={`rounded-full px-3 py-1 text-xs ${w.is_active ? "bg-[#015478]/10 text-[#015478]" : "bg-red-100 text-red-700"}`}>
-                        {w.is_active ? "Active" : "Inactive"}
+                        {w.is_active ? t("clin.active") : t("clin.inactive")}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right space-x-2">
@@ -326,21 +330,21 @@ export default function WorksPage() {
                         onClick={() => setViewWork(w)}
                         className="rounded-lg border border-slate-200 bg-[#015478] px-3 py-2 text-xs text-slate-100 hover:bg-[#013d58]"
                       >
-                        View
+                        {t("common.view")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditWork(w)}
                         className="rounded-lg border border-slate-200 bg-yellow-600 px-3 py-2 text-xs text-slate-100 hover:bg-yellow-900"
                       >
-                        Edit
+                        {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(w.id)}
                         className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-900"
                       >
-                        Delete
+                        {t("common.delete")}
                       </button>
                     </td>
                   </tr>
@@ -348,7 +352,7 @@ export default function WorksPage() {
                 {works.length === 0 && (
                   <tr>
                     <td colSpan={8} className="px-3 py-10 text-center text-slate-500">
-                      No works found.
+                      {t("clin.no_works")}
                     </td>
                   </tr>
                 )}

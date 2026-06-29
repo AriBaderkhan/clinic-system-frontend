@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { FiBell } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { getMyAnnouncements, markAnnouncementRead } from "../api/announcementApi";
 import AnnouncementModal from "./AnnouncementModal";
@@ -8,6 +9,7 @@ import AnnouncementModal from "./AnnouncementModal";
 // (the API returns [] for other roles), so it just stays empty elsewhere.
 export default function AnnouncementsBell() {
     const { isAuthenticated } = useAuth();
+    const { t } = useTranslation();
     const [items, setItems] = useState([]);
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(null);
@@ -52,7 +54,7 @@ export default function AnnouncementsBell() {
                 type="button"
                 onClick={() => setOpen((o) => !o)}
                 className="relative flex h-9 w-9 items-center justify-center rounded-full text-white transition hover:bg-white/10"
-                title="Announcements"
+                title={t("layout.announcements")}
             >
                 <FiBell size={18} />
                 {unread > 0 && (
@@ -63,23 +65,23 @@ export default function AnnouncementsBell() {
             </button>
 
             {open && (
-                <div className="absolute left-0 top-11 z-50 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-                    <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">Announcements</div>
+                <div className="absolute start-0 top-11 z-50 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                    <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">{t("layout.announcements")}</div>
                     <div className="max-h-80 overflow-y-auto">
                         {items.length === 0 ? (
-                            <p className="px-3 py-4 text-center text-xs text-slate-400">Nothing here yet.</p>
+                            <p className="px-3 py-4 text-center text-xs text-slate-400">{t("layout.no_announcements")}</p>
                         ) : (
                             items.map((a) => (
                                 <button
                                     key={a.id}
                                     onClick={() => openItem(a)}
-                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-left transition hover:bg-slate-50 ${a.read ? "" : "bg-[#015478]/5"}`}
+                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${a.read ? "" : "bg-[#015478]/5"}`}
                                 >
                                     <div className="flex items-center gap-2">
                                         {!a.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#015478]" />}
                                         <span className="truncate text-sm font-medium text-slate-800">{a.title}</span>
                                     </div>
-                                    <p className="ml-4 truncate text-xs text-slate-500">{a.body || "View details"}</p>
+                                    <p className="ms-4 truncate text-xs text-slate-500">{a.body || t("layout.view_details")}</p>
                                 </button>
                             ))
                         )}

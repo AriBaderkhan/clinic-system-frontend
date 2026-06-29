@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import usePatientSessions from "../../hooks/usePatientSessions";
 import SessionDetailsModalForDocs from "../sessions/SessionDetailsModalForDocs";
 import { getDoctorColor } from "../../utils/doctorColors";
@@ -25,6 +26,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function CalendarAppointmentModal({ appointment, onClose }) {
+  const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
   const { sessions, isLoading, error } = usePatientSessions(appointment?.patient_id, 5);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -57,7 +59,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
               <div>
                 <h2 className="text-sm font-semibold">{appointment.patient_name}</h2>
                 <p className="mt-0.5 text-[11px] text-white/80">
-                  {appointment.patient_phone || "No phone"} · Dr.{" "}
+                  {appointment.patient_phone || t("appt.no_phone")} · Dr.{" "}
                   <span className="capitalize">{appointment.doctor_name}</span>
                 </p>
                 <p className="mt-0.5 text-[11px] text-white/80">
@@ -93,7 +95,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
             {/* Complaint (from booking) */}
             {appointment.complaint && (
               <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">⚠ Complaint</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.complaint_badge")}</p>
                 <p className="mt-0.5 whitespace-pre-wrap break-words text-[13px] font-medium text-slate-800">{appointment.complaint}</p>
               </div>
             )}
@@ -103,19 +105,19 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
               <div className="grid gap-2 sm:grid-cols-3">
                 {appointment.patient_blood_type && (
                   <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Blood type</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.blood_type")}</p>
                     <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type}</p>
                   </div>
                 )}
                 {appointment.patient_allergies && (
                   <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">⚠ Allergies</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">{t("appt.allergies")}</p>
                     <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_allergies}</p>
                   </div>
                 )}
                 {appointment.patient_chronic_diseases && (
                   <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Chronic diseases</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.chronic")}</p>
                     <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_chronic_diseases}</p>
                   </div>
                 )}
@@ -125,11 +127,11 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
             {/* Last 5 sessions */}
             <div>
               <p className="mb-2 text-[11px] font-medium uppercase text-slate-500">
-                Last 5 sessions for {appointment.patient_name}
+                {t("appt.last_5_sessions", { name: appointment.patient_name })}
               </p>
 
               {isLoading && (
-                <p className="text-xs text-slate-500">Loading sessions…</p>
+                <p className="text-xs text-slate-500">{t("appt.loading_sessions")}</p>
               )}
 
               {error && !isLoading && (
@@ -140,7 +142,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
 
               {!isLoading && !error && sessions.length === 0 && (
                 <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-xs text-slate-500">
-                  No sessions yet for this patient.
+                  {t("appt.no_sessions_patient")}
                 </div>
               )}
 
@@ -156,7 +158,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                           {formatDateTime(s.created_at)}
                         </p>
                         <p className="mt-0.5 truncate text-[11px] text-slate-500 capitalize">
-                          Dr. {s.doctor_name} · Total: {formatMoney(s.total, s.currency_code)} · Paid:{" "}
+                          Dr. {s.doctor_name} · {t("appt.total")}: {formatMoney(s.total, s.currency_code)} · {t("appt.paid")}:{" "}
                           {formatMoney(s.total_paid, s.currency_code)}
                         </p>
                       </div>
@@ -169,14 +171,14 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                               : "border-amber-100 bg-amber-50 text-amber-700"
                           }`}
                         >
-                          {s.is_paid ? "Paid" : "Unpaid"}
+                          {s.is_paid ? t("appt.paid_badge") : t("appt.unpaid_badge")}
                         </span>
                         <button
                           type="button"
                           onClick={() => setSelectedSessionId(s.session_id)}
                           className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58]"
                         >
-                          View
+                          {t("common.view")}
                         </button>
                       </div>
                     </div>

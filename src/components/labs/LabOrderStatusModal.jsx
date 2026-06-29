@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { setLabOrderStatus } from "../../api/labApi";
 
 const STATUS_OPTIONS = [
-  { value: "ordered", label: "Ordered", hint: "Order sent to the lab" },
-  { value: "ready", label: "Ready", hint: "Lab finished the work (ready date saved)" },
-  { value: "delivered", label: "Delivered", hint: "Work arrived at the clinic (delivered date saved)" },
-  { value: "cancelled", label: "Cancelled", hint: "Order cancelled" },
+  { value: "ordered", labelKey: "labm.opt_ordered", hintKey: "labm.hint_ordered" },
+  { value: "ready", labelKey: "labm.opt_ready", hintKey: "labm.hint_ready" },
+  { value: "delivered", labelKey: "labm.opt_delivered", hintKey: "labm.hint_delivered" },
+  { value: "cancelled", labelKey: "labm.opt_cancelled", hintKey: "labm.hint_cancelled" },
 ];
 
 function statusBadgeClasses(status) {
@@ -25,6 +26,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!order) return null;
@@ -34,11 +36,11 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
     try {
       setIsSubmitting(true);
       await setLabOrderStatus(order.id, status);
-      toast.success(`Order marked as ${status}`);
+      toast.success(t("labm.marked_as", { status }));
       onUpdated?.();
       onClose();
     } catch (err) {
-      toast.error(err.userMessage || "Could not update order status.");
+      toast.error(err.userMessage || t("labm.status_update_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -53,7 +55,7 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Change order status</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("labm.status_title")}</h2>
             <p className="mt-1 text-[11px] text-slate-500">
               {order.lab_name} · {order.patient_name} · {order.items_summary || ""}
             </p>
@@ -75,7 +77,7 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
               statusBadgeClasses(order.status)
             }
           >
-            Current: {order.status}
+            {t("labm.current", { status: order.status })}
           </span>
         </div>
 
@@ -93,8 +95,8 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
                   : "border-slate-200 bg-white text-slate-800 hover:border-[#015478]/40 hover:bg-[#015478]/5"
               }`}
             >
-              <span className="font-medium capitalize">{opt.label}</span>
-              <span className="text-[11px] text-slate-500">{opt.hint}</span>
+              <span className="font-medium capitalize">{t(opt.labelKey)}</span>
+              <span className="text-[11px] text-slate-500">{t(opt.hintKey)}</span>
             </button>
           ))}
         </div>

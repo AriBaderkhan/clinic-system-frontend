@@ -1,10 +1,12 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
 
 
 export default function ApptsPerDoctor() {
+    const { t } = useTranslation();
     const { formatDateTime } = useSettings();
 
 
@@ -62,11 +64,10 @@ export default function ApptsPerDoctor() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-lg font-semibold text-slate-900">
-                        Appointments
+                        {t("appt.title")}
                     </h1>
                     <p className="text-xs text-slate-500">
-                        Manage Crown Dental Clinic appointments. View records, update
-                        status, and handle follow-ups.
+                        {t("appt.subtitle")}
                     </p>
                 </div>
 
@@ -81,49 +82,49 @@ export default function ApptsPerDoctor() {
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                         <span>
                             {isLoading
-                                ? "Loading appointments…"
-                                : `Total appointments: ${filteredAppointments.length}`}
+                                ? t("appt.loading")
+                                : t("clin.apd_total", { count: filteredAppointments.length })}
                         </span>
 
                         {/* Day filter */}
                         <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">Day:</span>
+                            <span className="text-[11px] text-slate-500">{t("clin.apd_day")}</span>
                             <select
                                 value={dayFilter}
                                 onChange={(e) => setDayFilter(e.target.value)}
                                 className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             >
-                                <option value="">All</option>
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="last_week">Last week</option>
-                                <option value="last_month">Last month</option>
+                                <option value="">{t("appt.all")}</option>
+                                <option value="today">{t("appt.today")}</option>
+                                <option value="yesterday">{t("appt.yesterday")}</option>
+                                <option value="last_week">{t("appt.last_week")}</option>
+                                <option value="last_month">{t("appt.last_month")}</option>
                             </select>
                         </div>
 
                         {/* Type filter */}
                         <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">Type:</span>
+                            <span className="text-[11px] text-slate-500">{t("clin.apd_type")}</span>
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
                                 className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             >
-                                <option value="">All</option>
-                                <option value="normal">Normal</option>
-                                <option value="urgent">Urgent</option>
-                                <option value="walk_in">Walk-in</option>
+                                <option value="">{t("appt.all")}</option>
+                                <option value="normal">{t("appt.type_normal")}</option>
+                                <option value="urgent">{t("appt.type_urgent")}</option>
+                                <option value="walk_in">{t("appt.type_walk_in")}</option>
                             </select>
                         </div>
 
                         {/* 🔍 Search */}
                         <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">Search:</span>
+                            <span className="text-[11px] text-slate-500">{t("clin.apd_search")}</span>
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Patient, phone, doctor..."
+                                placeholder={t("clin.apd_search_ph")}
                                 className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                             />
                         </div>
@@ -136,7 +137,7 @@ export default function ApptsPerDoctor() {
                             onClick={refresh}
                             className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
                         >
-                            Refresh
+                            {t("appt.refresh")}
                         </button>
                         <button
                             type="button"
@@ -147,7 +148,7 @@ export default function ApptsPerDoctor() {
                             }}
                             className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-50"
                         >
-                            Clear
+                            {t("appt.clear")}
                         </button>
                     </div>
                 </div>
@@ -165,7 +166,7 @@ export default function ApptsPerDoctor() {
                 {/* Empty state */}
                 {!isLoading && !error && filteredAppointments.length === 0 && (
                     <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-                        No appointments match these filters.
+                        {t("appt.empty")}
                     </div>
                 )}
 
@@ -176,16 +177,16 @@ export default function ApptsPerDoctor() {
                             <thead>
                                 <tr className="border-b border-slate-200 text-xs text-slate-500">
                                     <th className="px-3 py-2 font-medium">#</th>
-                                    <th className="px-3 py-2 font-medium">Patient Name</th>
-                                    <th className="px-3 py-2 font-medium">Patient Phone</th>
-                                    <th className="px-3 py-2 font-medium">Doctor</th>
+                                    <th className="px-3 py-2 font-medium">{t("appt.col_patient_name")}</th>
+                                    <th className="px-3 py-2 font-medium">{t("appt.col_patient_phone")}</th>
+                                    <th className="px-3 py-2 font-medium">{t("appt.col_doctor")}</th>
                                     <th className="px-3 py-2 font-medium">
-                                        Appointment Date/Time
+                                        {t("appt.col_datetime")}
                                     </th>
-                                    <th className="px-3 py-2 font-medium">Appointment Type</th>
-                                    <th className="px-3 py-2 font-medium">Status</th>
-                                    <th className="px-3 py-2 font-medium text-right">
-                                        Actions
+                                    <th className="px-3 py-2 font-medium">{t("appt.col_type")}</th>
+                                    <th className="px-3 py-2 font-medium">{t("appt.col_status")}</th>
+                                    <th className="px-3 py-2 font-medium text-end">
+                                        {t("appt.col_actions")}
                                     </th>
                                 </tr>
                             </thead>
@@ -221,8 +222,8 @@ export default function ApptsPerDoctor() {
                                             <td className="px-3 py-2 text-slate-700">
                                                 {a.appointment_type}
                                                 {a.is_walk_in && (
-                                                    <span className="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
-                                                        walk-in
+                                                    <span className="ms-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                                                        {t("appt.walk_in_badge")}
                                                     </span>
                                                 )}
                                             </td>
@@ -238,7 +239,7 @@ export default function ApptsPerDoctor() {
                                                         onClick={() => setSelectedAppointment(a)}
                                                         className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
                                                     >
-                                                        View
+                                                        {t("common.view")}
                                                     </button>
 
 

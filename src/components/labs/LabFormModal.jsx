@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useWorks from "../../hooks/useWorks";
 import { getLabById } from "../../api/labApi";
 
 export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, isSubmitting = false }) {
+  const { t } = useTranslation();
   const { works, isLoading: isWorksLoading } = useWorks();
 
   const [name, setName] = useState("");
@@ -23,11 +25,11 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
         setPhone(lab.phone || "");
         setRows(
           lab.treatments?.length > 0
-            ? lab.treatments.map((t) => ({ work_id: String(t.work_id), cost: String(t.cost) }))
+            ? lab.treatments.map((tr) => ({ work_id: String(tr.work_id), cost: String(tr.cost) }))
             : [{ work_id: "", cost: "" }]
         );
       } catch (err) {
-        setError(err.userMessage || "Could not load lab.");
+        setError(err.userMessage || t("labm.could_not_load_lab"));
       } finally {
         setIsLoadingLab(false);
       }
@@ -52,25 +54,25 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
     setError("");
 
     if (!name.trim() || name.trim().length < 2) {
-      setError("Lab name is required (at least 2 characters).");
+      setError(t("labm.name_required"));
       return;
     }
 
     const treatments = [];
     for (const r of rows) {
       if (!r.work_id || r.cost === "") {
-        setError("Every treatment row needs a treatment and a cost.");
+        setError(t("labm.row_needs_cost"));
         return;
       }
       if (Number(r.cost) < 0) {
-        setError("Cost cannot be negative.");
+        setError(t("labm.cost_negative"));
         return;
       }
       treatments.push({ work_id: Number(r.work_id), cost: Number(r.cost) });
     }
 
     if (treatments.length === 0) {
-      setError("Add at least one treatment with its cost.");
+      setError(t("labm.add_one_treatment_cost"));
       return;
     }
 
@@ -87,10 +89,10 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">
-              {mode === "add" ? "Add Lab" : "Edit Lab"}
+              {mode === "add" ? t("labm.add_lab") : t("labm.edit_lab")}
             </h2>
             <p className="mt-0.5 text-[11px] text-slate-500">
-              Lab info and the cost of each treatment this lab offers.
+              {t("labm.lab_subtitle")}
             </p>
           </div>
           <button
@@ -103,7 +105,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
         </div>
 
         {isLoadingLab ? (
-          <p className="text-xs text-slate-500">Loading lab…</p>
+          <p className="text-xs text-slate-500">{t("labm.loading_lab")}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -115,22 +117,22 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
             {/* Name + Phone */}
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700">Lab Name</label>
+                <label className="block text-xs font-medium text-slate-700">{t("labm.lab_name")}</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Farhan Lab"
+                  placeholder={t("labm.lab_name_ph")}
                   className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                 />
               </div>
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700">Phone (optional)</label>
+                <label className="block text-xs font-medium text-slate-700">{t("labm.phone_optional")}</label>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="07xx xxx xxxx"
+                  placeholder={t("labm.phone_ph")}
                   className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                 />
               </div>
@@ -140,19 +142,19 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-[11px] font-medium uppercase text-slate-500">
-                  Treatments &amp; Costs
+                  {t("labm.treatments_costs")}
                 </p>
                 <button
                   type="button"
                   onClick={addRow}
                   className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58]"
                 >
-                  + Add Treatment
+                  {t("labm.add_treatment")}
                 </button>
               </div>
 
               {isWorksLoading ? (
-                <p className="text-xs text-slate-500">Loading treatments…</p>
+                <p className="text-xs text-slate-500">{t("labm.loading_treatments")}</p>
               ) : (
                 <div className="space-y-2">
                   {rows.map((row, idx) => (
@@ -162,7 +164,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                         onChange={(e) => updateRow(idx, "work_id", e.target.value)}
                         className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                       >
-                        <option value="">Select treatment</option>
+                        <option value="">{t("labm.select_treatment")}</option>
                         {works.map((w) => (
                           <option
                             key={w.id}
@@ -180,7 +182,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                         step="any"
                         value={row.cost}
                         onChange={(e) => updateRow(idx, "cost", e.target.value)}
-                        placeholder="Cost"
+                        placeholder={t("labm.cost_ph")}
                         className="w-32 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
                       />
 
@@ -205,14 +207,14 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                 onClick={onClose}
                 className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Saving..." : mode === "add" ? "Create Lab" : "Save Changes"}
+                {isSubmitting ? t("labm.saving") : mode === "add" ? t("labm.create_lab") : t("labm.save_changes")}
               </button>
             </div>
           </form>

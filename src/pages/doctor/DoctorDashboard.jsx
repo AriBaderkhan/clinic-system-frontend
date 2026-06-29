@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
@@ -28,6 +29,7 @@ export default function DoctorDashboard() {
   } = useActiveApptsTodayPerDoctor();
 
   const { formatTime } = useSettings();
+  const { t } = useTranslation();
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
@@ -61,11 +63,10 @@ export default function DoctorDashboard() {
       {/* Top intro */}
       <div className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-slate-900">
-          Crown Dental Clinic — Overview
+          Crown Dental Clinic — {t('dash.overview')}
         </h1>
         <p className="text-xs text-slate-500">
-          Quick snapshot of today&apos;s patients, appointments, and active
-          cases.
+          {t('dash.subtitle')}
         </p>
       </div>
 
@@ -80,12 +81,10 @@ export default function DoctorDashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-slate-900">
-                  Today&apos;s active appointments
+                  {t('dash.today_active')}
                 </h2>
                 <p className="text-[11px] text-slate-500">
-                  Showing only <strong>scheduled</strong>,{" "}
-                  <strong>checked-in</strong> and <strong>in progress</strong>{" "}
-                  appointments for today.
+                  {t('dash.today_active_hint')}
                 </p>
               </div>
 
@@ -94,7 +93,7 @@ export default function DoctorDashboard() {
                 onClick={refreshToday}
                 className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
               >
-                Refresh
+                {t('dash.refresh')}
               </button>
             </div>
 
@@ -108,7 +107,7 @@ export default function DoctorDashboard() {
             {/* Loading */}
             {isTodayLoading && !todayError && (
               <p className="text-xs text-slate-500">
-                Loading today&apos;s appointments…
+                {t('dash.loading_today')}
               </p>
             )}
 
@@ -117,7 +116,7 @@ export default function DoctorDashboard() {
               !todayError &&
               todayAppointments.length === 0 && (
                 <p className="text-xs text-slate-500">
-                  No active appointments for today.
+                  {t('dash.no_active_today')}
                 </p>
               )}
 
@@ -128,28 +127,28 @@ export default function DoctorDashboard() {
                   <thead>
                     <tr className="border-b border-slate-200 text-xs text-slate-500">
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Patient
+                        {t('dash.col_patient')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Phone
+                        {t('dash.col_phone')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Doctor
+                        {t('dash.col_doctor')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Time
+                        {t('dash.col_time')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Type
+                        {t('dash.col_type')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Complaint
+                        {t('dash.col_complaint')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Status
+                        {t('dash.col_status')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478] text-right">
-                        Actions
+                      <th className="px-3 py-2 font-medium text-[#015478] text-end">
+                        {t('dash.col_actions')}
                       </th>
                     </tr>
                   </thead>
@@ -196,13 +195,13 @@ export default function DoctorDashboard() {
                               {a.status?.replace("_", " ")}
                             </span>
                           </td>
-                          <td className="px-3 py-2 text-right">
+                          <td className="px-3 py-2 text-end">
                             <button
                               type="button"
                               onClick={() => setSelectedAppointment(a)}
                               className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
                             >
-                              View
+                              {t('common.view')}
                             </button>
                           </td>
                         </tr>
@@ -222,21 +221,21 @@ export default function DoctorDashboard() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-semibold text-slate-900">
-                  In-progress appointments (Today)
+                  {t('dash.in_progress_title')}
                 </h2>
                 <p className="text-[12px] text-slate-600">
-                  Click an appointment to update status, fill session and works.
+                  {t('dash.in_progress_hint')}
                 </p>
               </div>
               <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium text-amber-800">
-                {inProgressAppointments.length} in progress
+                {t('dash.in_progress_count', { count: inProgressAppointments.length })}
               </span>
             </div>
 
             <div className="space-y-3 text-sm max-h-64 overflow-y-auto pr-1">
               {inProgressAppointments.length === 0 && (
                 <p className="text-xs text-slate-600">
-                  No in-progress appointments right now.
+                  {t('dash.no_in_progress')}
                 </p>
               )}
 

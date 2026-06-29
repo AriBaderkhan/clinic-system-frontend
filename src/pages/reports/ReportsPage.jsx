@@ -1,4 +1,5 @@
 ﻿import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import useMonthlyReportPdf from "../../hooks/useMonthlyReportPdf";
 import { useSubscription } from "../../context/SubscriptionContext";
@@ -17,6 +18,7 @@ function monthLabel(value) {
 }
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState("reports"); // reports | expenses
   const [monthValue, setMonthValue] = useState(() => {
     const now = new Date();
@@ -60,9 +62,9 @@ export default function ReportsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Reports</h1>
+        <h1 className="text-lg font-semibold text-slate-900">{t('report.title')}</h1>
         <p className="text-xs text-slate-500">
-          Monthly clinic report PDF + monthly expenses management.
+          {t('report.subtitle')}
         </p>
       </div>
 
@@ -77,7 +79,7 @@ export default function ReportsPage() {
                 : "text-slate-700 hover:bg-white"
                 }`}
             >
-              Reports
+              {t('report.tab_reports')}
             </button>
             <button
               onClick={() => setTab("expenses")}
@@ -86,7 +88,7 @@ export default function ReportsPage() {
                 : "text-slate-700 hover:bg-white"
                 }`}
             >
-              Expenses
+              {t('report.tab_expenses')}
             </button>
           </div>
         </div>
@@ -97,9 +99,9 @@ export default function ReportsPage() {
             <div className="space-y-4">
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-slate-900">Monthly Report PDF</div>
+                  <div className="text-sm font-medium text-slate-900">{t('report.monthly_pdf')}</div>
                   <div className="text-xs text-slate-500">
-                    Select month then download the PDF.
+                    {t('report.select_then_download')}
                   </div>
                 </div>
               </div>
@@ -113,7 +115,7 @@ export default function ReportsPage() {
                       checked={reportType === 'monthly'}
                       onChange={() => setReportType('monthly')}
                     />
-                    Monthly Report
+                    {t('report.monthly_report')}
                   </label>
                   {canCustomRange && (
                     <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -123,7 +125,7 @@ export default function ReportsPage() {
                         checked={reportType === 'custom'}
                         onChange={() => setReportType('custom')}
                       />
-                      Custom Date Range
+                      {t('report.custom_range')}
                     </label>
                   )}
                 </div>
@@ -131,7 +133,7 @@ export default function ReportsPage() {
                 <div className="flex flex-wrap items-end gap-3">
                   {reportType === 'monthly' ? (
                     <div className="space-y-1">
-                      <label className="block text-xs text-slate-600">Select Month</label>
+                      <label className="block text-xs text-slate-600">{t('report.select_month')}</label>
                       <input
                         type="month"
                         value={monthValue}
@@ -142,7 +144,7 @@ export default function ReportsPage() {
                   ) : (
                     <>
                       <div className="space-y-1">
-                        <label className="block text-xs text-slate-600">From Date</label>
+                        <label className="block text-xs text-slate-600">{t('report.from_date')}</label>
                         <input
                           type="date"
                           value={dateRange.from}
@@ -151,7 +153,7 @@ export default function ReportsPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-xs text-slate-600">To Date</label>
+                        <label className="block text-xs text-slate-600">{t('report.to_date')}</label>
                         <input
                           type="date"
                           value={dateRange.to}
@@ -167,15 +169,15 @@ export default function ReportsPage() {
                     disabled={isLoading || (reportType === 'monthly' ? !monthParam : (!dateRange.from || !dateRange.to))}
                     className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-60 mb-[1px]"
                   >
-                    {isLoading ? "Downloading..." : "Download PDF"}
+                    {isLoading ? t('report.downloading') : t('report.download_pdf')}
                   </button>
                 </div>
               </div>
 
               <div className="text-xs text-slate-500">
                 {reportType === 'monthly'
-                  ? `Selected: ${monthLabel(monthValue)}`
-                  : `Selected Range: ${dateRange.from} to ${dateRange.to}`
+                  ? t('report.selected', { month: monthLabel(monthValue) })
+                  : t('report.selected_range', { from: dateRange.from, to: dateRange.to })
                 }
               </div>
 

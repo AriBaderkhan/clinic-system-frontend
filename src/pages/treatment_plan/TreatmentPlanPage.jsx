@@ -11,10 +11,12 @@ function getPageNumbers(currentPage, totalPages) {
     pages.push(totalPages);
     return pages;
 }
+import { useTranslation } from "react-i18next";
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 import { useSettings } from "../../context/SettingContext";
 
 export default function TreatmentPlanPage() {
+    const { t } = useTranslation();
     const { formatDateTime, formatMoney } = useSettings();
     const {
         tps,
@@ -67,8 +69,8 @@ export default function TreatmentPlanPage() {
         <div className="space-y-5">
             {/* Header */}
             <div>
-                <h1 className="text-lg font-semibold text-slate-900">Treatment Plans</h1>
-                <p className="text-xs text-slate-500">Manage and track all patient treatment plans.</p>
+                <h1 className="text-lg font-semibold text-slate-900">{t("tp.title")}</h1>
+                <p className="text-xs text-slate-500">{t("tp.subtitle")}</p>
             </div>
 
             {/* Filter bar */}
@@ -76,9 +78,9 @@ export default function TreatmentPlanPage() {
 
                 {/* Search */}
                 <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-                    <label className="text-xs font-semibold text-[#015478]">Search</label>
+                    <label className="text-xs font-semibold text-[#015478]">{t("tp.search")}</label>
                     <input
-                        placeholder="Patient name..."
+                        placeholder={t("tp.search_ph")}
                         value={filters.q}
                         onChange={(e) => setFilters((prev) => ({ ...prev, q: e.target.value }))}
                         className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
@@ -87,7 +89,7 @@ export default function TreatmentPlanPage() {
 
                 {/* Pay status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#015478]">Pay Status</label>
+                    <label className="text-xs font-semibold text-[#015478]">{t("tp.pay_status")}</label>
                     <select
                         value={filters.isPaid === undefined ? "" : filters.isPaid ? "true" : "false"}
                         onChange={(e) => {
@@ -96,15 +98,15 @@ export default function TreatmentPlanPage() {
                         }}
                         className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
                     >
-                        <option value="">All</option>
-                        <option value="true">Paid</option>
-                        <option value="false">Not Paid</option>
+                        <option value="">{t("tp.all")}</option>
+                        <option value="true">{t("tp.paid")}</option>
+                        <option value="false">{t("tp.not_paid")}</option>
                     </select>
                 </div>
 
                 {/* Complete status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#015478]">Complete Status</label>
+                    <label className="text-xs font-semibold text-[#015478]">{t("tp.complete_status")}</label>
                     <select
                         value={filters.isCompleted === undefined ? "" : filters.isCompleted ? "true" : "false"}
                         onChange={(e) => {
@@ -113,9 +115,9 @@ export default function TreatmentPlanPage() {
                         }}
                         className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
                     >
-                        <option value="">All</option>
-                        <option value="true">Completed</option>
-                        <option value="false">Not Completed</option>
+                        <option value="">{t("tp.all")}</option>
+                        <option value="true">{t("tp.completed")}</option>
+                        <option value="false">{t("tp.not_completed")}</option>
                     </select>
                 </div>
 
@@ -126,7 +128,7 @@ export default function TreatmentPlanPage() {
                         onClick={() => setFilters({ isPaid: undefined, isCompleted: undefined, q: "" })}
                         className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
                     >
-                        Clear
+                        {t("tp.clear")}
                     </button>
                 </div>
             </div>
@@ -134,28 +136,28 @@ export default function TreatmentPlanPage() {
             {/* Count info */}
             <p className="text-xs text-slate-400">
                 {loading
-                    ? "Loading treatment plans…"
-                    : `Total: ${pagination.total} · Showing ${pagination.total === 0 ? 0 : rowStart}–${rowEnd}`}
+                    ? t("tp.loading_plans")
+                    : t("appt.count_info", { total: pagination.total, start: pagination.total === 0 ? 0 : rowStart, end: rowEnd })}
             </p>
 
             {/* Table */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 {loading ? (
-                    <p className="p-4 text-xs text-slate-500">Loading...</p>
+                    <p className="p-4 text-xs text-slate-500">{t("tp.loading")}</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-left text-xs">
                             <thead>
                                 <tr className="border-b border-slate-200 text-[11px] text-slate-500">
-                                    <th className="px-3 py-3">Patient Name</th>
-                                    <th className="px-3 py-3">Type</th>
-                                    <th className="px-3 py-3">Agreed</th>
-                                    <th className="px-3 py-3">Paid</th>
-                                    <th className="px-3 py-3">Remaining</th>
-                                    <th className="px-3 py-3">Pay Status</th>
-                                    <th className="px-3 py-3">Complete Status</th>
-                                    <th className="px-3 py-3">Created</th>
-                                    <th className="px-3 py-3 text-right">Actions</th>
+                                    <th className="px-3 py-3">{t("tp.col_patient")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_type")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_agreed")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_paid")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_remaining")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_pay_status")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_complete_status")}</th>
+                                    <th className="px-3 py-3">{t("tp.col_created")}</th>
+                                    <th className="px-3 py-3 text-end">{t("tp.col_actions")}</th>
                                 </tr>
                             </thead>
 
@@ -183,9 +185,9 @@ export default function TreatmentPlanPage() {
                                                             disabled={savingTp}
                                                             className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                         >
-                                                            <option value="">Select...</option>
-                                                            {typeButtons.filter((x) => x !== "All").map((t) => (
-                                                                <option key={t} value={t}>{t.toUpperCase()}</option>
+                                                            <option value="">{t("tp.select_dots")}</option>
+                                                            {typeButtons.filter((x) => x !== "All").map((ty) => (
+                                                                <option key={ty} value={ty}>{ty.toUpperCase()}</option>
                                                             ))}
                                                         </select>
                                                     ) : (
@@ -212,7 +214,7 @@ export default function TreatmentPlanPage() {
 
                                                 <td className="px-3 py-2">
                                                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${isPaid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700"}`}>
-                                                        {isPaid ? "Paid" : "Due"}
+                                                        {isPaid ? t("tp.paid") : t("tp.due")}
                                                     </span>
                                                 </td>
 
@@ -225,12 +227,12 @@ export default function TreatmentPlanPage() {
                                                             disabled={savingTp}
                                                             className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
                                                         >
-                                                            <option value="done">Done</option>
-                                                            <option value="undone">Undone</option>
+                                                            <option value="done">{t("tp.done")}</option>
+                                                            <option value="undone">{t("tp.undone")}</option>
                                                         </select>
                                                     ) : (
                                                         <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tp.is_completed ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700"}`}>
-                                                            {tp.is_completed ? "Done" : "Undone"}
+                                                            {tp.is_completed ? t("tp.done") : t("tp.undone")}
                                                         </span>
                                                     )}
                                                 </td>
@@ -245,7 +247,7 @@ export default function TreatmentPlanPage() {
                                                             onClick={() => toggleExpand(tp.id)}
                                                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
                                                         >
-                                                            {isExpanded ? "Hide" : "Sessions"}
+                                                            {isExpanded ? t("tp.hide") : t("tp.sessions_btn")}
                                                         </button>
 
                                                         {isEditing ? (
@@ -256,7 +258,7 @@ export default function TreatmentPlanPage() {
                                                                     disabled={savingTp}
                                                                     className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58] disabled:opacity-60"
                                                                 >
-                                                                    {savingTp ? "Saving..." : "Save"}
+                                                                    {savingTp ? t("tp.saving") : t("tp.save")}
                                                                 </button>
                                                                 <button
                                                                     type="button"
@@ -264,7 +266,7 @@ export default function TreatmentPlanPage() {
                                                                     disabled={savingTp}
                                                                     className="rounded-md border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                                                                 >
-                                                                    Cancel
+                                                                    {t("common.cancel")}
                                                                 </button>
                                                             </>
                                                         ) : (
@@ -274,14 +276,14 @@ export default function TreatmentPlanPage() {
                                                                     onClick={() => startEditTp(tp)}
                                                                     className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
                                                                 >
-                                                                    Edit
+                                                                    {t("common.edit")}
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleDeleteTp(tp.id)}
                                                                     className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-900"
                                                                 >
-                                                                    Delete
+                                                                    {t("common.delete")}
                                                                 </button>
                                                             </>
                                                         )}
@@ -294,27 +296,27 @@ export default function TreatmentPlanPage() {
                                                 <tr key={`${tp.id}-sessions`}>
                                                     <td colSpan={9} className="bg-slate-50 px-4 py-3">
                                                         <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                                            <p className="mb-3 text-[11px] font-semibold text-slate-600">Sessions for this plan</p>
+                                                            <p className="mb-3 text-[11px] font-semibold text-slate-600">{t("tp.sessions_for_plan")}</p>
 
                                                             {sessionsLoading && !tpSessions[tp.id] ? (
-                                                                <p className="text-xs text-slate-500">Loading sessions...</p>
+                                                                <p className="text-xs text-slate-500">{t("tp.loading_sessions")}</p>
                                                             ) : (
                                                                 <div className="overflow-x-auto">
                                                                     <table className="min-w-full text-left text-xs">
                                                                         <thead>
                                                                             <tr className="border-b border-slate-200 text-[11px] text-slate-500">
-                                                                                <th className="px-3 py-2">Finished</th>
-                                                                                <th className="px-3 py-2">Paid in this session</th>
-                                                                                <th className="px-3 py-2">Payment note</th>
-                                                                                <th className="px-3 py-2">Next plan</th>
-                                                                                <th className="px-3 py-2">Notes</th>
-                                                                                <th className="px-3 py-2 text-right">Action</th>
+                                                                                <th className="px-3 py-2">{t("tp.col_finished")}</th>
+                                                                                <th className="px-3 py-2">{t("tp.col_paid_session")}</th>
+                                                                                <th className="px-3 py-2">{t("tp.col_payment_note")}</th>
+                                                                                <th className="px-3 py-2">{t("tp.col_next_plan")}</th>
+                                                                                <th className="px-3 py-2">{t("tp.col_notes")}</th>
+                                                                                <th className="px-3 py-2 text-end">{t("tp.col_action")}</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
                                                                             {sessions.length === 0 && (
                                                                                 <tr>
-                                                                                    <td colSpan={6} className="px-3 py-2 text-slate-500">No sessions</td>
+                                                                                    <td colSpan={6} className="px-3 py-2 text-slate-500">{t("tp.no_sessions")}</td>
                                                                                 </tr>
                                                                             )}
                                                                             {sessions.map((s) => {
@@ -363,7 +365,7 @@ export default function TreatmentPlanPage() {
                                                                                                             disabled={savingPaid}
                                                                                                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58] disabled:opacity-60"
                                                                                                         >
-                                                                                                            {savingPaid ? "Saving..." : "Save"}
+                                                                                                            {savingPaid ? t("tp.saving") : t("tp.save")}
                                                                                                         </button>
                                                                                                         <button
                                                                                                             type="button"
@@ -371,7 +373,7 @@ export default function TreatmentPlanPage() {
                                                                                                             disabled={savingPaid}
                                                                                                             className="rounded-md border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                                                                                                         >
-                                                                                                            Cancel
+                                                                                                            {t("common.cancel")}
                                                                                                         </button>
                                                                                                     </>
                                                                                                 ) : (
@@ -380,7 +382,7 @@ export default function TreatmentPlanPage() {
                                                                                                         onClick={() => startEditPaid(tp.id, s.session_id, paidValue)}
                                                                                                         className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
                                                                                                     >
-                                                                                                        Edit
+                                                                                                        {t("common.edit")}
                                                                                                     </button>
                                                                                                 )}
                                                                                             </div>
@@ -403,7 +405,7 @@ export default function TreatmentPlanPage() {
                                 {tps.length === 0 && (
                                     <tr>
                                         <td colSpan={9} className="px-3 py-4 text-center text-xs text-slate-500">
-                                            No treatment plans found
+                                            {t("tp.no_plans")}
                                         </td>
                                     </tr>
                                 )}
@@ -421,7 +423,7 @@ export default function TreatmentPlanPage() {
                                 disabled={page === 1}
                                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                             >
-                                Prev
+                                {t("appt.prev")}
                             </button>
 
                             {pageNumbers.map((p, i) =>
@@ -447,11 +449,11 @@ export default function TreatmentPlanPage() {
                                 disabled={page === pagination.totalPages}
                                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                             >
-                                Next
+                                {t("appt.next")}
                             </button>
                         </div>
                         <span className="text-[11px] text-slate-400">
-                            Showing {rowStart}–{rowEnd} of {pagination.total} treatment plans
+                            {t("tp.showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
                         </span>
                     </div>
                 )}

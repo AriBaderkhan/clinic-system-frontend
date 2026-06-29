@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import { FiSearch, FiCalendar, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { getAuditLogs } from '../../api/auditApi';
@@ -25,6 +26,7 @@ function StatusBadge({ code }) {
 }
 
 export default function AuditLogPage() {
+    const { t } = useTranslation();
     const [data, setData] = useState({ rows: [], total: 0, page: 1, pages: 1 });
     const [loading, setLoading] = useState(true);
 
@@ -42,7 +44,7 @@ export default function AuditLogPage() {
                 const res = await getAuditLogs({ q, from, to, page });
                 if (active) setData(res.data ?? { rows: [], total: 0, page: 1, pages: 1 });
             } catch (err) {
-                if (active) toast.error(err.userMessage || 'Failed to load activity log');
+                if (active) toast.error(err.userMessage || t('audit.failed_load'));
             } finally {
                 if (active) setLoading(false);
             }
@@ -60,45 +62,45 @@ export default function AuditLogPage() {
         <div className="p-4 md:p-6 max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Activity Log</h1>
-                <p className="text-gray-500 mt-1">A record of who did what across your organization.</p>
+                <h1 className="text-2xl font-bold text-gray-800">{t('audit.title')}</h1>
+                <p className="text-gray-500 mt-1">{t('audit.subtitle')}</p>
             </div>
 
             {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
                 <div className="flex flex-col md:flex-row gap-3 md:items-end">
                     <div className="relative w-full md:flex-1">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Search by user</label>
-                        <FiSearch className="absolute left-3 top-[34px] text-gray-400" size={18} />
+                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('audit.search_by_user')}</label>
+                        <FiSearch className="absolute start-3 top-[34px] text-gray-400" size={18} />
                         <input
                             type="text"
-                            placeholder="User name..."
+                            placeholder={t('audit.user_name_ph')}
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                            className="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
                         />
                     </div>
                     <div className="w-full md:w-44">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">From date</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('audit.from_date')}</label>
                         <div className="relative">
-                            <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                            <FiCalendar className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                             <input
                                 type="date"
                                 value={from}
                                 onChange={(e) => setFrom(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
                             />
                         </div>
                     </div>
                     <div className="w-full md:w-44">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">To date</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('audit.to_date')}</label>
                         <div className="relative">
-                            <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                            <FiCalendar className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                             <input
                                 type="date"
                                 value={to}
                                 onChange={(e) => setTo(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
                             />
                         </div>
                     </div>
@@ -107,7 +109,7 @@ export default function AuditLogPage() {
                             onClick={clearFilters}
                             className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all"
                         >
-                            <FiX size={16} /> Clear
+                            <FiX size={16} /> {t('audit.clear')}
                         </button>
                     )}
                 </div>
@@ -119,18 +121,18 @@ export default function AuditLogPage() {
                     <table className="min-w-full w-full">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">When</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Request</th>
-                                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-start text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('audit.col_when')}</th>
+                                <th className="px-6 py-4 text-start text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('audit.col_user')}</th>
+                                <th className="px-6 py-4 text-start text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('audit.col_action')}</th>
+                                <th className="px-6 py-4 text-start text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('audit.col_request')}</th>
+                                <th className="px-6 py-4 text-end text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('audit.col_status')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
-                                <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-500">Loading activity…</td></tr>
+                                <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-500">{t('audit.loading')}</td></tr>
                             ) : data.rows.length === 0 ? (
-                                <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-500">No activity found.</td></tr>
+                                <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-500">{t('audit.none')}</td></tr>
                             ) : (
                                 data.rows.map((row) => (
                                     <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
@@ -138,7 +140,7 @@ export default function AuditLogPage() {
                                             {new Date(row.created_at).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-gray-900">{row.actor_name || 'System'}</div>
+                                            <div className="text-sm font-medium text-gray-900">{row.actor_name || t('audit.system')}</div>
                                             <div className="text-xs text-gray-400 capitalize">{row.actor_role || ''}</div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -161,16 +163,16 @@ export default function AuditLogPage() {
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
                 {loading ? (
-                    <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-500">Loading activity…</div>
+                    <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-500">{t('audit.loading')}</div>
                 ) : data.rows.length === 0 ? (
-                    <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-500">No activity found.</div>
+                    <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-500">{t('audit.none')}</div>
                 ) : (
                     data.rows.map((row) => (
                         <div key={row.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
                             <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
                                     <p className="text-sm font-semibold text-gray-800">{actionLabel(row)}</p>
-                                    <p className="text-xs text-gray-500">{row.actor_name || 'System'} · <span className="capitalize">{row.actor_role || ''}</span></p>
+                                    <p className="text-xs text-gray-500">{row.actor_name || t('audit.system')} · <span className="capitalize">{row.actor_role || ''}</span></p>
                                 </div>
                                 <StatusBadge code={row.status_code} />
                             </div>
@@ -188,7 +190,7 @@ export default function AuditLogPage() {
             {!loading && data.total > 0 && (
                 <div className="mt-5 flex items-center justify-between">
                     <p className="text-sm text-gray-500">
-                        Page {data.page} of {data.pages} · {data.total} entr{data.total === 1 ? 'y' : 'ies'}
+                        {t('audit.page_of', { page: data.page, pages: data.pages, total: data.total })}
                     </p>
                     <div className="flex gap-2">
                         <button
@@ -196,14 +198,14 @@ export default function AuditLogPage() {
                             disabled={data.page <= 1}
                             className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <FiChevronLeft size={16} /> Prev
+                            <FiChevronLeft size={16} className="rtl:rotate-180" /> {t('audit.prev')}
                         </button>
                         <button
                             onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                             disabled={data.page >= data.pages}
                             className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Next <FiChevronRight size={16} />
+                            {t('audit.next')} <FiChevronRight size={16} className="rtl:rotate-180" />
                         </button>
                     </div>
                 </div>

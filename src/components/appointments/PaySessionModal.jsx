@@ -1,9 +1,11 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { paySession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 
 export default function PaySessionModal({ session, onClose, onPaid }) {
+  const { t } = useTranslation();
   const { formatMoney } = useSettings();
   const [normalAmount, setNormalAmount] = useState("");
   const [note, setNote] = useState("");
@@ -42,12 +44,12 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
     const remaining = Number(p.agreed_total) - Number(p.total_paid);
 
     if (!Number.isFinite(amt) || amt <= 0) {
-      planErrors[pid] = "Invalid amount.";
+      planErrors[pid] = t("appt.pay_invalid");
       continue;
     }
 
     if (amt > remaining) {
-      planErrors[pid] = `Cannot exceed remaining (${formatMoney(remaining, curr)}).`;
+      planErrors[pid] = t("appt.pay_exceed", { amount: formatMoney(remaining, curr) });
       continue;
     }
 
@@ -85,7 +87,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
       onPaid?.();
       onClose?.();
     } catch (err) {
-      toast.error(err.userMessage || "Failed to save payment. Please try again.");
+      toast.error(err.userMessage || t("appt.pay_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -100,10 +102,10 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Pay session</h2>
+            <h2 className="text-base font-semibold text-slate-900">{t("appt.pay_title")}</h2>
             <p className="text-xs text-slate-500">
-              {session?.patient?.full_name || "Patient"} · Dr.{" "}
-              {session?.doctor?.full_name || "Doctor"}
+              {session?.patient?.full_name || t("appt.pay_patient")} · Dr.{" "}
+              {session?.doctor?.full_name || t("appt.pay_doctor")}
             </p>
           </div>
 
@@ -120,7 +122,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
         {/* Works summary */}
         <div className="mb-4 rounded-xl bg-slate-50 p-3 text-xs text-slate-700">
           <p className="mb-2 text-[11px] font-semibold text-slate-600">
-            Works in this session
+            {t("appt.pay_works")}
           </p>
 
           {session?.works_summary?.works?.length ? (
@@ -138,15 +140,15 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               ))}
             </ul>
           ) : (
-            <p>No works found for this session.</p>
+            <p>{t("appt.pay_no_works")}</p>
           )}
 
           <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-2 text-[11px]">
             <span className="text-slate-600">
-              Min total: <span className="font-semibold">{formatMoney(minTotal, curr)}</span>
+              {t("appt.pay_min_total")} <span className="font-semibold">{formatMoney(minTotal, curr)}</span>
             </span>
             <span className="text-slate-600">
-              Total: <span className="font-semibold">{formatMoney(total, curr)}</span>
+              {t("appt.pay_total")} <span className="font-semibold">{formatMoney(total, curr)}</span>
             </span>
           </div>
         </div>
@@ -155,10 +157,10 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
         {hasPlans && (
           <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
             <p className="text-sm font-semibold text-slate-900">
-              Treatment plan payments (optional)
+              {t("appt.pay_plans_title")}
             </p>
             <p className="mt-1 text-[11px] text-slate-600">
-              Only fill amounts for plans you want to collect today.
+              {t("appt.pay_plans_hint")}
             </p>
 
             <div className="mt-3 space-y-3">
@@ -174,18 +176,18 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
                         <p className="text-xs font-semibold text-slate-900">
-                          {String(p.type || "").toUpperCase()} plan
+                          {String(p.type || "").toUpperCase()} {t("appt.pay_plan_suffix")}
                         </p>
                         <p className="text-[11px] text-slate-600">
-                          Agreed: <b>{formatMoney(p.agreed_total, curr)}</b> · Paid:{" "}
-                          <b>{formatMoney(p.total_paid, curr)}</b> · Remaining:{" "}
+                          {t("appt.pay_agreed")} <b>{formatMoney(p.agreed_total, curr)}</b> · {t("appt.pay_paid")}{" "}
+                          <b>{formatMoney(p.total_paid, curr)}</b> · {t("appt.pay_remaining")}{" "}
                           <b>{formatMoney(remaining, curr)}</b>
                         </p>
                       </div>
 
                       <div className="w-44">
                         <label className="block text-[11px] font-medium text-slate-700 mb-1">
-                          Amount for this plan
+                          {t("appt.pay_amount_plan")}
                         </label>
                         <input
                           type="number"
@@ -218,7 +220,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">
-              Normal session payment (cash) (optional)
+              {t("appt.pay_normal_label")}
             </label>
             <input
               type="number"
@@ -232,7 +234,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               //     ? "border-red-400 bg-red-50"
               //     : "border-slate-200 bg-white focus:border-[#015478]"
               // }
-              placeholder={total ? String(total) : "Enter amount"}
+              placeholder={total ? String(total) : t("appt.pay_enter_amount")}
             />
             {/* {isNormalBelowMin && (
               <p className="text-[11px] text-red-500">
@@ -245,14 +247,14 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
 
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">
-              Reception note (optional)
+              {t("appt.pay_note_label")}
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#015478]"
-              placeholder="e.g. paid full in cash"
+              placeholder={t("appt.pay_note_ph")}
             />
           </div>
 
@@ -263,16 +265,16 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
               disabled={isSubmitting}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
               // disabled={disableSubmit}
-              className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white 
+              className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white
                 ${ disableSubmit ? "bg-[#015478]/50 cursor-not-allowed" : "bg-[#015478] hover:bg-[#013d58]"}
                   `}
             >
-              {isSubmitting ? "Saving…" : "Save payment"}
+              {isSubmitting ? t("appt.pay_saving") : t("appt.pay_save")}
             </button>
           </div>
         </form>

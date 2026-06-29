@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import usePatients from "../../hooks/usePatients";
 import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useUnpaidSessions from "../../hooks/useUnPaidSessions";
@@ -9,6 +10,7 @@ import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsM
 import { useSettings } from "../../context/SettingContext";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { formatTime, formatMoney } = useSettings();
   const { patients, isLoading } = usePatients();
 
@@ -72,11 +74,10 @@ export default function Dashboard() {
       {/* Top intro */}
       <div className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-slate-900">
-          Crown Dental Clinic — Overview
+          Crown Dental Clinic — {t('dash.overview')}
         </h1>
         <p className="text-xs text-slate-500">
-          Quick snapshot of today&apos;s patients, appointments, and active
-          cases.
+          {t('dash.subtitle')}
         </p>
       </div>
 
@@ -108,12 +109,10 @@ export default function Dashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-slate-900">
-                  Today&apos;s active appointments
+                  {t('dash.today_active')}
                 </h2>
                 <p className="text-[11px] text-slate-500">
-                  Showing only <strong>scheduled</strong>,{" "}
-                  <strong>checked-in</strong> and <strong>in progress</strong>{" "}
-                  appointments for today.
+                  {t('dash.today_active_hint')}
                 </p>
               </div>
 
@@ -122,7 +121,7 @@ export default function Dashboard() {
                 onClick={refreshToday}
                 className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
               >
-                Refresh
+                {t('dash.refresh')}
               </button>
             </div>
 
@@ -136,7 +135,7 @@ export default function Dashboard() {
             {/* Loading */}
             {isTodayLoading && !todayError && (
               <p className="text-xs text-slate-500">
-                Loading today&apos;s appointments…
+                {t('dash.loading_today')}
               </p>
             )}
 
@@ -145,7 +144,7 @@ export default function Dashboard() {
               !todayError &&
               todayAppointments.length === 0 && (
                 <p className="text-xs text-slate-500">
-                  No active appointments for today.
+                  {t('dash.no_active_today')}
                 </p>
               )}
 
@@ -156,22 +155,22 @@ export default function Dashboard() {
                   <thead>
                     <tr className="border-b border-slate-200 text-xs text-slate-500">
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Patient
+                        {t('dash.col_patient')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Phone
+                        {t('dash.col_phone')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Doctor
+                        {t('dash.col_doctor')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Time
+                        {t('dash.col_time')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Type
+                        {t('dash.col_type')}
                       </th>
                       <th className="px-3 py-2 font-medium text-[#015478]">
-                        Status
+                        {t('dash.col_status')}
                       </th>
                     </tr>
                   </thead>
@@ -225,21 +224,21 @@ export default function Dashboard() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-semibold text-slate-900">
-                  In-progress appointments (Today)
+                  {t('dash.in_progress_title')}
                 </h2>
                 <p className="text-[12px] text-slate-600">
-                  Click an appointment to update status, fill session and works.
+                  {t('dash.in_progress_hint')}
                 </p>
               </div>
               <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium text-amber-800">
-                {inProgressAppointments.length} in progress
+                {t('dash.in_progress_count', { count: inProgressAppointments.length })}
               </span>
             </div>
 
             <div className="space-y-3 text-sm max-h-64 overflow-y-auto pr-1">
               {inProgressAppointments.length === 0 && (
                 <p className="text-xs text-slate-600">
-                  No in-progress appointments right now.
+                  {t('dash.no_in_progress')}
                 </p>
               )}
 
@@ -277,29 +276,29 @@ export default function Dashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-slate-900">
-                  Sessions waiting for payment
+                  {t('dash.waiting_payment')}
                 </h2>
                 <p className="text-[11px] text-[#015478]/60">
-                  Newly completed sessions that reception needs to charge.
+                  {t('dash.waiting_payment_hint')}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700 border border-amber-200">
-                  {isUnpaidLoading ? "…" : unpaidTotal} unpaid
+                  {isUnpaidLoading ? t('dash.unpaid_count', { count: "…" }) : t('dash.unpaid_count', { count: unpaidTotal })}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllUnpaid(true)}
                   className="rounded-md border border-[#015478]/30 bg-white px-3 py-1.5 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10"
                 >
-                  View all
+                  {t('dash.view_all')}
                 </button>
                 <button
                   type="button"
                   onClick={refreshUnpaid}
                   className="rounded-md border border-[#015478]/20 bg-white px-3 py-1.5 text-[11px] text-slate-600 hover:bg-[#015478]/10"
                 >
-                  Refresh
+                  {t('dash.refresh')}
                 </button>
               </div>
             </div>
@@ -311,14 +310,14 @@ export default function Dashboard() {
             )}
 
             {isUnpaidLoading && !unpaidError && (
-              <p className="text-xs text-[#015478]/60">Loading unpaid sessions…</p>
+              <p className="text-xs text-[#015478]/60">{t('dash.loading_unpaid')}</p>
             )}
 
             {!isUnpaidLoading &&
               !unpaidError &&
               unpaidSessions.length === 0 && (
                 <p className="text-xs text-[#015478]/60">
-                  No unpaid sessions right now.
+                  {t('dash.no_unpaid')}
                 </p>
               )}
 
@@ -335,7 +334,7 @@ export default function Dashboard() {
                       </p>
                       <p className="text-xs text-slate-500">
                         {s.doctor.full_name} · {formatTime(s.appointment.start_time)} ·{" "}
-                        {s.works_summary.items_count} work{s.works_summary.items_count !== 1 && "s"}
+                        {t('dash.works_count', { count: s.works_summary.items_count })}
                         {" "}· <span className="font-medium text-slate-700">{formatMoney(s.totals.total, s.currency_code)}</span>
                       </p>
                     </div>
@@ -343,9 +342,9 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setSelectedForPayment(s)}
-                      className="ml-3 flex-shrink-0 rounded-full bg-[#015478] px-3.5 py-1 text-[10px] font-semibold text-white hover:bg-[#013d58]"
+                      className="ms-3 flex-shrink-0 rounded-full bg-[#015478] px-3.5 py-1 text-[10px] font-semibold text-white hover:bg-[#013d58]"
                     >
-                      Pay
+                      {t('dash.pay')}
                     </button>
                   </div>
                 ))}

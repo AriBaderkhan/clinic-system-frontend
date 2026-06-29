@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 
 export default function MonthlyExpenseFormModal({
@@ -8,6 +9,7 @@ export default function MonthlyExpenseFormModal({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const [form, setForm] = useState({
@@ -32,7 +34,7 @@ export default function MonthlyExpenseFormModal({
 
   if (!open) return null;
 
-  const title = isEdit ? "Edit Expense" : "Add Expense";
+  const title = isEdit ? t("exp.edit_expense") : t("exp.add_expense");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ export default function MonthlyExpenseFormModal({
         amount: Number(form.amount)
       });
     } catch (err) {
-      toast.error(err.userMessage || "Failed to save expense.");
+      toast.error(err.userMessage || t("exp.save_failed"));
     } finally {
       setSaving(false);
     }
@@ -57,19 +59,19 @@ export default function MonthlyExpenseFormModal({
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-          <button onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50">Close</button>
+          <button onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50">{t("common.close")}</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-xs text-slate-600 mb-1">Expense Type</label>
+            <label className="block text-xs text-slate-600 mb-1">{t("exp.expense_type")}</label>
             <input
               required
               list="expense-types"
               value={form.type}
               onChange={e => setForm({ ...form, type: e.target.value })}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
-              placeholder="e.g. Rent, Salary, Materials"
+              placeholder={t("exp.type_ph")}
             />
             <datalist id="expense-types">
               <option value="Rent" />
@@ -83,7 +85,7 @@ export default function MonthlyExpenseFormModal({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">Amount</label>
+            <label className="block text-xs text-slate-600 mb-1">{t("exp.amount")}</label>
             <input
               required
               type="number"
@@ -96,7 +98,7 @@ export default function MonthlyExpenseFormModal({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">Date</label>
+            <label className="block text-xs text-slate-600 mb-1">{t("exp.date")}</label>
             <input
               required
               type="date"
@@ -107,7 +109,7 @@ export default function MonthlyExpenseFormModal({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">Note</label>
+            <label className="block text-xs text-slate-600 mb-1">{t("exp.note")}</label>
             <textarea
               value={form.note}
               onChange={e => setForm({ ...form, note: e.target.value })}
@@ -117,9 +119,9 @@ export default function MonthlyExpenseFormModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Cancel</button>
+            <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">{t("common.cancel")}</button>
             <button type="submit" disabled={saving} className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58] disabled:opacity-50">
-              {saving ? "Saving..." : "Save"}
+              {saving ? t("exp.saving") : t("exp.save")}
             </button>
           </div>
         </form>

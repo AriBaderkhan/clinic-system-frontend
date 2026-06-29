@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useCalendarAppointments from "../../hooks/useCalendarAppointments";
 import { buildDoctorColorMap, getDoctorColor } from "../../utils/doctorColors";
 
-const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEK_DAY_KEYS = ["appt.day_mon", "appt.day_tue", "appt.day_wed", "appt.day_thu", "appt.day_fri", "appt.day_sat", "appt.day_sun"];
 const MAX_PILLS_PER_DAY = 3;
 
 function startOfDay(date) {
@@ -33,6 +34,7 @@ function dateKey(date) {
 import { useSettings } from "../../context/SettingContext";
 
 export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay }) {
+  const { t } = useTranslation();
   const { formatTime } = useSettings();
   const [view, setView] = useState("month"); // month | week
   const [anchorDate, setAnchorDate] = useState(() => startOfDay(new Date()));
@@ -166,7 +168,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
             onClick={goToday}
             className="rounded-lg border border-[#015478]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#015478] hover:bg-[#015478]/5"
           >
-            Today
+            {t("appt.cal_today")}
           </button>
         </div>
 
@@ -178,7 +180,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
             onClick={refresh}
             className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
           >
-            Refresh
+            {t("appt.refresh")}
           </button>
           <div className="flex rounded-full border border-[#015478]/20 bg-[#015478]/5 p-0.5 text-xs font-semibold">
             <button
@@ -188,7 +190,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                 view === "week" ? "bg-[#015478] text-white" : "text-[#015478] hover:bg-[#015478]/10"
               }`}
             >
-              Week
+              {t("appt.cal_week")}
             </button>
             <button
               type="button"
@@ -197,7 +199,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                 view === "month" ? "bg-[#015478] text-white" : "text-[#015478] hover:bg-[#015478]/10"
               }`}
             >
-              Month
+              {t("appt.cal_month")}
             </button>
           </div>
         </div>
@@ -230,13 +232,13 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
 
       {/* Loading */}
       {isLoading && (
-        <p className="mb-2 text-xs text-slate-400">Loading appointments…</p>
+        <p className="mb-2 text-xs text-slate-400">{t("appt.loading")}</p>
       )}
 
       {/* Weekday header */}
       <div className="grid grid-cols-7 border-b border-slate-200 pb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-        {WEEK_DAYS.map((d) => (
-          <div key={d}>{d}</div>
+        {WEEK_DAY_KEYS.map((k) => (
+          <div key={k}>{t(k)}</div>
         ))}
       </div>
 
@@ -255,7 +257,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
             <div
               key={key}
               onClick={() => onSelectDay?.(day)}
-              title={onSelectDay ? "Click to add an appointment on this day" : undefined}
+              title={onSelectDay ? t("appt.cal_add_hint") : undefined}
               className={`group border-b border-r border-slate-100 p-1.5 first:border-l ${
                 view === "week" ? "min-h-[340px]" : "min-h-[110px]"
               } ${isToday ? "bg-yellow-50" : isOtherMonth ? "bg-slate-50/70" : "bg-white"} ${
@@ -293,7 +295,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                     }}
                     className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-[#015478] hover:bg-[#015478]/5"
                   >
-                    +{hiddenCount} more
+                    {t("appt.cal_more", { count: hiddenCount })}
                   </button>
                 )}
 
@@ -306,7 +308,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                     }}
                     className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-slate-400 hover:bg-slate-50"
                   >
-                    Show less
+                    {t("appt.cal_show_less")}
                   </button>
                 )}
               </div>

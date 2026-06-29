@@ -4,9 +4,12 @@ import { getReminderTemplate, updateReminderTemplate } from "../../api/reminderA
 import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingContext";
 import { getTheme, toggleTheme } from "../../utils/theme";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 import toast from "react-hot-toast";
 
 export default function BranchSettingsPage() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const { refreshSettings } = useSettings();
 
@@ -61,7 +64,7 @@ export default function BranchSettingsPage() {
             });
             setIsEditing(false);
         } catch (error) {
-            setError(error.userMessage || "Failed to load branch details");
+            setError(error.userMessage || t("bs.failed_load"));
         } finally {
             setLoading(false);
         }
@@ -84,14 +87,14 @@ export default function BranchSettingsPage() {
             setSaving(true);
             setError("");
             await updateBranch(effectiveUser.branch_id, formData);
-            toast.success("Branch settings updated");
+            toast.success(t("bs.updated"));
 
             await loadBranchDetails(effectiveUser.branch_id);
             await refreshSettings();
 
             setIsEditing(false);
         } catch (error) {
-            toast.error(error.userMessage || "Failed to update branch");
+            toast.error(error.userMessage || t("bs.failed_update"));
         } finally {
             setSaving(false);
         }
@@ -116,27 +119,27 @@ export default function BranchSettingsPage() {
         try {
             setTplSaving(true);
             await updateReminderTemplate(tpl);
-            toast.success("Reminder template saved");
+            toast.success(t("bs.tpl_saved"));
             setShowTpl(false);
         } catch (err) {
-            toast.error(err.userMessage || "Failed to save template");
+            toast.error(err.userMessage || t("bs.tpl_save_failed"));
         } finally {
             setTplSaving(false);
         }
     };
 
     if (!effectiveUser) {
-        return <div>Loading user information... (Please refresh if stuck)</div>;
+        return <div>{t("bs.loading_user")}</div>;
     }
 
     if (!effectiveUser.branch_id) {
         return (
             <div className="p-6 max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Branch Settings</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">{t("bs.title")}</h1>
                 <div className="p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
                     <p className="text-gray-500">
-                        No branch assigned to your account. <br />
-                        <span className="text-xs">User ID: {effectiveUser.id}</span>
+                        {t("bs.no_branch")} <br />
+                        <span className="text-xs">{t("bs.user_id", { id: effectiveUser.id })}</span>
                     </p>
                 </div>
             </div>
@@ -147,7 +150,7 @@ export default function BranchSettingsPage() {
 
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-6">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">Branch Settings</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">{t("bs.title")}</h1>
 
             {error && (
                 <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
@@ -158,7 +161,7 @@ export default function BranchSettingsPage() {
             {/* ===== Section: Branch details ===== */}
             <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
                 {loading ? (
-                    <div className="text-center p-4">Loading branch details...</div>
+                    <div className="text-center p-4">{t("bs.loading_details")}</div>
                 ) : branchDetails ? (
                     <>
                         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 border-b pb-4 dark:border-slate-700">
@@ -168,7 +171,7 @@ export default function BranchSettingsPage() {
                                     onClick={() => setIsEditing(true)}
                                     className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
                                 >
-                                    Edit Branch
+                                    {t("bs.edit_branch")}
                                 </button>
                             )}
                         </div>
@@ -176,7 +179,7 @@ export default function BranchSettingsPage() {
                         {isEditing ? (
                             <form onSubmit={handleSave} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Branch Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.branch_name")}</label>
                                     <input
                                         type="text"
                                         value={formData.name}
@@ -187,7 +190,7 @@ export default function BranchSettingsPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Location</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.location")}</label>
                                     <input
                                         type="text"
                                         value={formData.location}
@@ -198,27 +201,27 @@ export default function BranchSettingsPage() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Timezone</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.timezone")}</label>
                                         <select
                                             value={formData.timezone}
                                             onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
                                             className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                                             required
                                         >
-                                            <option value="">Select Timezone</option>
+                                            <option value="">{t("bs.select_timezone")}</option>
                                             {timezones.map(tz => <option key={tz} value={tz}>{tz}</option>)}
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Currency</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.currency")}</label>
                                         <select
                                             value={formData.currency_code}
                                             onChange={(e) => setFormData({ ...formData, currency_code: e.target.value })}
                                             className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                                             required
                                         >
-                                            <option value="">Select Currency</option>
+                                            <option value="">{t("bs.select_currency")}</option>
                                             {currencies.map(c => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                     </div>
@@ -230,30 +233,30 @@ export default function BranchSettingsPage() {
                                         className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 dark:text-slate-300 dark:border-slate-600"
                                         disabled={saving}
                                     >
-                                        Cancel
+                                        {t("common.cancel")}
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={saving}
                                         className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#013d58] disabled:opacity-50"
                                     >
-                                        {saving ? "Saving..." : "Save Changes"}
+                                        {saving ? t("bs.saving") : t("bs.save_changes")}
                                     </button>
                                 </div>
                             </form>
                         ) : (
                             <div className="space-y-4">
                                 <div>
-                                    <span className="block text-sm font-medium text-gray-500">Location</span>
+                                    <span className="block text-sm font-medium text-gray-500">{t("bs.location")}</span>
                                     <span className="text-gray-900 dark:text-slate-200">{branchDetails.location}</span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-500">Timezone</span>
+                                        <span className="block text-sm font-medium text-gray-500">{t("bs.timezone")}</span>
                                         <span className="text-gray-900 dark:text-slate-200">{branchDetails.timezone}</span>
                                     </div>
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-500">Currency</span>
+                                        <span className="block text-sm font-medium text-gray-500">{t("bs.currency")}</span>
                                         <span className="text-gray-900 dark:text-slate-200">{branchDetails.currency_code}</span>
                                     </div>
                                 </div>
@@ -265,8 +268,8 @@ export default function BranchSettingsPage() {
 
             {/* ===== Section: Appearance ===== */}
             <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">Appearance</h2>
-                <p className="text-sm text-gray-500 mb-4">Choose how the dashboard looks on this device.</p>
+                <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.appearance")}</h2>
+                <p className="text-sm text-gray-500 mb-4">{t("bs.appearance_hint")}</p>
                 <div className="flex gap-3">
                     <button
                         onClick={() => { if (isDark) handleToggleTheme(); }}
@@ -276,7 +279,7 @@ export default function BranchSettingsPage() {
                         ].join(" ")}
                     >
                         <div className="text-2xl">☀️</div>
-                        <div className="mt-1 font-medium dark:text-slate-100">Light</div>
+                        <div className="mt-1 font-medium dark:text-slate-100">{t("bs.light")}</div>
                     </button>
                     <button
                         onClick={() => { if (!isDark) handleToggleTheme(); }}
@@ -286,8 +289,13 @@ export default function BranchSettingsPage() {
                         ].join(" ")}
                     >
                         <div className="text-2xl">🌙</div>
-                        <div className="mt-1 font-medium dark:text-slate-100">Dark</div>
+                        <div className="mt-1 font-medium dark:text-slate-100">{t("bs.dark")}</div>
                     </button>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between border-t pt-4 dark:border-slate-700">
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">{t('settings.language')}</span>
+                    <LanguageSwitcher />
                 </div>
             </section>
 
@@ -296,16 +304,16 @@ export default function BranchSettingsPage() {
                 <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">Reminder template</h2>
+                            <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.reminder_template")}</h2>
                             <p className="text-sm text-gray-500">
-                                The standard WhatsApp reminder message (Kurdish / Arabic / English).
+                                {t("bs.reminder_hint")}
                             </p>
                         </div>
                         <button
                             onClick={() => setShowTpl(true)}
                             className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
                         >
-                            Edit template
+                            {t("bs.edit_template")}
                         </button>
                     </div>
                 </section>
@@ -319,11 +327,11 @@ export default function BranchSettingsPage() {
                 >
                     <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-800">
                         <div className="mb-1 flex items-center justify-between">
-                            <h2 className="text-lg font-semibold dark:text-slate-100">Edit reminder template</h2>
+                            <h2 className="text-lg font-semibold dark:text-slate-100">{t("bs.edit_template_title")}</h2>
                             <button onClick={() => setShowTpl(false)} className="text-slate-400 hover:text-slate-600">✕</button>
                         </div>
                         <p className="mb-4 text-xs text-gray-500">
-                            Use <code>{"{patient_name}"}</code>, <code>{"{date}"}</code>, <code>{"{time}"}</code> — they fill in automatically.
+                            {t("bs.placeholders_hint")}
                         </p>
 
                         <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
@@ -349,11 +357,11 @@ export default function BranchSettingsPage() {
 
                         <div className="mt-4 flex justify-end gap-2">
                             <button onClick={() => setShowTpl(false)} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">
-                                Cancel
+                                {t("common.cancel")}
                             </button>
                             <button onClick={saveTemplate} disabled={tplSaving}
                                 className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#013d58] disabled:opacity-50">
-                                {tplSaving ? "Saving…" : "Save template"}
+                                {tplSaving ? t("bs.saving_short") : t("bs.save_template")}
                             </button>
                         </div>
                     </div>

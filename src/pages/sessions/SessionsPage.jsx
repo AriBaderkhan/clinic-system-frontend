@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useSessions from "../../hooks/useSessions";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
@@ -20,6 +21,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 export default function Sessions() {
+  const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
   const [tab, setTab] = useState("sessions");
   const [selectedId, setSelectedId] = useState(null);
@@ -52,13 +54,13 @@ export default function Sessions() {
   }
 
   const handleDelete = async (sessionId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this session?");
+    const confirmDelete = window.confirm(t("clin.sess_delete_confirm"));
     if (!confirmDelete) return;
     try {
       await deleteSession(sessionId);
       await refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Failed to delete session.");
+      toast.error(err.userMessage || t("clin.sess_delete_failed"));
     }
   };
 
@@ -80,7 +82,7 @@ export default function Sessions() {
               : "text-slate-500 hover:text-slate-700"
           }`}
         >
-          Sessions
+          {t("clin.sess_tab_sessions")}
         </button>
         <button
           type="button"
@@ -91,7 +93,7 @@ export default function Sessions() {
               : "text-slate-500 hover:text-slate-700"
           }`}
         >
-          Treatment Plans
+          {t("clin.sess_tab_plans")}
         </button>
       </div>
 
@@ -102,9 +104,9 @@ export default function Sessions() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Sessions</h1>
+          <h1 className="text-lg font-semibold text-slate-900">{t("clin.sess_title")}</h1>
           <p className="text-xs text-slate-500">
-            Normal sessions only (unpaid first). View details and manage records.
+            {t("clin.sess_subtitle")}
           </p>
         </div>
       </div>
@@ -117,29 +119,29 @@ export default function Sessions() {
 
           {/* Search */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-            <label className="text-xs font-semibold text-[#015478]">Search</label>
+            <label className="text-xs font-semibold text-[#015478]">{t("clin.sess_search")}</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Patient or doctor name..."
+              placeholder={t("clin.sess_search_ph")}
               className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
             />
           </div>
 
           {/* Day */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#015478]">Day</label>
+            <label className="text-xs font-semibold text-[#015478]">{t("clin.sess_day")}</label>
             <select
               value={dayFilter}
               onChange={(e) => setDayFilter(e.target.value)}
               className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
             >
-              <option value="">All</option>
-              <option value="today">Today</option>
-              <option value="yesterday">Yesterday</option>
-              <option value="last_week">Last week</option>
-              <option value="last_month">Last month</option>
+              <option value="">{t("appt.all")}</option>
+              <option value="today">{t("appt.today")}</option>
+              <option value="yesterday">{t("appt.yesterday")}</option>
+              <option value="last_week">{t("appt.last_week")}</option>
+              <option value="last_month">{t("appt.last_month")}</option>
             </select>
           </div>
 
@@ -150,14 +152,14 @@ export default function Sessions() {
               onClick={refresh}
               className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
             >
-              Refresh
+              {t("appt.refresh")}
             </button>
             <button
               type="button"
               onClick={() => { setDayFilter(""); setSearchTerm(""); }}
               className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
             >
-              Clear
+              {t("appt.clear")}
             </button>
           </div>
         </div>
@@ -165,8 +167,8 @@ export default function Sessions() {
         {/* Count info */}
         <p className="mb-3 text-xs text-slate-400">
           {isLoading
-            ? "Loading sessions…"
-            : `Total: ${pagination.total} · Showing ${pagination.total === 0 ? 0 : rowStart}–${rowEnd}`}
+            ? t("clin.sess_loading")
+            : t("appt.count_info", { total: pagination.total, start: pagination.total === 0 ? 0 : rowStart, end: rowEnd })}
         </p>
 
         {/* Error */}
@@ -179,7 +181,7 @@ export default function Sessions() {
         {/* Empty state */}
         {!isLoading && !error && sessions.length === 0 && (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-            No sessions match these filters.
+            {t("clin.sess_empty")}
           </div>
         )}
 
@@ -190,14 +192,14 @@ export default function Sessions() {
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500">
                   <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">Patient</th>
-                  <th className="px-3 py-2 font-medium">Doctor</th>
-                  <th className="px-3 py-2 font-medium">Finished</th>
-                  <th className="px-3 py-2 font-medium">Total</th>
-                  <th className="px-3 py-2 font-medium">Paid</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
-                  <th className="px-3 py-2 font-medium">Notes</th>
-                  <th className="px-3 py-2 font-medium text-right">Actions</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_patient")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_doctor")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_finished")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_total")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_paid")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_status")}</th>
+                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_notes")}</th>
+                  <th className="px-3 py-2 font-medium text-end">{t("clin.sess_col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -213,7 +215,7 @@ export default function Sessions() {
                       </td>
                       <td className="px-3 py-2 text-slate-800">
                         {s.has_normal_works === false ? (
-                          <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">Treatment plan</span>
+                          <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">{t("clin.sess_treatment_plan_badge")}</span>
                         ) : (
                           formatMoney(s.total, s.currency_code)
                         )}
@@ -229,7 +231,7 @@ export default function Sessions() {
                             "rounded-full px-3 py-1 text-xs",
                             s.is_paid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700",
                           ].join(" ")}>
-                            {s.is_paid ? "Paid" : "Unpaid"}
+                            {s.is_paid ? t("clin.sess_paid") : t("clin.sess_unpaid")}
                           </span>
                         )}
                       </td>
@@ -249,21 +251,21 @@ export default function Sessions() {
                             onClick={() => openView(s.session_id)}
                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
                           >
-                            View
+                            {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => openEdit(s.session_id)}
                             className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
                           >
-                            Edit
+                            {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(s.session_id)}
                             className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
                           >
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>
@@ -284,7 +286,7 @@ export default function Sessions() {
                 disabled={page === 1}
                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Prev
+                {t("appt.prev")}
               </button>
 
               {pageNumbers.map((p, i) =>
@@ -310,11 +312,11 @@ export default function Sessions() {
                 disabled={page === pagination.totalPages}
                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Next
+                {t("appt.next")}
               </button>
             </div>
             <span className="text-[11px] text-slate-400">
-              Showing {rowStart}–{rowEnd} of {pagination.total} sessions
+              {t("clin.sess_showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
             </span>
           </div>
         )}

@@ -47,6 +47,7 @@ import TenantDashboard from "./pages/tenant/Dashboard";
 import TenantBranches from "./pages/tenant/Branches";
 import TenantUsers from "./pages/tenant/Users";
 import AuditLogPage from "./pages/audit/AuditLogPage";
+import AppearanceSettingsPage from "./pages/settings/AppearanceSettingsPage";
 
 // Admin Platform pages
 import AdminLayout from "./layouts/AdminLayout";
@@ -176,6 +177,7 @@ export default function App() {
               <BranchSettingsPage />
             </RoleRoute>
           } />
+          <Route path="settings" element={<AppearanceSettingsPage />} />
         </Route>
 
         {/* ===================== DOCTOR ===================== */}
@@ -192,6 +194,7 @@ export default function App() {
           <Route index element={<DoctorDashboard />} />
           <Route path="appts_per_doc" element={<ApptsPerDoctor />} />
           <Route path="calendar" element={<AppointmentsCalendarPage />} />
+          <Route path="settings" element={<AppearanceSettingsPage />} />
         </Route>
 
         {/* ===================== PLATFORM ADMIN ===================== */}

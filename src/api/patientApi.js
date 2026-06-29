@@ -30,6 +30,11 @@ export const searchPatients = async (q) => {
     return res.data;
 };
 
+export const getReferralSources = async () => {
+    const res = await api.get("/api/patients/referral-sources");
+    return res.data;
+};
+
 export const getPatientAppointments = async (patientId) => {
     const res = await api.get(`/api/patients/${patientId}/appointments`);
     return res.data;

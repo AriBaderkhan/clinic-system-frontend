@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getUnpaidSessions } from "../../api/sessionApi";
 import PaySessionModal from "../appointments/PaySessionModal";
 import { useSettings } from "../../context/SettingContext";
 
 export default function AllUnpaidSessionsModal({ onClose }) {
+  const { t } = useTranslation();
   const { formatTime, formatMoney } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [total, setTotal] = useState(0);
@@ -20,7 +22,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
       setSessions(res.data || []);
       setTotal(res.total ?? (res.data || []).length);
     } catch (err) {
-      setError(err.userMessage || "Could not load sessions.");
+      setError(err.userMessage || t("aus.could_not_load"));
     } finally {
       setIsLoading(false);
     }
@@ -57,10 +59,10 @@ export default function AllUnpaidSessionsModal({ onClose }) {
           <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
             <div>
               <h2 className="text-base font-semibold text-slate-900">
-                All Unpaid Sessions
+                {t("aus.title")}
               </h2>
               <p className="text-[11px] text-slate-500">
-                {isLoading ? "Loading…" : `${total} sessions waiting for payment`}
+                {isLoading ? t("aus.loading") : t("aus.waiting", { count: total })}
               </p>
             </div>
             <button
@@ -84,7 +86,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by patient name…"
+                placeholder={t("aus.search_ph")}
                 className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
                 autoFocus
               />
@@ -100,7 +102,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
             </div>
             {search && (
               <p className="mt-1.5 text-[11px] text-slate-400">
-                Showing {filtered.length} of {total} sessions
+                {t("aus.showing", { shown: filtered.length, total })}
               </p>
             )}
           </div>
@@ -128,7 +130,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
             {!isLoading && !error && filtered.length === 0 && (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <p className="text-sm font-medium text-slate-700">
-                  {search ? "No sessions match that name." : "No unpaid sessions."}
+                  {search ? t("aus.no_match") : t("aus.no_unpaid")}
                 </p>
                 {search && (
                   <button
@@ -136,7 +138,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                     onClick={() => setSearch("")}
                     className="mt-2 text-xs text-[#015478] underline"
                   >
-                    Clear search
+                    {t("aus.clear_search")}
                   </button>
                 )}
               </div>
@@ -156,12 +158,14 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                       </p>
                       <p className="mt-0.5 text-[11px] text-slate-500">
                         {s.doctor?.full_name} · {formatTime(s.appointment?.start_time)} ·{" "}
-                        {s.works_summary?.items_count ?? 0} work{s.works_summary?.items_count !== 1 && "s"}
+                        {(s.works_summary?.items_count ?? 0) === 1
+                          ? t("aus.work_one", { count: s.works_summary?.items_count ?? 0 })
+                          : t("aus.work_other", { count: s.works_summary?.items_count ?? 0 })}
                       </p>
                       <p className="mt-0.5 text-[11px] text-slate-600">
-                        Total:{" "}
+                        {t("aus.total_label")}{" "}
                         <span className="font-semibold">{formatMoney(s.totals?.total, s.currency_code)}</span>{" "}
-                        · Min:{" "}
+                        · {t("aus.min_label")}{" "}
                         <span className="font-semibold">{formatMoney(s.totals?.min_total, s.currency_code)}</span>
                       </p>
                     </div>
@@ -169,9 +173,9 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                     <button
                       type="button"
                       onClick={() => setSelectedForPayment(s)}
-                      className="ml-4 flex-shrink-0 rounded-full bg-[#015478] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#013d58]"
+                      className="ms-4 flex-shrink-0 rounded-full bg-[#015478] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#013d58]"
                     >
-                      Pay
+                      {t("aus.pay")}
                     </button>
                   </div>
                 ))}
@@ -186,7 +190,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
               onClick={onClose}
               className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
             >
-              Close
+              {t("common.close")}
             </button>
           </div>
         </div>

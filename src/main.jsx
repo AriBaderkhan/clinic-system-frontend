@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SettingProvider } from './context/SettingContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import './index.css';
+import './i18n'; // initialise translations + apply saved language/direction before render
 import App from './App.jsx';
 import { initTheme } from './utils/theme';
 

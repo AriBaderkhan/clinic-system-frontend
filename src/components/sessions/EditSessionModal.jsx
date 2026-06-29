@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
@@ -46,6 +47,7 @@ function buildNormalWorks(confirmed) {
 const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}`).sort());
 
 export default function EditSessionModal({ sessionId, onClose, onUpdated, canEditPayment = true }) {
+    const { t } = useTranslation();
     const { formatDate, formatTime, formatMoney, settings } = useSettings();
     const curr = settings?.currency_code || "";
 
@@ -127,7 +129,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 setPrescription(pItems.map((i) => ({ drug_name: i.drug_name || "", dosage: i.dosage || "", frequency: i.frequency || "", duration: i.duration || "", instructions: i.instructions || "" })));
                 setOrigPrescSig(prescSig(pItems));
             } catch (err) {
-                if (alive) setError(err.userMessage || "Could not load session.");
+                if (alive) setError(err.userMessage || t("es.could_not_load"));
             } finally {
                 if (alive) setIsLoading(false);
             }
@@ -234,7 +236,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         const valid = picked
             .filter((f) => ALLOWED_IMG.includes(f.type) && f.size <= 10 * 1024 * 1024)
             .map((f) => ({ id: `${Date.now()}-${Math.random()}`, file: f, preview: URL.createObjectURL(f) }));
-        if (valid.length < picked.length) toast.error("Some files were skipped (only JPG/PNG/WEBP up to 10MB).");
+        if (valid.length < picked.length) toast.error(t("appt.comp_skipped_files"));
         setNewImages((prev) => [...prev, ...valid]);
     };
     const removeNewImage = (id) => setNewImages((prev) => { const t = prev.find((im) => im.id === id); if (t) URL.revokeObjectURL(t.preview); return prev.filter((im) => im.id !== id); });
@@ -267,7 +269,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         const oldPaid = Number(base?.session?.totals?.total_paid || 0);
         if (canEditPayment && totalPaid !== "" && Number(totalPaid) !== oldPaid) {
             const v = Number(totalPaid);
-            if (!Number.isFinite(v) || v < 0) return setError("Total paid must be a number ≥ 0");
+            if (!Number.isFinite(v) || v < 0) return setError(t("es.paid_invalid"));
             payload.total_paid = v;
         }
 
@@ -295,7 +297,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             onUpdated?.();
             onClose();
         } catch (err) {
-            toast.error(err.userMessage || "Failed to save session.");
+            toast.error(err.userMessage || t("es.save_failed"));
         } finally {
             setIsSaving(false);
         }
@@ -322,7 +324,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             <div className="flex max-h-[96vh] w-full max-w-7xl flex-col rounded-2xl bg-white shadow-xl">
                 <div className="flex items-start justify-between border-b border-slate-100 px-4 sm:px-5 py-3 shrink-0">
                     <div>
-                        <h2 className="text-sm font-semibold text-slate-900">Edit session</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t("es.title")}</h2>
                         <p className="mt-0.5 text-[11px] text-slate-500">
                             {header.patientName} · {header.patientPhone} · {header.doctorName}
                             {header.apptTime ? ` · ${formatDate(header.apptTime)} ${formatTime(header.apptTime)}` : ""}
@@ -334,33 +336,33 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 {error && <div className="mx-4 sm:mx-5 mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 shrink-0">{error}</div>}
 
                 {isLoading ? (
-                    <div className="p-6 text-sm text-slate-500">Loading…</div>
+                    <div className="p-6 text-sm text-slate-500">{t("appt.loading_short")}</div>
                 ) : (
                     <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
                       <div className="grid gap-3 lg:grid-cols-[minmax(300px,0.85fr),2fr] lg:items-start">
                         {/* LEFT */}
                         <div className="flex flex-col gap-3">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Next plan (optional)…" />
-                                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Notes (optional)…" />
+                                <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder={t("appt.comp_next_plan_ph")} />
+                                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder={t("appt.comp_notes_ph")} />
                             </div>
 
                             {/* Choose treatment */}
                             <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
-                                <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">1 · Choose treatment</p>
+                                <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">{t("appt.comp_step1")}</p>
                                 <div className="flex items-end gap-2">
                                     <div className="flex-1">
                                         <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} className={inputCls}>
-                                            <option value="">Select treatment…</option>
+                                            <option value="">{t("appt.comp_select_treatment")}</option>
                                             {catalog.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
                                         </select>
                                     </div>
                                     {dMeta && !dWhole && !dPerToothPlan && (
-                                        <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title="Quantity (teeth)" className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
+                                        <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
                                     )}
-                                    <button type="button" onClick={addTreatment} disabled={!canAdd} className="rounded-md bg-[#015478] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-40">+ Add</button>
+                                    <button type="button" onClick={addTreatment} disabled={!canAdd} className="rounded-md bg-[#015478] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-40">{t("appt.comp_add")}</button>
                                 </div>
-                                {dWhole && !dPlan && <p className="mt-1.5 text-[11px] text-slate-500">{dMeta?.name} applies to the whole mouth — no tooth needed.</p>}
+                                {dWhole && !dPlan && <p className="mt-1.5 text-[11px] text-slate-500">{t("appt.comp_whole_overlay", { name: dMeta?.name })}</p>}
 
                                 {/* Plan: New / Continue + agreement total */}
                                 {dPlan && (
@@ -368,17 +370,17 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                         <select value={draft.plan_mode} onChange={(e) => setPlanMode(e.target.value)} className={`${inputCls} mb-2`}>
                                             {existingForType.map((p) => {
                                                 const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
-                                                return <option key={p.id} value={String(p.id)}>Continue · {p.teeth ? `tooth ${p.teeth}` : "no tooth"} · remaining {formatMoney(rem)}</option>;
+                                                return <option key={p.id} value={String(p.id)}>{t("appt.comp_continue_opt", { where: p.teeth ? t("appt.comp_tooth_label", { teeth: p.teeth }) : t("appt.comp_no_tooth"), amount: formatMoney(rem) })}</option>;
                                             })}
-                                            <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
+                                            <option value="new">{t("appt.comp_new_plan_opt", { code: dCode.toUpperCase() })}</option>
                                         </select>
                                         {draft.plan_mode === "new" ? (
                                             <div>
-                                                <label className="block text-[11px] font-medium text-slate-600 mb-0.5">New <span className="uppercase">{dCode}</span> agreement total</label>
-                                                <input type="number" min={dMeta?.min_price || 0} step="0.01" value={draft.agreed_total} onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls} placeholder={`Min ${formatMoney(dMeta?.min_price || 0)}`} />
+                                                <label className="block text-[11px] font-medium text-slate-600 mb-0.5">{t("appt.comp_new_agreement", { code: dCode.toUpperCase() })}</label>
+                                                <input type="number" min={dMeta?.min_price || 0} step="0.01" value={draft.agreed_total} onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls} placeholder={t("appt.comp_min", { amount: formatMoney(dMeta?.min_price || 0) })} />
                                             </div>
                                         ) : (
-                                            <p className="text-slate-700">Continuing <b className="uppercase">{dCode}</b>{dWhole ? "" : draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : " · pick a tooth"} — no new agreement.</p>
+                                            <p className="text-slate-700">{t("appt.comp_continuing")} <b className="uppercase">{dCode}</b>{dWhole ? "" : draft.teeth[0] ? ` · ${t("appt.comp_tooth_label", { teeth: draft.teeth[0] })}` : ` · ${t("es.pick_a_tooth")}`} {t("appt.comp_no_new_agreement")}</p>
                                         )}
                                     </div>
                                 )}
@@ -386,18 +388,18 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
 
                             {/* Saved treatments */}
                             <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-                                <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">Saved treatments ({confirmed.length})</p>
+                                <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">{t("appt.comp_saved", { count: confirmed.length })}</p>
                                 {confirmed.length === 0 ? (
-                                    <p className="text-[11px] text-slate-500">Choose a treatment → pick teeth → “Add”.</p>
+                                    <p className="text-[11px] text-slate-500">{t("es.saved_hint")}</p>
                                 ) : (
                                     <div className="flex flex-wrap gap-1.5">
                                         {confirmed.map((c) => (
                                             <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                                                 <span className="font-semibold">{c.name}</span>
-                                                <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : c.teeth.length ? `tooth ${c.teeth.join(", ")}` : `${c.quantity}x · no tooth`}</span>
-                                                {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new ${formatMoney(Number(c.agreed_total))}` : "· continue"}</span>}
-                                                <button type="button" onClick={() => editTreatment(c.uid)} title="Edit" className="ml-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
-                                                <button type="button" onClick={() => removeTreatment(c.uid)} title="Remove" className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
+                                                <span className="text-slate-500">· {c.wholeMouth ? t("appt.comp_whole_mouth") : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("es.qty_no_tooth", { quantity: c.quantity })}</span>
+                                                {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("es.new_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
+                                                <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
+                                                <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                                             </span>
                                         ))}
                                     </div>
@@ -408,12 +410,12 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             {canEditPayment && (
                                 <div className="grid grid-cols-2 gap-2">
                                     <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                        <p className="text-[11px] font-medium text-slate-600">Session total</p>
+                                        <p className="text-[11px] font-medium text-slate-600">{t("es.session_total")}</p>
                                         <p className="mt-1 text-base font-semibold text-slate-900">{formatMoney(liveTotal)}</p>
-                                        <p className="text-[10px] text-slate-400">Updates with the treatments · saved to the session.</p>
+                                        <p className="text-[10px] text-slate-400">{t("es.session_total_hint")}</p>
                                     </div>
                                     <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                        <label className="text-[11px] font-medium text-slate-600">Total paid{curr ? ` (${curr})` : ""}</label>
+                                        <label className="text-[11px] font-medium text-slate-600">{t("es.total_paid")}{curr ? ` (${curr})` : ""}</label>
                                         <input type="number" min={0} step="0.01" value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
                                     </div>
                                 </div>
@@ -422,8 +424,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             {/* Existing plan works (tooth only) */}
                             {planWorks.length > 0 && (
                                 <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-3">
-                                    <p className="text-[11px] font-semibold text-slate-800">Treatment-plan works — tooth only</p>
-                                    <p className="text-[11px] text-slate-500">Money &amp; type are managed in Treatment Plans.</p>
+                                    <p className="text-[11px] font-semibold text-slate-800">{t("es.plan_works_title")}</p>
+                                    <p className="text-[11px] text-slate-500">{t("es.plan_works_hint")}</p>
                                     <div className="mt-2 space-y-2">
                                         {planWorks.map((p) => {
                                             const wholeMouthPlan = WHOLE_MOUTH_CODES.has(String(p.plan_type || "").toLowerCase());
@@ -432,9 +434,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                     <span className="flex-1 truncate text-sm font-medium text-slate-800">{p.work_name}</span>
                                                     {p.plan_type && <span className="rounded-full border border-purple-100 bg-purple-50 px-2 py-0.5 text-[10px] font-medium uppercase text-purple-700">{p.plan_type}</span>}
                                                     {wholeMouthPlan ? (
-                                                        <span className="text-[11px] text-slate-500">whole mouth · no tooth</span>
+                                                        <span className="text-[11px] text-slate-500">{t("es.whole_no_tooth")}</span>
                                                     ) : (
-                                                        <input type="number" min={11} max={85} value={p.tooth_number} onChange={(e) => setPlanTooth(p.session_work_id, e.target.value)} disabled={isSaving} placeholder="tooth" className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]" />
+                                                        <input type="number" min={11} max={85} value={p.tooth_number} onChange={(e) => setPlanTooth(p.session_work_id, e.target.value)} disabled={isSaving} placeholder={t("es.tooth_ph")} className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]" />
                                                     )}
                                                 </div>
                                             );
@@ -452,29 +454,29 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                         {/* RIGHT: tooth chart */}
                         <div className="flex flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-3 sm:p-4 lg:min-h-[420px]">
                             <div className="mb-2 flex items-center justify-between">
-                                <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
-                                {dMeta && !dWhole && (<span className="text-xs text-slate-500">{draft.teeth.length ? `tooth ${draft.teeth.join(", ")}` : "tooth optional"}</span>)}
+                                <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">{t("appt.comp_step2")}</p>
+                                {dMeta && !dWhole && (<span className="text-xs text-slate-500">{draft.teeth.length ? t("appt.comp_tooth_label", { teeth: draft.teeth.join(", ") }) : t("appt.comp_tooth_optional")}</span>)}
                             </div>
                             <div className="flex flex-1 items-center justify-center">
                                 <div className={`w-full transition-opacity ${dWhole ? "opacity-40 pointer-events-none" : !draft.work_id ? "opacity-70" : ""}`}>
                                     <TeethDiagram selected={draft.teeth} marked={planTeeth} labels={planLabels} onToothClick={toggleTooth} disabled={isSaving || dWhole || !draft.work_id} />
                                 </div>
                             </div>
-                            <p className="mt-2 text-center text-[11px] text-slate-400">Amber = treatment-plan tooth · pick a treatment then tap teeth</p>
+                            <p className="mt-2 text-center text-[11px] text-slate-400">{t("es.chart_hint")}</p>
                         </div>
                       </div>
 
                       {/* Case images — full width at the bottom, responsive grid (like the add flow) */}
                       <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
                         <div className="mb-2 flex items-center justify-between">
-                          <p className="text-[11px] font-semibold text-[#015478]">Case images</p>
+                          <p className="text-[11px] font-semibold text-[#015478]">{t("es.case_images")}</p>
                           <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
-                            + Add images
+                            {t("appt.comp_add_images")}
                             <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={onPickImages} disabled={isSaving} />
                           </label>
                         </div>
                         {existingImages.length === 0 && newImages.length === 0 ? (
-                          <p className="text-[11px] text-slate-500">JPG, PNG or WEBP · up to 10MB each.</p>
+                          <p className="text-[11px] text-slate-500">{t("es.images_hint")}</p>
                         ) : (
                           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
                             {existingImages.map((img) => {
@@ -489,7 +491,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             {newImages.map((im) => (
                               <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-emerald-300">
                                 <img src={im.preview} alt="" className="h-full w-full object-cover" />
-                                <span className="absolute left-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">new</span>
+                                <span className="absolute left-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">{t("es.new_badge")}</span>
                                 <button type="button" onClick={() => removeNewImage(im.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
                               </div>
                             ))}
@@ -500,8 +502,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 )}
 
                 <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-4 sm:px-5 py-3">
-                    <button type="button" onClick={onClose} disabled={isSaving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
-                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading} className="rounded-md bg-[#015478] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">{isSaving ? "Saving…" : "Save changes"}</button>
+                    <button type="button" onClick={onClose} disabled={isSaving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">{t("common.cancel")}</button>
+                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading} className="rounded-md bg-[#015478] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">{isSaving ? t("es.saving") : t("es.save_changes")}</button>
                 </div>
             </div>
         </div>

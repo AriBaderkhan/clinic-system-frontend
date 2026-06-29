@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 /* =========================================================
+   RIGHT-TO-LEFT (Arabic / Kurdish Sorani)
+   When the language switcher sets <html dir="rtl">, the whole layout
+   mirrors automatically and we swap to an Arabic-script font.
+   ========================================================= */
+html[dir="rtl"] body {
+  font-family: 'Noto Kufi Arabic', system-ui, -apple-system, sans-serif;
+}
+
+/* =========================================================
    DARK MODE
    The app is styled with light utilities (bg-white, text-slate-900...).
    When <html> has the .dark class, the overrides below re-map those

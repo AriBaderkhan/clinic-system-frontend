@@ -1,4 +1,5 @@
 ﻿import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { checkInAppointment, inProgressAppointment, cancelAppointment, noShowAppointment } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
@@ -15,15 +16,16 @@ function getAllowedNextStatuses(current) {
   }
 }
 
-const LABELS = {
-  scheduled: "Scheduled",
-  checked_in: "Checked-in",
-  in_progress: "In progress",
-  cancelled: "Cancelled",
-  no_show: "No show",
+const LABEL_KEYS = {
+  scheduled: "appt.st_scheduled",
+  checked_in: "appt.st_checked_in",
+  in_progress: "appt.st_in_progress",
+  cancelled: "appt.st_cancelled",
+  no_show: "appt.st_no_show",
 };
 
 export default function AppointmentStatusModal({ appointment, onClose, onUpdated }) {
+  const { t } = useTranslation();
   const { formatDateTime } = useSettings();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reason, setReason] = useState("");
@@ -46,17 +48,17 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
     setError("");
 
     if (!appointmentId) {
-      setError("Invalid appointment id.");
+      setError(t("appt.err_invalid_id"));
       return;
     }
 
     if (!selectedStatus) {
-      setError("Choose a new status.");
+      setError(t("appt.err_choose_status"));
       return;
     }
 
     if (needsReason && reason.trim().length < 3) {
-      setError("Please write a short reason (min 3 characters).");
+      setError(t("appt.err_reason_min"));
       return;
     }
 
@@ -77,7 +79,7 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
       await onUpdated();
       onClose();
     } catch (err) {
-      toast.error(err.userMessage || "Failed to update appointment status.");
+      toast.error(err.userMessage || t("appt.update_status_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -94,7 +96,7 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
         <div className="mb-3 flex items-start justify-between">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">
-              Update appointment status
+              {t("appt.status_title")}
             </h2>
             <p className="mt-1 text-[11px] text-slate-500">
               {appointment.patient_name} · {appointment.patient_phone}
@@ -120,8 +122,7 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
 
         {allowedStatuses.length === 0 ? (
           <p className="text-xs text-slate-500">
-            This appointment is <strong>{LABELS[appointment.status]}</strong>.
-            Status can no longer be changed.
+            {t("appt.status_locked", { status: t(LABEL_KEYS[appointment.status] || appointment.status) })}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -129,17 +130,17 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
             {/* Status selector */}
             <div className="space-y-1">
               <label className="block text-xs font-medium text-slate-700">
-                New status
+                {t("appt.new_status")}
               </label>
               <select
                 className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800"
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
-                <option value="">Select…</option>
+                <option value="">{t("appt.select_dots")}</option>
                 {allowedStatuses.map((s) => (
                   <option key={s} value={s}>
-                    {LABELS[s]}
+                    {t(LABEL_KEYS[s] || s)}
                   </option>
                 ))}
               </select>
@@ -150,14 +151,14 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
               <div className="space-y-1">
                 <label className="block text-xs font-medium text-slate-700">
                   {selectedStatus === "cancelled"
-                    ? "Cancel reason"
-                    : "No-show reason"}
+                    ? t("appt.cancel_reason")
+                    : t("appt.noshow_reason")}
                 </label>
                 <textarea
                   className="h-20 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Write short reason..."
+                  placeholder={t("appt.reason_ph")}
                 />
               </div>
             )}
@@ -169,14 +170,14 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
                 onClick={onClose}
                 className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="rounded-md bg-[#015478] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
               >
-                {isSubmitting ? "Saving…" : "Confirm"}
+                {isSubmitting ? t("appt.saving_short") : t("appt.confirm")}
               </button>
             </div>
           </form>

@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { searchPatients } from "../../api/patientApi";
 
 // "YYYY-MM-DDTHH:mm" -> { date, hour (1-12), minute, period }
@@ -20,6 +21,7 @@ export default function AppointmentForm({
   error,
   defaultScheduledStart = "",  // prefill date/time in add mode (e.g. from calendar day click)
 }) {
+  const { t } = useTranslation();
   // ------------------ PATIENT SEARCH ------------------
   const [patientQuery, setPatientQuery] = useState(
     mode === "edit" && initialData
@@ -108,7 +110,7 @@ export default function AppointmentForm({
 
         setPatientResults(list);
       } catch (err) {
-        setPatientError("Could not search patients. Try again.");
+        setPatientError(t("appt.err_search_patients"));
         setPatientResults([]);
       } finally {
         setIsPatientSearching(false);
@@ -136,14 +138,14 @@ export default function AppointmentForm({
 
     // In both modes, check if patient is selected
     if (!selectedPatient?.id) {
-      setPatientError("Please select a patient from the list.");
+      setPatientError(t("appt.err_select_patient"));
       return;
     }
 
     patient_id = selectedPatient.id;
 
     if (!form.doctor_id || !form.date || form.hour === "" || form.minute === "") {
-      setPatientError("Doctor, date and time are required.");
+      setPatientError(t("appt.err_doctor_date_time"));
       return;
     }
 
@@ -151,11 +153,11 @@ export default function AppointmentForm({
     const minuteNum = Number(form.minute);
 
     if (!Number.isInteger(hourNum) || hourNum < 1 || hourNum > 12) {
-      setPatientError("Hour must be between 1 and 12.");
+      setPatientError(t("appt.err_hour"));
       return;
     }
     if (!Number.isInteger(minuteNum) || minuteNum < 0 || minuteNum > 59) {
-      setPatientError("Minutes must be between 0 and 59.");
+      setPatientError(t("appt.err_minute"));
       return;
     }
 
@@ -199,7 +201,7 @@ export default function AppointmentForm({
       {mode === "add" || mode === "edit" ? (
         <div className="relative space-y-1">
           <label className="block text-xs font-medium text-slate-700">
-            Patient (type name or phone)
+            {t("appt.form_patient")}
           </label>
           <input
             type="text"
@@ -208,11 +210,11 @@ export default function AppointmentForm({
               setPatientQuery(e.target.value);
               setSelectedPatient(null);
             }}
-            placeholder="Start typing: e.g. Ari..."
+            placeholder={t("appt.form_patient_ph")}
             className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
           />
           {isPatientSearching && (
-            <p className="mt-1 text-[11px] text-slate-500">Searching…</p>
+            <p className="mt-1 text-[11px] text-slate-500">{t("appt.searching")}</p>
           )}
 
           {patientResults.length > 0 && (
@@ -235,7 +237,7 @@ export default function AppointmentForm({
       {/* DOCTOR SELECT */}
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-700">
-          Doctor
+          {t("appt.form_doctor")}
         </label>
         <select
           name="doctor_id"
@@ -243,11 +245,11 @@ export default function AppointmentForm({
           onChange={handleChange}
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         >
-          <option value="">Select doctor</option>
+          <option value="">{t("appt.select_doctor")}</option>
           {doctors.map((d) => (
             <option key={d.id} value={String(d.id)}>
-              {d.full_name ?? d.doctor_name ?? `Doctor #${d.id}`}
-              {d.room ? ` – Room ${d.room}` : ""}
+              {d.full_name ?? d.doctor_name ?? t("appt.doctor_fallback", { id: d.id })}
+              {d.room ? t("appt.room_suffix", { room: d.room }) : ""}
             </option>
           ))}
         </select>
@@ -256,7 +258,7 @@ export default function AppointmentForm({
       {/* DATE / TIME */}
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-700">
-          Appointment Date &amp; Time
+          {t("appt.datetime_label")}
         </label>
         <div className="flex flex-wrap items-center gap-2">
           <input
@@ -301,14 +303,14 @@ export default function AppointmentForm({
           </div>
         </div>
         <p className="mt-1 text-[11px] text-slate-400">
-          Example: 3 : 30 PM = 15:30 · Clinic rules: normal = 1 hour spacing, urgent / walk-in can ignore.
+          {t("appt.datetime_hint")}
         </p>
       </div>
 
       {/* TYPE */}
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-700">
-          Appointment Type
+          {t("appt.type_label")}
         </label>
         <select
           name="appointment_type"
@@ -317,23 +319,23 @@ export default function AppointmentForm({
           disabled={mode === "edit"}
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         >
-          <option value="normal">Normal</option>
-          <option value="urgent">Urgent</option>
-          <option value="walk_in">Walk-in</option>
+          <option value="normal">{t("appt.type_normal")}</option>
+          <option value="urgent">{t("appt.type_urgent")}</option>
+          <option value="walk_in">{t("appt.type_walk_in")}</option>
         </select>
       </div>
 
       {/* COMPLAINT */}
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-700">
-          Complaint <span className="text-slate-400">(optional)</span>
+          {t("appt.complaint_label")} <span className="text-slate-400">{t("appt.optional")}</span>
         </label>
         <textarea
           name="complaint"
           value={form.complaint}
           onChange={handleChange}
           rows={2}
-          placeholder="e.g. Toothache upper right, sensitivity to cold"
+          placeholder={t("appt.complaint_ph")}
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
         />
       </div>
@@ -347,11 +349,11 @@ export default function AppointmentForm({
         >
           {isSubmitting
             ? mode === "add"
-              ? "Creating..."
-              : "Saving..."
+              ? t("appt.creating")
+              : t("appt.saving")
             : mode === "add"
-              ? "Create Appointment"
-              : "Save Changes"}
+              ? t("appt.create_btn")
+              : t("appt.save_btn")}
         </button>
       </div>
     </form>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { completeAppointmentWithSession } from "../../api/appointmentApi";
 import { uploadSessionImages } from "../../api/sessionApi";
@@ -20,6 +21,7 @@ function parseTeeth(s) {
 }
 
 export default function CompleteAppointmentModal({ appointment, onClose, onCompleted }) {
+  const { t } = useTranslation();
   const { formatTime, formatDate, formatMoney } = useSettings();
 
   const [nextPlan, setNextPlan] = useState("");
@@ -215,7 +217,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         .filter((f) => ALLOWED_IMG.includes(f.type) && f.size <= 10 * 1024 * 1024)
         .map((f) => ({ id: `${Date.now()}-${Math.random()}`, file: f, preview: URL.createObjectURL(f) }));
       if (valid.length < picked.length) {
-        toast.error("Some files were skipped (only JPG/PNG/WEBP up to 10MB).");
+        toast.error(t("appt.comp_skipped_files"));
       }
       return [...prev, ...valid];
     });
@@ -231,7 +233,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!patientId || Number.isNaN(patientId)) return setError("Missing patient on this appointment.");
+    if (!patientId || Number.isNaN(patientId)) return setError(t("appt.comp_err_patient"));
     const works = [];
     for (const c of confirmed) {
       if (c.wholeMouth) {
@@ -245,7 +247,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         works.push({ work_id: c.work_id, quantity: c.quantity || 1, tooth_number: null, treatment_plan_id: null, agreed_total: null });
       }
     }
-    if (works.length === 0) return setError("Add at least one treatment first.");
+    if (works.length === 0) return setError(t("appt.comp_err_one"));
     try {
       setSaving(true);
       // 1) complete the appointment / create the session (unchanged logic)
@@ -259,14 +261,14 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           await uploadSessionImages(sessionId, images.map((im) => im.file));
         } catch (imgErr) {
           // session is already saved — don't fail the whole flow over images
-          toast.error(imgErr.userMessage || "Appointment completed, but images failed to upload.");
+          toast.error(imgErr.userMessage || t("appt.comp_img_failed"));
         }
       }
 
       onCompleted?.();
       onClose();
     } catch (err) {
-      toast.error(err.userMessage || "Failed to complete appointment.");
+      toast.error(err.userMessage || t("appt.comp_failed"));
     } finally {
       setSaving(false);
     }
@@ -351,7 +353,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     const svg = <ToothShape n={n} upper={upper} selected={selected} amber={hasPlan} />;
     return (
       <button type="button" onClick={() => toggleTooth(n)} disabled={locked}
-        title={hasPlan ? `Tooth ${n} · active ${(ABBR[planType] || planType).toUpperCase()}` : `Tooth ${n}`}
+        title={hasPlan ? `${t("appt.comp_tooth_label", { teeth: n })} · ${(ABBR[planType] || planType).toUpperCase()}` : t("appt.comp_tooth_label", { teeth: n })}
         className={`flex min-w-0 flex-1 flex-col items-center ${locked ? "cursor-not-allowed" : "hover:opacity-80"} transition`}>
         {upper
           ? (<>{tag}<div className="w-full rotate-180">{svg}</div>{num}</>)
@@ -369,7 +371,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-100 px-5 py-3 shrink-0">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Complete appointment & fill works</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("appt.comp_title")}</h2>
             <p className="mt-0.5 text-[11px] text-slate-500">
               {appointment.patient_name} · {appointment.patient_phone} · {appointment.doctor_name} ·{" "}
               {formatDate(appointment.scheduled_start)} {formatTime(appointment.scheduled_start)}
@@ -385,7 +387,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           {/* Patient complaint (from booking) — full width on top */}
           {appointment.complaint && (
             <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">⚠ Complaint</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.complaint_badge")}</p>
               <p className="mt-0.5 whitespace-pre-wrap text-[13px] font-medium text-slate-800">{appointment.complaint}</p>
             </div>
           )}
@@ -395,19 +397,19 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             <div className="grid gap-2 sm:grid-cols-3">
               {appointment.patient_blood_type && (
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Blood type</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.blood_type")}</p>
                   <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type}</p>
                 </div>
               )}
               {appointment.patient_allergies && (
                 <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">⚠ Allergies</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">{t("appt.allergies")}</p>
                   <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_allergies}</p>
                 </div>
               )}
               {appointment.patient_chronic_diseases && (
                 <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Chronic diseases</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.chronic")}</p>
                   <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_chronic_diseases}</p>
                 </div>
               )}
@@ -417,9 +419,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           {/* Next plan + Notes — full width on top */}
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2}
-              className={`${inputCls} resize-none`} placeholder="Next plan (optional)…" />
+              className={`${inputCls} resize-none`} placeholder={t("appt.comp_next_plan_ph")} />
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-              className={`${inputCls} resize-none`} placeholder="Notes (optional)…" />
+              className={`${inputCls} resize-none`} placeholder={t("appt.comp_notes_ph")} />
           </div>
 
           {/* Middle: treatment controls (left) | teeth chart (right) */}
@@ -428,19 +430,19 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           <div className="flex flex-col gap-3">
             {/* Choose treatment */}
             <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
-              <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">1 · Choose treatment</p>
+              <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">{t("appt.comp_step1")}</p>
               <div className="flex flex-wrap items-end gap-2">
                 <div className="min-w-[160px] flex-1">
                   <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} disabled={loadingCatalog} className={inputCls}>
-                    <option value="">{loadingCatalog ? "Loading…" : "Select treatment…"}</option>
+                    <option value="">{loadingCatalog ? t("appt.loading_short") : t("appt.comp_select_treatment")}</option>
                     {catalog.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
                 </div>
                 {dMeta && !dWhole && !dPerToothPlan && (
-                  <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title="Quantity (teeth)" className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
+                  <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
                 )}
                 <button type="button" onClick={addTreatment} disabled={!canAdd}
-                  className="rounded-md bg-[#015478] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-40">+ Add</button>
+                  className="rounded-md bg-[#015478] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-40">{t("appt.comp_add")}</button>
               </div>
 
               {/* agreement / continue */}
@@ -450,30 +452,30 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                   <select value={draft.plan_mode} onChange={(e) => setPlanModeManual(e.target.value)} className={`${inputCls} mb-2`}>
                     {(plans[dCode]?.list || []).map((p) => {
                       const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
-                      const where = p.teeth ? `tooth ${p.teeth}` : "no tooth";
-                      return <option key={p.id} value={String(p.id)}>Continue · {where} · remaining {formatMoney(rem)}</option>;
+                      const where = p.teeth ? t("appt.comp_tooth_label", { teeth: p.teeth }) : t("appt.comp_no_tooth");
+                      return <option key={p.id} value={String(p.id)}>{t("appt.comp_continue_opt", { where, amount: formatMoney(rem) })}</option>;
                     })}
-                    <option value="new">➕ New {dCode.toUpperCase()} — separate plan</option>
+                    <option value="new">{t("appt.comp_new_plan_opt", { code: dCode.toUpperCase() })}</option>
                   </select>
 
                   {conflictPlan && (
                     <p className="mb-1 text-[11px] font-medium text-red-600">
-                      Tooth {draft.teeth[0]} already has an active {dCode.toUpperCase()} — choose “Continue”, or mark the existing one completed first. You can’t open two on the same tooth.
+                      {t("appt.comp_conflict", { tooth: draft.teeth[0], code: dCode.toUpperCase() })}
                     </p>
                   )}
 
                   {draftExistingPlan ? (
                     <p className="text-slate-700">
-                      Continuing <b className="uppercase">{dCode}</b>{draft.teeth[0] ? ` · tooth ${draft.teeth[0]}` : " · tooth optional"} · remaining{" "}
-                      <b>{formatMoney(Number(draftExistingPlan.agreed_total) - Number(draftExistingPlan.total_paid || 0))}</b> — no new agreement.
+                      {t("appt.comp_continuing")} <b className="uppercase">{dCode}</b>{draft.teeth[0] ? ` · ${t("appt.comp_tooth_label", { teeth: draft.teeth[0] })}` : ` · ${t("appt.comp_tooth_optional")}`} · {t("appt.comp_remaining", { amount: formatMoney(Number(draftExistingPlan.agreed_total) - Number(draftExistingPlan.total_paid || 0)) })}{" "}
+                      {t("appt.comp_no_new_agreement")}
                     </p>
                   ) : (
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-600 mb-0.5">New <span className="uppercase">{dCode}</span> agreement total</label>
+                      <label className="block text-[11px] font-medium text-slate-600 mb-0.5">{t("appt.comp_new_agreement", { code: dCode.toUpperCase() })}</label>
                       <input type="number" min={dMeta?.min_price || 0} value={draft.agreed_total}
                         onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls}
                         step="0.01"
-                        placeholder={`Min ${formatMoney(dMeta?.min_price || 0)}`} />
+                        placeholder={t("appt.comp_min", { amount: formatMoney(dMeta?.min_price || 0) })} />
                     </div>
                   )}
                 </div>
@@ -482,19 +484,19 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
             {/* Saved treatments (chips) */}
             <div className="flex flex-col rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-              <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">Saved treatments ({confirmed.length})</p>
+              <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">{t("appt.comp_saved", { count: confirmed.length })}</p>
               <div className="max-h-48 overflow-y-auto">
                 {confirmed.length === 0 ? (
-                  <p className="text-[11px] text-slate-500">Choose a treatment → pick teeth → “Add”. Items appear here.</p>
+                  <p className="text-[11px] text-slate-500">{t("appt.comp_saved_hint")}</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {confirmed.map((c) => (
                       <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                         <span className="font-semibold">{c.name}</span>
-                        <span className="text-slate-500">· {c.wholeMouth ? "whole mouth" : c.teeth.length ? `tooth ${c.teeth.join(", ")}` : "no tooth"}</span>
-                        {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? `· new plan ${formatMoney(Number(c.agreed_total))}` : "· continue"}</span>}
-                        <button type="button" onClick={() => editTreatment(c.uid)} title="Edit" className="ml-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
-                        <button type="button" onClick={() => removeTreatment(c.uid)} title="Remove" className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
+                        <span className="text-slate-500">· {c.wholeMouth ? t("appt.comp_whole_mouth") : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
+                        {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("appt.comp_new_plan_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
+                        <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
+                        <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                       </span>
                     ))}
                   </div>
@@ -505,13 +507,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             {/* Existing plans of the selected plan type */}
             {dPlan && existingForSelected.length > 0 && (
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="mb-1.5 text-[11px] font-semibold text-slate-700">Existing <span className="uppercase">{dCode}</span> — tick to mark completed</p>
+                <p className="mb-1.5 text-[11px] font-semibold text-slate-700">{t("appt.comp_existing", { code: dCode.toUpperCase() })}</p>
                 <div className="max-h-24 space-y-1.5 overflow-y-auto">
                   {existingForSelected.map((p) => {
                     const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
                     return (
                       <label key={p.id} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px]">
-                        <span>{p.teeth ? `tooth ${p.teeth}` : "tooth not set"} · remaining {formatMoney(rem)}</span>
+                        <span>{p.teeth ? t("appt.comp_tooth_label", { teeth: p.teeth }) : t("appt.comp_tooth_not_set")} · {t("appt.comp_remaining", { amount: formatMoney(rem) })}</span>
                         <input type="checkbox" checked={completedPlanIds.includes(p.id)} onChange={() => toggleCompleted(p.id)} />
                       </label>
                     );
@@ -529,12 +531,12 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           {/* ===== RIGHT: teeth chart (hero) ===== */}
           <div className="flex flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-4 lg:min-h-[420px]">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">2 · Pick teeth</p>
+              <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">{t("appt.comp_step2")}</p>
               {!dWhole && draft.work_id && (
                 <span className="text-xs text-slate-500">
                   {draft.teeth.length
-                    ? `tooth ${draft.teeth.join(", ")}`
-                    : "tooth optional"}
+                    ? t("appt.comp_tooth_label", { teeth: draft.teeth.join(", ") })
+                    : t("appt.comp_tooth_optional")}
                 </span>
               )}
             </div>
@@ -557,34 +559,34 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
               {dWhole && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                   <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm">
-                    {dMeta?.name} applies to the whole mouth — no tooth needed.
+                    {t("appt.comp_whole_overlay", { name: dMeta?.name })}
                   </span>
                 </div>
               )}
             </div>
-            <p className="mt-2 text-center text-[11px] text-slate-400">Highlighted tooth = already has an active plan · tap to select</p>
+            <p className="mt-2 text-center text-[11px] text-slate-400">{t("appt.comp_teeth_hint")}</p>
           </div>
           </div>
 
           {/* Case images (optional) — full width at the bottom, responsive grid */}
           <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold text-[#015478]">Case images (optional)</p>
+              <p className="text-[11px] font-semibold text-[#015478]">{t("appt.comp_case_images")}</p>
               <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
-                + Add images
+                {t("appt.comp_add_images")}
                 <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
                   onChange={onPickImages} disabled={saving} />
               </label>
             </div>
             {images.length === 0 ? (
-              <p className="text-[11px] text-slate-500">Attach x-rays/photos (JPG, PNG, WEBP · up to 10MB each).</p>
+              <p className="text-[11px] text-slate-500">{t("appt.comp_images_hint")}</p>
             ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
                 {images.map((im) => (
                   <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-slate-200">
                     <img src={im.preview} alt="" className="h-full w-full object-cover" />
                     <button type="button" onClick={() => removeImage(im.id)} disabled={saving}
-                      title="Remove"
+                      title={t("common.delete")}
                       className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
                   </div>
                 ))}
@@ -595,10 +597,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
         {/* Footer */}
         <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-5 py-3">
-          <button type="button" onClick={onClose} disabled={saving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="button" onClick={onClose} disabled={saving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">{t("common.cancel")}</button>
           <button type="button" onClick={handleSubmit} disabled={saving || confirmed.length === 0}
             className="rounded-md bg-[#015478] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">
-            {saving ? "Saving…" : "Confirm & Complete"}
+            {saving ? t("appt.comp_saving") : t("appt.comp_confirm")}
           </button>
         </div>
       </div>

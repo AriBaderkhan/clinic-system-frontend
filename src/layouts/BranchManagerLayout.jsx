@@ -1,5 +1,6 @@
-﻿import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
@@ -12,33 +13,32 @@ import { clearStorageKeepingTheme } from "../utils/theme";
 
 // `feature` items are hidden unless the tenant's plan includes that feature code.
 const navItems = [
-  { label: "Dashboard", path: "", end: true },
-  { label: "Patients", path: "patients" },
-  { label: "Appointments", path: "appointments", end: true },
-  { label: "Calendar", path: "appointments/calendar", indent: true },
-  { label: "Reminders", path: "appointments/reminders", indent: true, feature: "reminders" },
-  { label: "Sessions", path: "sessions" },
-  { label: "Lab", path: "lab" },
-  // { label: "History", path: "history" },
-  { label: "Reports", path: "reports" },
-  { label: "Works", path: "works" },
-  { label: "Branch Settings", path: "settings/branch" },
+  { labelKey: "nav.dashboard", path: "", end: true },
+  { labelKey: "nav.patients", path: "patients" },
+  { labelKey: "nav.appointments", path: "appointments", end: true },
+  { labelKey: "nav.calendar", path: "appointments/calendar", indent: true },
+  { labelKey: "nav.reminders", path: "appointments/reminders", indent: true, feature: "reminders" },
+  { labelKey: "nav.sessions", path: "sessions" },
+  { labelKey: "nav.lab", path: "lab" },
+  { labelKey: "nav.reports", path: "reports" },
+  { labelKey: "nav.works", path: "works" },
+  { labelKey: "nav.branch_settings", path: "settings/branch" },
 ];
-
-// const name = localStorage.getItem('name')
-const handleLogout = () => {
-  if (window.confirm('Are you sure you want to logout?')) {
-    clearStorageKeepingTheme(); // keeps dark/light preference
-    disconnectSocket();
-    window.location.href = "/";
-  }
-};
 
 export default function BranchManagerLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { hasFeature } = useSubscription();
   const isTenantViewing = !!localStorage.getItem('tenant_token');
+
+  const handleLogout = () => {
+    if (window.confirm(t('layout.logout_confirm'))) {
+      clearStorageKeepingTheme(); // keeps dark/light preference
+      disconnectSocket();
+      window.location.href = "/";
+    }
+  };
 
   // hide nav items whose feature the plan doesn't include
   const visibleNav = navItems.filter((item) => !item.feature || hasFeature(item.feature));
@@ -58,18 +58,18 @@ export default function BranchManagerLayout() {
 
       audio.play().catch(() => { }); // play sound
 
-      toast((t) => (
+      toast((to) => (
         <div
           style={{ cursor: "pointer" }}
           onClick={() => {
             audio.pause();
             audio.currentTime = 0;
-            toast.dismiss(t.id);
+            toast.dismiss(to.id);
           }}
         >
           <div>{payload?.message}</div>
           <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
-            Click to stop sound
+            {t('layout.click_stop_sound')}
           </div>
         </div>
       ), {
@@ -83,7 +83,16 @@ export default function BranchManagerLayout() {
     return () => {
       socket.off("appointment_completed", onApptCompleted);
     }
-  }, []);
+  }, [t]);
+
+  const navLinkClass = (indent) => ({ isActive }) =>
+    [
+      "flex items-center gap-2 rounded-lg transition",
+      indent ? "py-1.5 ps-9 pe-3 text-[13px]" : "py-2 px-3",
+      "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
+      "border-s-4 border-transparent",
+      isActive ? "bg-[#6a87ad] border-s-[#015478] text-[#015478]" : "",
+    ].filter(Boolean).join(" ");
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900">
@@ -99,26 +108,25 @@ export default function BranchManagerLayout() {
       {/* ===== Mobile drawer ===== */}
       <aside
         className={[
-          "fixed left-0 top-0 z-50 h-full w-72 bg-[#7b97bd] text-slate-100",
+          "fixed start-0 top-0 z-50 h-full w-72 bg-[#7b97bd] text-slate-100",
           "transform transition-transform md:hidden",
-          open ? "translate-x-0" : "-translate-x-full",
+          open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full",
         ].join(" ")}
       >
         <div className="flex items-center justify-between border-b border-[#6a87ad] px-5 py-4">
           <div className="flex items-center gap-3">
             <ProfileMenu />
-
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-              <span className="text-[11px] text-white">Branch Manager</span>
+              <span className="text-[11px] text-white">{t('layout.branch_manager')}</span>
             </div>
-            <div className="ml-auto"><AnnouncementsBell /></div>
+            <div className="ms-auto"><AnnouncementsBell /></div>
           </div>
 
           <button
             onClick={() => setOpen(false)}
             className="rounded-md px-2 py-1 text-slate-200 hover:bg-[#6a87ad]"
-            aria-label="Close menu"
+            aria-label={t('layout.close_menu')}
           >
             ✕
           </button>
@@ -126,24 +134,8 @@ export default function BranchManagerLayout() {
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
           {visibleNav.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.end}
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                [
-                  "flex items-center gap-2 rounded-lg transition",
-                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
-                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
-                  "border-l-4 border-transparent",
-                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-              }
-            >
-              <span>{item.label}</span>
+            <NavLink key={item.path} to={item.path} end={item.end} onClick={() => setOpen(false)} className={navLinkClass(item.indent)}>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>
@@ -154,57 +146,38 @@ export default function BranchManagerLayout() {
               onClick={() => { handleBackToTenant(); setOpen(false); }}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#015478] transition hover:bg-[#015478]/10 hover:text-blue-300"
             >
-              <span>← Back to Tenant</span>
+              <span>← {t('layout.back_to_tenant')}</span>
             </button>
           )}
           <BranchSwitcher />
           <button
-            onClick={() => {
-              handleLogout();
-              setOpen(false);
-            }}
+            onClick={() => { handleLogout(); setOpen(false); }}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
-            <span>Logout</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
 
-
         <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
-          Powered By <span className="text-white">Tradi Company</span>
+          {t('layout.powered_by')} <span className="text-white">Tradi Company</span>
         </div>
       </aside>
 
       {/* ===== Desktop sidebar ===== */}
-      <aside className="hidden w-64 flex-col border-r bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
+      <aside className="hidden w-64 flex-col border-e bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
         <div className="flex items-center gap-3 border-b border-[#6a87ad] px-5 py-4">
           <ProfileMenu />
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-white">Branch Manager</span>
+            <span className="text-[11px] text-white">{t('layout.branch_manager')}</span>
           </div>
-          <div className="ml-auto"><AnnouncementsBell /></div>
+          <div className="ms-auto"><AnnouncementsBell /></div>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
           {visibleNav.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.end}
-              className={({ isActive }) =>
-                [
-                  "flex items-center gap-2 rounded-lg transition",
-                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
-                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
-                  "border-l-4 border-transparent",
-                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-              }
-            >
-              <span>{item.label}</span>
+            <NavLink key={item.path} to={item.path} end={item.end} className={navLinkClass(item.indent)}>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>
@@ -215,7 +188,7 @@ export default function BranchManagerLayout() {
               onClick={handleBackToTenant}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#015478] transition hover:bg-[#015478]/10 hover:text-blue-300"
             >
-              <span>← Back to Tenant</span>
+              <span>← {t('layout.back_to_tenant')}</span>
             </button>
           )}
           <BranchSwitcher />
@@ -223,28 +196,24 @@ export default function BranchManagerLayout() {
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
-            <span>Logout</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
 
         <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
-          Powered By <span className="text-white">Tradi Company</span>
+          {t('layout.powered_by')} <span className="text-white">Tradi Company</span>
         </div>
-
-
-
       </aside>
 
       {/* ===== Main area ===== */}
       <div id="main-scroll" className="flex flex-1 flex-col overflow-y-auto">
-          {/* Mobile hamburger — no header bar, just floating button */}
-          <button
-            className="fixed top-3 left-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
+        <button
+          className="fixed top-3 start-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
+          onClick={() => setOpen(true)}
+          aria-label={t('layout.open_menu')}
+        >
+          ☰
+        </button>
 
         <main className="flex-1 overflow-y-auto px-4 pt-14 pb-4 md:px-6 md:py-6">
           <SubscriptionBanner />
@@ -253,6 +222,4 @@ export default function BranchManagerLayout() {
       </div>
     </div>
   );
-
 }
-

@@ -1,6 +1,7 @@
 // Shared FDI teeth chart — used read-only when VIEWING a session and interactive
 // when EDITING (same look as the Complete-appointment chart). Fully responsive:
 // each tooth flexes to fill the available width, so the arches scale on iPad/laptop.
+import { useTranslation } from "react-i18next";
 
 const UPPER = [[18, 17, 16, 15, 14, 13, 12, 11], [21, 22, 23, 24, 25, 26, 27, 28]];
 const LOWER = [[48, 47, 46, 45, 44, 43, 42, 41], [31, 32, 33, 34, 35, 36, 37, 38]];
@@ -58,6 +59,7 @@ function ToothShape({ n, upper, selected, amber }) {
 }
 
 function Tooth({ n, upper, selectedSet, markedSet, labels, onToothClick, disabled }) {
+  const { t } = useTranslation();
   const selected = selectedSet.has(n);
   const amber = !selected && markedSet.has(n);
   const label = labels?.[n];
@@ -72,7 +74,7 @@ function Tooth({ n, upper, selectedSet, markedSet, labels, onToothClick, disable
   const svg = <ToothShape n={n} upper={upper} selected={selected} amber={amber} />;
   const inner = upper ? (<>{tag}<div className="w-full rotate-180">{svg}</div>{num}</>) : (<>{num}<div className="w-full">{svg}</div>{tag}</>);
   const cls = `flex min-w-0 flex-1 flex-col items-center ${interactive ? "cursor-pointer hover:opacity-80" : ""} transition`;
-  const title = `Tooth ${n}${label ? ` · ${label}` : ""}`;
+  const title = `${t("appt.comp_tooth_label", { teeth: n })}${label ? ` · ${label}` : ""}`;
 
   return interactive ? (
     <button type="button" onClick={() => onToothClick(n)} className={cls} title={title}>{inner}</button>

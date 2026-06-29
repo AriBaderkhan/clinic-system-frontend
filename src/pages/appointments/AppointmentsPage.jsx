@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useAppointments from "../../hooks/useAppointments";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
@@ -21,6 +22,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 export default function AppointmentPage() {
+  const { t } = useTranslation();
   const { formatDateTime } = useSettings();
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
@@ -47,13 +49,13 @@ export default function AppointmentPage() {
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this appointment?");
+    const confirmDelete = window.confirm(t("appt.delete_confirm"));
     if (!confirmDelete) return;
     try {
       await deleteAppointment(id);
       await refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Failed to delete appointment. Please try again.");
+      toast.error(err.userMessage || t("appt.delete_failed"));
     }
   };
 
@@ -94,9 +96,9 @@ export default function AppointmentPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Appointments</h1>
+          <h1 className="text-lg font-semibold text-slate-900">{t("appt.title")}</h1>
           <p className="text-xs text-slate-500">
-            Manage Crown Dental Clinic appointments. View records, update status, and handle follow-ups.
+            {t("appt.subtitle")}
           </p>
         </div>
         <button
@@ -104,7 +106,7 @@ export default function AppointmentPage() {
           onClick={() => navigate(`${prefix}/appointments/add`)}
           className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58]"
         >
-          + Add Appointment
+          {t("appt.add")}
         </button>
       </div>
 
@@ -116,44 +118,44 @@ export default function AppointmentPage() {
 
           {/* Search */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-            <label className="text-xs font-semibold text-[#015478]">Search</label>
+            <label className="text-xs font-semibold text-[#015478]">{t("appt.search")}</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Patient name, phone, doctor..."
+              placeholder={t("appt.search_ph")}
               className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
             />
           </div>
 
           {/* Day */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#015478]">Day</label>
+            <label className="text-xs font-semibold text-[#015478]">{t("appt.day")}</label>
             <select
               value={dayFilter}
               onChange={(e) => setDayFilter(e.target.value)}
               className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
             >
-              <option value="">All</option>
-              <option value="today">Today</option>
-              <option value="yesterday">Yesterday</option>
-              <option value="last_week">Last week</option>
-              <option value="last_month">Last month</option>
+              <option value="">{t("appt.all")}</option>
+              <option value="today">{t("appt.today")}</option>
+              <option value="yesterday">{t("appt.yesterday")}</option>
+              <option value="last_week">{t("appt.last_week")}</option>
+              <option value="last_month">{t("appt.last_month")}</option>
             </select>
           </div>
 
           {/* Type */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#015478]">Type</label>
+            <label className="text-xs font-semibold text-[#015478]">{t("appt.type")}</label>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
             >
-              <option value="">All</option>
-              <option value="normal">Normal</option>
-              <option value="urgent">Urgent</option>
-              <option value="walk_in">Walk-in</option>
+              <option value="">{t("appt.all")}</option>
+              <option value="normal">{t("appt.type_normal")}</option>
+              <option value="urgent">{t("appt.type_urgent")}</option>
+              <option value="walk_in">{t("appt.type_walk_in")}</option>
             </select>
           </div>
 
@@ -164,14 +166,14 @@ export default function AppointmentPage() {
               onClick={refresh}
               className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
             >
-              Refresh
+              {t("appt.refresh")}
             </button>
             <button
               type="button"
               onClick={() => { setDayFilter(""); setTypeFilter(""); setSearchTerm(""); }}
               className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
             >
-              Clear
+              {t("appt.clear")}
             </button>
           </div>
         </div>
@@ -179,8 +181,8 @@ export default function AppointmentPage() {
         {/* Count info */}
         <p className="mb-3 text-xs text-slate-400">
           {isLoading
-            ? "Loading appointments…"
-            : `Total: ${pagination.total} · Showing ${pagination.total === 0 ? 0 : rowStart}–${rowEnd}`}
+            ? t("appt.loading")
+            : t("appt.count_info", { total: pagination.total, start: pagination.total === 0 ? 0 : rowStart, end: rowEnd })}
         </p>
 
         {/* Error */}
@@ -193,7 +195,7 @@ export default function AppointmentPage() {
         {/* Empty state */}
         {!isLoading && !error && appointments.length === 0 && (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-            No appointments match these filters.
+            {t("appt.empty")}
           </div>
         )}
 
@@ -204,13 +206,13 @@ export default function AppointmentPage() {
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500">
                   <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">Patient Name</th>
-                  <th className="px-3 py-2 font-medium">Patient Phone</th>
-                  <th className="px-3 py-2 font-medium">Doctor</th>
-                  <th className="px-3 py-2 font-medium">Appointment Date/Time</th>
-                  <th className="px-3 py-2 font-medium">Appointment Type</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
-                  <th className="px-3 py-2 font-medium text-right">Actions</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_patient_name")}</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_patient_phone")}</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_doctor")}</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_datetime")}</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_type")}</th>
+                  <th className="px-3 py-2 font-medium">{t("appt.col_status")}</th>
+                  <th className="px-3 py-2 font-medium text-end">{t("appt.col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -233,8 +235,8 @@ export default function AppointmentPage() {
                       <td className="px-3 py-2 text-slate-700">
                         {a.appointment_type}
                         {a.is_walk_in && (
-                          <span className="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
-                            walk-in
+                          <span className="ms-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                            {t("appt.walk_in_badge")}
                           </span>
                         )}
                       </td>
@@ -257,21 +259,21 @@ export default function AppointmentPage() {
                             onClick={() => setSelectedDetailsId(id)}
                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
                           >
-                            View
+                            {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleEdit(id)}
                             className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
                           >
-                            Edit
+                            {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(id)}
                             className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
                           >
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>
@@ -292,7 +294,7 @@ export default function AppointmentPage() {
                 disabled={page === 1}
                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Prev
+                {t("appt.prev")}
               </button>
 
               {pageNumbers.map((p, i) =>
@@ -318,11 +320,11 @@ export default function AppointmentPage() {
                 disabled={page === pagination.totalPages}
                 className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Next
+                {t("appt.next")}
               </button>
             </div>
             <span className="text-[11px] text-slate-400">
-              Showing {rowStart}–{rowEnd} of {pagination.total} appointments
+              {t("appt.showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
             </span>
           </div>
         )}

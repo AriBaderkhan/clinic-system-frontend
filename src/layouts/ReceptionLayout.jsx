@@ -1,14 +1,15 @@
-﻿import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { connectSocket, disconnectSocket } from "../realtime/socket";
 import toast from "react-hot-toast";
 import notify from '../assets/notify.mp3'
-import ThemeToggle from "../components/ThemeToggle";
 import BranchSwitcher from "../components/BranchSwitcher";
 import ProfileMenu from "../components/ProfileMenu";
 import AnnouncementsBell from "../components/AnnouncementsBell";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
+
 // Helper to check permission safely
 const hasPermission = (permission) => {
   const userString = localStorage.getItem("user");
@@ -23,43 +24,38 @@ const hasPermission = (permission) => {
 
 const getNavItems = () => {
   const items = [
-    { label: "Dashboard", path: "", end: true },
-    { label: "Patients", path: "patients", permission: "view_patient" },
-    { label: "Appointments", path: "appointments", permission: "view_appointment", end: true },
-    { label: "Calendar", path: "appointments/calendar", permission: "view_appointment", indent: true },
-    { label: "Reminders", path: "appointments/reminders", permission: "send_reminders", indent: true, feature: "reminders" },
-    { label: "Sessions", path: "sessions", permission: "view_session" },
-    { label: "Lab", path: "lab", permission: "manage_lab" },
-    // { label: "History", path: "history", permission: "view_payment" },
-    { label: "Reports", path: "reports", permission: "view_reports" },
-    { label: "Branch Settings", path: "settings/branch", permission: "manage_branch_settings" },
+    { labelKey: "nav.dashboard", path: "", end: true },
+    { labelKey: "nav.patients", path: "patients", permission: "view_patient" },
+    { labelKey: "nav.appointments", path: "appointments", permission: "view_appointment", end: true },
+    { labelKey: "nav.calendar", path: "appointments/calendar", permission: "view_appointment", indent: true },
+    { labelKey: "nav.reminders", path: "appointments/reminders", permission: "send_reminders", indent: true, feature: "reminders" },
+    { labelKey: "nav.sessions", path: "sessions", permission: "view_session" },
+    { labelKey: "nav.lab", path: "lab", permission: "manage_lab" },
+    { labelKey: "nav.reports", path: "reports", permission: "view_reports" },
+    { labelKey: "nav.branch_settings", path: "settings/branch", permission: "manage_branch_settings" },
+    { labelKey: "nav.settings", path: "settings" },
   ];
 
-  // Filter based on permissions
-  const role = localStorage.getItem("role");
   return items.filter(item => !item.permission || hasPermission(item.permission));
-};
-
-// const name = localStorage.getItem('name')
-const handleLogout = () => {
-  if (window.confirm('Are you sure you want to logout?')) {
-    clearStorageKeepingTheme(); // keeps dark/light preference
-    disconnectSocket();
-    window.location.href = "/";
-  }
 };
 
 export default function ReceptionLayout() {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   const { hasFeature } = useSubscription();
+
+  const handleLogout = () => {
+    if (window.confirm(t('layout.logout_confirm'))) {
+      clearStorageKeepingTheme(); // keeps dark/light preference
+      disconnectSocket();
+      window.location.href = "/";
+    }
+  };
 
   // permission-filtered items, then hide any whose plan feature isn't included
   const navItems = getNavItems().filter((item) => !item.feature || hasFeature(item.feature));
 
-
-
   useEffect(() => {
-
     const socket = connectSocket();
 
     const onApptCompleted = (payload) => {
@@ -68,18 +64,18 @@ export default function ReceptionLayout() {
 
       audio.play().catch(() => { }); // play sound
 
-      toast((t) => (
+      toast((to) => (
         <div
           style={{ cursor: "pointer" }}
           onClick={() => {
             audio.pause();
             audio.currentTime = 0;
-            toast.dismiss(t.id);
+            toast.dismiss(to.id);
           }}
         >
           <div>{payload?.message}</div>
           <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
-            Click to stop sound
+            {t('layout.click_stop_sound')}
           </div>
         </div>
       ), {
@@ -93,7 +89,16 @@ export default function ReceptionLayout() {
     return () => {
       socket.off("appointment_completed", onApptCompleted);
     }
-  }, []);
+  }, [t]);
+
+  const navLinkClass = (indent) => ({ isActive }) =>
+    [
+      "flex items-center gap-2 rounded-lg transition",
+      indent ? "py-1.5 ps-9 pe-3 text-[13px]" : "py-2 px-3",
+      "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
+      "border-s-4 border-transparent",
+      isActive ? "bg-[#6a87ad] border-s-[#015478] text-[#015478]" : "",
+    ].filter(Boolean).join(" ");
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900">
@@ -109,26 +114,25 @@ export default function ReceptionLayout() {
       {/* ===== Mobile drawer ===== */}
       <aside
         className={[
-          "fixed left-0 top-0 z-50 h-full w-72 bg-[#7b97bd] text-slate-100",
+          "fixed start-0 top-0 z-50 h-full w-72 bg-[#7b97bd] text-slate-100",
           "transform transition-transform md:hidden",
-          open ? "translate-x-0" : "-translate-x-full",
+          open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full",
         ].join(" ")}
       >
         <div className="flex items-center justify-between border-b border-[#6a87ad] px-5 py-4">
           <div className="flex items-center gap-3">
             <ProfileMenu />
-
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-              <span className="text-[11px] text-white">Reception Dashboard</span>
+              <span className="text-[11px] text-white">{t('layout.reception_dashboard')}</span>
             </div>
-            <div className="ml-auto"><AnnouncementsBell /></div>
+            <div className="ms-auto"><AnnouncementsBell /></div>
           </div>
 
           <button
             onClick={() => setOpen(false)}
             className="rounded-md px-2 py-1 text-slate-200 hover:bg-[#6a87ad]"
-            aria-label="Close menu"
+            aria-label={t('layout.close_menu')}
           >
             ✕
           </button>
@@ -136,107 +140,67 @@ export default function ReceptionLayout() {
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
           {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.end}
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                [
-                  "flex items-center gap-2 rounded-lg transition",
-                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
-                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
-                  "border-l-4 border-transparent",
-                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-              }
-            >
-              <span>{item.label}</span>
+            <NavLink key={item.path} to={item.path} end={item.end} onClick={() => setOpen(false)} className={navLinkClass(item.indent)}>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
           <BranchSwitcher />
-          <ThemeToggle />
           <button
-            onClick={() => {
-              handleLogout();
-              setOpen(false);
-            }}
+            onClick={() => { handleLogout(); setOpen(false); }}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
-            <span>Logout</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
 
-
         <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
-          Powered By <span className="text-white">Tradi Company</span>
+          {t('layout.powered_by')} <span className="text-white">Tradi Company</span>
         </div>
       </aside>
 
       {/* ===== Desktop sidebar ===== */}
-      <aside className="hidden w-64 flex-col border-r bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
+      <aside className="hidden w-64 flex-col border-e bg-[#7b97bd] text-slate-100 md:flex h-screen sticky top-0 shrink-0">
         <div className="flex items-center gap-3 border-b border-[#6a87ad] px-5 py-4">
           <ProfileMenu />
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
-            <span className="text-[11px] text-white">Reception Dashboard</span>
+            <span className="text-[11px] text-white">{t('layout.reception_dashboard')}</span>
           </div>
-          <div className="ml-auto"><AnnouncementsBell /></div>
+          <div className="ms-auto"><AnnouncementsBell /></div>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">
           {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.end}
-              className={({ isActive }) =>
-                [
-                  "flex items-center gap-2 rounded-lg transition",
-                  item.indent ? "py-1.5 pl-9 pr-3 text-[13px]" : "py-2 px-3",
-                  "text-slate-200 hover:bg-[#6a87ad] hover:text-white",
-                  "border-l-4 border-transparent",
-                  isActive ? "bg-[#6a87ad] border-l-[#015478] text-[#015478]" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-              }
-            >
-              <span>{item.label}</span>
+            <NavLink key={item.path} to={item.path} end={item.end} className={navLinkClass(item.indent)}>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="border-t border-[#6a87ad] px-3 py-3">
           <BranchSwitcher />
-          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
           >
-            <span>Logout</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
 
         <div className="border-t border-[#6a87ad] px-5 py-3 text-[11px] text-slate-900">
-          Powered By <span className="text-white">Tradi Company</span>
+          {t('layout.powered_by')} <span className="text-white">Tradi Company</span>
         </div>
-
-
-
       </aside>
 
       {/* ===== Main area ===== */}
       <div id="main-scroll" className="flex flex-1 flex-col overflow-y-auto">
         <button
-          className="fixed top-3 left-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
+          className="fixed top-3 start-3 z-30 rounded-md bg-[#7b97bd] px-3 py-2 text-white shadow md:hidden"
           onClick={() => setOpen(true)}
-          aria-label="Open menu"
+          aria-label={t('layout.open_menu')}
         >
           ☰
         </button>
@@ -247,6 +211,4 @@ export default function ReceptionLayout() {
       </div>
     </div>
   );
-
 }
-

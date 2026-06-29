@@ -1,9 +1,11 @@
 ﻿import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { useSettings } from "../../context/SettingContext";
 import MonthlyExpenseFormModal from "../../components/reports/MonthlyExpenseFormModal";
 
 export default function MonthlyExpensesPage() {
+  const { t } = useTranslation();
   const { formatDate, formatMoney } = useSettings();
   const { items, isLoading, error, refresh, create, update, remove, getOne } = useMonthlyExpenses();
 
@@ -36,7 +38,7 @@ export default function MonthlyExpensesPage() {
   };
 
   const onDelete = async (row) => {
-    const ok = window.confirm(`Delete expense "${row.type}"?`);
+    const ok = window.confirm(t("exp.delete_confirm", { type: row.type }));
     if (!ok) return;
     await remove(row.id);
   };
@@ -57,9 +59,9 @@ export default function MonthlyExpensesPage() {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Monthly Expenses</h1>
+          <h1 className="text-lg font-semibold text-slate-900">{t("exp.title")}</h1>
           <p className="text-xs text-slate-500">
-            Log individual expenses (Rent, Salary, etc) to track profit/loss.
+            {t("exp.subtitle")}
           </p>
         </div>
 
@@ -67,7 +69,7 @@ export default function MonthlyExpensesPage() {
           onClick={onClickCreate}
           className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
         >
-          + Add Expense
+          {t("exp.add")}
         </button>
       </div>
 
@@ -78,7 +80,7 @@ export default function MonthlyExpensesPage() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by type or note..."
+              placeholder={t("exp.search_ph")}
               className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
             />
           </div>
@@ -88,13 +90,13 @@ export default function MonthlyExpensesPage() {
               onClick={refresh}
               className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm hover:bg-slate-50"
             >
-              Refresh
+              {t("exp.refresh")}
             </button>
             <button
               onClick={onClear}
               className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm hover:bg-slate-50"
             >
-              Clear
+              {t("exp.clear")}
             </button>
           </div>
         </div>
@@ -113,11 +115,11 @@ export default function MonthlyExpensesPage() {
             <thead className="border-b border-slate-200 text-xs text-slate-600">
               <tr>
                 <th className="px-5 py-3">#</th>
-                <th className="px-5 py-3">Date</th>
-                <th className="px-5 py-3">Type</th>
-                <th className="px-5 py-3">Amount</th>
-                <th className="px-5 py-3">Note</th>
-                <th className="px-5 py-3 text-right">Actions</th>
+                <th className="px-5 py-3">{t("exp.col_date")}</th>
+                <th className="px-5 py-3">{t("exp.col_type")}</th>
+                <th className="px-5 py-3">{t("exp.col_amount")}</th>
+                <th className="px-5 py-3">{t("exp.col_note")}</th>
+                <th className="px-5 py-3 text-end">{t("exp.col_actions")}</th>
               </tr>
             </thead>
 
@@ -125,13 +127,13 @@ export default function MonthlyExpensesPage() {
               {isLoading ? (
                 <tr>
                   <td className="px-5 py-6 text-slate-500" colSpan={6}>
-                    Loading...
+                    {t("exp.loading")}
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
                   <td className="px-5 py-6 text-slate-500" colSpan={6}>
-                    No expenses found.
+                    {t("exp.empty")}
                   </td>
                 </tr>
               ) : (
@@ -149,13 +151,13 @@ export default function MonthlyExpensesPage() {
                           onClick={() => onClickEdit(row)}
                           className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
                         >
-                          Edit
+                          {t("common.edit")}
                         </button>
                         <button
                           onClick={() => onDelete(row)}
                           className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-900"
                         >
-                          Delete
+                          {t("common.delete")}
                         </button>
                       </div>
                     </td>

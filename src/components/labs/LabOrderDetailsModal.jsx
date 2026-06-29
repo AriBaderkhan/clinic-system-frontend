@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getLabOrderById } from "../../api/labApi";
 import { useSettings } from "../../context/SettingContext";
 
@@ -27,6 +28,7 @@ function Field({ label, children }) {
 }
 
 export default function LabOrderDetailsModal({ orderId, onClose }) {
+  const { t } = useTranslation();
   // shown in the branch's configured timezone
   const { formatDateTime: formatDateTimeTz, formatMoney } = useSettings();
   const formatDateTime = (value) => (value ? formatDateTimeTz(value) : "-");
@@ -44,7 +46,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
         const res = await getLabOrderById(orderId);
         setOrder(res.data ?? null);
       } catch (err) {
-        setError(err.userMessage || "Could not load order details.");
+        setError(err.userMessage || t("labm.could_not_load_order"));
       } finally {
         setIsLoading(false);
       }
@@ -60,7 +62,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Order details</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("labm.order_details")}</h2>
             {order && (
               <p className="mt-1 text-[11px] text-slate-500">
                 {order.lab_name} · {order.patient_name}
@@ -76,7 +78,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
           </button>
         </div>
 
-        {isLoading && <p className="text-xs text-slate-500">Loading order…</p>}
+        {isLoading && <p className="text-xs text-slate-500">{t("labm.loading_order")}</p>}
 
         {error && !isLoading && (
           <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
@@ -100,15 +102,15 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
 
             {/* Who / where */}
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-              <Field label="Lab">
+              <Field label={t("labm.f_lab")}>
                 {order.lab_name}
                 {order.lab_phone ? ` · ${order.lab_phone}` : ""}
               </Field>
-              <Field label="Patient">
+              <Field label={t("labm.f_patient")}>
                 {order.patient_name}
                 {order.patient_phone ? ` · ${order.patient_phone}` : ""}
               </Field>
-              <Field label="Doctor">
+              <Field label={t("labm.f_doctor")}>
                 <span className="capitalize">{order.doctor_name}</span>
               </Field>
             </div>
@@ -116,7 +118,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             {/* Appointment link */}
             {order.appointment_id && (
               <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-                <p className="text-[11px] font-medium uppercase text-slate-500">From appointment</p>
+                <p className="text-[11px] font-medium uppercase text-slate-500">{t("labm.from_appointment")}</p>
                 <p className="mt-0.5 text-xs text-slate-700">
                   #{order.appointment_id} · {formatDateTime(order.appointment_date)}
                 </p>
@@ -128,10 +130,10 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
               <table className="min-w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 text-[11px] text-slate-500">
-                    <th className="px-3 py-2 font-medium">Treatment</th>
-                    <th className="px-3 py-2 font-medium">Qty</th>
-                    <th className="px-3 py-2 font-medium">Unit</th>
-                    <th className="px-3 py-2 font-medium text-right">Total</th>
+                    <th className="px-3 py-2 font-medium">{t("labm.col_treatment")}</th>
+                    <th className="px-3 py-2 font-medium">{t("labm.col_qty")}</th>
+                    <th className="px-3 py-2 font-medium">{t("labm.col_unit")}</th>
+                    <th className="px-3 py-2 font-medium text-end">{t("labm.col_total")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -145,7 +147,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
                   ))}
                   <tr className="bg-[#015478]/5">
                     <td className="px-3 py-2 text-xs font-semibold text-slate-600" colSpan={3}>
-                      Order total
+                      {t("labm.order_total")}
                     </td>
                     <td className="px-3 py-2 text-right text-sm font-semibold text-[#015478]">
                       {formatMoney(order.total_cost, order.currency_code)}
@@ -157,15 +159,15 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
 
             {/* Timeline */}
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-              <Field label="Order date">{formatDateTime(order.order_date)}</Field>
-              <Field label="Ready date">{formatDateTime(order.ready_date)}</Field>
-              <Field label="Delivered date">{formatDateTime(order.delivered_date)}</Field>
+              <Field label={t("labm.order_date")}>{formatDateTime(order.order_date)}</Field>
+              <Field label={t("labm.ready_date")}>{formatDateTime(order.ready_date)}</Field>
+              <Field label={t("labm.delivered_date")}>{formatDateTime(order.delivered_date)}</Field>
             </div>
 
             {/* Notes */}
             {order.notes && (
               <div className="space-y-1">
-                <p className="text-[11px] font-medium uppercase text-slate-500">Notes</p>
+                <p className="text-[11px] font-medium uppercase text-slate-500">{t("labm.notes")}</p>
                 <p className="whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700">
                   {order.notes}
                 </p>
@@ -174,7 +176,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
 
             {/* Created by */}
             <p className="text-[11px] text-slate-400">
-              Created by {order.created_by_name || "-"} · {formatDateTime(order.created_at)}
+              {t("labm.created_by", { name: order.created_by_name || "-", date: formatDateTime(order.created_at) })}
             </p>
           </div>
         )}

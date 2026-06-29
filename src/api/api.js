@@ -1,4 +1,5 @@
 import axios from 'axios';
+import i18n from '../i18n';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -43,11 +44,19 @@ api.interceptors.response.use(
         const original = error.config;
         const status = error?.response?.status;
 
-        // keep the existing user-safe message
+        // User-safe message. Prefer translating by the backend error CODE (so it
+        // follows the chosen language); fall back to the backend's English text,
+        // then to a generic translated message. The {{...}} values in error
+        // strings are filled from data.meta (e.g. { feature: "insights_assistant" }).
         const data = error?.response?.data;
-        error.userMessage = data?.message
-            ? (data.support_code ? `${data.message} (Support Code: ${data.support_code})` : data.message)
-            : "Something went wrong. Please try again.";
+        const code = data?.code;
+        const translated = code && i18n.exists(`errors.${code}`)
+            ? i18n.t(`errors.${code}`, data?.meta || {})
+            : null;
+        error.userMessage = translated
+            || (data?.message
+                ? (data.support_code ? `${data.message} (Support Code: ${data.support_code})` : data.message)
+                : i18n.t('errors.INTERNAL_ERROR'));
 
         // don't try to refresh auth endpoints themselves, and only retry once
         const url = original?.url || "";

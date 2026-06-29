@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AppointmentsCalendar from "../../components/appointments/AppointmentsCalendar";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 
@@ -8,6 +9,7 @@ function toDateParam(day) {
 }
 
 export default function AppointmentsCalendarPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
@@ -32,11 +34,11 @@ export default function AppointmentsCalendarPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Calendar</h1>
+        <h1 className="text-lg font-semibold text-slate-900">{t("appt.cal_title")}</h1>
         <p className="text-xs text-slate-500">
           {role === "doctor"
-            ? "Your appointments at a glance. Click an appointment to see details and the patient's last sessions."
-            : "All appointments at a glance, color-coded per doctor. Click an appointment for details, or click an empty day to add a new one."}
+            ? t("appt.cal_subtitle_doctor")
+            : t("appt.cal_subtitle_other")}
         </p>
       </div>
 

@@ -20,3 +20,17 @@ export async function downloadMonthlyReportPdf({ month, from, to }) {
 
   return { blob: res.data, filename };
 }
+
+// ---- Insights Assistant (tenant_manager, Pro feature) --------------------
+
+// The question menu. Each entry: { id, category, label, type, unit, supportsCompare }.
+export async function getInsightsCatalog() {
+  const res = await api.get("/api/reports/insights/catalog");
+  return res.data?.data || [];
+}
+
+// Run one question. params: { month | from,to, compare, compareMonth, compareFrom, compareTo }
+export async function getInsight(metricId, params = {}) {
+  const res = await api.get(`/api/reports/insights/${metricId}`, { params });
+  return res.data?.data || null;
+}

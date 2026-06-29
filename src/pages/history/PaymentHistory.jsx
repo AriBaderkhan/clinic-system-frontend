@@ -1,9 +1,11 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
 import { useSettings } from "../../context/SettingContext";
 
 export default function PaymentHistory() {
+  const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
   const { payments, isLoading, error, refresh } = usePaymentHistory();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -27,10 +29,10 @@ export default function PaymentHistory() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-slate-900">
-            Payment History
+            {t("clin.ph_title")}
           </h1>
           <p className="text-xs text-slate-500">
-            All payments collected in the clinic.
+            {t("clin.ph_subtitle")}
           </p>
         </div>
 
@@ -39,7 +41,7 @@ export default function PaymentHistory() {
           onClick={refresh}
           className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
         >
-          Refresh
+          {t("clin.refresh")}
         </button>
       </div>
 
@@ -47,7 +49,7 @@ export default function PaymentHistory() {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium text-slate-500">
-            Total collected (all time)
+            {t("clin.ph_total_collected")}
           </p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">
             {formatMoney(totalAmount)}
@@ -56,7 +58,7 @@ export default function PaymentHistory() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium text-slate-500">
-            Total payments
+            {t("clin.ph_total_payments")}
           </p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">
             {isLoading ? "…" : payments.length}
@@ -69,11 +71,10 @@ export default function PaymentHistory() {
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">
-              Payment History
+              {t("clin.ph_title")}
             </h2>
             <p className="text-[11px] text-slate-500">
-              Date &amp; time, patient, doctor, amount, reception staff and
-              note. Click a row to see full session details.
+              {t("clin.ph_card_subtitle")}
             </p>
           </div>
         </div>
@@ -87,12 +88,12 @@ export default function PaymentHistory() {
 
         {/* Loading */}
         {isLoading && !error && (
-          <p className="text-xs text-slate-500">Loading payment history…</p>
+          <p className="text-xs text-slate-500">{t("clin.ph_loading")}</p>
         )}
 
         {/* Empty */}
         {!isLoading && !error && payments.length === 0 && (
-          <p className="text-xs text-slate-500">No payments found.</p>
+          <p className="text-xs text-slate-500">{t("clin.ph_empty")}</p>
         )}
 
         {/* Table */}
@@ -102,22 +103,22 @@ export default function PaymentHistory() {
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500">
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Date &amp; Time
+                    {t("clin.ph_col_datetime")}
                   </th>
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Patient
+                    {t("clin.ph_col_patient")}
                   </th>
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Doctor
+                    {t("clin.ph_col_doctor")}
                   </th>
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Amount
+                    {t("clin.ph_col_amount")}
                   </th>
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Reception
+                    {t("clin.ph_col_reception")}
                   </th>
                   <th className="px-3 py-2 font-medium text-[#015478]">
-                    Note
+                    {t("clin.ph_col_note")}
                   </th>
                 </tr>
               </thead>

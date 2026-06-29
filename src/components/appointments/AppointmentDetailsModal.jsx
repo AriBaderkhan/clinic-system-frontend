@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
 import SessionDetailsModalForDocs from "../../components/sessions/SessionDetailsModalForDocs";
@@ -25,6 +26,7 @@ function statusBadgeClasses(status) {
 }
 
 export default function AppointmentDetailsModal({ appointmentId, onClose }) {
+  const { t } = useTranslation();
   const { formatDateTime } = useSettings();
   const { appointment, isLoading, error } = useAppointmentById(appointmentId);
 
@@ -53,13 +55,13 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
           <div className="mb-3 flex items-start justify-between">
             <div>
               <h2 className="text-sm font-semibold text-slate-900">
-                Appointment details
+                {t("appt.details_title")}
               </h2>
 
               {appointment && (
                 <p className="mt-1 text-[11px] text-slate-500">
                   {appointment.patient_name} ·{" "}
-                  {appointment.patient_phone || "No phone"}
+                  {appointment.patient_phone || t("appt.no_phone")}
                   <br />
                   {appointment.doctor_name} ·{" "}
                   {formatDateTime(appointment.scheduled_start)}
@@ -78,7 +80,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
 
           {/* Loading / error */}
           {isLoading && (
-            <p className="text-xs text-slate-500">Loading appointment…</p>
+            <p className="text-xs text-slate-500">{t("appt.loading_appt")}</p>
           )}
 
           {error && !isLoading && (
@@ -94,7 +96,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
               <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Status
+                    {t("appt.status")}
                   </p>
                   <span
                     className={
@@ -108,17 +110,17 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
 
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Appointment type
+                    {t("appt.appt_type")}
                   </p>
                   <p className="text-xs text-slate-700 capitalize">
                     {appointment.appointment_type || "-"}
-                    {appointment.is_walk_in && " · walk-in"}
+                    {appointment.is_walk_in && ` · ${t("appt.walk_in_badge")}`}
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Created at
+                    {t("appt.created_at")}
                   </p>
                   <p className="text-xs text-slate-700">
                     {formatDateTime(appointment.created_at)}
@@ -130,7 +132,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
               <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Check-in time
+                    {t("appt.checkin_time")}
                   </p>
                   <p className="text-xs text-slate-700">
                     {formatDateTime(appointment.check_in_time)}
@@ -138,7 +140,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Started at
+                    {t("appt.started_at")}
                   </p>
                   <p className="text-xs text-slate-700">
                     {formatDateTime(appointment.started_at)}
@@ -146,7 +148,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Finished at
+                    {t("appt.finished_at")}
                   </p>
                   <p className="text-xs text-slate-700">
                     {formatDateTime(appointment.finished_at)}
@@ -158,7 +160,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
               {appointment.complaint && (
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
-                    Complaint
+                    {t("appt.complaint")}
                   </p>
                   <p className="whitespace-pre-wrap text-xs text-slate-700">
                     {appointment.complaint}
@@ -174,7 +176,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                   {appointment.patient_blood_type && (
                     <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Blood type
+                        {t("appt.blood_type")}
                       </p>
                       <p className="mt-0.5 text-sm font-semibold text-slate-800">
                         {appointment.patient_blood_type}
@@ -184,7 +186,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                   {appointment.patient_allergies && (
                     <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">
-                        ⚠ Allergies
+                        {t("appt.allergies")}
                       </p>
                       <p className="mt-0.5 text-xs font-medium text-slate-800">
                         {appointment.patient_allergies}
@@ -194,7 +196,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                   {appointment.patient_chronic_diseases && (
                     <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
-                        Chronic diseases
+                        {t("appt.chronic")}
                       </p>
                       <p className="mt-0.5 text-xs font-medium text-slate-800">
                         {appointment.patient_chronic_diseases}
@@ -210,8 +212,8 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 <div className="space-y-1">
                   <p className="text-[11px] font-medium uppercase text-slate-500">
                     {appointment.status === "cancelled"
-                      ? "Cancel reason"
-                      : "No-show reason"}
+                      ? t("appt.cancel_reason")
+                      : t("appt.noshow_reason")}
                   </p>
                   <p className="whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700">
                     {appointment.cancel_reason || "-"}
@@ -224,12 +226,12 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[11px] font-medium uppercase text-slate-500">
-                      Session
+                      {t("appt.session")}
                     </p>
 
                     {isSessionLoading && (
                       <p className="mt-1 text-xs text-slate-500">
-                        Checking session…
+                        {t("appt.checking_session")}
                       </p>
                     )}
 
@@ -239,13 +241,13 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
 
                     {!isSessionLoading && !sessionError && !sessionId && (
                       <p className="mt-1 text-xs text-slate-600">
-                        No session created yet for this appointment.
+                        {t("appt.no_session")}
                       </p>
                     )}
 
                     {!isSessionLoading && !sessionError && sessionId && (
                       <p className="mt-1 text-xs text-slate-700">
-                        Session exists • ID:{" "}
+                        {t("appt.session_exists_label")}{" "}
                         <span className="font-semibold">{sessionId}</span>
                       </p>
                     )}
@@ -262,7 +264,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                           : "bg-slate-200 text-slate-500 cursor-not-allowed"
                       }`}
                     >
-                      View session
+                      {t("appt.view_session")}
                     </button>
                   </div>
                 </div>
@@ -272,7 +274,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
 
           {!isLoading && !error && !appointment && (
             <p className="text-xs text-slate-500">
-              Appointment not found or could not be loaded.
+              {t("appt.appt_not_found")}
             </p>
           )}
         </div>

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getAppointmentById, editAppointment } from "../../api/appointmentApi";
 import useDoctors from "../../hooks/useDoctors";
 import AppointmentForm from "../../components/appointments/AppointmentForm";
 
 export default function EditAppointment() {
+  const { t } = useTranslation();
   const { appointmentId } = useParams();
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ export default function EditAppointment() {
         const res = await getAppointmentById(appointmentId);
         setAppointment(res.data?.appointment || res.data);
       } catch (err) {
-        setLoadError(err.userMessage || "Could not load appointment data. Please try again.");
+        setLoadError(err.userMessage || t("appt.load_failed"));
       } finally {
         setIsLoading(false);
       }
@@ -41,7 +43,7 @@ export default function EditAppointment() {
       });
       navigate("/reception/appointments");
     } catch (err) {
-      toast.error(err.userMessage || "Could not update appointment. Please try again.");
+      toast.error(err.userMessage || t("appt.update_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -51,15 +53,15 @@ export default function EditAppointment() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Edit Appointment</h1>
+          <h1 className="text-lg font-semibold text-slate-900">{t("appt.edit_title")}</h1>
           <p className="text-xs text-slate-500">
-            Only doctor and date/time can be changed. Status & type are fixed.
+            {t("appt.edit_subtitle")}
           </p>
         </div>
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-        {isLoading && <p className="text-xs text-slate-500">Loading appointment…</p>}
+        {isLoading && <p className="text-xs text-slate-500">{t("appt.loading_appt")}</p>}
 
         {loadError && (
           <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
@@ -68,7 +70,7 @@ export default function EditAppointment() {
         )}
 
         {!isLoading && !appointment && !loadError && (
-          <p className="text-xs text-slate-500">Appointment not found or cannot be edited.</p>
+          <p className="text-xs text-slate-500">{t("appt.not_found_edit")}</p>
         )}
 
         {!isLoading && appointment && (

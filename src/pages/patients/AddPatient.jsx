@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import PatientForm from "../../components/patients/PatientForm";
 import usePatients from "../../hooks/usePatients";
 
 export default function AddPatient() {
+  const { t } = useTranslation();
   const { createPatients, isSubmitting } = usePatients({ skipFetch: true });
   const navigate = useNavigate();
 
@@ -12,7 +14,7 @@ export default function AddPatient() {
     if (result.ok) {
       navigate("/branch/patients");
     } else {
-      toast.error(result.error || "Could not create patient.");
+      toast.error(result.error || t("patient_form.create_failed"));
     }
   };
 

@@ -1,9 +1,11 @@
 ﻿import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getBranches, switchBranch } from '../../api/tenantApi';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function TenantBranches() {
+    const { t } = useTranslation();
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -18,7 +20,7 @@ export default function TenantBranches() {
             const data = await getBranches();
             setBranches(data.data || []);
         } catch (error) {
-            toast.error(error.userMessage || "Failed to load branches");
+            toast.error(error.userMessage || t('branches.failed_load'));
         } finally {
             setLoading(false);
         }
@@ -31,7 +33,7 @@ export default function TenantBranches() {
             localStorage.setItem('token', data.token);
             navigate('/branch');
         } catch (error) {
-            toast.error(error.userMessage || "Failed to switch branch");
+            toast.error(error.userMessage || t('branches.failed_switch'));
         }
     };
 
@@ -42,15 +44,15 @@ export default function TenantBranches() {
             localStorage.setItem('token', data.token);
             navigate('/branch/works');
         } catch (error) {
-            toast.error(error.userMessage || "Failed to switch branch");
+            toast.error(error.userMessage || t('branches.failed_switch'));
         }
     };
 
     return (
         <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Active Branches</h2>
+            <h2 className="text-xl font-bold mb-4">{t('branches.title')}</h2>
             {loading ? (
-                <p>Loading...</p>
+                <p>{t('common.loading')}</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {branches.map((branch) => (
@@ -64,7 +66,7 @@ export default function TenantBranches() {
                                     onClick={() => handleWorks(branch)}
                                     className="text-[#015478] text-sm font-medium hover:underline cursor-pointer"
                                 >
-                                    Works &rarr;
+                                    {t('branches.works')} &rarr;
                                 </button>
                             </div>
                             <p className="text-sm text-gray-500">{branch.location}</p>
@@ -76,7 +78,7 @@ export default function TenantBranches() {
                                     onClick={() => handleManage(branch)}
                                     className="text-[#015478] text-sm font-medium hover:underline cursor-pointer"
                                 >
-                                    Manage &rarr;
+                                    {t('branches.manage')} &rarr;
                                 </button>
                             </div>
                         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { suggestPrescriptionField } from "../../api/prescriptionApi";
 
@@ -58,6 +59,7 @@ function AutoInput({ field, value, onChange, placeholder, disabled }) {
 // UX mirrors the treatment flow: fill the draft row → "Add medicine" → it lands
 // in a compact list below where each item can be edited or removed.
 export default function PrescriptionEditor({ items = [], onChange, patientName = "", readOnly = false }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState({ ...EMPTY_ROW });
   const [editingIdx, setEditingIdx] = useState(null); // index being edited, or null = adding new
   const [showForm, setShowForm] = useState(false);    // fields stay hidden until "+ Add medicine"
@@ -67,7 +69,7 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
   const openAdd = () => { setDraft({ ...EMPTY_ROW }); setEditingIdx(null); setShowForm(true); };
 
   const addOrSave = () => {
-    if (!draft.drug_name.trim()) { toast.error("Enter a drug name first."); return; }
+    if (!draft.drug_name.trim()) { toast.error(t("rx.enter_drug")); return; }
     const clean = { ...draft, drug_name: draft.drug_name.trim() };
     if (editingIdx === null) onChange([...items, clean]);
     else onChange(items.map((row, i) => (i === editingIdx ? clean : row)));
@@ -89,7 +91,7 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
 
   const print = () => {
     const rows = items.filter((r) => r.drug_name && r.drug_name.trim());
-    if (rows.length === 0) { toast.error("Add at least one medicine to print."); return; }
+    if (rows.length === 0) { toast.error(t("rx.add_one_print")); return; }
     const doctor = localStorage.getItem("name") || "";
     const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
@@ -119,7 +121,7 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
       </body></html>`;
 
     const w = window.open("", "_blank");
-    if (!w) { toast.error("Allow pop-ups to print."); return; }
+    if (!w) { toast.error(t("rx.allow_popups")); return; }
     w.document.write(html);
     w.document.close();
   };
@@ -127,16 +129,16 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-800">Prescription <span className="text-xs font-normal text-slate-400">(optional)</span></h3>
+        <h3 className="text-sm font-semibold text-slate-800">{t("rx.title")} <span className="text-xs font-normal text-slate-400">{t("rx.optional")}</span></h3>
         <button type="button" onClick={print}
           className="rounded-lg border border-[#015478] px-3 py-1.5 text-xs font-medium text-[#015478] transition hover:bg-[#015478] hover:text-white">
-          🖨 Print
+          {t("rx.print")}
         </button>
       </div>
 
       {/* Added medicines — compact list (always visible) */}
       {items.length === 0 ? (
-        <p className="text-xs text-slate-400">No medicines yet.</p>
+        <p className="text-xs text-slate-400">{t("rx.no_medicines")}</p>
       ) : (
         <div className="space-y-2">
           {items.map((row, idx) => (
@@ -147,9 +149,9 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
               </div>
               {!readOnly && (
                 <div className="flex shrink-0 items-center gap-1">
-                  <button type="button" onClick={() => editRow(idx)} title="Edit"
+                  <button type="button" onClick={() => editRow(idx)} title={t("common.edit")}
                     className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
-                  <button type="button" onClick={() => removeRow(idx)} title="Delete"
+                  <button type="button" onClick={() => removeRow(idx)} title={t("common.delete")}
                     className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                 </div>
               )}
@@ -162,36 +164,36 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
       {!readOnly && (showForm ? (
         <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
           <AutoInput field="drug_name" value={draft.drug_name}
-            onChange={(v) => setField("drug_name", v)} placeholder="Drug name (e.g. Amoxicillin)" />
+            onChange={(v) => setField("drug_name", v)} placeholder={t("rx.drug_name_ph")} />
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <AutoInput field="dosage" value={draft.dosage}
-              onChange={(v) => setField("dosage", v)} placeholder="Dosage (500mg)" />
+              onChange={(v) => setField("dosage", v)} placeholder={t("rx.dosage_ph")} />
             <AutoInput field="frequency" value={draft.frequency}
-              onChange={(v) => setField("frequency", v)} placeholder="Frequency (3x/day)" />
+              onChange={(v) => setField("frequency", v)} placeholder={t("rx.frequency_ph")} />
             <AutoInput field="duration" value={draft.duration}
-              onChange={(v) => setField("duration", v)} placeholder="Duration (7 days)" />
+              onChange={(v) => setField("duration", v)} placeholder={t("rx.duration_ph")} />
           </div>
 
           <input type="text" value={draft.instructions}
-            onChange={(e) => setField("instructions", e.target.value)} placeholder="Instructions (after meals…)"
+            onChange={(e) => setField("instructions", e.target.value)} placeholder={t("rx.instructions_ph")}
             className={INPUT_CLS} />
 
           <div className="flex items-center justify-end gap-2">
             <button type="button" onClick={resetDraft}
               className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100">
-              Cancel
+              {t("common.cancel")}
             </button>
             <button type="button" onClick={addOrSave}
               className="rounded-lg bg-[#015478] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#013d58]">
-              {editingIdx === null ? "Add medicine" : "Save medicine"}
+              {editingIdx === null ? t("rx.add_medicine") : t("rx.save_medicine")}
             </button>
           </div>
         </div>
       ) : (
         <button type="button" onClick={openAdd}
           className="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-xs font-medium text-slate-600 hover:border-[#015478] hover:text-[#015478]">
-          + Add medicine
+          {t("rx.add_medicine_btn")}
         </button>
       ))}
     </div>

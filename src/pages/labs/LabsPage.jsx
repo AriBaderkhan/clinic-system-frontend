@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useLabs from "../../hooks/useLabs";
 import useLabOrders from "../../hooks/useLabOrders";
@@ -40,6 +41,7 @@ function statusBadgeClasses(status) {
 }
 
 function Pagination({ page, pagination, onPageChange }) {
+  const { t } = useTranslation();
   if (pagination.totalPages <= 1) return null;
   const pageNumbers = getPageNumbers(page, pagination.totalPages);
   const rowStart = (page - 1) * pagination.limit + 1;
@@ -53,7 +55,7 @@ function Pagination({ page, pagination, onPageChange }) {
           disabled={page === 1}
           className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Prev
+          {t("appt.prev")}
         </button>
 
         {pageNumbers.map((p, i) =>
@@ -79,17 +81,18 @@ function Pagination({ page, pagination, onPageChange }) {
           disabled={page === pagination.totalPages}
           className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Next
+          {t("appt.next")}
         </button>
       </div>
       <span className="text-[11px] text-slate-400">
-        Showing {rowStart}–{rowEnd} of {pagination.total}
+        {t("lab.showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
       </span>
     </div>
   );
 }
 
 export default function LabsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("orders"); // orders | labs
 
   // dates/times are shown in the branch's configured timezone (branch/tenant settings)
@@ -137,29 +140,29 @@ export default function LabsPage() {
       setIsOrderSubmitting(true);
       if (orderFormMode === "add") {
         await createLabOrder(payload);
-        toast.success("Order created");
+        toast.success(t("lab.order_created"));
       } else {
         await editLabOrder(activeOrder.id, payload);
-        toast.success("Order updated");
+        toast.success(t("lab.order_updated"));
       }
       setOpenOrderForm(false);
       await ordersState.refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Could not save the order.");
+      toast.error(err.userMessage || t("lab.order_save_failed"));
     } finally {
       setIsOrderSubmitting(false);
     }
   };
 
   const onDeleteOrder = async (order) => {
-    const ok = window.confirm(`Delete this order (${order.items_summary || "items"} from ${order.lab_name})?`);
+    const ok = window.confirm(t("lab.order_delete_confirm", { items: order.items_summary || t("lab.items_fallback"), lab: order.lab_name }));
     if (!ok) return;
     try {
       await deleteLabOrder(order.id);
-      toast.success("Order deleted");
+      toast.success(t("lab.order_deleted"));
       await ordersState.refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Could not delete the order.");
+      toast.error(err.userMessage || t("lab.order_delete_failed"));
     }
   };
 
@@ -181,29 +184,29 @@ export default function LabsPage() {
       setIsLabSubmitting(true);
       if (labFormMode === "add") {
         await createLab(payload);
-        toast.success("Lab created");
+        toast.success(t("lab.lab_created"));
       } else {
         await editLab(activeLabId, payload);
-        toast.success("Lab updated");
+        toast.success(t("lab.lab_updated"));
       }
       setOpenLabForm(false);
       await labsState.refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Could not save the lab.");
+      toast.error(err.userMessage || t("lab.lab_save_failed"));
     } finally {
       setIsLabSubmitting(false);
     }
   };
 
   const onDeleteLab = async (lab) => {
-    const ok = window.confirm(`Delete lab "${lab.name}"? Its old orders stay in history.`);
+    const ok = window.confirm(t("lab.lab_delete_confirm", { name: lab.name }));
     if (!ok) return;
     try {
       await deleteLab(lab.id);
-      toast.success("Lab deleted");
+      toast.success(t("lab.lab_deleted"));
       await labsState.refresh();
     } catch (err) {
-      toast.error(err.userMessage || "Could not delete the lab.");
+      toast.error(err.userMessage || t("lab.lab_delete_failed"));
     }
   };
 
@@ -262,9 +265,9 @@ export default function LabsPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Lab</h1>
+          <h1 className="text-lg font-semibold text-slate-900">{t("lab.title")}</h1>
           <p className="text-xs text-slate-500">
-            Manage the labs the clinic works with, their price lists, and lab orders.
+            {t("lab.subtitle")}
           </p>
         </div>
 
@@ -274,22 +277,22 @@ export default function LabsPage() {
             onClick={onClickAddLab}
             className="rounded-lg border border-[#015478]/30 bg-white px-4 py-2 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5"
           >
-            + Add Lab
+            {t("lab.add_lab")}
           </button>
           <button
             type="button"
             onClick={onClickMakeOrder}
             className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58]"
           >
-            + Make Order
+            {t("lab.make_order")}
           </button>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex w-fit rounded-full border border-[#015478]/20 bg-[#015478]/5 p-1">
-        {tabButton("orders", "Orders")}
-        {tabButton("labs", "Labs")}
+        {tabButton("orders", t("lab.tab_orders"))}
+        {tabButton("labs", t("lab.tab_labs"))}
       </div>
 
       {/* ===================== ORDERS TAB ===================== */}
@@ -298,28 +301,28 @@ export default function LabsPage() {
           {/* Filters */}
           <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
             <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#015478]">Search</label>
+              <label className="text-xs font-semibold text-[#015478]">{t("lab.search")}</label>
               <input
                 type="text"
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
-                placeholder="Patient, phone, doctor, lab..."
+                placeholder={t("lab.order_search_ph")}
                 className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-[#015478]">Status</label>
+              <label className="text-xs font-semibold text-[#015478]">{t("lab.status")}</label>
               <select
                 value={orderStatus}
                 onChange={(e) => setOrderStatus(e.target.value)}
                 className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
               >
-                <option value="">All</option>
-                <option value="ordered">Ordered</option>
-                <option value="ready">Ready</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="">{t("lab.all")}</option>
+                <option value="ordered">{t("lab.ordered")}</option>
+                <option value="ready">{t("lab.ready")}</option>
+                <option value="delivered">{t("lab.delivered")}</option>
+                <option value="cancelled">{t("lab.cancelled")}</option>
               </select>
             </div>
 
@@ -329,20 +332,20 @@ export default function LabsPage() {
                 onClick={ordersState.refresh}
                 className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
               >
-                Refresh
+                {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => { setOrderSearch(""); setOrderStatus(""); }}
                 className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
               >
-                Clear
+                {t("lab.clear")}
               </button>
             </div>
           </div>
 
           <p className="mb-3 text-xs text-slate-400">
-            {ordersState.isLoading ? "Loading orders…" : `Total: ${ordersState.pagination.total}`}
+            {ordersState.isLoading ? t("lab.loading_orders") : t("lab.total", { count: ordersState.pagination.total })}
           </p>
 
           {ordersState.error && (
@@ -353,7 +356,7 @@ export default function LabsPage() {
 
           {!ordersState.isLoading && !ordersState.error && ordersState.orders.length === 0 && (
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-              No orders found. Click "+ Make Order" to create the first one.
+              {t("lab.orders_empty")}
             </div>
           )}
 
@@ -363,16 +366,16 @@ export default function LabsPage() {
                 <thead>
                   <tr className="border-b border-slate-200 text-xs text-slate-500">
                     <th className="px-3 py-2 font-medium">#</th>
-                    <th className="px-3 py-2 font-medium">Order Date</th>
-                    <th className="px-3 py-2 font-medium">Lab</th>
-                    <th className="px-3 py-2 font-medium">Patient</th>
-                    <th className="px-3 py-2 font-medium">Doctor</th>
-                    <th className="px-3 py-2 font-medium">Treatments</th>
-                    <th className="px-3 py-2 font-medium">Total</th>
-                    <th className="px-3 py-2 font-medium">Status</th>
-                    <th className="px-3 py-2 font-medium">Ready</th>
-                    <th className="px-3 py-2 font-medium">Delivered</th>
-                    <th className="px-3 py-2 font-medium text-right">Actions</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_order_date")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_lab")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_patient")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_doctor")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_treatments")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_total")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_status")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_ready")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_delivered")}</th>
+                    <th className="px-3 py-2 font-medium text-end">{t("lab.col_actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -391,7 +394,7 @@ export default function LabsPage() {
                         <button
                           type="button"
                           onClick={() => setOrderForStatus(o)}
-                          title="Click to change status"
+                          title={t("lab.change_status_title")}
                           className={
                             "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize hover:opacity-80 " +
                             statusBadgeClasses(o.status)
@@ -409,21 +412,21 @@ export default function LabsPage() {
                             onClick={() => setOrderDetailsId(o.id)}
                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
                           >
-                            View
+                            {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onClickEditOrder(o)}
                             className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
                           >
-                            Edit
+                            {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteOrder(o)}
                             className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
                           >
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>
@@ -448,12 +451,12 @@ export default function LabsPage() {
           {/* Filters */}
           <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
             <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#015478]">Search</label>
+              <label className="text-xs font-semibold text-[#015478]">{t("lab.search")}</label>
               <input
                 type="text"
                 value={labSearch}
                 onChange={(e) => setLabSearch(e.target.value)}
-                placeholder="Lab name..."
+                placeholder={t("lab.lab_search_ph")}
                 className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
               />
             </div>
@@ -464,20 +467,20 @@ export default function LabsPage() {
                 onClick={labsState.refresh}
                 className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
               >
-                Refresh
+                {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => setLabSearch("")}
                 className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
               >
-                Clear
+                {t("lab.clear")}
               </button>
             </div>
           </div>
 
           <p className="mb-3 text-xs text-slate-400">
-            {labsState.isLoading ? "Loading labs…" : `Total: ${labsState.pagination.total}`}
+            {labsState.isLoading ? t("lab.loading_labs") : t("lab.total", { count: labsState.pagination.total })}
           </p>
 
           {labsState.error && (
@@ -488,7 +491,7 @@ export default function LabsPage() {
 
           {!labsState.isLoading && !labsState.error && labsState.labs.length === 0 && (
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-              No labs yet. Click "+ Add Lab" to register the first one.
+              {t("lab.labs_empty")}
             </div>
           )}
 
@@ -498,11 +501,11 @@ export default function LabsPage() {
                 <thead>
                   <tr className="border-b border-slate-200 text-xs text-slate-500">
                     <th className="px-3 py-2 font-medium">#</th>
-                    <th className="px-3 py-2 font-medium">Lab Name</th>
-                    <th className="px-3 py-2 font-medium">Phone</th>
-                    <th className="px-3 py-2 font-medium">Treatments</th>
-                    <th className="px-3 py-2 font-medium">Added</th>
-                    <th className="px-3 py-2 font-medium text-right">Actions</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_lab_name")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_phone")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_treatments")}</th>
+                    <th className="px-3 py-2 font-medium">{t("lab.col_added")}</th>
+                    <th className="px-3 py-2 font-medium text-end">{t("lab.col_actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -522,14 +525,14 @@ export default function LabsPage() {
                             onClick={() => onClickEditLab(lab)}
                             className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
                           >
-                            View / Edit
+                            {t("lab.view_edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteLab(lab)}
                             className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
                           >
-                            Delete
+                            {t("common.delete")}
                           </button>
                         </div>
                       </td>

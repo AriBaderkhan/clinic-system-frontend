@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getMySubscription, createSubscriptionRequest } from "../../api/subscriptionApi";
 import { getPlans } from "../../api/planApi";
@@ -18,6 +19,7 @@ const STATUS_BADGE = {
 };
 
 export default function SubscriptionSection() {
+    const { t } = useTranslation();
     const { refresh: refreshCtx } = useSubscription();
 
     const [status, setStatus] = useState(null);
@@ -35,7 +37,7 @@ export default function SubscriptionSection() {
             setStatus(statusRes.data);
             setPlans(plansRes.data ?? []);
         } catch (err) {
-            toast.error(err.userMessage || "Failed to load subscription");
+            toast.error(err.userMessage || t('subscription.failed_load'));
         } finally {
             setLoading(false);
         }
@@ -44,24 +46,24 @@ export default function SubscriptionSection() {
     useEffect(() => { load(); }, []);
 
     const handleBuy = async () => {
-        if (!selectedPlanId) return toast.error("Choose a plan first.");
-        if (!file) return toast.error("Attach your payment evidence image.");
+        if (!selectedPlanId) return toast.error(t('subscription.choose_plan'));
+        if (!file) return toast.error(t('subscription.attach_evidence'));
         try {
             setSubmitting(true);
             await createSubscriptionRequest(selectedPlanId, file);
-            toast.success("Request sent! Awaiting admin confirmation.");
+            toast.success(t('subscription.request_sent'));
             setSelectedPlanId(null);
             setFile(null);
             await load();
             await refreshCtx();
         } catch (err) {
-            toast.error(err.userMessage || "Failed to send request");
+            toast.error(err.userMessage || t('subscription.failed_send'));
         } finally {
             setSubmitting(false);
         }
     };
 
-    if (loading) return <div className="rounded-lg bg-white p-6 text-sm text-gray-500 shadow">Loading subscription…</div>;
+    if (loading) return <div className="rounded-lg bg-white p-6 text-sm text-gray-500 shadow">{t('subscription.loading')}</div>;
 
     const badge = STATUS_BADGE[status?.status] || STATUS_BADGE.none;
 
@@ -71,23 +73,23 @@ export default function SubscriptionSection() {
             <div className="rounded-lg bg-white p-6 shadow">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Current plan</p>
-                        <p className="mt-0.5 text-xl font-bold text-gray-900">{status?.plan_name || "No plan"}</p>
-                        {status?.price != null && <p className="text-sm text-gray-500">${status.price} / period</p>}
+                        <p className="text-sm font-medium text-gray-500">{t('subscription.current_plan')}</p>
+                        <p className="mt-0.5 text-xl font-bold text-gray-900">{status?.plan_name || t('subscription.no_plan')}</p>
+                        {status?.price != null && <p className="text-sm text-gray-500">{t('subscription.price_period', { price: status.price })}</p>}
                     </div>
-                    <div className="text-right">
-                        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium capitalize ${badge}`}>
-                            {status?.status || "none"}
+                    <div className="text-end">
+                        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${badge}`}>
+                            {t(`subscription.status_${status?.status || "none"}`)}
                         </span>
                         {status?.days_left != null && status.status !== "expired" && (
-                            <p className="mt-1 text-xs text-gray-500">{status.days_left} day{status.days_left === 1 ? "" : "s"} left</p>
+                            <p className="mt-1 text-xs text-gray-500">{t('subscription.days_left', { count: status.days_left })}</p>
                         )}
                     </div>
                 </div>
 
                 {status?.pending_request && (
                     <div className="mt-4 rounded-lg border border-sky-100 bg-sky-50 px-3 py-2 text-[13px] text-sky-700">
-                        ⏳ Your request for <b>{status.pending_request.plan_name}</b> is awaiting admin confirmation.
+                        {t('subscription.pending', { plan: status.pending_request.plan_name })}
                     </div>
                 )}
             </div>
@@ -96,8 +98,8 @@ export default function SubscriptionSection() {
             {!status?.pending_request && (
                 status?.can_renew ? (
                     <div className="rounded-lg bg-white p-6 shadow">
-                        <h3 className="text-lg font-bold text-gray-800">Renew or upgrade</h3>
-                        <p className="mb-4 text-sm text-gray-500">Pick a plan, transfer the amount, then upload your payment evidence.</p>
+                        <h3 className="text-lg font-bold text-gray-800">{t('subscription.renew_upgrade')}</h3>
+                        <p className="mb-4 text-sm text-gray-500">{t('subscription.renew_hint')}</p>
 
                         {/* Plans */}
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -115,7 +117,10 @@ export default function SubscriptionSection() {
                                             <span className="font-bold text-[#015478]">${plan.price}</span>
                                         </div>
                                         <p className="mt-2 text-xs text-slate-500">
-                                            {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {plan.max_users === -1 ? "Unlimited" : plan.max_users} users
+                                            {t('subscription.plan_limits', {
+                                                branches: plan.max_branches === -1 ? t('subscription.unlimited') : plan.max_branches,
+                                                users: plan.max_users === -1 ? t('subscription.unlimited') : plan.max_users,
+                                            })}
                                         </p>
                                     </button>
                                 );
@@ -126,7 +131,7 @@ export default function SubscriptionSection() {
                         {selectedPlanId && (
                             <div className="mt-5 space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
                                 <div>
-                                    <p className="text-sm font-semibold text-slate-800">1 · Transfer to one of these</p>
+                                    <p className="text-sm font-semibold text-slate-800">{t('subscription.step1')}</p>
                                     <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                                         {BANK_ACCOUNTS.map((b) => (
                                             <div key={b.label} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
@@ -138,14 +143,14 @@ export default function SubscriptionSection() {
                                 </div>
 
                                 <div>
-                                    <p className="text-sm font-semibold text-slate-800">2 · Upload payment evidence</p>
+                                    <p className="text-sm font-semibold text-slate-800">{t('subscription.step2')}</p>
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/png,image/webp"
                                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                        className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#015478] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#013d58]"
+                                        className="mt-2 block w-full text-sm text-slate-600 file:me-3 file:rounded-md file:border-0 file:bg-[#015478] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#013d58]"
                                     />
-                                    {file && <p className="mt-1 text-xs text-slate-500">Selected: {file.name}</p>}
+                                    {file && <p className="mt-1 text-xs text-slate-500">{t('subscription.selected_file', { name: file.name })}</p>}
                                 </div>
 
                                 <div className="flex justify-end gap-2">
@@ -154,7 +159,7 @@ export default function SubscriptionSection() {
                                         onClick={() => { setSelectedPlanId(null); setFile(null); }}
                                         className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                                     >
-                                        Cancel
+                                        {t('common.cancel')}
                                     </button>
                                     <button
                                         type="button"
@@ -162,7 +167,7 @@ export default function SubscriptionSection() {
                                         disabled={submitting}
                                         className="rounded-lg bg-[#015478] px-5 py-2 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50"
                                     >
-                                        {submitting ? "Sending…" : "Buy"}
+                                        {submitting ? t('subscription.sending') : t('subscription.buy')}
                                     </button>
                                 </div>
                             </div>
@@ -170,7 +175,7 @@ export default function SubscriptionSection() {
                     </div>
                 ) : (
                     <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow">
-                        You can renew or upgrade in the last 7 days of your plan, or after it expires.
+                        {t('subscription.cannot_renew')}
                     </div>
                 )
             )}
