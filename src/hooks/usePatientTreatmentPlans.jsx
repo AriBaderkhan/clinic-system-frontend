@@ -24,5 +24,5 @@ export default function usePatientTreatmentPlans(patientId) {
     fetchPlans();
   }, [fetchPlans]);
 
-  return { plans, isLoading, error };
+  return { plans, isLoading, error, refresh: fetchPlans };
 }

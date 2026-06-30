@@ -25,5 +25,5 @@ export default function usePatientSessions(patientId, limit = null) {
     fetchSessions();
   }, [fetchSessions]);
 
-  return { sessions, isLoading, error };
+  return { sessions, isLoading, error, refresh: fetchSessions };
 }

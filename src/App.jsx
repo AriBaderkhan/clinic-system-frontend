@@ -34,6 +34,7 @@ import RemindersPage from './pages/reminders/RemindersPage'
 
 // Doctor pages
 import DoctorDashboard from './pages/doctor/DoctorDashboard'
+import DoctorReport from './pages/doctor/DoctorReport'
 import ApptsPerDoctor from './pages/doctor/ApptsPerDoctor'
 import TenantSettingsPage from "./pages/settings/TenantSettings";
 import BranchSettingsPage from "./pages/settings/BranchSettings";
@@ -192,6 +193,7 @@ export default function App() {
           }
         >
           <Route index element={<DoctorDashboard />} />
+          <Route path="report" element={<DoctorReport />} />
           <Route path="appts_per_doc" element={<ApptsPerDoctor />} />
           <Route path="calendar" element={<AppointmentsCalendarPage />} />
           <Route path="settings" element={<AppearanceSettingsPage />} />

@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import usePatientById from "../../hooks/usePatientById";
@@ -11,17 +11,30 @@ import usePatientTreatmentPlans from "../../hooks/usePatientTreatmentPlans";
 import useTreatmentPlanSessions from "../../hooks/useTreatmentPlanSessions";
 
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
+import EditSessionModal from "../../components/sessions/EditSessionModal";
+import EditTreatmentPlanModal from "../../components/treatment_plan/EditTreatmentPlanModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { useSettings } from "../../context/SettingContext";
+
+// Edit appointments go to the same edit route the general Appointments page uses;
+// the base path depends on the role viewing the folder.
+function rolePrefix() {
+  const role = localStorage.getItem("role") || "reception";
+  return role === "branch_manager" || role === "tenant_manager" ? "/branch" : "/reception";
+}
 
 export default function PatientFolderPage() {
   const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
   const { patientId } = useParams();
+  const navigate = useNavigate();
+  const prefix = rolePrefix();
 
   const [activeTab, setActiveTab] = useState("appointments");
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [selectedDetailsId, setSelectedDetailsId] = useState(null);
+  const [editSessionId, setEditSessionId] = useState(null);
+  const [editPlan, setEditPlan] = useState(null);
 
   // treatment plans tab state
   const [tpFilter, setTpFilter] = useState("all"); // all | ORTHO | RCT | IMPLANT
@@ -35,18 +48,25 @@ export default function PatientFolderPage() {
   const { appointments, isLoading: isApptsLoading, error: apptsError } =
     usePatientAppointments(patientId);
 
-  const { sessions, isLoading: isSessionsLoading, error: sessionsError } =
+  const { sessions, isLoading: isSessionsLoading, error: sessionsError, refresh: refreshSessions } =
     usePatientSessions(patientId);
 
-  const { payments, isLoading: isPaymentsLoading, error: paymentsError } =
-    usePatientPayments(patientId);
+  const { payments } = usePatientPayments(patientId);
 
   // ---- Treatment plans ----
-  const { plans, isLoading: isPlansLoading, error: plansError } =
+  const { plans, isLoading: isPlansLoading, error: plansError, refresh: refreshPlans } =
     usePatientTreatmentPlans(patientId);
 
-  const { cache: tpSessionsCache, load: loadTpSessions } =
+  const { cache: tpSessionsCache, load: loadTpSessions, reload: reloadTpSessions } =
     useTreatmentPlanSessions();
+
+  // After a session is edited (from the Sessions tab or a plan's sub-table),
+  // refresh the session list, the plan totals, and the open plan's sub-table.
+  const handleSessionUpdated = () => {
+    refreshSessions();
+    refreshPlans();
+    if (expandedPlanId != null) reloadTpSessions(expandedPlanId);
+  };
 
   const totalPaidForPatient = payments.reduce(
     (sum, p) => sum + Number(p.amount || 0),
@@ -78,6 +98,22 @@ export default function PatientFolderPage() {
         <AppointmentDetailsModal
           appointmentId={selectedDetailsId}
           onClose={() => setSelectedDetailsId(null)}
+        />
+      )}
+
+      {editSessionId && (
+        <EditSessionModal
+          sessionId={editSessionId}
+          onClose={() => setEditSessionId(null)}
+          onUpdated={handleSessionUpdated}
+        />
+      )}
+
+      {editPlan && (
+        <EditTreatmentPlanModal
+          plan={editPlan}
+          onClose={() => setEditPlan(null)}
+          onUpdated={refreshPlans}
         />
       )}
 
@@ -124,6 +160,12 @@ export default function PatientFolderPage() {
                       <span className="font-medium">{patient.referral_source}</span>
                     </>
                   )}
+                  {patient.address && (
+                    <>
+                      {" · "}{t("patient_folder.address")}:{" "}
+                      <span className="font-medium">{patient.address}</span>
+                    </>
+                  )}
                 </p>
               </div>
               <div className="text-end text-xs text-slate-500">
@@ -165,7 +207,7 @@ export default function PatientFolderPage() {
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-1 text-xs">
-        {["appointments", "sessions", "payments", "treatment_plans"].map((tab) => (
+        {["appointments", "sessions", "treatment_plans"].map((tab) => (
           <button
             key={tab}
             type="button"
@@ -217,13 +259,22 @@ export default function PatientFolderPage() {
                         <td className="px-3 py-2 text-slate-700 capitalize">{a.status}</td>
                         <td className="px-3 py-2 text-slate-700">{a.created_by_name}</td>
                         <td className="px-3 py-2 text-end">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedDetailsId(a.appointment_id)}
-                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
-                          >
-                            {t("common.view")}
-                          </button>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedDetailsId(a.appointment_id)}
+                              className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
+                            >
+                              {t("common.view")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => navigate(`${prefix}/appointments/${a.appointment_id}/edit`)}
+                              className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                            >
+                              {t("common.edit")}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -280,55 +331,23 @@ export default function PatientFolderPage() {
                           )}
                         </td>
                         <td className="px-3 py-2 text-end">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedSessionId(s.session_id)}
-                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
-                          >
-                            {t("common.view")}
-                          </button>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSessionId(s.session_id)}
+                              className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
+                            >
+                              {t("common.view")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditSessionId(s.session_id)}
+                              className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                            >
+                              {t("common.edit")}
+                            </button>
+                          </div>
                         </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ---- Payments ---- */}
-        {activeTab === "payments" && (
-          <>
-            {paymentsError && <p className="mb-2 text-xs text-red-600">{paymentsError}</p>}
-            {isPaymentsLoading && <p className="text-xs text-slate-500">{t("patient_folder.loading_payments")}</p>}
-            {!isPaymentsLoading && payments.length === 0 && (
-              <p className="text-xs text-slate-500">{t("patient_folder.no_payments")}</p>
-            )}
-
-            {payments.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-[11px] text-slate-500">
-                      <th className="px-3 py-2">{t("patient_folder.col_date")}</th>
-                      <th className="px-3 py-2">{t("patient_folder.col_amount")}</th>
-                      <th className="px-3 py-2">{t("patient_folder.col_method")}</th>
-                      <th className="px-3 py-2">{t("patient_folder.col_doctor")}</th>
-                      <th className="px-3 py-2">{t("patient_folder.col_processed_by")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payments.map((p) => (
-                      <tr
-                        key={p.payment_id}
-                        className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
-                      >
-                        <td className="px-3 py-2 text-slate-800">{formatDateTime(p.created_at)}</td>
-                        <td className="px-3 py-2 text-slate-700">{formatMoney(p.amount, p.currency_code)}</td>
-                        <td className="px-3 py-2 text-slate-700">{p.method || "-"}</td>
-                        <td className="px-3 py-2 text-slate-700">{p.doctor_name}</td>
-                        <td className="px-3 py-2 text-slate-700">{p.processed_by}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -383,6 +402,7 @@ export default function PatientFolderPage() {
                       <th className="px-3 py-2">{t("patient_folder.col_status")}</th>
                       <th className="px-3 py-2">{t("patient_folder.col_active")}</th>
                       <th className="px-3 py-2">{t("patient_folder.col_created")}</th>
+                      <th className="px-3 py-2 text-end">{t("patient_folder.col_actions")}</th>
                     </tr>
                   </thead>
 
@@ -431,11 +451,23 @@ export default function PatientFolderPage() {
                               )}
                             </td>
                             <td className="px-3 py-2 text-slate-700">{formatDateTime(tp.created_at)}</td>
+                            <td className="px-3 py-2 text-end">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditPlan(tp);
+                                }}
+                                className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                              >
+                                {t("common.edit")}
+                              </button>
+                            </td>
                           </tr>
 
                           {isOpen && (
                             <tr key={`${tp.id}-details`} className="border-b border-slate-100">
-                              <td colSpan={6} className="px-3 py-3 bg-slate-50">
+                              <td colSpan={8} className="px-3 py-3 bg-slate-50">
                                 <div className="rounded-xl border border-slate-200 bg-white p-3">
                                   <p className="mb-2 text-[11px] font-semibold text-slate-600">
                                     {t("patient_folder.sessions_for_plan")}
@@ -462,6 +494,7 @@ export default function PatientFolderPage() {
                                             <th className="px-2 py-2">{t("patient_folder.col_paid_session")}</th>
                                             <th className="px-2 py-2">{t("patient_folder.col_next_plan")}</th>
                                             <th className="px-2 py-2">{t("patient_folder.col_notes")}</th>
+                                            <th className="px-2 py-2 text-end">{t("patient_folder.col_actions")}</th>
                                           </tr>
                                         </thead>
                                         <tbody>
@@ -482,6 +515,18 @@ export default function PatientFolderPage() {
                                               </td>
                                               <td className="px-2 py-2 text-slate-700">{s.next_plan || "-"}</td>
                                               <td className="px-2 py-2 text-slate-700">{s.notes || "-"}</td>
+                                              <td className="px-2 py-2 text-end">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setEditSessionId(s.session_id);
+                                                  }}
+                                                  className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                                                >
+                                                  {t("common.edit")}
+                                                </button>
+                                              </td>
                                             </tr>
                                           ))}
                                         </tbody>
