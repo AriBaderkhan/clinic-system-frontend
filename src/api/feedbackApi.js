@@ -27,6 +27,12 @@ export const dismissFeedback = async (data) => {
   return res.data;
 };
 
+// The ids the branch's static feedback QR encodes → { tenant_id, branch_id }.
+export const getFeedbackQrLink = async () => {
+  const res = await api.get('/api/feedbacks/qr-link');
+  return res.data;
+};
+
 // ── Results (tenant_manager) ─────────────────────────────────────────────────
 // Returns { overall, branches, responses } (tenant-wide, switch branch in UI).
 export const getFeedbackResults = async () => {

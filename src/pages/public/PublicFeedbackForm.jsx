@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
-import { getPublicFeedback, submitPublicFeedback } from "../../api/publicFeedbackApi";
+import { getPublicFeedback, submitPublicFeedback, getQrFeedback, submitQrFeedback } from "../../api/publicFeedbackApi";
 
 // Form languages. `api` is what the backend expects ('ku'|'ar'|'en'); `i18n` is
 // the locale code used by react-i18next (Kurdish = 'ckb').
@@ -72,7 +72,10 @@ function LangBar({ current, onPick }) {
 }
 
 export default function PublicFeedbackForm() {
-  const { token } = useParams();
+  // Two modes: token flow (/feedback/:token, per patient) OR QR flow
+  // (/feedback/clinic/:tenantId/:branchId, static & anonymous walk-in).
+  const { token, tenantId, branchId } = useParams();
+  const qrMode = !token && !!tenantId && !!branchId;
   const { t } = useTranslation();
 
   const [lang, setLang] = useState(LANGS[2]); // default English
@@ -97,7 +100,9 @@ export default function PublicFeedbackForm() {
     document.documentElement.dir = lang.rtl ? "rtl" : "ltr";
     (async () => {
       try {
-        const res = await getPublicFeedback(token);
+        const res = qrMode
+          ? await getQrFeedback(tenantId, branchId)
+          : await getPublicFeedback(token);
         setInfo(res.data);
         if (res.data?.already_submitted) setDone(true);
       } catch (err) {
@@ -109,7 +114,7 @@ export default function PublicFeedbackForm() {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, tenantId, branchId]);
 
   const setRating = (key, n) => setRatings((p) => ({ ...p, [key]: n }));
   const setComment = (key, v) => setComments((p) => ({ ...p, [key]: v }));
@@ -120,12 +125,13 @@ export default function PublicFeedbackForm() {
     if (!allRated) return;
     setSubmitting(true);
     try {
-      const payload = { form_language: lang.api, anonymous, note: note || null };
+      const payload = { form_language: lang.api, anonymous: qrMode ? true : anonymous, note: note || null };
       for (const c of CATEGORIES) {
         payload[`${c.key}_rating`] = ratings[c.key];
         payload[`${c.key}_comment`] = comments[c.key] || null;
       }
-      await submitPublicFeedback(token, payload);
+      if (qrMode) await submitQrFeedback(tenantId, branchId, payload);
+      else await submitPublicFeedback(token, payload);
       setDone(true);
     } catch (err) {
       setFatal(err?.response?.data?.code === "FEEDBACK_ALREADY_SUBMITTED"
@@ -212,10 +218,12 @@ export default function PublicFeedbackForm() {
           />
         </div>
 
-        <label className="mt-4 flex items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
-          {t("feedback.anonymous_opt")}
-        </label>
+        {!qrMode && (
+          <label className="mt-4 flex items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+            {t("feedback.anonymous_opt")}
+          </label>
+        )}
 
         {!allRated && <p className="mt-3 text-xs text-amber-600">{t("feedback.rate_all_hint")}</p>}
 

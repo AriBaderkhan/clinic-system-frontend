@@ -17,3 +17,14 @@ export const submitPublicFeedback = async (token, payload) => {
   const res = await publicApi.post(`/api/public/feedback/${token}`, payload);
   return res.data;
 };
+
+// QR (walk-in, anonymous) — keyed by tenant + branch, no token.
+export const getQrFeedback = async (tenantId, branchId) => {
+  const res = await publicApi.get(`/api/public/feedback/qr/${tenantId}/${branchId}`);
+  return res.data;
+};
+
+export const submitQrFeedback = async (tenantId, branchId, payload) => {
+  const res = await publicApi.post(`/api/public/feedback/qr/${tenantId}/${branchId}`, payload);
+  return res.data;
+};

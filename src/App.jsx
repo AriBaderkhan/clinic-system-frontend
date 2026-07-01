@@ -70,6 +70,8 @@ export default function App() {
       <Routes>
 
         {/* ===================== PUBLIC ===================== */}
+        {/* Static clinic QR feedback (walk-in, anonymous) */}
+        <Route path="/feedback/clinic/:tenantId/:branchId" element={<PublicFeedbackForm />} />
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

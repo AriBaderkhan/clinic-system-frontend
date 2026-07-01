@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 import { getBranch, updateBranch } from "../../api/branchApi";
 import { getReminderTemplate, updateReminderTemplate } from "../../api/reminderApi";
+import { getFeedbackQrLink } from "../../api/feedbackApi";
 import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingContext";
 import { getTheme, toggleTheme } from "../../utils/theme";
@@ -35,6 +37,10 @@ export default function BranchSettingsPage() {
     const [tplSaving, setTplSaving] = useState(false);
     const [showTpl, setShowTpl] = useState(false);
 
+    // Feedback QR (static, anonymous walk-in form for this branch)
+    const [qrUrl, setQrUrl] = useState("");
+    const qrRef = useRef(null);
+
     const timezones = Intl.supportedValuesOf('timeZone');
     const currencies = Intl.supportedValuesOf('currency');
 
@@ -45,8 +51,30 @@ export default function BranchSettingsPage() {
         if (effectiveUser && effectiveUser.branch_id) {
             loadBranchDetails(effectiveUser.branch_id);
             loadTemplate();
+            loadQrLink();
         }
     }, [effectiveUser?.branch_id]);
+
+    const loadQrLink = async () => {
+        try {
+            const res = await getFeedbackQrLink();
+            const { tenant_id, branch_id } = res.data;
+            setQrUrl(`${window.location.origin}/feedback/clinic/${tenant_id}/${branch_id}`);
+        } catch {
+            setQrUrl(""); // no permission / feature off → hide the QR section
+        }
+    };
+
+    const downloadQr = () => {
+        const canvas = qrRef.current?.querySelector("canvas");
+        if (!canvas) return;
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download = `feedback-qr-${(branchDetails?.name || "branch").replace(/\s+/g, "-")}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    };
 
     const loadBranchDetails = async (id) => {
         try {
@@ -315,6 +343,30 @@ export default function BranchSettingsPage() {
                         >
                             {t("bs.edit_template")}
                         </button>
+                    </div>
+                </section>
+            )}
+
+            {/* ===== Section: Feedback QR ===== */}
+            {qrUrl && (
+                <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+                    <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.feedback_qr_title")}</h2>
+                    <p className="text-sm text-gray-500 mb-4">{t("bs.feedback_qr_hint")}</p>
+                    <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
+                        <div ref={qrRef} className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700">
+                            <QRCodeCanvas value={qrUrl} size={200} level="M" marginSize={3} />
+                        </div>
+                        <div className="flex-1 space-y-3">
+                            <button
+                                onClick={downloadQr}
+                                className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
+                            >
+                                {t("bs.feedback_qr_download")}
+                            </button>
+                            <div className="break-all rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                                {qrUrl}
+                            </div>
+                        </div>
                     </div>
                 </section>
             )}
