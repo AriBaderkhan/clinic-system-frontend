@@ -24,6 +24,7 @@ export default function DoctorLayout() {
       { labelKey: "nav.appts_per_doc", path: "/doctor/appts_per_doc" },
       { labelKey: "nav.calendar", path: "/doctor/calendar" },
       { labelKey: "nav.reports", path: "/doctor/report" },
+      { labelKey: "nav.lab", path: "/doctor/lab" },
       { labelKey: "nav.settings", path: "/doctor/settings" },
     ];
   }, []);

@@ -205,6 +205,7 @@ export default function App() {
           <Route path="report" element={<DoctorReport />} />
           <Route path="appts_per_doc" element={<ApptsPerDoctor />} />
           <Route path="calendar" element={<AppointmentsCalendarPage />} />
+          <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
           <Route path="settings" element={<AppearanceSettingsPage />} />
         </Route>
 
