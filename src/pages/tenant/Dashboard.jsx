@@ -128,7 +128,7 @@ export default function TenantDashboard() {
             newPatients: selected.new_patients,
             returningPatients: selected.returning_patients,
             appts: selected.appointments || { total: 0, done: 0, scheduled: 0 },
-            revenue: selected.revenue,
+            revenue: selected.revenue || [],
             treatments: selected.treatments || [],
             list: fullList.filter((a) => a.branch_name === selected.name),
         }
@@ -136,7 +136,7 @@ export default function TenantDashboard() {
             newPatients: stats?.today_new_patients ?? 0,
             returningPatients: stats?.today_returning_patients ?? 0,
             appts: allAppts,
-            revenue: stats?.month_revenue ?? 0,
+            revenue: stats?.month_revenue ?? [],
             treatments: stats?.treatments_month || [],
             list: fullList,
         };
@@ -145,6 +145,13 @@ export default function TenantDashboard() {
     const list = view.list;
     const treatments = view.treatments;
     const dash = (v) => (stats ? v : '--');
+
+    // Revenue is a per-currency list ([{ currency_code, total }]) — each currency
+    // shown on its own (IQD and USD are never added together).
+    const revenueText = (arr) => {
+        if (!Array.isArray(arr) || arr.length === 0) return formatMoney(0);
+        return arr.map((r) => formatMoney(r.total, r.currency_code)).join('   ·   ');
+    };
 
     return (
         <div className="w-full space-y-6 p-4 md:p-6">
@@ -222,7 +229,7 @@ export default function TenantDashboard() {
                 <KpiCard
                     icon={FiDollarSign}
                     label={t('tdash.month_revenue')}
-                    value={dash(formatMoney(view.revenue))}
+                    value={dash(revenueText(view.revenue))}
                     accent="bg-emerald-100 text-emerald-700"
                 />
             </div>
