@@ -18,6 +18,7 @@ const navItems = [
   { labelKey: "nav.appointments", path: "appointments", end: true },
   { labelKey: "nav.calendar", path: "appointments/calendar", indent: true },
   { labelKey: "nav.reminders", path: "appointments/reminders", indent: true, feature: "reminders" },
+  { labelKey: "nav.feedback", path: "appointments/feedback", indent: true, feature: "reminders" },
   { labelKey: "nav.sessions", path: "sessions" },
   { labelKey: "nav.lab", path: "lab" },
   { labelKey: "nav.reports", path: "reports" },

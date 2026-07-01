@@ -31,6 +31,9 @@ import ReportsPage from "./pages/reports/ReportsPage";
 import SessionsPage from './pages/sessions/SessionsPage'
 import TreatmentPlanPage from './pages/treatment_plan/TreatmentPlanPage'
 import RemindersPage from './pages/reminders/RemindersPage'
+import FeedbackPage from './pages/feedback/FeedbackPage'
+import FeedbackResultsPage from './pages/feedback/FeedbackResultsPage'
+import PublicFeedbackForm from './pages/public/PublicFeedbackForm'
 
 // Doctor pages
 import DoctorDashboard from './pages/doctor/DoctorDashboard'
@@ -71,6 +74,9 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
+        {/* Public patient feedback form (opened via the WhatsApp link, no auth) */}
+        <Route path="/feedback/:token" element={<PublicFeedbackForm />} />
+
         {/* Own profile — any authenticated role */}
         <Route
           path="/profile"
@@ -107,6 +113,7 @@ export default function App() {
           <Route path="settings" element={<TenantSettingsPage />} />
           <Route path="users" element={<TenantUsers />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="feedback" element={<FeedbackResultsPage />} />
           <Route path="audit" element={<AuditLogPage />} />
         </Route>
 
@@ -135,6 +142,7 @@ export default function App() {
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="treatment_plan" element={<TreatmentPlanPage />} />
           <Route path="appointments/reminders" element={<RemindersPage />} />
+          <Route path="appointments/feedback" element={<FeedbackPage />} />
           <Route path="history" element={<PaymentHistory />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="settings/branch" element={<BranchSettingsPage />} />
@@ -171,6 +179,7 @@ export default function App() {
           <Route path="reports" element={<PermissionRoute requiredPermission="view_reports"><ReportsPage /></PermissionRoute>} />
           <Route path="sessions" element={<PermissionRoute requiredPermission="view_session"><SessionsPage /></PermissionRoute>} />
           <Route path="appointments/reminders" element={<PermissionRoute requiredPermission="send_reminders"><RemindersPage /></PermissionRoute>} />
+          <Route path="appointments/feedback" element={<PermissionRoute requiredPermission="send_reminders"><FeedbackPage /></PermissionRoute>} />
           <Route path="treatment_plan" element={<PermissionRoute requiredPermission="manage_tp"><TreatmentPlanPage /></PermissionRoute>} />
           <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
           <Route path="settings/branch" element={

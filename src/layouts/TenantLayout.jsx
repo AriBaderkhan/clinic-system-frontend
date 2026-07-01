@@ -14,6 +14,7 @@ const navItems = [
     { labelKey: "nav.branches", path: "branches" },
     { labelKey: "nav.users", path: "users" },
     { labelKey: "nav.reports", path: "reports" },
+    { labelKey: "nav.feedback_results", path: "feedback", feature: "reminders" },
     { labelKey: "nav.activity_log", path: "audit", feature: "audit_log" },
     { labelKey: "nav.settings", path: "settings" },
 ];

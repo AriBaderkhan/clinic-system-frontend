@@ -29,6 +29,7 @@ const getNavItems = () => {
     { labelKey: "nav.appointments", path: "appointments", permission: "view_appointment", end: true },
     { labelKey: "nav.calendar", path: "appointments/calendar", permission: "view_appointment", indent: true },
     { labelKey: "nav.reminders", path: "appointments/reminders", permission: "send_reminders", indent: true, feature: "reminders" },
+    { labelKey: "nav.feedback", path: "appointments/feedback", permission: "send_reminders", indent: true, feature: "reminders" },
     { labelKey: "nav.sessions", path: "sessions", permission: "view_session" },
     { labelKey: "nav.lab", path: "lab", permission: "manage_lab" },
     { labelKey: "nav.reports", path: "reports", permission: "view_reports" },
