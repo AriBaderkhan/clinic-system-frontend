@@ -10,6 +10,12 @@ export const getActiveTodayApptsPerDoc = async () => {
     return res.data;
 };
 
+// All the doctor's unfinished (in_progress) appointments, any date.
+export const getOpenApptsPerDoc = async () => {
+    const res = await api.get("/api/docs/active/appointments/open");
+    return res.data;
+};
+
 export const getAllApptsPerDoc = async (params = {}) => {
     const res = await api.get("/api/docs/appointments/per-doctor", { params });
     return res.data;

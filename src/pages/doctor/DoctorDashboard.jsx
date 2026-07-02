@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
+import useOpenApptsPerDoctor from "../../hooks/useOpenApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
@@ -28,11 +29,18 @@ export default function DoctorDashboard() {
     refresh: refreshToday,
   } = useActiveApptsTodayPerDoctor();
 
-  const { formatTime } = useSettings();
+  // All unfinished (in_progress) appointments, any date — for the "unfinished" button.
+  const {
+    appointments: openAppointments,
+    refresh: refreshOpen,
+  } = useOpenApptsPerDoctor();
+
+  const { formatTime, formatDateTime } = useSettings();
   const { t } = useTranslation();
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
+  const [showOpen, setShowOpen] = useState(false);
  
 
   // only in_progress appointments (for right column)
@@ -54,7 +62,17 @@ export default function DoctorDashboard() {
         <CompleteAppointmentModal
           appointment={selectedForComplete}
           onClose={() => setSelectedForComplete(null)}
-          onCompleted={refreshToday}
+          onCompleted={() => { refreshToday(); refreshOpen(); }}
+        />
+      )}
+
+      {showOpen && (
+        <OpenApptsModal
+          appointments={openAppointments}
+          formatDateTime={formatDateTime}
+          onPick={(a) => { setSelectedForComplete(a); setShowOpen(false); }}
+          onClose={() => setShowOpen(false)}
+          t={t}
         />
       )}
 
@@ -218,7 +236,7 @@ export default function DoctorDashboard() {
         <div className="space-y-4">
           {/* In-progress appointments – click to fill session + works */}
           <div className="rounded-3xl border border-[#015478]/20 bg-[#015478]/10/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-semibold text-slate-900">
                   {t('dash.in_progress_title')}
@@ -227,9 +245,24 @@ export default function DoctorDashboard() {
                   {t('dash.in_progress_hint')}
                 </p>
               </div>
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium text-amber-800">
-                {t('dash.in_progress_count', { count: inProgressAppointments.length })}
-              </span>
+
+              <div className="flex shrink-0 items-center gap-2">
+                {/* Unfinished visits (all dates) — catches sessions started on a past day. */}
+                <button
+                  type="button"
+                  onClick={() => setShowOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-[#013f5a]"
+                >
+                  {t('dash.unfinished_btn')}
+                  <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/20 px-1.5 text-[11px] font-semibold">
+                    {openAppointments.length}
+                  </span>
+                </button>
+
+                <span className="rounded-full border border-[#015478]/20 bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478]">
+                  {t('dash.in_progress_count', { count: inProgressAppointments.length })}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-3 text-sm max-h-64 overflow-y-auto pr-1">
@@ -269,6 +302,58 @@ export default function DoctorDashboard() {
           </div>
 
           
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Popup list of ALL unfinished (in_progress) visits, any date. Each row shows the
+// date + patient name; clicking one opens the same complete flow to finalize it.
+function OpenApptsModal({ appointments, formatDateTime, onPick, onClose, t }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+          <h3 className="text-sm font-semibold text-slate-900">
+            {t('dash.unfinished_title')}
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md px-2 py-0.5 text-slate-500 hover:bg-slate-100"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="max-h-[60vh] overflow-y-auto p-3">
+          {appointments.length === 0 ? (
+            <p className="p-3 text-sm text-slate-500">{t('dash.unfinished_empty')}</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {appointments.map((a) => {
+                const id = a.id ?? a.appointment_id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => onPick(a)}
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2.5 text-left hover:border-[#015478] hover:bg-[#015478]/5"
+                  >
+                    <span className="font-medium text-slate-800">{a.patient_name}</span>
+                    <span className="text-xs text-slate-500">{formatDateTime(a.scheduled_start)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
