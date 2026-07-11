@@ -1,12 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { connectSocket, disconnectSocket } from "../realtime/socket";
-import toast from "react-hot-toast";
-import notify from '../assets/notify.mp3'
+import { disconnectSocket } from "../realtime/socket";
 import BranchSwitcher from "../components/BranchSwitcher";
 import ProfileMenu from "../components/ProfileMenu";
-import AnnouncementsBell from "../components/AnnouncementsBell";
+import NotificationBell from "../components/NotificationBell";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
@@ -56,42 +54,6 @@ export default function ReceptionLayout() {
   // permission-filtered items, then hide any whose plan feature isn't included
   const navItems = getNavItems().filter((item) => !item.feature || hasFeature(item.feature));
 
-  useEffect(() => {
-    const socket = connectSocket();
-
-    const onApptCompleted = (payload) => {
-      const audio = new Audio(notify);
-      audio.volume = 1;
-
-      audio.play().catch(() => { }); // play sound
-
-      toast((to) => (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            audio.pause();
-            audio.currentTime = 0;
-            toast.dismiss(to.id);
-          }}
-        >
-          <div>{payload?.message}</div>
-          <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
-            {t('layout.click_stop_sound')}
-          </div>
-        </div>
-      ), {
-        duration: Infinity, // stays until click
-        id: "appt_completed_click_stop", // no duplicates
-      });
-    }
-
-    socket.on('appointment_completed', onApptCompleted);
-
-    return () => {
-      socket.off("appointment_completed", onApptCompleted);
-    }
-  }, [t]);
-
   const navLinkClass = (indent) => ({ isActive }) =>
     [
       "flex items-center gap-2 rounded-lg transition",
@@ -127,7 +89,7 @@ export default function ReceptionLayout() {
               <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
               <span className="text-[11px] text-white">{t('layout.reception_dashboard')}</span>
             </div>
-            <div className="ms-auto"><AnnouncementsBell /></div>
+            <div className="ms-auto"><NotificationBell /></div>
           </div>
 
           <button
@@ -170,7 +132,7 @@ export default function ReceptionLayout() {
             <span className="text-sm font-semibold tracking-tight">Crown Dental Clinic</span>
             <span className="text-[11px] text-white">{t('layout.reception_dashboard')}</span>
           </div>
-          <div className="ms-auto"><AnnouncementsBell /></div>
+          <div className="ms-auto"><NotificationBell /></div>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">

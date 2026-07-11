@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import BranchSwitcher from "../components/BranchSwitcher";
 import SubscriptionBanner from "../components/SubscriptionBanner";
 import ProfileMenu from "../components/ProfileMenu";
-import AnnouncementsBell from "../components/AnnouncementsBell";
+import NotificationBell from "../components/NotificationBell";
 import InsightsAssistant from "../components/insights/InsightsAssistant";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
@@ -70,7 +70,7 @@ export default function TenantLayout() {
                             <span className="text-sm font-semibold tracking-tight">{t('layout.tenant_manager')}</span>
                             <span className="text-[11px] text-white">{t('layout.organization_admin')}</span>
                         </div>
-                        <div className="ms-auto"><AnnouncementsBell /></div>
+                        <div className="ms-auto"><NotificationBell /></div>
                     </div>
                     <button
                         onClick={() => setOpen(false)}
@@ -117,7 +117,7 @@ export default function TenantLayout() {
                         <span className="text-sm font-semibold tracking-tight">{t('layout.tenant_manager')}</span>
                         <span className="text-[11px] text-white">{t('layout.organization_admin')}</span>
                     </div>
-                    <div className="ms-auto"><AnnouncementsBell /></div>
+                    <div className="ms-auto"><NotificationBell /></div>
                 </div>
 
                 <nav className="flex flex-1 flex-col gap-1 px-3 py-4 text-sm">

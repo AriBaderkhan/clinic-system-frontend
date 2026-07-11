@@ -106,6 +106,10 @@
     "view_details": "عرض التفاصيل",
     "announcement_video": "فيديو الإعلان"
   },
+  "notif": {
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات."
+  },
   "dashboard": {
     "welcome": "مرحباً، مدير المؤسسة",
     "active_branches": "الفروع النشطة",

@@ -106,6 +106,10 @@
     "view_details": "View details",
     "announcement_video": "Announcement video"
   },
+  "notif": {
+    "title": "Notifications",
+    "empty": "No notifications."
+  },
   "dashboard": {
     "welcome": "Welcome, Tenant Manager",
     "active_branches": "Active Branches",
