@@ -975,6 +975,8 @@
     "session_total": "Session total",
     "session_total_hint": "Updates with the treatments · saved to the session.",
     "total_paid": "Total paid",
+    "payment_note": "Payment note",
+    "payment_note_ph": "Note for this payment",
     "plan_works_title": "Treatment-plan works — tooth only",
     "plan_works_hint": "Money & type are managed in Treatment Plans.",
     "whole_no_tooth": "whole mouth · no tooth",
