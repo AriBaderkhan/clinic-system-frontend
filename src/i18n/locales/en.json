@@ -108,7 +108,8 @@
   },
   "notif": {
     "title": "Notifications",
-    "empty": "No notifications."
+    "empty": "No notifications.",
+    "markAllRead": "Mark all as read"
   },
   "dashboard": {
     "welcome": "Welcome, Tenant Manager",

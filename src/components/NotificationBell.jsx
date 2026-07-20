@@ -15,7 +15,7 @@ export default function NotificationBell() {
     const { t } = useTranslation();
     const { formatDateTime } = useSettings();
     const { isAuthenticated } = useAuth();
-    const { notifications, markRead } = useNotifications();
+    const { notifications, markRead, markAllRead } = useNotifications();
 
     const [announcements, setAnnouncements] = useState([]);
     const [selected, setSelected] = useState(null);
@@ -66,6 +66,8 @@ export default function NotificationBell() {
     ].sort((x, y) => new Date(y.at) - new Date(x.at));
 
     const unread = items.filter((i) => !i.read).length;
+    // Only notifications are cleared by the bulk endpoint (announcements read per-item).
+    const unreadNotifications = notifications.filter((n) => !n.is_read).length;
 
     return (
         <div className="relative" ref={ref}>
@@ -85,7 +87,18 @@ export default function NotificationBell() {
 
             {open && (
                 <div className="absolute start-0 top-11 z-50 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-                    <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">{t("notif.title")}</div>
+                    <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
+                        <span className="text-xs font-semibold text-slate-700">{t("notif.title")}</span>
+                        {unreadNotifications > 0 && (
+                            <button
+                                type="button"
+                                onClick={markAllRead}
+                                className="text-[11px] font-medium text-[#015478] transition hover:underline"
+                            >
+                                {t("notif.markAllRead")}
+                            </button>
+                        )}
+                    </div>
                     <div className="max-h-80 overflow-y-auto">
                         {items.length === 0 ? (
                             <p className="px-3 py-4 text-center text-xs text-slate-400">{t("notif.empty")}</p>

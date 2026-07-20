@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { connectSocket } from "../realtime/socket";
-import { getMyNotifications, markNotificationRead } from "../api/notificationApi";
+import { getMyNotifications, markNotificationRead, markAllNotificationsRead } from "../api/notificationApi";
 import notifySound from "../assets/notify.mp3";
 
 // Module-level so the ring fires ONCE per notification even though the bell is
@@ -65,5 +65,14 @@ export default function useNotifications() {
         }
     }, []);
 
-    return { notifications, unreadCount, markRead, refresh: load };
+    const markAllRead = useCallback(async () => {
+        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+        try {
+            await markAllNotificationsRead();
+        } catch {
+            // ignore — the UI already reflects it
+        }
+    }, []);
+
+    return { notifications, unreadCount, markRead, markAllRead, refresh: load };
 }
