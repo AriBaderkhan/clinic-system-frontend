@@ -67,7 +67,7 @@ function Pagination({ page, pagination, onPageChange }) {
               onClick={() => onPageChange(p)}
               className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
                 p === page
-                  ? "border-[#015478] bg-[#015478] text-white"
+                  ? "border-[#0E6E75] bg-[#0E6E75] text-white"
                   : "border-slate-200 text-slate-700 hover:bg-slate-50"
               }`}
             >
@@ -216,8 +216,8 @@ export default function LabsPage() {
       onClick={() => setActiveTab(key)}
       className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
         activeTab === key
-          ? "bg-[#015478] text-white"
-          : "text-[#015478] hover:bg-[#015478]/10"
+          ? "bg-[#0E6E75] text-white"
+          : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
       }`}
     >
       {label}
@@ -275,14 +275,14 @@ export default function LabsPage() {
           <button
             type="button"
             onClick={onClickAddLab}
-            className="rounded-lg border border-[#015478]/30 bg-white px-4 py-2 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5"
+            className="rounded-lg border border-[#0E6E75]/30 bg-white px-4 py-2 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
           >
             {t("lab.add_lab")}
           </button>
           <button
             type="button"
             onClick={onClickMakeOrder}
-            className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58]"
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
           >
             {t("lab.make_order")}
           </button>
@@ -290,7 +290,7 @@ export default function LabsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex w-fit rounded-full border border-[#015478]/20 bg-[#015478]/5 p-1">
+      <div className="flex w-fit rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-1">
         {tabButton("orders", t("lab.tab_orders"))}
         {tabButton("labs", t("lab.tab_labs"))}
       </div>
@@ -299,24 +299,24 @@ export default function LabsPage() {
       {activeTab === "orders" && (
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
           {/* Filters */}
-          <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+          <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
             <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#015478]">{t("lab.search")}</label>
+              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.search")}</label>
               <input
                 type="text"
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
                 placeholder={t("lab.order_search_ph")}
-                className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-[#015478]">{t("lab.status")}</label>
+              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.status")}</label>
               <select
                 value={orderStatus}
                 onChange={(e) => setOrderStatus(e.target.value)}
-                className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
               >
                 <option value="">{t("lab.all")}</option>
                 <option value="ordered">{t("lab.ordered")}</option>
@@ -330,14 +330,14 @@ export default function LabsPage() {
               <button
                 type="button"
                 onClick={ordersState.refresh}
-                className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
+                className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
               >
                 {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => { setOrderSearch(""); setOrderStatus(""); }}
-                className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
+                className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
               >
                 {t("lab.clear")}
               </button>
@@ -410,21 +410,21 @@ export default function LabsPage() {
                           <button
                             type="button"
                             onClick={() => setOrderDetailsId(o.id)}
-                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
+                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
                           >
                             {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onClickEditOrder(o)}
-                            className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
+                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
                           >
                             {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteOrder(o)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
+                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
                           >
                             {t("common.delete")}
                           </button>
@@ -449,15 +449,15 @@ export default function LabsPage() {
       {activeTab === "labs" && (
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
           {/* Filters */}
-          <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+          <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
             <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#015478]">{t("lab.search")}</label>
+              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.search")}</label>
               <input
                 type="text"
                 value={labSearch}
                 onChange={(e) => setLabSearch(e.target.value)}
                 placeholder={t("lab.lab_search_ph")}
-                className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
               />
             </div>
 
@@ -465,14 +465,14 @@ export default function LabsPage() {
               <button
                 type="button"
                 onClick={labsState.refresh}
-                className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
+                className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
               >
                 {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => setLabSearch("")}
-                className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
+                className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
               >
                 {t("lab.clear")}
               </button>
@@ -523,14 +523,14 @@ export default function LabsPage() {
                           <button
                             type="button"
                             onClick={() => onClickEditLab(lab)}
-                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
+                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
                           >
                             {t("lab.view_edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteLab(lab)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
+                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
                           >
                             {t("common.delete")}
                           </button>

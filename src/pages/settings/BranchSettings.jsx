@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { getBranch, updateBranch } from "../../api/branchApi";
 import { getReminderTemplate, updateReminderTemplate } from "../../api/reminderApi";
@@ -8,12 +9,14 @@ import { useSettings } from "../../context/SettingContext";
 import { getTheme, toggleTheme } from "../../utils/theme";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import DiscountsSettings from "../../components/settings/DiscountsSettings";
 import toast from "react-hot-toast";
 
 export default function BranchSettingsPage() {
     const { t } = useTranslation();
     const { user } = useAuth();
     const { refreshSettings } = useSettings();
+    const navigate = useNavigate();
 
     const [branchDetails, setBranchDetails] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -197,7 +200,7 @@ export default function BranchSettingsPage() {
                             {!isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
+                                    className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
                                 >
                                     {t("bs.edit_branch")}
                                 </button>
@@ -266,7 +269,7 @@ export default function BranchSettingsPage() {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#013d58] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#0E6E75] text-white rounded-md hover:bg-[#0A565C] disabled:opacity-50"
                                     >
                                         {saving ? t("bs.saving") : t("bs.save_changes")}
                                     </button>
@@ -294,6 +297,22 @@ export default function BranchSettingsPage() {
                 ) : null}
             </section>
 
+            {/* ===== Section: Works (treatment catalog) ===== */}
+            <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.works_title")}</h2>
+                        <p className="text-sm text-gray-500">{t("bs.works_hint")}</p>
+                    </div>
+                    <button
+                        onClick={() => navigate("/branch/works")}
+                        className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                    >
+                        {t("bs.open_works")}
+                    </button>
+                </div>
+            </section>
+
             {/* ===== Section: Appearance ===== */}
             <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.appearance")}</h2>
@@ -303,7 +322,7 @@ export default function BranchSettingsPage() {
                         onClick={() => { if (isDark) handleToggleTheme(); }}
                         className={[
                             "flex-1 rounded-xl border p-4 text-left transition",
-                            !isDark ? "border-[#015478] ring-2 ring-[#015478]/20" : "border-slate-200 dark:border-slate-700",
+                            !isDark ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/20" : "border-slate-200 dark:border-slate-700",
                         ].join(" ")}
                     >
                         <div className="text-2xl">☀️</div>
@@ -313,7 +332,7 @@ export default function BranchSettingsPage() {
                         onClick={() => { if (!isDark) handleToggleTheme(); }}
                         className={[
                             "flex-1 rounded-xl border p-4 text-left transition",
-                            isDark ? "border-[#015478] ring-2 ring-[#015478]/20" : "border-slate-200 dark:border-slate-700",
+                            isDark ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/20" : "border-slate-200 dark:border-slate-700",
                         ].join(" ")}
                     >
                         <div className="text-2xl">🌙</div>
@@ -339,7 +358,7 @@ export default function BranchSettingsPage() {
                         </div>
                         <button
                             onClick={() => setShowTpl(true)}
-                            className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
+                            className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
                         >
                             {t("bs.edit_template")}
                         </button>
@@ -359,7 +378,7 @@ export default function BranchSettingsPage() {
                         <div className="flex-1 space-y-3">
                             <button
                                 onClick={downloadQr}
-                                className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#013d58] transition"
+                                className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
                             >
                                 {t("bs.feedback_qr_download")}
                             </button>
@@ -370,6 +389,11 @@ export default function BranchSettingsPage() {
                     </div>
                 </section>
             )}
+
+            {/* ===== Section: Discounts ===== */}
+            <section className="mt-6">
+                <DiscountsSettings />
+            </section>
 
             {/* ===== Edit template modal ===== */}
             {showTpl && tpl && (
@@ -412,7 +436,7 @@ export default function BranchSettingsPage() {
                                 {t("common.cancel")}
                             </button>
                             <button onClick={saveTemplate} disabled={tplSaving}
-                                className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#013d58] disabled:opacity-50">
+                                className="px-4 py-2 bg-[#0E6E75] text-white rounded-md hover:bg-[#0A565C] disabled:opacity-50">
                                 {tplSaving ? t("bs.saving_short") : t("bs.save_template")}
                             </button>
                         </div>

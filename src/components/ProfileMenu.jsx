@@ -42,7 +42,7 @@ export default function ProfileMenu() {
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#015478] text-xs font-semibold text-white ring-2 ring-transparent transition hover:ring-white/50"
+                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#0E6E75] text-xs font-semibold text-white ring-2 ring-transparent transition hover:ring-white/50"
                 title={t("layout.account")}
             >
                 {image ? <img src={image} alt="" className="h-full w-full object-cover" /> : initialsOf(name)}

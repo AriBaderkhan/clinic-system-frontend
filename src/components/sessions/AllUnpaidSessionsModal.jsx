@@ -78,8 +78,8 @@ export default function AllUnpaidSessionsModal({ onClose }) {
 
           {/* Search */}
           <div className="border-b border-slate-100 px-6 py-3">
-            <div className="flex items-center gap-2 rounded-xl border border-[#015478]/20 bg-[#015478]/5 px-3.5 py-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#015478]/50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex items-center gap-2 rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 px-3.5 py-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#0E6E75]/50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
               <input
@@ -136,7 +136,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="mt-2 text-xs text-[#015478] underline"
+                    className="mt-2 text-xs text-[#0E6E75] underline"
                   >
                     {t("aus.clear_search")}
                   </button>
@@ -173,7 +173,7 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                     <button
                       type="button"
                       onClick={() => setSelectedForPayment(s)}
-                      className="ms-4 flex-shrink-0 rounded-full bg-[#015478] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#013d58]"
+                      className="ms-4 flex-shrink-0 rounded-full bg-[#0E6E75] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#0A565C]"
                     >
                       {t("aus.pay")}
                     </button>

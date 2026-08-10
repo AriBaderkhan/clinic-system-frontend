@@ -104,7 +104,7 @@ export default function AppointmentPage() {
         <button
           type="button"
           onClick={() => navigate(`${prefix}/appointments/add`)}
-          className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58]"
+          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
         >
           {t("appt.add")}
         </button>
@@ -114,27 +114,27 @@ export default function AppointmentPage() {
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
 
         {/* Filters bar */}
-        <div className="mb-5 rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+        <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
 
           {/* Search */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-            <label className="text-xs font-semibold text-[#015478]">{t("appt.search")}</label>
+            <label className="text-xs font-semibold text-[#0E6E75]">{t("appt.search")}</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t("appt.search_ph")}
-              className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+              className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
             />
           </div>
 
           {/* Day */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#015478]">{t("appt.day")}</label>
+            <label className="text-xs font-semibold text-[#0E6E75]">{t("appt.day")}</label>
             <select
               value={dayFilter}
               onChange={(e) => setDayFilter(e.target.value)}
-              className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+              className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
             >
               <option value="">{t("appt.all")}</option>
               <option value="today">{t("appt.today")}</option>
@@ -146,11 +146,11 @@ export default function AppointmentPage() {
 
           {/* Type */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#015478]">{t("appt.type")}</label>
+            <label className="text-xs font-semibold text-[#0E6E75]">{t("appt.type")}</label>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+              className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
             >
               <option value="">{t("appt.all")}</option>
               <option value="normal">{t("appt.type_normal")}</option>
@@ -164,14 +164,14 @@ export default function AppointmentPage() {
             <button
               type="button"
               onClick={refresh}
-              className="rounded-xl bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] transition-colors"
+              className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
             >
               {t("appt.refresh")}
             </button>
             <button
               type="button"
               onClick={() => { setDayFilter(""); setTypeFilter(""); setSearchTerm(""); }}
-              className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
+              className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
             >
               {t("appt.clear")}
             </button>
@@ -257,21 +257,21 @@ export default function AppointmentPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedDetailsId(id)}
-                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#013d58]"
+                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
                           >
                             {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleEdit(id)}
-                            className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-yellow-900"
+                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
                           >
                             {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(id)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-900"
+                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
                           >
                             {t("common.delete")}
                           </button>
@@ -306,7 +306,7 @@ export default function AppointmentPage() {
                     onClick={() => handlePageChange(p)}
                     className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
                       p === page
-                        ? "border-[#015478] bg-[#015478] text-white"
+                        ? "border-[#0E6E75] bg-[#0E6E75] text-white"
                         : "border-slate-200 text-slate-700 hover:bg-slate-50"
                     }`}
                   >

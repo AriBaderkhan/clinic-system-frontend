@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import useAppointmentById from "../../hooks/useAppointmentById";
 import useAppointmentSession from "../../hooks/useAppointmentSession";
@@ -15,7 +15,7 @@ function statusBadgeClasses(status) {
     case "in_progress":
       return "bg-purple-50 text-purple-700 border-purple-100";
     case "completed":
-      return "bg-[#015478]/10 text-[#015478] border-[#015478]/20";
+      return "bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20";
     case "cancelled":
       return "bg-red-50 text-red-700 border-red-100";
     case "no_show":
@@ -260,7 +260,7 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                       onClick={() => setOpenSessionModal(true)}
                       className={`rounded-md px-3 py-1.5 text-[11px] font-medium ${
                         sessionId
-                          ? "bg-[#015478] text-white hover:bg-[#015478]"
+                          ? "bg-[#0E6E75] text-white hover:bg-[#0E6E75]"
                           : "bg-slate-200 text-slate-500 cursor-not-allowed"
                       }`}
                     >

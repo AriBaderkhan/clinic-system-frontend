@@ -137,7 +137,7 @@ export default function RemindersPage() {
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => openPrepare(r)}
-                      className="rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#013d58]"
+                      className="rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#0A565C]"
                     >
                       {t("appt.rem_prepare")}
                     </button>
@@ -172,7 +172,7 @@ export default function RemindersPage() {
                   className={[
                     "rounded-lg px-3 py-1.5 text-sm transition",
                     lang === l.key
-                      ? "bg-[#015478] text-white"
+                      ? "bg-[#0E6E75] text-white"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200",
                   ].join(" ")}
                 >
@@ -187,7 +187,7 @@ export default function RemindersPage() {
               onChange={(e) => setDraft(e.target.value)}
               dir={LANGS.find((l) => l.key === lang)?.rtl ? "rtl" : "ltr"}
               rows={9}
-              className="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed focus:border-[#015478] focus:outline-none dark:bg-slate-900 dark:text-slate-100"
+              className="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed focus:border-[#0E6E75] focus:outline-none dark:bg-slate-900 dark:text-slate-100"
             />
 
             <div className="mt-4 flex items-center justify-between">

@@ -105,7 +105,7 @@ export default function DoctorReport() {
           )}
 
           <button onClick={onDownload} disabled={!ready || downloading}
-            className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-60 mb-[1px]">
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-60 mb-[1px]">
             {downloading ? t("report.downloading") : t("report.download_pdf")}
           </button>
         </div>

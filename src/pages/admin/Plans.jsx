@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getPlans, createPlan, updatePlan } from '../../api/planApi';
 import { getFeatures, getPlanFeatures, assignFeatureToPlan, removeFeatureFromPlan } from '../../api/featureApi';
@@ -123,7 +123,7 @@ export default function PlansPage() {
                 <h2 className="text-lg font-medium text-slate-800">Subscription Plans</h2>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="rounded-md bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                    className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
                 >
                     Create Plan
                 </button>
@@ -134,7 +134,7 @@ export default function PlansPage() {
                     <div key={plan.id} className="flex flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
-                            <span className="text-xl font-bold text-[#015478]">${plan.price}</span>
+                            <span className="text-xl font-bold text-[#0E6E75]">${plan.price}</span>
                         </div>
                         <p className="mb-6 flex-1 text-sm text-slate-500">{plan.description}</p>
 
@@ -158,7 +158,7 @@ export default function PlansPage() {
                             </button>
                             <button
                                 onClick={() => openFeaturesModal(plan)}
-                                className="w-full rounded-md bg-[#015478] py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                                className="w-full rounded-md bg-[#0E6E75] py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
                             >
                                 Features
                             </button>
@@ -183,7 +183,7 @@ export default function PlansPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -191,7 +191,7 @@ export default function PlansPage() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Description</label>
                                 <textarea
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                     rows="2"
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -205,7 +205,7 @@ export default function PlansPage() {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                         value={formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                     />
@@ -217,7 +217,7 @@ export default function PlansPage() {
                                     <input
                                         type="number"
                                         required
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                         value={formData.max_branches}
                                         onChange={(e) => setFormData({ ...formData, max_branches: e.target.value })}
                                         placeholder="-1 for infinite"
@@ -228,7 +228,7 @@ export default function PlansPage() {
                                     <input
                                         type="number"
                                         required
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                         value={formData.max_users}
                                         onChange={(e) => setFormData({ ...formData, max_users: e.target.value })}
                                         placeholder="-1 for infinite"
@@ -246,7 +246,7 @@ export default function PlansPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="rounded-md bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]"
+                                    className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]"
                                 >
                                     Save
                                 </button>
@@ -265,7 +265,7 @@ export default function PlansPage() {
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-medium text-slate-900">
-                                Features — <span className="text-[#015478]">{featuresPlan.name}</span>
+                                Features — <span className="text-[#0E6E75]">{featuresPlan.name}</span>
                             </h3>
                             <button onClick={() => setFeaturesPlan(null)} className="text-xl font-bold text-slate-400 hover:text-slate-600">&times;</button>
                         </div>
@@ -289,7 +289,7 @@ export default function PlansPage() {
                                                 checked={checked}
                                                 disabled={togglingId === f.id}
                                                 onChange={(e) => toggleFeature(f.id, e.target.checked)}
-                                                className="h-4 w-4 rounded border-slate-300 text-[#015478] focus:ring-[#015478]"
+                                                className="h-4 w-4 rounded border-slate-300 text-[#0E6E75] focus:ring-[#0E6E75]"
                                             />
                                         </label>
                                     );
@@ -300,7 +300,7 @@ export default function PlansPage() {
                         <div className="mt-5 flex justify-end">
                             <button
                                 onClick={() => setFeaturesPlan(null)}
-                                className="rounded-md bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                                className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
                             >
                                 Done
                             </button>

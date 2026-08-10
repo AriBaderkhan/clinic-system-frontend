@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
@@ -7,7 +7,7 @@ export default function NotFound() {
       <p className="text-gray-400 mb-4">Page not found.</p>
       <Link
         to="/"
-        className="text-[#015478] hover:text-blue-300 underline text-sm"
+        className="text-[#0E6E75] hover:text-blue-300 underline text-sm"
       >
         Go back to login
       </Link>

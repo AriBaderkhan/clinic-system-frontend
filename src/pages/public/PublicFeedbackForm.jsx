@@ -47,7 +47,7 @@ function StarInput({ value, onChange }) {
 
 function Shell({ rtl, children }) {
   return (
-    <div dir={rtl ? "rtl" : "ltr"} className="min-h-screen bg-gradient-to-b from-[#015478] to-slate-100 px-4 py-8">
+    <div dir={rtl ? "rtl" : "ltr"} className="min-h-screen bg-gradient-to-b from-[#0E6E75] to-slate-100 px-4 py-8">
       <div className="mx-auto w-full max-w-xl">{children}</div>
     </div>
   );
@@ -61,7 +61,7 @@ function LangBar({ current, onPick }) {
           key={l.api}
           onClick={() => onPick(l)}
           className={`rounded-lg px-3 py-1.5 text-sm transition ${
-            current === l.api ? "bg-white text-[#015478] shadow" : "bg-white/20 text-white hover:bg-white/30"
+            current === l.api ? "bg-white text-[#0E6E75] shadow" : "bg-white/20 text-white hover:bg-white/30"
           }`}
         >
           {l.label}
@@ -182,7 +182,7 @@ export default function PublicFeedbackForm() {
         {/* Clinic-branded header — the clinic name follows the selected language
             (falls back to the base name when a language isn't set). */}
         <div className="mb-5 text-center">
-          <h1 className="text-xl font-bold text-[#015478]">
+          <h1 className="text-xl font-bold text-[#0E6E75]">
             {info?.clinic_names?.[lang.api] || info?.clinic_names?.en}
           </h1>
           <p className="mt-3 text-sm text-slate-600">{t("feedback.form_intro")}</p>
@@ -200,7 +200,7 @@ export default function PublicFeedbackForm() {
                 value={comments[c.key] || ""}
                 onChange={(e) => setComment(c.key, e.target.value)}
                 placeholder={t("feedback.comment_ph")}
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-[#015478] focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none"
               />
             </div>
           ))}
@@ -214,7 +214,7 @@ export default function PublicFeedbackForm() {
             onChange={(e) => setNote(e.target.value)}
             placeholder={t("feedback.extra_note_ph")}
             rows={3}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
           />
         </div>
 
@@ -230,7 +230,7 @@ export default function PublicFeedbackForm() {
         <button
           onClick={handleSubmit}
           disabled={!allRated || submitting}
-          className="mt-4 w-full rounded-xl bg-[#015478] py-3 text-sm font-semibold text-white transition hover:bg-[#013d58] disabled:opacity-50"
+          className="mt-4 w-full rounded-xl bg-[#0E6E75] py-3 text-sm font-semibold text-white transition hover:bg-[#0A565C] disabled:opacity-50"
         >
           {submitting ? "…" : t("feedback.submit")}
         </button>

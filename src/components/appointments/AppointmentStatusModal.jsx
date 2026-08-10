@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { checkInAppointment, inProgressAppointment, cancelAppointment, noShowAppointment } from "../../api/appointmentApi";
@@ -175,7 +175,7 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-[#015478] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
+                className="rounded-md bg-[#0E6E75] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
               >
                 {isSubmitting ? t("appt.saving_short") : t("appt.confirm")}
               </button>

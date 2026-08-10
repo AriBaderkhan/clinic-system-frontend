@@ -15,7 +15,7 @@ function statusBadgeClasses(status) {
     case "in_progress":
       return "bg-purple-50 text-purple-700 border-purple-100";
     case "completed":
-      return "bg-[#015478]/10 text-[#015478] border-[#015478]/20";
+      return "bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20";
     case "cancelled":
       return "bg-red-50 text-red-700 border-red-100";
     case "no_show":
@@ -176,7 +176,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                         <button
                           type="button"
                           onClick={() => setSelectedSessionId(s.session_id)}
-                          className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58]"
+                          className="rounded-md bg-[#0E6E75] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#0A565C]"
                         >
                           {t("common.view")}
                         </button>

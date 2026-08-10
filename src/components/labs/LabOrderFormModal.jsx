@@ -238,7 +238,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                   setSelectedAppt(null);
                 }}
                 placeholder={t("labm.start_typing_ari")}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
               />
               {isApptSearching && <p className="mt-1 text-[11px] text-slate-500">{t("labm.searching")}</p>}
 
@@ -265,7 +265,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
               )}
 
               {selectedAppt && (
-                <div className="mt-1 rounded-xl border border-[#015478]/10 bg-[#015478]/5 px-3 py-2 text-xs text-slate-700">
+                <div className="mt-1 rounded-xl border border-[#0E6E75]/10 bg-[#0E6E75]/5 px-3 py-2 text-xs text-slate-700">
                   <span className="font-medium">{selectedAppt.patient_name}</span> ·{" "}
                   {selectedAppt.patient_phone || t("labm.no_phone")} · Dr.{" "}
                   <span className="capitalize">{selectedAppt.doctor_name}</span>
@@ -295,7 +295,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                 setSelectedLab(null);
               }}
               placeholder={t("labm.start_typing_far")}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478] disabled:bg-slate-100 disabled:text-slate-500"
+              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75] disabled:bg-slate-100 disabled:text-slate-500"
             />
             {isLabSearching && <p className="mt-1 text-[11px] text-slate-500">{t("labm.searching")}</p>}
 
@@ -323,7 +323,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                 type="button"
                 onClick={addRow}
                 disabled={!selectedLab || labTreatments.length === 0}
-                className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58] disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md bg-[#0E6E75] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#0A565C] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("labm.add_treatment")}
               </button>
@@ -342,7 +342,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                     <select
                       value={row.work_id}
                       onChange={(e) => updateRow(idx, "work_id", e.target.value)}
-                      className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                      className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                     >
                       <option value="">{t("labm.select_treatment")}</option>
                       {labTreatments.map((tr) => (
@@ -362,7 +362,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                       value={row.quantity}
                       onChange={(e) => updateRow(idx, "quantity", e.target.value)}
                       placeholder={t("labm.qty_ph")}
-                      className="w-20 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                      className="w-20 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                     />
 
                     <span className="w-24 text-right text-xs text-slate-600">
@@ -373,7 +373,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                       type="button"
                       onClick={() => removeRow(idx)}
                       disabled={rows.length === 1}
-                      className="rounded-md border border-red-200 bg-red-600 px-2.5 py-2 text-[11px] text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="rounded-md border border-red-200 bg-red-600 px-2.5 py-2 text-[11px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       ✕
                     </button>
@@ -384,10 +384,10 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
           </div>
 
           {/* LIVE TOTAL */}
-          <div className="rounded-xl border border-[#015478]/10 bg-[#015478]/5 px-4 py-3">
+          <div className="rounded-xl border border-[#0E6E75]/10 bg-[#0E6E75]/5 px-4 py-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-xs text-slate-600">{t("labm.order_total")}</span>
-              <span className="text-base font-semibold text-[#015478]">
+              <span className="text-base font-semibold text-[#0E6E75]">
                 {formatMoney(total)}
               </span>
             </div>
@@ -401,7 +401,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder={t("labm.notes_ph")}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
             />
           </div>
 
@@ -417,7 +417,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? (mode === "add" ? t("labm.ordering") : t("labm.saving")) : mode === "add" ? t("labm.make_order") : t("labm.save_changes")}
             </button>

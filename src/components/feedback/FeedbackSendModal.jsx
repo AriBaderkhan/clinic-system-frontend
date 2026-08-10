@@ -101,7 +101,7 @@ export default function FeedbackSendModal({ item, source, onDone, onClose }) {
               className={[
                 "rounded-lg px-3 py-1.5 text-sm transition",
                 lang === l.key
-                  ? "bg-[#015478] text-white"
+                  ? "bg-[#0E6E75] text-white"
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200",
               ].join(" ")}
             >
@@ -117,7 +117,7 @@ export default function FeedbackSendModal({ item, source, onDone, onClose }) {
           onChange={(e) => setDraft(e.target.value)}
           dir={rtl ? "rtl" : "ltr"}
           rows={9}
-          className="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed focus:border-[#015478] focus:outline-none dark:bg-slate-900 dark:text-slate-100"
+          className="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed focus:border-[#0E6E75] focus:outline-none dark:bg-slate-900 dark:text-slate-100"
         />
 
         <div className="mt-4 flex items-center justify-between gap-2">

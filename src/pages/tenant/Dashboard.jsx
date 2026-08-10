@@ -30,7 +30,7 @@ function StatusBadge({ status }) {
 
 // Rotating palette for the treatment bars.
 const BAR_COLORS = [
-    'from-[#015478] to-[#0a7ab0]',
+    'from-[#0E6E75] to-[#0a7ab0]',
     'from-violet-500 to-violet-400',
     'from-emerald-500 to-emerald-400',
     'from-sky-500 to-sky-400',
@@ -176,7 +176,7 @@ export default function TenantDashboard() {
                     <button
                         onClick={() => setBranch('all')}
                         className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${branch === 'all'
-                            ? 'border-[#015478] bg-[#015478] text-white'
+                            ? 'border-[#0E6E75] bg-[#0E6E75] text-white'
                             : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
                     >
                         {t('tdash.all_branches')}
@@ -186,7 +186,7 @@ export default function TenantDashboard() {
                             key={b.id}
                             onClick={() => setBranch(String(b.id))}
                             className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${String(branch) === String(b.id)
-                                ? 'border-[#015478] bg-[#015478] text-white'
+                                ? 'border-[#0E6E75] bg-[#0E6E75] text-white'
                                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
                         >
                             {b.name}
@@ -201,7 +201,7 @@ export default function TenantDashboard() {
                     icon={FiUserPlus}
                     label={t('tdash.new_patients')}
                     value={dash(view.newPatients)}
-                    accent="bg-[#015478]/10 text-[#015478]"
+                    accent="bg-[#0E6E75]/10 text-[#0E6E75]"
                 />
                 <KpiCard
                     icon={FiUsers}
@@ -306,7 +306,7 @@ export default function TenantDashboard() {
                         <h2 className="text-base font-semibold text-slate-900">{t('tdash.treatments_title')}</h2>
                         <p className="text-xs text-slate-500">{t('tdash.treatments_hint')}</p>
                     </div>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#015478]/10 text-[#015478]">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0E6E75]/10 text-[#0E6E75]">
                         <FiActivity size={16} />
                     </span>
                 </div>

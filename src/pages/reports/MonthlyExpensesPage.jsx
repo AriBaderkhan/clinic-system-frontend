@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useMonthlyExpenses from "../../hooks/useMonthlyExpenses";
 import { useSettings } from "../../context/SettingContext";
@@ -67,7 +67,7 @@ export default function MonthlyExpensesPage() {
 
         <button
           onClick={onClickCreate}
-          className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
         >
           {t("exp.add")}
         </button>
@@ -149,13 +149,13 @@ export default function MonthlyExpensesPage() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => onClickEdit(row)}
-                          className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
+                          className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
                         >
                           {t("common.edit")}
                         </button>
                         <button
                           onClick={() => onDelete(row)}
-                          className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-900"
+                          className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
                         >
                           {t("common.delete")}
                         </button>

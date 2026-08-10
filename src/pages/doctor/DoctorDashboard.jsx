@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
@@ -144,28 +144,28 @@ export default function DoctorDashboard() {
                 <table className="min-w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-xs text-slate-500">
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_patient')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_phone')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_doctor')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_time')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_type')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_complaint')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478]">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
                         {t('dash.col_status')}
                       </th>
-                      <th className="px-3 py-2 font-medium text-[#015478] text-end">
+                      <th className="px-3 py-2 font-medium text-[#0E6E75] text-end">
                         {t('dash.col_actions')}
                       </th>
                     </tr>
@@ -235,7 +235,7 @@ export default function DoctorDashboard() {
         {/* ================= RIGHT COLUMN ================= */}
         <div className="space-y-4">
           {/* In-progress appointments – click to fill session + works */}
-          <div className="rounded-3xl border border-[#015478]/20 bg-[#015478]/10/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+          <div className="rounded-3xl border border-[#0E6E75]/20 bg-[#0E6E75]/10/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
             <div className="mb-4 flex items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-semibold text-slate-900">
@@ -251,7 +251,7 @@ export default function DoctorDashboard() {
                 <button
                   type="button"
                   onClick={() => setShowOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-[#013f5a]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-[#013f5a]"
                 >
                   {t('dash.unfinished_btn')}
                   <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/20 px-1.5 text-[11px] font-semibold">
@@ -259,7 +259,7 @@ export default function DoctorDashboard() {
                   </span>
                 </button>
 
-                <span className="rounded-full border border-[#015478]/20 bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478]">
+                <span className="rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/10 px-3 py-1 text-[11px] font-medium text-[#0E6E75]">
                   {t('dash.in_progress_count', { count: inProgressAppointments.length })}
                 </span>
               </div>
@@ -280,7 +280,7 @@ export default function DoctorDashboard() {
                     key={id}
                     type="button"
                     onClick={() => setSelectedForComplete(a)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-[#015478]/20 bg-white px-4 py-3 text-left transition hover:shadow-sm hover:bg-[#015478]/10/60"
+                    className="flex w-full items-center justify-between rounded-2xl border border-[#0E6E75]/20 bg-white px-4 py-3 text-left transition hover:shadow-sm hover:bg-[#0E6E75]/10/60"
                   >
                     <div>
                       <p className="font-medium text-slate-800">
@@ -292,7 +292,7 @@ export default function DoctorDashboard() {
                       </p>
                     </div>
 
-                    <span className="rounded-full bg-[#015478]/15 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/30">
+                    <span className="rounded-full bg-[#0E6E75]/15 px-3 py-1 text-[11px] font-medium text-[#0E6E75] border border-[#0E6E75]/30">
                       {a.status}
                     </span>
                   </button>
@@ -345,7 +345,7 @@ function OpenApptsModal({ appointments, formatDateTime, onPick, onClose, t }) {
                     key={id}
                     type="button"
                     onClick={() => onPick(a)}
-                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2.5 text-left hover:border-[#015478] hover:bg-[#015478]/5"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2.5 text-left hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
                   >
                     <span className="font-medium text-slate-800">{a.patient_name}</span>
                     <span className="text-xs text-slate-500">{formatDateTime(a.scheduled_start)}</span>

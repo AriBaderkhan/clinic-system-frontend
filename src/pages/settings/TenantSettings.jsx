@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getTenant, updateTenant, getBranches, createBranch, updateBranch, deleteBranch } from "../../api/tenantApi";
 import { useSettings } from "../../context/SettingContext";
@@ -218,7 +218,7 @@ export default function TenantSettingsPage() {
                     {!isEditingTenant && (
                         <button
                             onClick={() => setIsEditingTenant(true)}
-                            className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#015478] transition text-sm font-medium"
+                            className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0E6E75] transition text-sm font-medium"
                         >
                             {t('tenant_settings.edit_details')}
                         </button>
@@ -241,7 +241,7 @@ export default function TenantSettingsPage() {
                                     type="text"
                                     value={tenantForm.name}
                                     onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#015478] focus:ring-[#015478] border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0E6E75] focus:ring-[#0E6E75] border p-2"
                                     required
                                 />
                             </div>
@@ -253,7 +253,7 @@ export default function TenantSettingsPage() {
                                     type="text"
                                     value={tenantForm.logo_url}
                                     onChange={(e) => setTenantForm({ ...tenantForm, logo_url: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#015478] focus:ring-[#015478] border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0E6E75] focus:ring-[#0E6E75] border p-2"
                                 />
                             </div>
 
@@ -264,7 +264,7 @@ export default function TenantSettingsPage() {
                                     <select
                                         value={tenantForm.timezone}
                                         onChange={(e) => setTenantForm({ ...tenantForm, timezone: e.target.value })}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#015478] focus:ring-[#015478] border p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0E6E75] focus:ring-[#0E6E75] border p-2"
                                         required
                                     >
                                         <option value="">{t('tenant_settings.select_timezone')}</option>
@@ -280,7 +280,7 @@ export default function TenantSettingsPage() {
                                     <select
                                         value={tenantForm.currency_code}
                                         onChange={(e) => setTenantForm({ ...tenantForm, currency_code: e.target.value })}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#015478] focus:ring-[#015478] border p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0E6E75] focus:ring-[#0E6E75] border p-2"
                                         required
                                     >
                                         <option value="">{t('tenant_settings.select_currency')}</option>
@@ -303,7 +303,7 @@ export default function TenantSettingsPage() {
                                 <button
                                     type="submit"
                                     disabled={savingTenant}
-                                    className="px-4 py-2 bg-[#015478] text-white rounded-md hover:bg-[#015478] disabled:opacity-50 text-sm font-medium"
+                                    className="px-4 py-2 bg-[#0E6E75] text-white rounded-md hover:bg-[#0E6E75] disabled:opacity-50 text-sm font-medium"
                                 >
                                     {savingTenant ? t('common.saving') : t('tenant_settings.save_changes')}
                                 </button>
@@ -354,7 +354,7 @@ export default function TenantSettingsPage() {
                     <h2 className="text-xl font-bold text-gray-800">{t('tenant_settings.branches')}</h2>
                     <button
                         onClick={openCreateBranchModal}
-                        className="px-4 py-2 bg-[#015478] text-white rounded hover:bg-[#015478] transition text-sm font-medium shadow-sm"
+                        className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0E6E75] transition text-sm font-medium shadow-sm"
                     >
                         + {t('tenant_settings.create_branch')}
                     </button>
@@ -388,14 +388,14 @@ export default function TenantSettingsPage() {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{branch.timezone || t('tenant_settings.default')}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{branch.currency_code || t('tenant_settings.default')}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${branch.status === 'active' ? 'bg-[#015478]/20 text-[#015478]' : 'bg-red-100 text-red-800'}`}>
+                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${branch.status === 'active' ? 'bg-[#0E6E75]/20 text-[#0E6E75]' : 'bg-red-100 text-red-800'}`}>
                                                 {branch.status === 'active' ? t('common.active') : t('common.inactive')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium space-x-2">
                                             <button
                                                 onClick={() => openEditBranchModal(branch)}
-                                                className="text-[#015478] hover:text-blue-900 bg-[#015478]/10 px-3 py-1 rounded hover:bg-[#015478]/20 transition"
+                                                className="text-[#0E6E75] hover:text-blue-900 bg-[#0E6E75]/10 px-3 py-1 rounded hover:bg-[#0E6E75]/20 transition"
                                             >
                                                 {t('common.edit')}
                                             </button>
@@ -448,7 +448,7 @@ export default function TenantSettingsPage() {
                                     type="text"
                                     value={branchForm.name}
                                     onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#015478] focus:ring-1 focus:ring-[#015478] outline-none transition"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:ring-1 focus:ring-[#0E6E75] outline-none transition"
                                     placeholder={t('tenant_settings.branch_name_ph')}
                                     required
                                 />
@@ -461,7 +461,7 @@ export default function TenantSettingsPage() {
                                     type="text"
                                     value={branchForm.location}
                                     onChange={(e) => setBranchForm({ ...branchForm, location: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#015478] focus:ring-1 focus:ring-[#015478] outline-none transition"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:ring-1 focus:ring-[#0E6E75] outline-none transition"
                                     placeholder={t('tenant_settings.location_ph')}
                                 />
                             </div>
@@ -473,7 +473,7 @@ export default function TenantSettingsPage() {
                                     <select
                                         value={branchForm.timezone}
                                         onChange={(e) => setBranchForm({ ...branchForm, timezone: e.target.value })}
-                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#015478] focus:ring-1 focus:ring-[#015478] outline-none transition"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:ring-1 focus:ring-[#0E6E75] outline-none transition"
                                     >
                                         <option value="">{t('tenant_settings.default_tenant')}</option>
                                         {timezones.map(tz => (
@@ -488,7 +488,7 @@ export default function TenantSettingsPage() {
                                     <select
                                         value={branchForm.currency_code}
                                         onChange={(e) => setBranchForm({ ...branchForm, currency_code: e.target.value })}
-                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#015478] focus:ring-1 focus:ring-[#015478] outline-none transition"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:ring-1 focus:ring-[#0E6E75] outline-none transition"
                                     >
                                         <option value="">{t('tenant_settings.default_tenant')}</option>
                                         {currencies.map(c => (
@@ -505,7 +505,7 @@ export default function TenantSettingsPage() {
                                     type="checkbox"
                                     checked={branchForm.status}
                                     onChange={(e) => setBranchForm({ ...branchForm, status: e.target.checked })}
-                                    className="h-4 w-4 text-[#015478] focus:ring-[#015478] border-gray-300 rounded"
+                                    className="h-4 w-4 text-[#0E6E75] focus:ring-[#0E6E75] border-gray-300 rounded"
                                 />
                                 <label htmlFor="status" className="ms-2 block text-sm text-gray-900">
                                     {t('tenant_settings.active_branch')}
@@ -524,7 +524,7 @@ export default function TenantSettingsPage() {
                                 <button
                                     type="submit"
                                     disabled={savingBranch}
-                                    className="px-4 py-2 bg-[#015478] text-white rounded-lg hover:bg-[#015478] disabled:opacity-50 text-sm font-medium shadow-sm"
+                                    className="px-4 py-2 bg-[#0E6E75] text-white rounded-lg hover:bg-[#0E6E75] disabled:opacity-50 text-sm font-medium shadow-sm"
                                 >
                                     {savingBranch ? t('common.saving') : (branchModalMode === 'create' ? t('tenant_settings.create_branch') : t('tenant_settings.save_changes'))}
                                 </button>

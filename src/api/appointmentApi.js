@@ -50,6 +50,12 @@ export const completeAppointmentWithSession = async (appointmentId, payload) => 
     return res.data;
 };
 
+// Save the mid-visit draft (complaint + notes + next plan) so it survives a refresh.
+export const saveVisitDraft = async (appointmentId, payload) => {
+    const res = await api.patch(`/api/appointments/${appointmentId}/visit-draft`, payload);
+    return res.data;
+};
+
 export const cancelAppointment = async (appointmentId, data) => {
     const res = await api.patch(`/api/appointments/${appointmentId}/cancelled`, data);
     return res.data;

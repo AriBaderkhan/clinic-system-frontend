@@ -1,23 +1,107 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { completeAppointmentWithSession } from "../../api/appointmentApi";
+import { completeAppointmentWithSession, saveVisitDraft, getAppointmentById } from "../../api/appointmentApi";
 import { uploadSessionImages } from "../../api/sessionApi";
 import { getWorks } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 import { useSettings } from "../../context/SettingContext";
 import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
+import TeethDiagram from "../sessions/TeethDiagram";
 
-const TREATMENT_TYPES = ["ortho", "implant", "rct", "re_rct"];
-const PLAN_CODES = new Set(TREATMENT_TYPES);
-const WHOLE_MOUTH_CODES = new Set(["scaling_polish", "ortho","laser"]);
-
-const UPPER = [[18, 17, 16, 15, 14, 13, 12, 11], [21, 22, 23, 24, 25, 26, 27, 28]];
-const LOWER = [[48, 47, 46, 45, 44, 43, 42, 41], [31, 32, 33, 34, 35, 36, 37, 38]];
 
 function parseTeeth(s) {
   if (!s) return [];
   return String(s).split(",").map((x) => Number(x.trim())).filter((n) => Number.isFinite(n));
+}
+
+// Per-tooth quick-add popup (opened by double-clicking a tooth). Fast path:
+//   • normal work  → click it → saved instantly, popup closes (no extra button).
+//   • plan work    → one question then saves+closes:
+//        - tooth already has this plan → "Done? / Not done" (continue the plan),
+//        - new plan → enter the agreed total.
+// onConfirm both records the treatment AND closes the popup (parent clears state).
+function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose }) {
+  const { t } = useTranslation();
+  const [step, setStep] = useState(null);   // { work, existing } when a PLAN work needs a follow-up
+  const [amount, setAmount] = useState("");
+
+  const clickWork = (w) => {
+    if (!w.is_plan) {
+      // normal work → save immediately, popup closes
+      onConfirm({ work: w, existingPlan: null, markDone: false, amount: 0 });
+      return;
+    }
+    const existing = planFor(tooth, w.code);
+    setStep({ work: w, existing });
+    setAmount(existing ? "" : String(w.min_price ?? ""));
+  };
+  const back = () => { setStep(null); setAmount(""); };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="w-full max-w-2xl rounded-2xl bg-white p-4 shadow-xl max-h-[85vh] overflow-y-auto">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-slate-900">{t("appt.tw_title", { tooth })}</h3>
+          <button type="button" onClick={onClose} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-200">✕</button>
+        </div>
+
+        {!step ? (
+          <>
+            <p className="mb-2 text-[11px] text-slate-500">{t("appt.tw_pick")}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {works.map((w) => {
+                const hasPlan = w.is_plan && !!planFor(tooth, w.code);
+                return (
+                  <button key={w.id} type="button" onClick={() => clickWork(w)}
+                    className="flex w-full items-center justify-between gap-1 rounded-lg border border-slate-200 px-3 py-2 text-left text-sm hover:border-[#0E6E75] hover:bg-[#0E6E75]/5">
+                    <span className="min-w-0 truncate font-medium text-slate-800" title={w.name}>{w.name}</span>
+                    <span className="flex shrink-0 items-center gap-1.5 text-[11px]">
+                      {w.is_plan && <span className="rounded bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-700">{t("appt.tw_plan")}</span>}
+                      {hasPlan && <span className="rounded bg-emerald-100 px-1.5 py-0.5 font-semibold text-emerald-700">{t("appt.tw_has_plan")}</span>}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+              <span className="text-sm font-semibold text-slate-800">{step.work.name}</span>
+              <button type="button" onClick={back} className="text-[11px] text-[#0E6E75] hover:underline">{t("appt.tw_change")}</button>
+            </div>
+
+            {step.existing ? (
+              // Existing plan on this tooth → ask done or not; either way it continues the plan.
+              <div className="space-y-3">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-slate-700">
+                  {t("appt.tw_existing")} · {t("appt.pay_agreed")} <b>{formatMoney(step.existing.agreed_total)}</b> · {t("appt.pay_remaining")} <b>{formatMoney(Number(step.existing.agreed_total) - Number(step.existing.total_paid || 0))}</b>
+                </div>
+                <p className="text-xs font-medium text-slate-700">{t("appt.tw_done_q")}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: true, amount: 0 })}
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
+                  <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: false, amount: 0 })}
+                    className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_done_no")}</button>
+                </div>
+              </div>
+            ) : (
+              // New plan → enter the agreed total, then save.
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium text-slate-600">{t("appt.tw_agreed")}</label>
+                <input type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none" />
+                <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: null, markDone: false, amount: Number(amount) || 0 })}
+                  className="mt-2 w-full rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_add")}</button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function CompleteAppointmentModal({ appointment, onClose, onCompleted }) {
@@ -26,21 +110,20 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
   const [nextPlan, setNextPlan] = useState("");
   const [notes, setNotes] = useState("");
+  const [complaint, setComplaint] = useState(appointment.complaint || "");
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
   const [catalog, setCatalog] = useState([]);
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const [plans, setPlans] = useState({
-    ortho: { loaded: false, list: [] },
-    implant: { loaded: false, list: [] },
-    rct: { loaded: false, list: [] },
-    re_rct: { loaded: false, list: [] },
-  });
+  const [plans, setPlans] = useState({});
 
   const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "" });
   const [confirmed, setConfirmed] = useState([]);
   const [completedPlanIds, setCompletedPlanIds] = useState([]);
+  const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
 
   // case images chosen before completion: { id, file, preview }
   const [images, setImages] = useState([]);
@@ -60,7 +143,11 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         setLoadingCatalog(true);
         const res = await getWorks();
         const data = res.data?.works || res.data?.data || res.data;
-        setCatalog(Array.isArray(data) ? data : []);
+        // Canonicalise code to lowercase ONCE, here. The backend stores codes
+        // uppercase but the whole frontend compares them lowercase (plans keys,
+        // planCodes, getMeta). Normalising at ingestion keeps a single source of
+        // truth so no lookup/popup ever has to remember to convert.
+        setCatalog(Array.isArray(data) ? data.map((w) => ({ ...w, code: String(w.code || "").toLowerCase() })) : []);
       } catch (err) {
         setError(err.userMessage);
       } finally {
@@ -69,14 +156,40 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     })();
   }, []);
 
+  // Prefill complaint + notes + next plan from the saved visit draft so a refresh
+  // (or reopening) never loses what was typed. Falls back to the booking complaint.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getAppointmentById(apptId);
+        const a = res.data || {};
+        setComplaint(a.complaint || "");
+        setNotes(a.draft_notes || "");
+        setNextPlan(a.draft_next_plan || "");
+      } catch { /* keep whatever is already there */ }
+    })();
+  }, [apptId]);
+
+  // Behavior is data-driven now: the catalog carries is_plan / is_whole_mouth,
+  // so we derive the code sets from it instead of hardcoding treatment codes.
+  const planCodes = useMemo(
+    () => new Set(catalog.filter((w) => w.is_plan).map((w) => String(w.code || "").toLowerCase())),
+    [catalog]
+  );
+  const wholeMouthCodes = useMemo(
+    () => new Set(catalog.filter((w) => w.is_whole_mouth).map((w) => String(w.code || "").toLowerCase())),
+    [catalog]
+  );
+  const treatmentTypes = useMemo(() => [...planCodes], [planCodes]);
+
   useEffect(() => {
     if (!patientId || Number.isNaN(patientId)) return;
-    TREATMENT_TYPES.forEach((type) => {
+    treatmentTypes.forEach((type) => {
       getActiveTreatmentPlan(patientId, type)
         .then((list) => setPlans((prev) => ({ ...prev, [type]: { loaded: true, list: Array.isArray(list) ? list : [] } })))
         .catch(() => setPlans((prev) => ({ ...prev, [type]: { loaded: true, list: [] } })));
     });
-  }, [patientId]);
+  }, [patientId, treatmentTypes]);
 
   const getMeta = (workId) => {
     const item = catalog.find((x) => Number(x.id) === Number(workId));
@@ -87,17 +200,17 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   // tooth number -> active plan type (for the label above the tooth)
   const planTypeByTooth = useMemo(() => {
     const m = {};
-    TREATMENT_TYPES.forEach((t) => (plans[t]?.list || []).forEach((p) => parseTeeth(p.teeth).forEach((n) => { m[n] = t; })));
+    treatmentTypes.forEach((t) => (plans[t]?.list || []).forEach((p) => parseTeeth(p.teeth).forEach((n) => { m[n] = t; })));
     return m;
-  }, [plans]);
+  }, [plans, treatmentTypes]);
 
   const activePlanForTooth = (tooth, code) =>
     (plans[code]?.list || []).find((p) => parseTeeth(p.teeth).includes(tooth)) || null;
 
   const dMeta = getMeta(draft.work_id);
   const dCode = dMeta?.code;
-  const dWhole = !!dCode && WHOLE_MOUTH_CODES.has(dCode);
-  const dPlan = !!dCode && PLAN_CODES.has(dCode);
+  const dWhole = !!dCode && wholeMouthCodes.has(dCode);
+  const dPlan = !!dCode && planCodes.has(dCode);
   const dPerToothPlan = dPlan && !dWhole;
 
   // Clinical rule: a tooth can't have two active plans of the SAME type at once.
@@ -122,7 +235,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const selectWork = (value) => {
     const meta = getMeta(value);
     const code = meta?.code;
-    const isPlan = !!code && PLAN_CODES.has(code);
+    const isPlan = !!code && planCodes.has(code);
     let plan_mode = "new";
     let agreed_total = isPlan && meta ? meta.min_price : "";
     // default to continuing an existing plan of this type if one exists
@@ -142,8 +255,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     const meta = getMeta(draft.work_id);
     if (!meta) return;
     const code = meta.code;
-    if (WHOLE_MOUTH_CODES.has(code)) return;
-    const perToothPlan = PLAN_CODES.has(code) && !WHOLE_MOUTH_CODES.has(code);
+    if (wholeMouthCodes.has(code)) return;
+    const perToothPlan = planCodes.has(code) && !wholeMouthCodes.has(code);
     if (perToothPlan) {
       // optional single tooth. If the tapped tooth already has an active plan of
       // this type, auto-switch to "continue" it (convenience). Otherwise just
@@ -171,8 +284,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     if (!canAdd) return;
     const meta = getMeta(draft.work_id);
     const code = meta.code;
-    const whole = WHOLE_MOUTH_CODES.has(code);
-    const isPlan = PLAN_CODES.has(code);
+    const whole = wholeMouthCodes.has(code);
+    const isPlan = planCodes.has(code);
     setConfirmed((prev) => [
       ...prev,
       {
@@ -206,6 +319,29 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const toggleCompleted = (planId) =>
     setCompletedPlanIds((prev) => (prev.includes(planId) ? prev.filter((id) => id !== planId) : [...prev, planId]));
 
+  // Double-click quick-add: builds the same "confirmed" entry the main form does,
+  // and (for an existing plan marked done) reuses the completedPlanIds mechanism.
+  const addToothWork = ({ work, existingPlan, markDone, amount }) => {
+    const isPlan = !!work.is_plan;
+    setConfirmed((prev) => [
+      ...prev,
+      {
+        uid: `${Date.now()}-${Math.random()}`,
+        work_id: Number(work.id),
+        code: work.code, name: work.name, min_price: work.min_price,
+        wholeMouth: false, isPlan,
+        quantity: 1,
+        teeth: [popupTooth],
+        plan_mode: isPlan ? (existingPlan ? String(existingPlan.id) : "new") : null,
+        agreed_total: isPlan && !existingPlan ? Number(amount) : null,
+      },
+    ]);
+    if (isPlan && existingPlan && markDone && !completedPlanIds.includes(existingPlan.id)) {
+      setCompletedPlanIds((prev) => [...prev, existingPlan.id]);
+    }
+    setPopupTooth(null);
+  };
+
   const ALLOWED_IMG = ["image/jpeg", "image/png", "image/webp"];
 
   const onPickImages = (e) => {
@@ -229,6 +365,20 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       if (target) URL.revokeObjectURL(target.preview);
       return prev.filter((im) => im.id !== id);
     });
+
+  // Save the mid-visit draft (complaint + notes + next plan) to the server so it
+  // survives a refresh. Independent of "Confirm & Complete".
+  const handleSaveDraft = async () => {
+    try {
+      setSavingDraft(true);
+      await saveVisitDraft(apptId, { complaint: complaint || "", notes: notes || "", next_plan: nextPlan || "" });
+      setDraftSaved(true);
+    } catch (err) {
+      toast.error(err.userMessage || t("appt.comp_draft_failed"));
+    } finally {
+      setSavingDraft(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -281,88 +431,21 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       : null;
   const existingForSelected = dPlan ? plans[dCode]?.list || [] : [];
 
-  // ── anatomical tooth shapes (viewBox 32x56; crown on top, root(s) at bottom) ──
+  // Plan abbreviations shown as the per-tooth tag in the chart.
   const ABBR = { rct: "RCT", re_rct: "RE-RCT", implant: "IMP", ortho: "ORT" };
-  const toothCategory = (n) => {
-    const p = n % 10;
-    if (p <= 2) return "incisor";
-    if (p === 3) return "canine";
-    if (p <= 5) return "premolar";
-    return "molar";
-  };
-  // crown outlines (viewBox 36 x 66; crown ~ y3..27)
-  const CROWN = {
-    incisor: "M13 4 Q13 3 18 3 Q23 3 23 4 Q24 15 22 23 Q20 27 18 27 Q16 27 14 23 Q12 15 13 4 Z",
-    canine: "M18 3 Q22 7 23 15 Q23 24 18 27 Q13 24 13 15 Q14 7 18 3 Z",
-    premolar: "M11 8 Q10 4 14 5 Q16 2 18 5 Q20 2 22 5 Q26 4 25 8 Q26 22 18 27 Q10 22 11 8 Z",
-    molar: "M8 9 Q7 4 12 5 Q14.5 2 16.5 5 Q18 3 19.5 5 Q21.5 2 24 5 Q29 4 28 9 Q29 23 18 27 Q7 23 8 9 Z",
-  };
-  // light occlusal ridge lines (the grooves on the crown)
-  const RIDGE = {
-    incisor: ["M16 8 L16 22", "M18 7 L18 23", "M20 8 L20 22"],
-    canine: ["M18 8 L18 24", "M16 12 L20 12"],
-    premolar: ["M15 9 L15 23", "M21 9 L21 23", "M11 15 H25"],
-    molar: ["M13 9 L13 24", "M18 8 L18 25", "M23 9 L23 24", "M9 16 H27"],
-  };
-  // roots vary by tooth type AND arch (upper molars 3 roots, lower 2; etc.)
-  const rootPaths = (cat, upper) => {
-    if (cat === "incisor") return ["M15 25 Q14 45 17 60 Q18 63 19 60 Q22 45 21 25 Z"];
-    if (cat === "canine") return ["M15 26 Q13 47 16 62 Q17 66 19 62 Q22 47 21 26 Z"];
-    if (cat === "premolar")
-      return upper
-        ? ["M13 25 Q11 41 12 55 Q12 59 15 56 Q16 41 16 27 Z", "M23 25 Q25 41 24 55 Q24 59 21 56 Q20 41 20 27 Z"]
-        : ["M15 25 Q14 46 17 59 Q18 62 19 59 Q22 46 21 25 Z"];
-    // molar
-    return upper
-      ? ["M11 25 Q8 41 8 55 Q8 59 12 56 Q13 41 14 27 Z", "M18 27 Q17.5 45 18 59 Q18 62 19 59 Q19.5 45 19 27 Z", "M25 25 Q28 41 28 55 Q28 59 24 56 Q23 41 22 27 Z"]
-      : ["M12 25 Q9 43 11 57 Q12 61 15 57 Q15 43 15 27 Z", "M24 25 Q27 43 25 57 Q24 61 21 57 Q21 43 21 27 Z"];
-  };
+  const planTeeth = Object.keys(planTypeByTooth).map(Number);
+  const planLabels = Object.fromEntries(
+    Object.entries(planTypeByTooth).map(([n, pt]) => [n, ABBR[pt] || String(pt).toUpperCase()])
+  );
 
-  const ToothShape = ({ n, upper, selected, amber }) => {
-    const cat = toothCategory(n);
-    // navy-family palette so it fits the system theme in both light & dark mode
-    const rootFill = selected ? "#075c86" : amber ? "#b9d0e0" : "#e7dabc";
-    const rootStroke = selected ? "#013d58" : amber ? "#6f9cbb" : "#c4b491";
-    const crownFill = selected ? "#0a6aa0" : amber ? "#dcebf6" : "#ffffff";
-    const crownStroke = selected ? "#013d58" : amber ? "#6f9cbb" : "#b7c1cf";
-    const ridge = selected ? "#d6ecf7" : amber ? "#9cc0db" : "#dbe1e8";
-    return (
-      <svg viewBox="0 0 36 66" className="h-auto w-full">
-        {rootPaths(cat, upper).map((d, i) => (
-          <path key={i} d={d} fill={rootFill} stroke={rootStroke} strokeWidth="1" strokeLinejoin="round" />
-        ))}
-        <path d={CROWN[cat]} fill={crownFill} stroke={crownStroke} strokeWidth="1.2" strokeLinejoin="round" />
-        {RIDGE[cat].map((d, i) => (
-          <path key={`r${i}`} d={d} fill="none" stroke={ridge} strokeWidth="0.8" strokeLinecap="round" />
-        ))}
-      </svg>
-    );
-  };
+  // teeth that already have a work added THIS visit → shown green on the chart
+  const confirmedTeeth = useMemo(() => {
+    const s = new Set();
+    for (const c of confirmed) if (!c.wholeMouth) for (const n of c.teeth) s.add(Number(n));
+    return [...s];
+  }, [confirmed]);
 
-  const Tooth = ({ n, upper }) => {
-    const selected = draft.teeth.includes(n);
-    const planType = planTypeByTooth[n];
-    const hasPlan = !!planType;
-    const locked = dWhole || !draft.work_id;
-    const num = <span className={`text-[11px] font-semibold ${selected ? "text-[#015478]" : "text-slate-500"}`}>{n}</span>;
-    const tag = (
-      <span className={`h-4 leading-none text-[9px] font-bold ${hasPlan ? "text-[#015478] dark:text-sky-300" : "text-transparent"}`}>
-        {hasPlan ? ABBR[planType] || planType.toUpperCase() : "·"}
-      </span>
-    );
-    const svg = <ToothShape n={n} upper={upper} selected={selected} amber={hasPlan} />;
-    return (
-      <button type="button" onClick={() => toggleTooth(n)} disabled={locked}
-        title={hasPlan ? `${t("appt.comp_tooth_label", { teeth: n })} · ${(ABBR[planType] || planType).toUpperCase()}` : t("appt.comp_tooth_label", { teeth: n })}
-        className={`flex min-w-0 flex-1 flex-col items-center ${locked ? "cursor-not-allowed" : "hover:opacity-80"} transition`}>
-        {upper
-          ? (<>{tag}<div className="w-full rotate-180">{svg}</div>{num}</>)
-          : (<>{num}<div className="w-full">{svg}</div>{tag}</>)}
-      </button>
-    );
-  };
-
-  const inputCls = "w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]";
+  const inputCls = "w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]";
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4"
@@ -384,44 +467,41 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
         {/* Body: clean top-down flow — less scrolling, full-width sections */}
         <div className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
-          {/* Patient complaint (from booking) — full width on top */}
-          {appointment.complaint && (
-            <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.complaint_badge")}</p>
-              <p className="mt-0.5 whitespace-pre-wrap text-[13px] font-medium text-slate-800">{appointment.complaint}</p>
-            </div>
-          )}
-
-          {/* Patient medical info — blood type / allergies / chronic diseases */}
+          {/* Patient medical info — blood type · allergies · chronic diseases (one box) */}
           {(appointment.patient_blood_type || appointment.patient_allergies || appointment.patient_chronic_diseases) && (
-            <div className="grid gap-2 sm:grid-cols-3">
-              {appointment.patient_blood_type && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.blood_type")}</p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type}</p>
-                </div>
-              )}
-              {appointment.patient_allergies && (
-                <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-red-700">{t("appt.allergies")}</p>
-                  <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_allergies}</p>
-                </div>
-              )}
-              {appointment.patient_chronic_diseases && (
-                <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.chronic")}</p>
-                  <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_chronic_diseases}</p>
-                </div>
-              )}
+            <div className="grid gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 sm:grid-cols-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.blood_type")}</p>
+                <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type || "—"}</p>
+              </div>
+              <div className="sm:border-s sm:border-slate-200 sm:ps-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-red-600">{t("appt.allergies")}</p>
+                <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_allergies || "—"}</p>
+              </div>
+              <div className="sm:border-s sm:border-slate-200 sm:ps-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("appt.chronic")}</p>
+                <p className="mt-0.5 text-[13px] font-medium text-slate-800">{appointment.patient_chronic_diseases || "—"}</p>
+              </div>
             </div>
           )}
 
-          {/* Next plan + Notes — full width on top */}
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={2}
-              className={`${inputCls} resize-none`} placeholder={t("appt.comp_next_plan_ph")} />
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-              className={`${inputCls} resize-none`} placeholder={t("appt.comp_notes_ph")} />
+          {/* Visit notes — complaint + next plan + notes, saved mid-visit (survives refresh) */}
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.complaint_badge")}</p>
+              <button type="button" onClick={handleSaveDraft} disabled={savingDraft}
+                className="inline-flex items-center gap-1.5 rounded-md border border-[#0E6E75]/40 bg-white px-3 py-1 text-[11px] font-semibold text-[#0E6E75] transition hover:bg-[#0E6E75]/10 disabled:opacity-50">
+                {savingDraft ? t("appt.comp_saving") : draftSaved ? t("appt.comp_saved") : t("appt.comp_save_draft")}
+              </button>
+            </div>
+            <textarea value={complaint} onChange={(e) => { setComplaint(e.target.value); setDraftSaved(false); }} rows={2}
+              className={`${inputCls} resize-none`} placeholder={t("appt.comp_complaint_ph")} />
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <textarea value={nextPlan} onChange={(e) => { setNextPlan(e.target.value); setDraftSaved(false); }} rows={2}
+                className={`${inputCls} resize-none`} placeholder={t("appt.comp_next_plan_ph")} />
+              <textarea value={notes} onChange={(e) => { setNotes(e.target.value); setDraftSaved(false); }} rows={2}
+                className={`${inputCls} resize-none`} placeholder={t("appt.comp_notes_ph")} />
+            </div>
           </div>
 
           {/* Middle: treatment controls (left) | teeth chart (right) */}
@@ -429,8 +509,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           {/* ===== LEFT: controls ===== */}
           <div className="flex flex-col gap-3">
             {/* Choose treatment */}
-            <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
-              <p className="mb-1.5 text-[11px] font-semibold text-[#015478]">{t("appt.comp_step1")}</p>
+            <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
+              <p className="mb-1.5 text-[11px] font-semibold text-[#0E6E75]">{t("appt.comp_step1")}</p>
               <div className="flex flex-wrap items-end gap-2">
                 <div className="min-w-[160px] flex-1">
                   <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} disabled={loadingCatalog} className={inputCls}>
@@ -442,7 +522,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                   <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
                 )}
                 <button type="button" onClick={addTreatment} disabled={!canAdd}
-                  className="rounded-md bg-[#015478] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-40">{t("appt.comp_add")}</button>
+                  className="rounded-md bg-[#0E6E75] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-40">{t("appt.comp_add")}</button>
               </div>
 
               {/* agreement / continue */}
@@ -495,7 +575,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                         <span className="font-semibold">{c.name}</span>
                         <span className="text-slate-500">· {c.wholeMouth ? t("appt.comp_whole_mouth") : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
                         {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("appt.comp_new_plan_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
-                        <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#015478]">✎</button>
+                        <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
                         <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                       </span>
                     ))}
@@ -529,9 +609,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           </div>
 
           {/* ===== RIGHT: teeth chart (hero) ===== */}
-          <div className="flex flex-col rounded-xl border border-[#015478]/20 bg-[#015478]/5 p-4 lg:min-h-[420px]">
+          <div className="flex flex-col rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-4 lg:min-h-[420px]">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-semibold text-[#015478] dark:text-sky-300">{t("appt.comp_step2")}</p>
+              <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
               {!dWhole && draft.work_id && (
                 <span className="text-xs text-slate-500">
                   {draft.teeth.length
@@ -542,18 +622,17 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
 
             <div className="relative flex flex-1 items-center justify-center">
-              <div className={`w-full space-y-3 transition-opacity ${dWhole ? "opacity-40 pointer-events-none" : !draft.work_id ? "opacity-60" : ""}`}>
-                <div className="flex w-full items-end gap-px">
-                  {UPPER[0].map((n) => <Tooth key={n} n={n} upper />)}
-                  <div className="mx-1 h-14 w-px shrink-0 self-center bg-[#015478]/30" />
-                  {UPPER[1].map((n) => <Tooth key={n} n={n} upper />)}
-                </div>
-                <div className="h-px w-full bg-[#015478]/20" />
-                <div className="flex w-full items-start gap-px">
-                  {LOWER[0].map((n) => <Tooth key={n} n={n} />)}
-                  <div className="mx-1 h-14 w-px shrink-0 self-center bg-[#015478]/30" />
-                  {LOWER[1].map((n) => <Tooth key={n} n={n} />)}
-                </div>
+              <div className={`w-full transition-opacity ${dWhole ? "opacity-40 pointer-events-none" : !draft.work_id ? "opacity-60" : ""}`}>
+                <TeethDiagram
+                  age={appointment.patient_age}
+                  selected={draft.teeth}
+                  done={confirmedTeeth}
+                  marked={planTeeth}
+                  labels={planLabels}
+                  onToothClick={toggleTooth}
+                  onToothDoubleClick={(n) => setPopupTooth(n)}
+                  disabled={dWhole || !draft.work_id}
+                />
               </div>
 
               {dWhole && (
@@ -569,10 +648,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           </div>
 
           {/* Case images (optional) — full width at the bottom, responsive grid */}
-          <div className="rounded-xl border border-[#015478]/30 bg-[#015478]/5 p-3">
+          <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold text-[#015478]">{t("appt.comp_case_images")}</p>
-              <label className="cursor-pointer rounded-md border border-[#015478]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#015478] hover:bg-[#015478]/10">
+              <p className="text-[11px] font-semibold text-[#0E6E75]">{t("appt.comp_case_images")}</p>
+              <label className="cursor-pointer rounded-md border border-[#0E6E75]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10">
                 {t("appt.comp_add_images")}
                 <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
                   onChange={onPickImages} disabled={saving} />
@@ -599,11 +678,22 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-5 py-3">
           <button type="button" onClick={onClose} disabled={saving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">{t("common.cancel")}</button>
           <button type="button" onClick={handleSubmit} disabled={saving || confirmed.length === 0}
-            className="rounded-md bg-[#015478] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">
+            className="rounded-md bg-[#0E6E75] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
             {saving ? t("appt.comp_saving") : t("appt.comp_confirm")}
           </button>
         </div>
       </div>
+
+      {popupTooth != null && (
+        <ToothWorkPopup
+          tooth={popupTooth}
+          works={catalog.filter((w) => !w.is_whole_mouth)}
+          planFor={activePlanForTooth}
+          formatMoney={formatMoney}
+          onConfirm={addToothWork}
+          onClose={() => setPopupTooth(null)}
+        />
+      )}
     </div>
   );
 }

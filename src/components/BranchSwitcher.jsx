@@ -74,7 +74,7 @@ export default function BranchSwitcher() {
                 className={[
                   "flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-xs transition",
                   isCurrent
-                    ? "bg-[#015478] text-white cursor-default"
+                    ? "bg-[#0E6E75] text-white cursor-default"
                     : "text-slate-900 hover:bg-black/15 hover:text-black",
                 ].join(" ")}
               >

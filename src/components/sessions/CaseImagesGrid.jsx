@@ -19,7 +19,7 @@ export default function CaseImagesGrid({ images = [] }) {
     <div className="rounded-xl border border-slate-200 bg-white p-3">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-sm font-semibold text-slate-900">{t("ci.title")}</p>
-        <span className="rounded-full bg-[#015478]/10 px-3 py-1 text-[11px] font-medium text-[#015478] border border-[#015478]/20">{t("ci.images_count", { count: images.length })}</span>
+        <span className="rounded-full bg-[#0E6E75]/10 px-3 py-1 text-[11px] font-medium text-[#0E6E75] border border-[#0E6E75]/20">{t("ci.images_count", { count: images.length })}</span>
       </div>
 
       {images.length === 0 ? (
@@ -32,7 +32,7 @@ export default function CaseImagesGrid({ images = [] }) {
               type="button"
               onClick={() => setActive(img)}
               title={t("ci.view_image")}
-              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 hover:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]"
+              className="group relative block aspect-square overflow-hidden rounded-lg border border-slate-200 hover:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]"
             >
               <img src={img.url} alt="Case image" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
             </button>

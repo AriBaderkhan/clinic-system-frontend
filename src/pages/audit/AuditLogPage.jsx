@@ -18,7 +18,7 @@ function StatusBadge({ code }) {
     const ok = code != null && code < 300;
     return (
         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${ok
-            ? 'bg-[#015478]/10 text-[#015478] border-[#015478]/20'
+            ? 'bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20'
             : 'bg-amber-50 text-amber-700 border-amber-100'}`}>
             {code ?? '—'}
         </span>
@@ -77,7 +77,7 @@ export default function AuditLogPage() {
                             placeholder={t('audit.user_name_ph')}
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
-                            className="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                            className="w-full ps-10 pe-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20 focus:border-[#0E6E75] transition-all"
                         />
                     </div>
                     <div className="w-full md:w-44">
@@ -88,7 +88,7 @@ export default function AuditLogPage() {
                                 type="date"
                                 value={from}
                                 onChange={(e) => setFrom(e.target.value)}
-                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20 focus:border-[#0E6E75] transition-all"
                             />
                         </div>
                     </div>
@@ -100,7 +100,7 @@ export default function AuditLogPage() {
                                 type="date"
                                 value={to}
                                 onChange={(e) => setTo(e.target.value)}
-                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015478]/20 focus:border-[#015478] transition-all"
+                                className="w-full ps-9 pe-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20 focus:border-[#0E6E75] transition-all"
                             />
                         </div>
                     </div>

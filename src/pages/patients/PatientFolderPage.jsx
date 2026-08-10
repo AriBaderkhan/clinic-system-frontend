@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -171,7 +171,7 @@ export default function PatientFolderPage() {
               <div className="text-end text-xs text-slate-500">
                 <p>
                   {t("patient_folder.total_payments")}:{" "}
-                  <span className="font-semibold text-[#015478]">
+                  <span className="font-semibold text-[#0E6E75]">
                     {formatMoney(totalPaidForPatient)}
                   </span>
                 </p>
@@ -214,7 +214,7 @@ export default function PatientFolderPage() {
             onClick={() => setActiveTab(tab)}
             className={`rounded-full px-3 py-1 ${
               activeTab === tab
-                ? "bg-[#015478] text-white"
+                ? "bg-[#0E6E75] text-white"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
@@ -263,14 +263,14 @@ export default function PatientFolderPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedDetailsId(a.appointment_id)}
-                              className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
+                              className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C]"
                             >
                               {t("common.view")}
                             </button>
                             <button
                               type="button"
                               onClick={() => navigate(`${prefix}/appointments/${a.appointment_id}/edit`)}
-                              className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                              className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                             >
                               {t("common.edit")}
                             </button>
@@ -321,7 +321,7 @@ export default function PatientFolderPage() {
                         <td className="px-3 py-2 text-slate-700">{formatMoney(s.total, s.currency_code)}</td>
                         <td className="px-3 py-2 text-slate-700">
                           {s.is_paid ? (
-                            <span className="rounded-full bg-[#015478]/10 px-2 py-0.5 text-[11px] font-medium text-[#015478]">
+                            <span className="rounded-full bg-[#0E6E75]/10 px-2 py-0.5 text-[11px] font-medium text-[#0E6E75]">
                               {t("patient_folder.paid")}
                             </span>
                           ) : (
@@ -335,14 +335,14 @@ export default function PatientFolderPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedSessionId(s.session_id)}
-                              className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
+                              className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C]"
                             >
                               {t("common.view")}
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditSessionId(s.session_id)}
-                              className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                              className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                             >
                               {t("common.edit")}
                             </button>
@@ -375,7 +375,7 @@ export default function PatientFolderPage() {
                   onClick={() => setTpFilter(f.key)}
                   className={`rounded-full px-3 py-1 ${
                     tpFilter === f.key
-                      ? "bg-[#015478] text-white"
+                      ? "bg-[#0E6E75] text-white"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
@@ -430,7 +430,7 @@ export default function PatientFolderPage() {
                             <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining, tp.currency_code)}</td>
                             <td className="px-3 py-2">
                               {tp.is_paid ? (
-                                <span className="rounded-full bg-[#015478]/10 px-2 py-0.5 text-[11px] font-medium text-[#015478]">
+                                <span className="rounded-full bg-[#0E6E75]/10 px-2 py-0.5 text-[11px] font-medium text-[#0E6E75]">
                                   {t("patient_folder.paid")}
                                 </span>
                               ) : (
@@ -441,7 +441,7 @@ export default function PatientFolderPage() {
                             </td>
                                <td className="px-3 py-2">
                               {tp.is_completed ? (
-                                <span className="rounded-full bg-[#015478]/10 px-2 py-0.5 text-[11px] font-medium text-[#015478]">
+                                <span className="rounded-full bg-[#0E6E75]/10 px-2 py-0.5 text-[11px] font-medium text-[#0E6E75]">
                                   {t("patient_folder.done")}
                                 </span>
                               ) : (
@@ -458,7 +458,7 @@ export default function PatientFolderPage() {
                                   e.stopPropagation();
                                   setEditPlan(tp);
                                 }}
-                                className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                                className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                               >
                                 {t("common.edit")}
                               </button>
@@ -522,7 +522,7 @@ export default function PatientFolderPage() {
                                                     e.stopPropagation();
                                                     setEditSessionId(s.session_id);
                                                   }}
-                                                  className="rounded-md border border-yellow-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                                                  className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                                                 >
                                                   {t("common.edit")}
                                                 </button>

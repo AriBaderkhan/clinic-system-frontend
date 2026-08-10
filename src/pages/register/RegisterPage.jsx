@@ -125,13 +125,13 @@ export default function RegisterPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
                 <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-lg">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#015478]/10 text-3xl">✓</div>
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0E6E75]/10 text-3xl">✓</div>
                     <h1 className="text-xl font-bold text-slate-900">Request submitted!</h1>
                     <p className="mt-2 text-sm text-slate-600">
                         We received your registration for <b>{form.tenant_name}</b>. Our team will review your
                         payment and email you at <b>{form.email}</b> once your account is ready.
                     </p>
-                    <Link to="/" className="mt-6 inline-block rounded-lg bg-[#015478] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58]">
+                    <Link to="/" className="mt-6 inline-block rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C]">
                         Back to login
                     </Link>
                 </div>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                         const passed = step > n;
                         return (
                             <div key={label} className="flex items-center gap-2">
-                                <span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${active ? "bg-[#015478] text-white" : passed ? "bg-[#015478]/20 text-[#015478]" : "bg-slate-200 text-slate-500"}`}>
+                                <span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${active ? "bg-[#0E6E75] text-white" : passed ? "bg-[#0E6E75]/20 text-[#0E6E75]" : "bg-slate-200 text-slate-500"}`}>
                                     {passed ? "✓" : n}
                                 </span>
                                 <span className={`text-sm ${active ? "font-semibold text-slate-900" : "text-slate-500"}`}>{label}</span>
@@ -182,11 +182,11 @@ export default function RegisterPage() {
                                                 key={plan.id}
                                                 type="button"
                                                 onClick={() => setSelectedPlanId(plan.id)}
-                                                className={`flex flex-col rounded-xl border p-4 text-left transition ${selected ? "border-[#015478] ring-2 ring-[#015478]/30" : "border-slate-200 hover:border-[#015478]/50"}`}
+                                                className={`flex flex-col rounded-xl border p-4 text-left transition ${selected ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/30" : "border-slate-200 hover:border-[#0E6E75]/50"}`}
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-bold text-slate-900">{plan.name}</span>
-                                                    <span className="font-bold text-[#015478]">${plan.price}</span>
+                                                    <span className="font-bold text-[#0E6E75]">${plan.price}</span>
                                                 </div>
                                                 <p className="mt-1 text-xs text-slate-500">
                                                     {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {plan.max_users === -1 ? "Unlimited" : plan.max_users} users
@@ -194,7 +194,7 @@ export default function RegisterPage() {
                                                 <ul className="mt-3 space-y-1">
                                                     {(plan.features ?? []).map((f) => (
                                                         <li key={f.code} className="flex items-center gap-1.5 text-xs text-slate-600">
-                                                            <span className="text-[#015478]">✓</span> {f.name}
+                                                            <span className="text-[#0E6E75]">✓</span> {f.name}
                                                         </li>
                                                     ))}
                                                     {(plan.features ?? []).length === 0 && (
@@ -211,7 +211,7 @@ export default function RegisterPage() {
                                     type="button"
                                     disabled={!selectedPlanId}
                                     onClick={() => setStep(2)}
-                                    className="rounded-lg bg-[#015478] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50"
+                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
                                 >
                                     Continue
                                 </button>
@@ -239,14 +239,14 @@ export default function RegisterPage() {
                                         value={form.email}
                                         onChange={(e) => onEmailChange(e.target.value)}
                                         disabled={emailVerified}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none disabled:opacity-60"
+                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none disabled:opacity-60"
                                         placeholder="you@example.com"
                                     />
                                     {emailVerified ? (
-                                        <span className="inline-flex items-center justify-center rounded-lg bg-[#015478]/10 px-3 py-2 text-sm font-medium text-[#015478]">Verified ✓</span>
+                                        <span className="inline-flex items-center justify-center rounded-lg bg-[#0E6E75]/10 px-3 py-2 text-sm font-medium text-[#0E6E75]">Verified ✓</span>
                                     ) : (
                                         <button type="button" onClick={handleSendCode} disabled={sendingCode}
-                                            className="whitespace-nowrap rounded-lg border border-[#015478] px-4 py-2 text-sm font-medium text-[#015478] hover:bg-[#015478]/10 disabled:opacity-50">
+                                            className="whitespace-nowrap rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10 disabled:opacity-50">
                                             {sendingCode ? "Sending…" : codeSent ? "Resend code" : "Send code"}
                                         </button>
                                     )}
@@ -259,11 +259,11 @@ export default function RegisterPage() {
                                             maxLength={6}
                                             value={code}
                                             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#015478] focus:outline-none"
+                                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
                                             placeholder="6-digit code"
                                         />
                                         <button type="button" onClick={handleVerifyCode} disabled={verifying}
-                                            className="whitespace-nowrap rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">
+                                            className="whitespace-nowrap rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
                                             {verifying ? "Verifying…" : "Verify"}
                                         </button>
                                     </div>
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                             <div className="mt-6 flex justify-between">
                                 <button type="button" onClick={() => setStep(1)} className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50">Back</button>
                                 <button type="button" disabled={!detailsValid} onClick={() => setStep(3)}
-                                    className="rounded-lg bg-[#015478] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                                     Continue
                                 </button>
                             </div>
@@ -292,7 +292,7 @@ export default function RegisterPage() {
                         <div>
                             <h2 className="mb-1 text-lg font-bold text-slate-800">Payment</h2>
                             <p className="mb-4 text-sm text-slate-500">
-                                Transfer <b className="text-[#015478]">${selectedPlan?.price}</b> for the <b>{selectedPlan?.name}</b> plan, then upload your payment screenshot.
+                                Transfer <b className="text-[#0E6E75]">${selectedPlan?.price}</b> for the <b>{selectedPlan?.name}</b> plan, then upload your payment screenshot.
                             </p>
 
                             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -301,7 +301,7 @@ export default function RegisterPage() {
                                     {BANK_ACCOUNTS.map((b) => (
                                         <div key={b.label} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
                                             <span className="text-sm font-medium text-slate-700">{b.label}</span>
-                                            <span className="select-all font-mono text-sm font-semibold text-[#015478]">{b.number}</span>
+                                            <span className="select-all font-mono text-sm font-semibold text-[#0E6E75]">{b.number}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -311,7 +311,7 @@ export default function RegisterPage() {
                                     type="file"
                                     accept="image/jpeg,image/png,image/webp"
                                     onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                    className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#015478] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#013d58]"
+                                    className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#0E6E75] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#0A565C]"
                                 />
                                 {file && <p className="mt-1 text-xs text-slate-500">Selected: {file.name}</p>}
                             </div>
@@ -319,7 +319,7 @@ export default function RegisterPage() {
                             <div className="mt-6 flex justify-between">
                                 <button type="button" onClick={() => setStep(2)} className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50">Back</button>
                                 <button type="button" disabled={submitting || !file} onClick={handleSubmit}
-                                    className="rounded-lg bg-[#015478] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                                     {submitting ? "Submitting…" : "Submit registration"}
                                 </button>
                             </div>
@@ -328,7 +328,7 @@ export default function RegisterPage() {
                 </div>
 
                 <p className="mt-4 text-center text-xs text-slate-400">
-                    Already have an account? <Link to="/" className="text-[#015478] hover:underline">Sign in</Link>
+                    Already have an account? <Link to="/" className="text-[#0E6E75] hover:underline">Sign in</Link>
                 </p>
             </div>
         </div>
@@ -345,7 +345,7 @@ function Field({ label, value, onChange, type = "text", required, hint, error })
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#015478]"}`}
+                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#0E6E75]"}`}
             />
             {error ? <p className="mt-1 text-xs text-red-500">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
         </div>

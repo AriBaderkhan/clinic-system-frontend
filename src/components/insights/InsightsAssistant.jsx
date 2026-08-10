@@ -107,7 +107,7 @@ export default function InsightsAssistant() {
             <button
                 onClick={() => setOpen((o) => !o)}
                 aria-label={t("insights.title")}
-                className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#015478] text-white shadow-lg transition hover:scale-105 hover:bg-[#013f5a]"
+                className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#0E6E75] text-white shadow-lg transition hover:scale-105 hover:bg-[#013f5a]"
             >
                 {open ? (
                     <span className="text-xl">✕</span>
@@ -122,7 +122,7 @@ export default function InsightsAssistant() {
             {open && (
                 <div className="fixed bottom-24 end-5 z-50 flex h-[70vh] max-h-[560px] w-[92vw] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-center gap-2 border-b border-slate-100 bg-[#015478] px-4 py-3 text-white">
+                    <div className="flex items-center gap-2 border-b border-slate-100 bg-[#0E6E75] px-4 py-3 text-white">
                         {view !== "categories" && (
                             <button
                                 onClick={() => (view === "result" ? setView("questions") : goCategories())}
@@ -155,7 +155,7 @@ export default function InsightsAssistant() {
                                             <button
                                                 key={c.code}
                                                 onClick={() => openCategory(c)}
-                                                className="flex flex-col items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-5 text-center transition hover:border-[#015478] hover:bg-[#015478]/5"
+                                                className="flex flex-col items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-5 text-center transition hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
                                             >
                                                 <span className="text-2xl">{c.icon}</span>
                                                 <span className="text-sm font-medium text-slate-700">{t(`insights.cat.${c.code}`)}</span>
@@ -181,7 +181,7 @@ export default function InsightsAssistant() {
                                         <button
                                             key={q.id}
                                             onClick={() => runMetric(q)}
-                                            className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5 text-start text-sm text-slate-700 transition hover:border-[#015478] hover:bg-[#015478]/5"
+                                            className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5 text-start text-sm text-slate-700 transition hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
                                         >
                                             <span>{t(`insights.q.${q.id}`, { defaultValue: q.label })}</span>
                                             <span className="text-slate-300 rtl:rotate-180">›</span>
@@ -198,7 +198,7 @@ export default function InsightsAssistant() {
                                     <span className="text-[11px] uppercase tracking-wide text-slate-400">{periodLabel}</span>
                                     <button
                                         onClick={() => runMetric(activeMetric)}
-                                        className="text-[11px] font-medium text-[#015478] hover:underline"
+                                        className="text-[11px] font-medium text-[#0E6E75] hover:underline"
                                     >
                                         ↻ {t("insights.update")}
                                     </button>
@@ -221,13 +221,13 @@ function PeriodControls({ t, periodType, setPeriodType, month, setMonth, from, s
             <div className="mb-2 flex gap-1">
                 <button
                     onClick={() => setPeriodType("month")}
-                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "month" ? "bg-[#015478] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
+                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "month" ? "bg-[#0E6E75] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
                 >
                     {t("insights.by_month")}
                 </button>
                 <button
                     onClick={() => setPeriodType("range")}
-                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "range" ? "bg-[#015478] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
+                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "range" ? "bg-[#0E6E75] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
                 >
                     {t("insights.custom_range")}
                 </button>
@@ -296,7 +296,7 @@ function ResultView({ data, t }) {
 function BigValue({ value, unit, compare, t }) {
     return (
         <div className="rounded-xl border border-slate-200 p-4 text-center">
-            <div className="text-3xl font-bold text-[#015478]">{fmt(value)}</div>
+            <div className="text-3xl font-bold text-[#0E6E75]">{fmt(value)}</div>
             <div className="text-[11px] uppercase tracking-wide text-slate-400">{unit === "money" ? t("insights.total") : t("insights.count")}</div>
             {compare && (
                 <div className="mt-2 text-xs">
@@ -341,7 +341,7 @@ function BreakdownList({ items, t }) {
                         </span>
                     </div>
                     <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                        <div className="h-full rounded-full bg-[#015478]" style={{ width: `${(it.value / max) * 100}%` }} />
+                        <div className="h-full rounded-full bg-[#0E6E75]" style={{ width: `${(it.value / max) * 100}%` }} />
                     </div>
                 </div>
             ))}

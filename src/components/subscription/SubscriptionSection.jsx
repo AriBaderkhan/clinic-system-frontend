@@ -12,7 +12,7 @@ const BANK_ACCOUNTS = [
 ];
 
 const STATUS_BADGE = {
-    active: "bg-[#015478]/10 text-[#015478] border-[#015478]/20",
+    active: "bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20",
     expiring: "bg-amber-50 text-amber-700 border-amber-100",
     expired: "bg-red-50 text-red-700 border-red-100",
     none: "bg-slate-50 text-slate-600 border-slate-200",
@@ -110,11 +110,11 @@ export default function SubscriptionSection() {
                                         key={plan.id}
                                         type="button"
                                         onClick={() => setSelectedPlanId(plan.id)}
-                                        className={`rounded-xl border p-4 text-left transition ${selected ? "border-[#015478] ring-2 ring-[#015478]/30" : "border-slate-200 hover:border-[#015478]/50"}`}
+                                        className={`rounded-xl border p-4 text-left transition ${selected ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/30" : "border-slate-200 hover:border-[#0E6E75]/50"}`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <span className="font-bold text-slate-900">{plan.name}</span>
-                                            <span className="font-bold text-[#015478]">${plan.price}</span>
+                                            <span className="font-bold text-[#0E6E75]">${plan.price}</span>
                                         </div>
                                         <p className="mt-2 text-xs text-slate-500">
                                             {t('subscription.plan_limits', {
@@ -136,7 +136,7 @@ export default function SubscriptionSection() {
                                         {BANK_ACCOUNTS.map((b) => (
                                             <div key={b.label} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
                                                 <span className="text-sm font-medium text-slate-700">{b.label}</span>
-                                                <span className="select-all font-mono text-sm font-semibold text-[#015478]">{b.number}</span>
+                                                <span className="select-all font-mono text-sm font-semibold text-[#0E6E75]">{b.number}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -148,7 +148,7 @@ export default function SubscriptionSection() {
                                         type="file"
                                         accept="image/jpeg,image/png,image/webp"
                                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                        className="mt-2 block w-full text-sm text-slate-600 file:me-3 file:rounded-md file:border-0 file:bg-[#015478] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#013d58]"
+                                        className="mt-2 block w-full text-sm text-slate-600 file:me-3 file:rounded-md file:border-0 file:bg-[#0E6E75] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#0A565C]"
                                     />
                                     {file && <p className="mt-1 text-xs text-slate-500">{t('subscription.selected_file', { name: file.name })}</p>}
                                 </div>
@@ -165,7 +165,7 @@ export default function SubscriptionSection() {
                                         type="button"
                                         onClick={handleBuy}
                                         disabled={submitting}
-                                        className="rounded-lg bg-[#015478] px-5 py-2 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50"
+                                        className="rounded-lg bg-[#0E6E75] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
                                     >
                                         {submitting ? t('subscription.sending') : t('subscription.buy')}
                                     </button>

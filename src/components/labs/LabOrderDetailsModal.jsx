@@ -145,11 +145,11 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
                       <td className="px-3 py-2 text-right text-slate-800">{formatMoney(it.total_cost, order.currency_code)}</td>
                     </tr>
                   ))}
-                  <tr className="bg-[#015478]/5">
+                  <tr className="bg-[#0E6E75]/5">
                     <td className="px-3 py-2 text-xs font-semibold text-slate-600" colSpan={3}>
                       {t("labm.order_total")}
                     </td>
-                    <td className="px-3 py-2 text-right text-sm font-semibold text-[#015478]">
+                    <td className="px-3 py-2 text-right text-sm font-semibold text-[#0E6E75]">
                       {formatMoney(order.total_cost, order.currency_code)}
                     </td>
                   </tr>

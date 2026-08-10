@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 
 function getPageNumbers(currentPage, totalPages) {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -74,29 +74,29 @@ export default function TreatmentPlanPage() {
             </div>
 
             {/* Filter bar */}
-            <div className="rounded-2xl bg-[#015478]/5 border border-[#015478]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+            <div className="rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
 
                 {/* Search */}
                 <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-                    <label className="text-xs font-semibold text-[#015478]">{t("tp.search")}</label>
+                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.search")}</label>
                     <input
                         placeholder={t("tp.search_ph")}
                         value={filters.q}
                         onChange={(e) => setFilters((prev) => ({ ...prev, q: e.target.value }))}
-                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
                     />
                 </div>
 
                 {/* Pay status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#015478]">{t("tp.pay_status")}</label>
+                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.pay_status")}</label>
                     <select
                         value={filters.isPaid === undefined ? "" : filters.isPaid ? "true" : "false"}
                         onChange={(e) => {
                             const v = e.target.value;
                             setFilters((prev) => ({ ...prev, isPaid: v === "" ? undefined : v === "true" }));
                         }}
-                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
                     >
                         <option value="">{t("tp.all")}</option>
                         <option value="true">{t("tp.paid")}</option>
@@ -106,14 +106,14 @@ export default function TreatmentPlanPage() {
 
                 {/* Complete status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#015478]">{t("tp.complete_status")}</label>
+                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.complete_status")}</label>
                     <select
                         value={filters.isCompleted === undefined ? "" : filters.isCompleted ? "true" : "false"}
                         onChange={(e) => {
                             const v = e.target.value;
                             setFilters((prev) => ({ ...prev, isCompleted: v === "" ? undefined : v === "true" }));
                         }}
-                        className="rounded-xl border border-[#015478]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#015478] focus:outline-none focus:ring-2 focus:ring-[#015478]/20"
+                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
                     >
                         <option value="">{t("tp.all")}</option>
                         <option value="true">{t("tp.completed")}</option>
@@ -126,7 +126,7 @@ export default function TreatmentPlanPage() {
                     <button
                         type="button"
                         onClick={() => setFilters({ isPaid: undefined, isCompleted: undefined, q: "" })}
-                        className="rounded-xl border border-[#015478]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#015478] hover:bg-[#015478]/5 transition-colors"
+                        className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
                     >
                         {t("tp.clear")}
                     </button>
@@ -172,7 +172,7 @@ export default function TreatmentPlanPage() {
                                         <>
                                             <tr
                                                 key={tp.id}
-                                                className={`border-b border-slate-100 ${isEditing ? "bg-[#015478]/10" : "hover:bg-slate-50"}`}
+                                                className={`border-b border-slate-100 ${isEditing ? "bg-[#0E6E75]/10" : "hover:bg-slate-50"}`}
                                             >
                                                 <td className="px-3 py-2 font-medium text-slate-800">{tp.patient_name}</td>
 
@@ -183,7 +183,7 @@ export default function TreatmentPlanPage() {
                                                             value={tpDraft.type}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, type: e.target.value }))}
                                                             disabled={savingTp}
-                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                                                         >
                                                             <option value="">{t("tp.select_dots")}</option>
                                                             {typeButtons.filter((x) => x !== "All").map((ty) => (
@@ -202,7 +202,7 @@ export default function TreatmentPlanPage() {
                                                             value={tpDraft.agreed_total}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, agreed_total: e.target.value }))}
                                                             disabled={savingTp}
-                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                                                         />
                                                     ) : (
                                                         <span className="text-slate-700">{formatMoney(tp.agreed_total, tp.currency_code)}</span>
@@ -213,7 +213,7 @@ export default function TreatmentPlanPage() {
                                                 <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining, tp.currency_code)}</td>
 
                                                 <td className="px-3 py-2">
-                                                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${isPaid ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700"}`}>
+                                                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${isPaid ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-amber-50 text-amber-700"}`}>
                                                         {isPaid ? t("tp.paid") : t("tp.due")}
                                                     </span>
                                                 </td>
@@ -225,13 +225,13 @@ export default function TreatmentPlanPage() {
                                                             value={tpDraft.is_completed ? "done" : "undone"}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, is_completed: e.target.value === "done" }))}
                                                             disabled={savingTp}
-                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                                                         >
                                                             <option value="done">{t("tp.done")}</option>
                                                             <option value="undone">{t("tp.undone")}</option>
                                                         </select>
                                                     ) : (
-                                                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tp.is_completed ? "bg-[#015478]/10 text-[#015478]" : "bg-amber-50 text-amber-700"}`}>
+                                                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tp.is_completed ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-amber-50 text-amber-700"}`}>
                                                             {tp.is_completed ? t("tp.done") : t("tp.undone")}
                                                         </span>
                                                     )}
@@ -245,7 +245,7 @@ export default function TreatmentPlanPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => toggleExpand(tp.id)}
-                                                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58]"
+                                                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C]"
                                                         >
                                                             {isExpanded ? t("tp.hide") : t("tp.sessions_btn")}
                                                         </button>
@@ -256,7 +256,7 @@ export default function TreatmentPlanPage() {
                                                                     type="button"
                                                                     onClick={() => saveEditTp(tp)}
                                                                     disabled={savingTp}
-                                                                    className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58] disabled:opacity-60"
+                                                                    className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C] disabled:opacity-60"
                                                                 >
                                                                     {savingTp ? t("tp.saving") : t("tp.save")}
                                                                 </button>
@@ -274,14 +274,14 @@ export default function TreatmentPlanPage() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => startEditTp(tp)}
-                                                                    className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
+                                                                    className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
                                                                 >
                                                                     {t("common.edit")}
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleDeleteTp(tp.id)}
-                                                                    className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-900"
+                                                                    className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
                                                                 >
                                                                     {t("common.delete")}
                                                                 </button>
@@ -328,7 +328,7 @@ export default function TreatmentPlanPage() {
                                                                                 return (
                                                                                     <tr
                                                                                         key={s.session_id}
-                                                                                        className={`border-b border-slate-100 last:border-0 ${isEditingThis ? "bg-[#015478]/10" : "hover:bg-slate-50"}`}
+                                                                                        className={`border-b border-slate-100 last:border-0 ${isEditingThis ? "bg-[#0E6E75]/10" : "hover:bg-slate-50"}`}
                                                                                     >
                                                                                         <td className="px-3 py-2 text-slate-700">{formatDateTime(s.finished_at)}</td>
 
@@ -338,7 +338,7 @@ export default function TreatmentPlanPage() {
                                                                                                     value={paidDraft}
                                                                                                     onChange={(e) => setPaidDraft(e.target.value)}
                                                                                                     disabled={savingPaid}
-                                                                                                    className="w-36 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                                                                                                    className="w-36 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                                                                                                 />
                                                                                             ) : (
                                                                                                 <span className="font-medium text-slate-800">{formatMoney(paidValue, tp.currency_code)}</span>
@@ -363,7 +363,7 @@ export default function TreatmentPlanPage() {
                                                                                                             type="button"
                                                                                                             onClick={saveEditPaid}
                                                                                                             disabled={savingPaid}
-                                                                                                            className="rounded-md border border-slate-200 bg-[#015478] px-3 py-1 text-[11px] text-white hover:bg-[#013d58] disabled:opacity-60"
+                                                                                                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C] disabled:opacity-60"
                                                                                                         >
                                                                                                             {savingPaid ? t("tp.saving") : t("tp.save")}
                                                                                                         </button>
@@ -380,7 +380,7 @@ export default function TreatmentPlanPage() {
                                                                                                     <button
                                                                                                         type="button"
                                                                                                         onClick={() => startEditPaid(tp.id, s.session_id, paidValue)}
-                                                                                                        className="rounded-md border border-slate-200 bg-yellow-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-900"
+                                                                                                        className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
                                                                                                     >
                                                                                                         {t("common.edit")}
                                                                                                     </button>
@@ -435,7 +435,7 @@ export default function TreatmentPlanPage() {
                                         onClick={() => handlePageChange(p)}
                                         className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
                                             p === page
-                                                ? "border-[#015478] bg-[#015478] text-white"
+                                                ? "border-[#0E6E75] bg-[#0E6E75] text-white"
                                                 : "border-slate-200 text-slate-700 hover:bg-slate-50"
                                         }`}
                                     >

@@ -90,7 +90,7 @@ export default function EditTreatmentPlanModal({ plan, onClose, onUpdated }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50"
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50"
           >
             {saving ? t("common.saving") : t("common.save")}
           </button>

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import usePaymentHistory from "../../hooks/usePaymentHistory";
 import SessionDetailsModal from "../../components/sessions/SessionDetailsModal";
@@ -102,22 +102,22 @@ export default function PaymentHistory() {
             <table className="min-w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-500">
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_datetime")}
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_patient")}
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_doctor")}
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_amount")}
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_reception")}
                   </th>
-                  <th className="px-3 py-2 font-medium text-[#015478]">
+                  <th className="px-3 py-2 font-medium text-[#0E6E75]">
                     {t("clin.ph_col_note")}
                   </th>
                 </tr>

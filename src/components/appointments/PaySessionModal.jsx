@@ -1,7 +1,8 @@
-﻿import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { paySession } from "../../api/sessionApi";
+import { getDiscounts } from "../../api/discountApi";
 import { useSettings } from "../../context/SettingContext";
 
 export default function PaySessionModal({ session, onClose, onPaid }) {
@@ -10,13 +11,45 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const [normalAmount, setNormalAmount] = useState("");
   const [note, setNote] = useState("");
   const [planAmounts, setPlanAmounts] = useState({});
+  const [settleNormal, setSettleNormal] = useState(false);
+  const [discounts, setDiscounts] = useState([]);
+  const [discountId, setDiscountId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getDiscounts().then((res) => alive && setDiscounts(res?.data || [])).catch(() => {});
+    return () => { alive = false; };
+  }, []);
 
   if (!session) return null;
 
   const curr = session?.currency_code;
   const minTotal = Number(session?.totals?.min_total || 0);
   const total = Number(session?.totals?.total || 0);
+  const totalPaid = Number(session?.totals?.total_paid || 0);
+  const remaining = Number(session?.totals?.remaining ?? (total - totalPaid));
+  const normalSettled = !!session?.totals?.is_paid; // normal already paid/settled → hide the normal section
+
+  // A discount already applied to this session (from an earlier payment).
+  const appliedAmount = Number(session?.totals?.discount_amount || 0);
+  const appliedName = session?.totals?.discount_name || null;
+  const discountApplied = appliedAmount > 0;
+
+  // Preview of a newly-picked discount (only when none is applied yet). The
+  // backend re-computes + caps authoritatively.
+  const pickedDiscount = discounts.find((d) => String(d.id) === String(discountId)) || null;
+  const discountPreview = pickedDiscount
+    ? Math.min(
+        pickedDiscount.type === "percent"
+          ? Math.round((total * Number(pickedDiscount.value)) / 100)
+          : Number(pickedDiscount.value),
+        remaining
+      )
+    : 0;
+  // One authoritative discount + remaining for the top line.
+  const shownDiscount = discountApplied ? appliedAmount : discountPreview;
+  const shownRemaining = discountApplied ? remaining : Math.max(0, remaining - discountPreview);
 
   const plans = Array.isArray(session?.treatment_plans)
     ? session.treatment_plans
@@ -77,6 +110,8 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
       normalAmount: payNormal ? normalNumeric : null,
       planPayments: payPlans ? planPaymentsArray : [],
       note: note || null,
+      settleNormal,
+      discountId: discountId ? Number(discountId) : null,
     };
 
     try {
@@ -198,7 +233,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                           className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${
                             planErrors[pid]
                               ? "border-red-400 bg-red-50"
-                              : "border-slate-200 bg-white focus:border-[#015478]"
+                              : "border-slate-200 bg-white focus:border-[#0E6E75]"
                           }`}
                           placeholder="0"
                         />
@@ -216,12 +251,21 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
           </div>
         )}
 
-        {/* Normal payment */}
+        {/* Normal payment (hidden once the normal balance is settled/fully paid) */}
         <form onSubmit={handleSubmit} className="space-y-3">
+          {!normalSettled && (
+            <>
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">
               {t("appt.pay_normal_label")}
             </label>
+            <p className="text-[11px] text-slate-600">
+              {t("appt.pay_paid")} <b>{formatMoney(totalPaid, curr)}</b>
+              {shownDiscount > 0 && (
+                <span className="text-emerald-700"> · {t("appt.pay_discount_applied", { amount: formatMoney(shownDiscount, curr) })}</span>
+              )}
+              {" · "}{t("appt.pay_remaining")} <b>{formatMoney(shownRemaining, curr)}</b>
+            </p>
             <input
               type="number"
               min="0"
@@ -229,12 +273,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               value={normalAmount}
               onChange={(e) => setNormalAmount(e.target.value)}
               className={`w-full rounded-lg border px-3 py-2 text-sm outline-none`}
-              //  ${
-              //   isNormalBelowMin
-              //     ? "border-red-400 bg-red-50"
-              //     : "border-slate-200 bg-white focus:border-[#015478]"
-              // }
-              placeholder={total ? String(total) : t("appt.pay_enter_amount")}
+              placeholder={shownRemaining ? String(shownRemaining) : t("appt.pay_enter_amount")}
             />
             {/* {isNormalBelowMin && (
               <p className="text-[11px] text-red-500">
@@ -245,6 +284,47 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
             
           </div>
 
+          {discountApplied ? (
+            // A discount is already locked onto this session — show it, no re-pick.
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-700">{t("appt.pay_discount")}</label>
+              <div className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                <span className="font-medium">{appliedName || t("appt.pay_discount")}</span>
+                <span className="font-semibold">−{formatMoney(appliedAmount, curr)}</span>
+              </div>
+            </div>
+          ) : remaining > 0 && discounts.length > 0 ? (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-700">{t("appt.pay_discount")}</label>
+              <select
+                value={discountId}
+                onChange={(e) => setDiscountId(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#0E6E75]"
+              >
+                <option value="">{t("appt.pay_no_discount")}</option>
+                {discounts.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} ({d.type === "percent" ? `${d.value}%` : formatMoney(d.value, curr)})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+
+          {remaining > 0 && (
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input
+                type="checkbox"
+                checked={settleNormal}
+                onChange={(e) => setSettleNormal(e.target.checked)}
+                className="h-4 w-4 accent-[#0E6E75]"
+              />
+              {t("appt.pay_settle_done")}
+            </label>
+          )}
+            </>
+          )}
+
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">
               {t("appt.pay_note_label")}
@@ -253,7 +333,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#015478]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#0E6E75]"
               placeholder={t("appt.pay_note_ph")}
             />
           </div>
@@ -271,7 +351,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               type="submit"
               // disabled={disableSubmit}
               className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white
-                ${ disableSubmit ? "bg-[#015478]/50 cursor-not-allowed" : "bg-[#015478] hover:bg-[#013d58]"}
+                ${ disableSubmit ? "bg-[#0E6E75]/50 cursor-not-allowed" : "bg-[#0E6E75] hover:bg-[#0A565C]"}
                   `}
             >
               {isSubmitting ? t("appt.pay_saving") : t("appt.pay_save")}

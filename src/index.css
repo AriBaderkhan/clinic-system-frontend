@@ -12,10 +12,10 @@ html[dir="rtl"] body {
 }
 
 /* =========================================================
-   DARK MODE
+   DARK MODE  —  Petrol teal palette
    The app is styled with light utilities (bg-white, text-slate-900...).
    When <html> has the .dark class, the overrides below re-map those
-   utilities to the dark palette. Pure CSS -> instant switch, no JS cost.
+   utilities to a deep teal-charcoal palette. Pure CSS -> instant switch.
    ========================================================= */
 
 .dark {
@@ -23,79 +23,73 @@ html[dir="rtl"] body {
 }
 
 /* ---------- backgrounds ---------- */
-.dark .bg-white { background-color: #131e33; }
-.dark .bg-slate-50 { background-color: #0b1322; }
-.dark .bg-slate-50\/70 { background-color: rgba(11, 19, 34, 0.7); }
-.dark .bg-slate-100 { background-color: #1c2a47; }
-.dark .bg-slate-200 { background-color: #2a3a5c; }
+.dark .bg-white { background-color: #121A1D; }        /* surface */
+.dark .bg-slate-50 { background-color: #0B0F11; }      /* ground  */
+.dark .bg-slate-50\/70 { background-color: rgba(11, 15, 17, 0.7); }
+.dark .bg-slate-100 { background-color: #182326; }
+.dark .bg-slate-200 { background-color: #223033; }
 .dark .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.1); }
 
-.dark .hover\:bg-slate-50:hover { background-color: #1a2742; }
-.dark .hover\:bg-slate-100:hover { background-color: #233354; }
-.dark .hover\:bg-slate-200:hover { background-color: #2f4067; }
-.dark .hover\:bg-white:hover { background-color: #1a2742; }
-.dark .focus\:bg-white:focus { background-color: #1a2742; }
+.dark .hover\:bg-slate-50:hover { background-color: #172227; }
+.dark .hover\:bg-slate-100:hover { background-color: #1E2C30; }
+.dark .hover\:bg-slate-200:hover { background-color: #26383C; }
+.dark .hover\:bg-white:hover { background-color: #172227; }
+.dark .focus\:bg-white:focus { background-color: #172227; }
 
 /* Chrome autofill paints a light background — keep inputs dark and text readable */
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #1a2742 inset;
-  -webkit-text-fill-color: #f1f5f9;
-  caret-color: #f1f5f9;
+  -webkit-box-shadow: 0 0 0 1000px #172227 inset;
+  -webkit-text-fill-color: #E9F0F0;
+  caret-color: #E9F0F0;
 }
 
 /* ---------- text ---------- */
-.dark .text-slate-900 { color: #f1f5f9; }
-.dark .text-slate-800 { color: #e2e8f0; }
-.dark .text-slate-700 { color: #cbd5e1; }
-.dark .text-slate-600 { color: #a8b6cc; }
-.dark .text-slate-500 { color: #8fa0ba; }
-.dark .text-slate-400 { color: #748399; }
-.dark .text-slate-300 { color: #5d6b82; }
-.dark ::placeholder { color: #64748b; }
+.dark .text-slate-900 { color: #E9F0F0; }
+.dark .text-slate-800 { color: #D6E0E1; }
+.dark .text-slate-700 { color: #BFCDCE; }
+.dark .text-slate-600 { color: #9DB0B2; }
+.dark .text-slate-500 { color: #869A9C; }
+.dark .text-slate-400 { color: #6E8386; }
+.dark .text-slate-300 { color: #5A6E71; }
+.dark ::placeholder { color: #67797C; }
 
 /* ---------- borders ---------- */
-.dark .border-slate-200 { border-color: #2a3a5c; }
-.dark .border-slate-100 { border-color: #22304f; }
-.dark .border-slate-300 { border-color: #35496f; }
+.dark .border-slate-200 { border-color: #223033; }
+.dark .border-slate-100 { border-color: #1B282B; }
+.dark .border-slate-300 { border-color: #2C3D41; }
 
 /* ---------- gray palette (settings/tenant pages use gray instead of slate) ---------- */
-.dark .bg-gray-50 { background-color: #0b1322; }
-.dark .bg-gray-100 { background-color: #1c2a47; }
-.dark .bg-gray-300 { background-color: #2a3a5c; }
-.dark .hover\:bg-gray-50:hover { background-color: #1a2742; }
-.dark .hover\:bg-gray-100:hover { background-color: #233354; }
+.dark .bg-gray-50 { background-color: #0B0F11; }
+.dark .bg-gray-100 { background-color: #182326; }
+.dark .bg-gray-300 { background-color: #223033; }
+.dark .hover\:bg-gray-50:hover { background-color: #172227; }
+.dark .hover\:bg-gray-100:hover { background-color: #1E2C30; }
 
-.dark .text-gray-900 { color: #f1f5f9; }
-.dark .text-gray-800 { color: #e2e8f0; }
-.dark .text-gray-700 { color: #cbd5e1; }
-.dark .text-gray-600 { color: #a8b6cc; }
-.dark .text-gray-500 { color: #8fa0ba; }
-.dark .text-gray-400 { color: #748399; }
-.dark .text-gray-300 { color: #5d6b82; }
-.dark .hover\:text-gray-600:hover { color: #a8b6cc; }
-.dark .hover\:text-gray-700:hover { color: #cbd5e1; }
+.dark .text-gray-900 { color: #E9F0F0; }
+.dark .text-gray-800 { color: #D6E0E1; }
+.dark .text-gray-700 { color: #BFCDCE; }
+.dark .text-gray-600 { color: #9DB0B2; }
+.dark .text-gray-500 { color: #869A9C; }
+.dark .text-gray-400 { color: #6E8386; }
+.dark .text-gray-300 { color: #5A6E71; }
+.dark .hover\:text-gray-600:hover { color: #9DB0B2; }
+.dark .hover\:text-gray-700:hover { color: #BFCDCE; }
 
-.dark .border-gray-300 { border-color: #35496f; }
-.dark .border-gray-200 { border-color: #2a3a5c; }
-.dark .border-gray-100 { border-color: #22304f; }
+.dark .border-gray-300 { border-color: #2C3D41; }
+.dark .border-gray-200 { border-color: #223033; }
+.dark .border-gray-100 { border-color: #1B282B; }
 
-/* ---------- brand navy on dark ---------- */
-.dark .text-\[\#015478\] { color: #79c3f5; }
-.dark .bg-\[\#015478\]\/5 { background-color: rgba(121, 195, 245, 0.06); }
-.dark .bg-\[\#015478\]\/10 { background-color: rgba(121, 195, 245, 0.12); }
-.dark .border-\[\#015478\]\/10 { border-color: rgba(121, 195, 245, 0.15); }
-.dark .border-\[\#015478\]\/20 { border-color: rgba(121, 195, 245, 0.25); }
-.dark .border-\[\#015478\]\/30 { border-color: rgba(121, 195, 245, 0.35); }
-.dark .hover\:bg-\[\#015478\]\/5:hover { background-color: rgba(121, 195, 245, 0.08); }
-.dark .hover\:bg-\[\#015478\]\/10:hover { background-color: rgba(121, 195, 245, 0.14); }
-
-/* ---------- sidebar ---------- */
-.dark .bg-\[\#7b97bd\] { background-color: #0f1930; }
-.dark .bg-\[\#6a87ad\] { background-color: #1c2a47; }
-.dark .border-\[\#6a87ad\] { border-color: #22304f; }
-.dark .hover\:bg-\[\#6a87ad\]:hover { background-color: #1c2a47; }
+/* ---------- brand teal on dark ---------- */
+.dark .text-\[\#0E6E75\] { color: #4FC3CB; }
+.dark .bg-\[\#0E6E75\]\/5 { background-color: rgba(47, 176, 184, 0.08); }
+.dark .bg-\[\#0E6E75\]\/10 { background-color: rgba(47, 176, 184, 0.14); }
+.dark .border-\[\#0E6E75\]\/10 { border-color: rgba(47, 176, 184, 0.18); }
+.dark .border-\[\#0E6E75\]\/20 { border-color: rgba(47, 176, 184, 0.28); }
+.dark .border-\[\#0E6E75\]\/30 { border-color: rgba(47, 176, 184, 0.38); }
+.dark .hover\:bg-\[\#0E6E75\]\/5:hover { background-color: rgba(47, 176, 184, 0.10); }
+.dark .hover\:bg-\[\#0E6E75\]\/10:hover { background-color: rgba(47, 176, 184, 0.16); }
 
 /* ---------- status badges / alerts ---------- */
 .dark .bg-sky-50 { background-color: rgba(14, 165, 233, 0.14); }
@@ -119,6 +113,20 @@ html[dir="rtl"] body {
 .dark .bg-green-50 { background-color: rgba(34, 197, 94, 0.14); }
 .dark .text-green-700 { color: #86efac; }
 .dark .border-green-100 { border-color: rgba(34, 197, 94, 0.3); }
+
+/* ---------- components hand-styled with dark: slate variants (navy-era) → teal ----------
+   Tailwind emits these as `.dark\:bg-slate-800:is(.dark *)`; we override with an
+   `html.dark` prefix so specificity always wins and the whole app shares one dark palette. */
+html.dark .dark\:bg-slate-800 { background-color: #121A1D; }
+html.dark .dark\:bg-slate-900 { background-color: #0B0F11; }
+html.dark .dark\:bg-slate-700 { background-color: #182326; }
+html.dark .dark\:hover\:bg-slate-700:hover { background-color: #1E2C30; }
+html.dark .dark\:border-slate-700 { border-color: #223033; }
+html.dark .dark\:border-slate-600 { border-color: #2C3D41; }
+html.dark .dark\:text-slate-100 { color: #E9F0F0; }
+html.dark .dark\:text-slate-200 { color: #D6E0E1; }
+html.dark .dark\:text-slate-300 { color: #BFCDCE; }
+html.dark .dark\:text-slate-400 { color: #869A9C; }
 
 /* smooth color change when toggling */
 body, .bg-white, .bg-slate-50, .bg-slate-100 {

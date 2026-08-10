@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMinimize2, FiMonitor, FiUser, FiArrowRight } from "react-icons/fi";
 
@@ -130,7 +130,7 @@ export default function Login() {
             onClick={(e) => e.target === e.currentTarget && setShowBranchModal(false)}
           >
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-              <div className="bg-gradient-to-r from-[#015478] to-[#013d58] px-6 py-6 text-white text-center">
+              <div className="bg-gradient-to-r from-[#0E6E75] to-[#0A565C] px-6 py-6 text-white text-center">
                 <div className="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-3 backdrop-blur-sm">
                   <FiMinimize2 size={32} />
                 </div>
@@ -144,21 +144,21 @@ export default function Login() {
                     <button
                       key={branch.branch_id}
                       onClick={() => handleBranchSelect(branch.branch_id)}
-                      className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#015478] hover:bg-[#015478]/10 hover:shadow-md transition-all group group-hover:scale-[1.01]"
+                      className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#0E6E75] hover:bg-[#0E6E75]/10 hover:shadow-md transition-all group group-hover:scale-[1.01]"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-[#015478]/20 text-[#015478] flex items-center justify-center group-hover:bg-[#015478] group-hover:text-white transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-[#0E6E75]/20 text-[#0E6E75] flex items-center justify-center group-hover:bg-[#0E6E75] group-hover:text-white transition-colors">
                           <FiMonitor size={20} />
                         </div>
                         <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-[#015478]">Branch {branch.branch_name}</h3>
+                          <h3 className="font-semibold text-gray-900 group-hover:text-[#0E6E75]">Branch {branch.branch_name}</h3>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <FiUser size={12} className="text-gray-400 group-hover:text-[#015478]" />
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide group-hover:text-[#015478]">{branch.role_name}</p>
+                            <FiUser size={12} className="text-gray-400 group-hover:text-[#0E6E75]" />
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide group-hover:text-[#0E6E75]">{branch.role_name}</p>
                           </div>
                         </div>
                       </div>
-                      <FiArrowRight className="text-gray-300 group-hover:text-[#015478] transform group-hover:translate-x-1 transition-all" size={20} />
+                      <FiArrowRight className="text-gray-300 group-hover:text-[#0E6E75] transform group-hover:translate-x-1 transition-all" size={20} />
                     </button>
                   ))}
                 </div>

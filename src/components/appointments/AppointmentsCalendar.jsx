@@ -166,7 +166,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
           <button
             type="button"
             onClick={goToday}
-            className="rounded-lg border border-[#015478]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#015478] hover:bg-[#015478]/5"
+            className="rounded-lg border border-[#0E6E75]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
           >
             {t("appt.cal_today")}
           </button>
@@ -182,12 +182,12 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
           >
             {t("appt.refresh")}
           </button>
-          <div className="flex rounded-full border border-[#015478]/20 bg-[#015478]/5 p-0.5 text-xs font-semibold">
+          <div className="flex rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-0.5 text-xs font-semibold">
             <button
               type="button"
               onClick={() => setView("week")}
               className={`rounded-full px-3.5 py-1.5 transition-colors ${
-                view === "week" ? "bg-[#015478] text-white" : "text-[#015478] hover:bg-[#015478]/10"
+                view === "week" ? "bg-[#0E6E75] text-white" : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
               }`}
             >
               {t("appt.cal_week")}
@@ -196,7 +196,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
               type="button"
               onClick={() => setView("month")}
               className={`rounded-full px-3.5 py-1.5 transition-colors ${
-                view === "month" ? "bg-[#015478] text-white" : "text-[#015478] hover:bg-[#015478]/10"
+                view === "month" ? "bg-[#0E6E75] text-white" : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
               }`}
             >
               {t("appt.cal_month")}
@@ -261,14 +261,14 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
               className={`group border-b border-r border-slate-100 p-1.5 first:border-l ${
                 view === "week" ? "min-h-[340px]" : "min-h-[110px]"
               } ${isToday ? "bg-yellow-50" : isOtherMonth ? "bg-slate-50/70" : "bg-white"} ${
-                onSelectDay ? "cursor-pointer hover:bg-[#015478]/5" : ""
+                onSelectDay ? "cursor-pointer hover:bg-[#0E6E75]/5" : ""
               }`}
             >
               <div className="mb-1 flex items-center justify-between px-0.5">
                 <span
                   className={`text-xs font-semibold ${
                     isToday
-                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[#015478] text-[10px] text-white"
+                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[#0E6E75] text-[10px] text-white"
                       : isOtherMonth
                       ? "text-slate-300"
                       : "text-slate-700"
@@ -279,7 +279,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                 {dayAppts.length > 0 ? (
                   <span className="text-[10px] text-slate-400">{dayAppts.length}</span>
                 ) : onSelectDay ? (
-                  <span className="hidden text-[10px] font-semibold text-[#015478] group-hover:inline">+</span>
+                  <span className="hidden text-[10px] font-semibold text-[#0E6E75] group-hover:inline">+</span>
                 ) : null}
               </div>
 
@@ -293,7 +293,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
                       e.stopPropagation();
                       setExpandedDay(key);
                     }}
-                    className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-[#015478] hover:bg-[#015478]/5"
+                    className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
                   >
                     {t("appt.cal_more", { count: hiddenCount })}
                   </button>

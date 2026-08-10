@@ -134,13 +134,13 @@ export default function ProfilePage() {
             <div className="rounded-2xl bg-white p-6 shadow-sm">
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
                     <div className="relative">
-                        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#015478] text-2xl font-bold text-white">
+                        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#0E6E75] text-2xl font-bold text-white">
                             {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initialsOf(form.full_name)}
                         </div>
                         <button
                             type="button"
                             onClick={() => fileRef.current?.click()}
-                            className="absolute bottom-0 end-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#015478] text-white hover:bg-[#013d58]"
+                            className="absolute bottom-0 end-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#0E6E75] text-white hover:bg-[#0A565C]"
                             title={t("prof.change_photo")}
                         >
                             <FiCamera size={15} />
@@ -150,7 +150,7 @@ export default function ProfilePage() {
                     <div className="text-center sm:text-start">
                         <h1 className="text-xl font-bold text-slate-900">{data?.full_name || t("prof.your_profile")}</h1>
                         <p className="text-sm text-slate-500">{data?.email}</p>
-                        <span className="mt-1 inline-flex items-center rounded-full bg-[#015478]/10 px-2.5 py-0.5 text-xs font-medium capitalize text-[#015478] border border-[#015478]/20">
+                        <span className="mt-1 inline-flex items-center rounded-full bg-[#0E6E75]/10 px-2.5 py-0.5 text-xs font-medium capitalize text-[#0E6E75] border border-[#0E6E75]/20">
                             {data?.role}
                         </span>
                     </div>
@@ -173,7 +173,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="mt-5 flex justify-end">
                     <button onClick={saveDetails} disabled={savingDetails}
-                        className="rounded-lg bg-[#015478] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                        className="rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                         {savingDetails ? t("prof.saving") : t("prof.save_changes")}
                     </button>
                 </div>
@@ -184,7 +184,7 @@ export default function ProfilePage() {
                 <h2 className="mb-1 text-base font-bold text-slate-800">{t("prof.email")}</h2>
                 <p className="mb-4 text-sm text-slate-500">{t("prof.current_label")} <b>{data?.email}</b></p>
                 {!emailMode ? (
-                    <button onClick={() => setEmailMode(true)} className="rounded-lg border border-[#015478] px-4 py-2 text-sm font-medium text-[#015478] hover:bg-[#015478]/10">
+                    <button onClick={() => setEmailMode(true)} className="rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10">
                         {t("prof.change_email")}
                     </button>
                 ) : (
@@ -192,9 +192,9 @@ export default function ProfilePage() {
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <input type="email" value={newEmail} onChange={(e) => { setNewEmail(e.target.value); setCodeSent(false); }}
                                 placeholder={t("prof.new_email")} disabled={codeSent}
-                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none disabled:opacity-60" />
+                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none disabled:opacity-60" />
                             <button onClick={sendCode} disabled={emailBusy}
-                                className="whitespace-nowrap rounded-lg border border-[#015478] px-4 py-2 text-sm font-medium text-[#015478] hover:bg-[#015478]/10 disabled:opacity-50">
+                                className="whitespace-nowrap rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10 disabled:opacity-50">
                                 {emailBusy ? "…" : codeSent ? t("prof.resend") : t("prof.send_code")}
                             </button>
                         </div>
@@ -203,9 +203,9 @@ export default function ProfilePage() {
                                 <input type="text" inputMode="numeric" maxLength={6} value={emailCode}
                                     onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, ""))}
                                     placeholder={t("prof.code_ph")}
-                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#015478] focus:outline-none" />
+                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none" />
                                 <button onClick={confirmEmail} disabled={emailBusy}
-                                    className="whitespace-nowrap rounded-lg bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58] disabled:opacity-50">
+                                    className="whitespace-nowrap rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
                                     {emailBusy ? "…" : t("prof.save_email")}
                                 </button>
                             </div>
@@ -227,7 +227,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="mt-5 flex justify-end">
                     <button onClick={savePassword} disabled={savingPwd || !pwd.currentPassword || !pwd.newPassword}
-                        className="rounded-lg bg-[#015478] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                        className="rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                         {savingPwd ? t("prof.saving") : t("prof.change_password")}
                     </button>
                 </div>
@@ -246,7 +246,7 @@ function Field({ label, value, onChange, type = "text", required, hint, error })
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#015478]"}`}
+                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#0E6E75]"}`}
             />
             {error ? <p className="mt-1 text-xs text-red-500">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
         </div>

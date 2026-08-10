@@ -91,7 +91,7 @@ export default function SubscriptionRequestsPage() {
                                     <button
                                         type="button"
                                         onClick={() => setPreview(r.evidence_url)}
-                                        className="block w-full overflow-hidden rounded-lg border border-slate-200 hover:border-[#015478]"
+                                        className="block w-full overflow-hidden rounded-lg border border-slate-200 hover:border-[#0E6E75]"
                                         title="View evidence"
                                     >
                                         <img src={r.evidence_url} alt="Payment evidence" className="h-40 w-full object-cover" />
@@ -109,7 +109,7 @@ export default function SubscriptionRequestsPage() {
                                     type="button"
                                     onClick={() => handleApprove(r.id)}
                                     disabled={busyId === r.id}
-                                    className="flex-1 rounded-lg bg-[#015478] py-2 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50"
+                                    className="flex-1 rounded-lg bg-[#0E6E75] py-2 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
                                 >
                                     {busyId === r.id ? "…" : "Confirm"}
                                 </button>

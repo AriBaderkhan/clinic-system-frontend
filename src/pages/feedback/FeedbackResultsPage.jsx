@@ -90,7 +90,7 @@ export default function FeedbackResultsPage() {
                 onClick={() => setBranch("all")}
                 className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
                   branch === "all"
-                    ? "border-[#015478] bg-[#015478] text-white"
+                    ? "border-[#0E6E75] bg-[#0E6E75] text-white"
                     : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >
@@ -102,7 +102,7 @@ export default function FeedbackResultsPage() {
                   onClick={() => setBranch(String(b.branch_id))}
                   className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
                     String(branch) === String(b.branch_id)
-                      ? "border-[#015478] bg-[#015478] text-white"
+                      ? "border-[#0E6E75] bg-[#0E6E75] text-white"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   }`}
                 >

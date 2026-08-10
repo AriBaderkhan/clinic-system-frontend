@@ -93,7 +93,7 @@ export default function NotificationBell() {
                             <button
                                 type="button"
                                 onClick={markAllRead}
-                                className="text-[11px] font-medium text-[#015478] transition hover:underline"
+                                className="text-[11px] font-medium text-[#0E6E75] transition hover:underline"
                             >
                                 {t("notif.markAllRead")}
                             </button>
@@ -107,10 +107,10 @@ export default function NotificationBell() {
                                 <button
                                     key={i.key}
                                     onClick={i.onClick}
-                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${i.read ? "" : "bg-[#015478]/5"}`}
+                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${i.read ? "" : "bg-[#0E6E75]/5"}`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        {!i.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#015478]" />}
+                                        {!i.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#0E6E75]" />}
                                         <span className="text-sm font-medium text-slate-800">{i.text}</span>
                                     </div>
                                     <p className="ms-4 mt-0.5 text-[11px] text-slate-500">{formatDateTime(i.at)}</p>

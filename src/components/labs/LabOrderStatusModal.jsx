@@ -92,7 +92,7 @@ export default function LabOrderStatusModal({ order, onClose, onUpdated }) {
               className={`flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition ${
                 opt.value === order.status
                   ? "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
-                  : "border-slate-200 bg-white text-slate-800 hover:border-[#015478]/40 hover:bg-[#015478]/5"
+                  : "border-slate-200 bg-white text-slate-800 hover:border-[#0E6E75]/40 hover:bg-[#0E6E75]/5"
               }`}
             >
               <span className="font-medium capitalize">{t(opt.labelKey)}</span>

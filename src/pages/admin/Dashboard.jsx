@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getAllTenants, registerTenant } from '../../api/adminApi';
 import { getPlans } from '../../api/planApi';
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
                 <h2 className="text-lg font-medium text-slate-800">All Tenants</h2>
                 <button
                     onClick={() => setIsRegisterOpen(true)}
-                    className="rounded-md bg-[#015478] px-4 py-2 text-sm font-medium text-white hover:bg-[#013d58]"
+                    className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
                 >
                     Add Tenant
                 </button>
@@ -143,13 +143,13 @@ export default function AdminDashboard() {
                                 <td className="px-6 py-4">
                                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tenant.plan_name === 'Pro' ? 'bg-purple-100 text-purple-800' :
                                             tenant.plan_name === 'Enterprise' ? 'bg-yellow-100 text-yellow-800' :
-                                                'bg-[#015478]/20 text-[#015478]'
+                                                'bg-[#0E6E75]/20 text-[#0E6E75]'
                                         }`}>
                                         {tenant.plan_name || 'No Plan'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tenant.status === 'active' ? 'bg-[#015478]/20 text-[#015478]' : 'bg-red-100 text-red-800'
+                                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tenant.status === 'active' ? 'bg-[#0E6E75]/20 text-[#0E6E75]' : 'bg-red-100 text-red-800'
                                         }`}>
                                         {tenant.status}
                                     </span>
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
                                 <td className="px-6 py-4">
                                     <button
                                         onClick={() => openSubscriptionModal(tenant)}
-                                        className="text-[#015478] hover:text-indigo-900"
+                                        className="text-[#0E6E75] hover:text-indigo-900"
                                     >
                                         Manage Plan
                                     </button>
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
                                     {plans.map(plan => (
                                         <div key={plan.id}
                                             onClick={() => setRegisterForm({ ...registerForm, plan_id: plan.id })}
-                                            className={`cursor-pointer rounded-lg border p-3 text-center transition ${parseInt(registerForm.plan_id) === plan.id ? 'border-[#015478] bg-[#015478]/10 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'
+                                            className={`cursor-pointer rounded-lg border p-3 text-center transition ${parseInt(registerForm.plan_id) === plan.id ? 'border-[#0E6E75] bg-[#0E6E75]/10 ring-1 ring-indigo-500' : 'border-slate-200 hover:bg-slate-50'
                                                 }`}
                                         >
                                             <div className="font-medium text-slate-900">{plan.name}</div>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
 
                             <div className="md:col-span-2 mt-6 flex justify-end gap-3">
                                 <button type="button" onClick={() => setIsRegisterOpen(false)} className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
-                                <button type="submit" className="rounded-md bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]">Register Tenant</button>
+                                <button type="submit" className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]">Register Tenant</button>
                             </div>
                         </form>
                     </div>
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Select New Plan</label>
                                 <select
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none"
+                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                     value={subForm.plan_id}
                                     onChange={(e) => setSubForm({ ...subForm, plan_id: e.target.value })}
                                 >
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
 
                             <div className="mt-6 flex justify-end gap-3">
                                 <button type="button" onClick={() => setIsSubscriptionOpen(false)} className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
-                                <button type="submit" className="rounded-md bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]">Update Plan</button>
+                                <button type="submit" className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]">Update Plan</button>
                             </div>
                         </form>
                     </div>

@@ -75,10 +75,10 @@ export default function AnnouncementsBell() {
                                 <button
                                     key={a.id}
                                     onClick={() => openItem(a)}
-                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${a.read ? "" : "bg-[#015478]/5"}`}
+                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${a.read ? "" : "bg-[#0E6E75]/5"}`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        {!a.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#015478]" />}
+                                        {!a.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#0E6E75]" />}
                                         <span className="truncate text-sm font-medium text-slate-800">{a.title}</span>
                                     </div>
                                     <p className="ms-4 truncate text-xs text-slate-500">{a.body || t("layout.view_details")}</p>

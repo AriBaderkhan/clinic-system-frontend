@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function LoginForm({ onSubmit, isLoading = false, errorMessage = "" }) {
@@ -33,7 +33,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
           </label>
           <input
             type="email"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#015478] focus:bg-white focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#0E6E75] focus:bg-white focus:ring-2 focus:ring-blue-100"
             placeholder="tradicompany01@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -49,7 +49,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 pr-24 text-sm text-slate-900 outline-none transition focus:border-[#015478] focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 pr-24 text-sm text-slate-900 outline-none transition focus:border-[#0E6E75] focus:bg-white focus:ring-2 focus:ring-blue-100"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -64,7 +64,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
             </button>
           </div>
           <div className="text-right">
-            <Link to="/forgot-password" className="text-xs font-medium text-[#015478] hover:underline">
+            <Link to="/forgot-password" className="text-xs font-medium text-[#0E6E75] hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -74,7 +74,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-[#015478] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#015478] disabled:cursor-not-allowed disabled:bg-blue-400"
+          className="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0E6E75] disabled:cursor-not-allowed disabled:bg-blue-400"
         >
           {isLoading ? "Signing in..." : "Login"}
         </button>

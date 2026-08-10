@@ -1,8 +1,8 @@
 // Each doctor gets a fixed color: the first doctor (smallest id) gets the menu bar
 // blue, the second the navy, the third the light green, then the rest of the palette.
 const DOCTOR_PALETTE = [
-  { bg: "#7b97bd", soft: "#7b97bd15", text: "#7b97bd" }, // menu bar blue
-  { bg: "#015478", soft: "#01547815", text: "#015478" }, // navy (brand)
+  { bg: "#0E6E75", soft: "#0E6E7515", text: "#0E6E75" }, // menu bar blue
+  { bg: "#0E6E75", soft: "#0E6E7515", text: "#0E6E75" }, // navy (brand)
   { bg: "#66bb6a", soft: "#66bb6a15", text: "#66bb6a" }, // light green
   { bg: "#e11d74", soft: "#e11d7415", text: "#e11d74" }, // pink
   { bg: "#f97316", soft: "#f9731615", text: "#f97316" }, // orange

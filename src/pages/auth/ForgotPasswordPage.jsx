@@ -55,11 +55,11 @@ export default function ForgotPasswordPage() {
                         <div>
                             <label className="block text-sm font-medium text-slate-700">Email</label>
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none"
+                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
                                 placeholder="you@example.com" />
                         </div>
                         <button onClick={sendCode} disabled={busy}
-                            className="w-full rounded-lg bg-[#015478] py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                            className="w-full rounded-lg bg-[#0E6E75] py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                             {busy ? "Sending…" : "Send code"}
                         </button>
                     </div>
@@ -69,21 +69,21 @@ export default function ForgotPasswordPage() {
                             <label className="block text-sm font-medium text-slate-700">Verification code</label>
                             <input type="text" inputMode="numeric" maxLength={6} value={code}
                                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#015478] focus:outline-none"
+                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
                                 placeholder="6-digit code" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700">New password</label>
                             <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none" />
+                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700">Confirm new password</label>
                             <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#015478] focus:outline-none" />
+                                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none" />
                         </div>
                         <button onClick={submitReset} disabled={busy}
-                            className="w-full rounded-lg bg-[#015478] py-2.5 text-sm font-semibold text-white hover:bg-[#013d58] disabled:opacity-50">
+                            className="w-full rounded-lg bg-[#0E6E75] py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
                             {busy ? "Resetting…" : "Reset password"}
                         </button>
                         <button onClick={() => setStep(1)} className="w-full text-xs text-slate-500 hover:underline">Use a different email</button>
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <p className="mt-5 text-center text-xs text-slate-400">
-                    Remembered it? <Link to="/" className="text-[#015478] hover:underline">Back to login</Link>
+                    Remembered it? <Link to="/" className="text-[#0E6E75] hover:underline">Back to login</Link>
                 </p>
             </div>
         </div>

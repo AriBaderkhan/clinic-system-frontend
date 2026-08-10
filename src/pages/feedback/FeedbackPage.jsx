@@ -115,7 +115,7 @@ export default function FeedbackPage() {
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => setActive(r)}
-                      className="rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#013d58]"
+                      className="rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#0A565C]"
                     >
                       {t("feedback.prepare")}
                     </button>
@@ -146,7 +146,7 @@ export default function FeedbackPage() {
                   key={p}
                   onClick={() => handlePageChange(p)}
                   className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
-                    p === page ? "border-[#015478] bg-[#015478] text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                    p === page ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   {p}

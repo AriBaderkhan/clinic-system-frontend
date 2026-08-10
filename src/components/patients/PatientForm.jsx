@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getReferralSources } from "../../api/patientApi";
 
@@ -154,7 +154,7 @@ export default function PatientForm({
                                     name="name"
                                     value={form.name}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.name_ph")}
                                 />
                             </div>
@@ -169,7 +169,7 @@ export default function PatientForm({
                                     name="phone"
                                     value={form.phone}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.phone_ph")}
                                 />
                             </div>
@@ -187,11 +187,11 @@ export default function PatientForm({
                                         onChange={handleChange}
                                         onBlur={normalizeAge}
                                         min={0}
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                         placeholder={t("patient_form.age_ph")}
                                     />
                                     {ageYearHint !== null && (
-                                        <p className="text-[11px] font-medium text-[#015478]">
+                                        <p className="text-[11px] font-medium text-[#0E6E75]">
                                             {t("patient_form.year_hint", { year: form.age, age: ageYearHint })}
                                         </p>
                                     )}
@@ -205,7 +205,7 @@ export default function PatientForm({
                                         name="gender"
                                         value={form.gender}
                                         onChange={handleChange}
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     >
                                         <option value="">{t("patient_form.select_gender")}</option>
                                         <option value="male">{t("patient_form.male")}</option>
@@ -224,7 +224,7 @@ export default function PatientForm({
                                     value={form.address}
                                     onChange={handleChange}
                                     rows={3}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.address_ph")}
                                 />
                             </div>
@@ -236,7 +236,7 @@ export default function PatientForm({
                                     name="referral_source"
                                     value={showOther ? "__other__" : form.referral_source}
                                     onChange={handleReferralChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                 >
                                     <option value="">{t("patient_form.select_source")}</option>
                                     {referralOptions.map((s) => (
@@ -253,7 +253,7 @@ export default function PatientForm({
                                             setForm((prev) => ({ ...prev, referral_source: e.target.value }));
                                         }}
                                         placeholder={t("patient_form.other_ph")}
-                                        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     />
                                 )}
                             </div>
@@ -274,7 +274,7 @@ export default function PatientForm({
                                     name="blood_type"
                                     value={form.blood_type}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478] sm:max-w-[12rem]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75] sm:max-w-[12rem]"
                                 >
                                     <option value="">{t("patient_form.select")}</option>
                                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((b) => (
@@ -291,7 +291,7 @@ export default function PatientForm({
                                     value={form.allergies}
                                     onChange={handleChange}
                                     rows={2}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.allergies_ph")}
                                 />
                             </div>
@@ -304,7 +304,7 @@ export default function PatientForm({
                                     value={form.chronic_diseases}
                                     onChange={handleChange}
                                     rows={2}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#015478] focus:bg-white focus:ring-1 focus:ring-[#015478]"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.chronic_ph")}
                                 />
                             </div>
@@ -315,7 +315,7 @@ export default function PatientForm({
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="rounded-lg bg-[#015478] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#015478] disabled:cursor-not-allowed disabled:opacity-70"
+                            className="rounded-lg bg-[#0E6E75] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0E6E75] disabled:cursor-not-allowed disabled:opacity-70"
                         >
                             {isSubmitting ? t("patient_form.saving") : submitLabel}
                         </button>

@@ -38,7 +38,7 @@ export default function SubscriptionBanner() {
             {isTenantManager && !pending && (
                 <Link
                     to="/tenant/settings"
-                    className="shrink-0 rounded-lg bg-[#015478] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#013d58]"
+                    className="shrink-0 rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0A565C]"
                 >
                     Go to Subscription
                 </Link>

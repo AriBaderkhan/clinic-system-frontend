@@ -11,6 +11,8 @@ const emptyForm = {
   allow_installments: false,
   min_installment_amount: "",
   is_active: true,
+  is_plan: false,
+  is_whole_mouth: false,
 };
 
 // ── View Modal ────────────────────────────────────────────────────────────────
@@ -34,7 +36,7 @@ function ViewModal({ work, onClose }) {
           <DetailRow
             label={t("clin.allow_installments")}
             value={
-              <span className={`rounded-full px-3 py-1 text-xs ${work.allow_installments ? "bg-[#015478]/10 text-[#015478]" : "bg-slate-100 text-slate-500"}`}>
+              <span className={`rounded-full px-3 py-1 text-xs ${work.allow_installments ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-slate-100 text-slate-500"}`}>
                 {work.allow_installments ? t("clin.yes") : t("clin.no")}
               </span>
             }
@@ -45,7 +47,7 @@ function ViewModal({ work, onClose }) {
           <DetailRow
             label={t("clin.status")}
             value={
-              <span className={`rounded-full px-3 py-1 text-xs ${work.is_active ? "bg-[#015478]/10 text-[#015478]" : "bg-red-100 text-red-700"}`}>
+              <span className={`rounded-full px-3 py-1 text-xs ${work.is_active ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-red-100 text-red-700"}`}>
                 {work.is_active ? t("clin.active") : t("clin.inactive")}
               </span>
             }
@@ -96,6 +98,8 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
       min_price: Number(form.min_price),
       allow_installments: form.allow_installments,
       is_active: form.is_active,
+      is_plan: form.is_plan,
+      is_whole_mouth: form.is_whole_mouth,
     };
     if (form.allow_installments) {
       payload.min_installment_amount = Number(form.min_installment_amount);
@@ -123,7 +127,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               value={form.code}
               onChange={(e) => set("code", e.target.value)}
               placeholder={t("clin.code_ph")}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
             />
           </FormField>
 
@@ -133,7 +137,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
               placeholder={t("clin.name_ph")}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
             />
           </FormField>
 
@@ -145,7 +149,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               step="0.01"
               value={form.min_price}
               onChange={(e) => set("min_price", e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
             />
           </FormField>
 
@@ -158,7 +162,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
                 set("allow_installments", e.target.checked);
                 if (!e.target.checked) set("min_installment_amount", "");
               }}
-              className="h-4 w-4 accent-[#015478]"
+              className="h-4 w-4 accent-[#0E6E75]"
             />
             <label htmlFor="allow_installments" className="text-sm text-slate-700">
               {t("clin.allow_installments")}
@@ -174,7 +178,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
                 step="0.01"
                 value={form.min_installment_amount}
                 onChange={(e) => set("min_installment_amount", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
               />
             </FormField>
           )}
@@ -185,9 +189,31 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               id="is_active"
               checked={form.is_active}
               onChange={(e) => set("is_active", e.target.checked)}
-              className="h-4 w-4 accent-[#015478]"
+              className="h-4 w-4 accent-[#0E6E75]"
             />
             <label htmlFor="is_active" className="text-sm text-slate-700">{t("clin.active")}</label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="is_plan"
+              checked={form.is_plan}
+              onChange={(e) => set("is_plan", e.target.checked)}
+              className="h-4 w-4 accent-[#0E6E75]"
+            />
+            <label htmlFor="is_plan" className="text-sm text-slate-700">{t("clin.is_plan")}</label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="is_whole_mouth"
+              checked={form.is_whole_mouth}
+              onChange={(e) => set("is_whole_mouth", e.target.checked)}
+              className="h-4 w-4 accent-[#0E6E75]"
+            />
+            <label htmlFor="is_whole_mouth" className="text-sm text-slate-700">{t("clin.is_whole_mouth")}</label>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
@@ -201,7 +227,7 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58] disabled:opacity-60"
+              className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C] disabled:opacity-60"
             >
               {isSubmitting ? t("clin.saving") : mode === "edit" ? t("clin.save_changes") : t("clin.create")}
             </button>
@@ -274,7 +300,7 @@ export default function WorksPage() {
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="rounded-lg bg-[#015478] px-4 py-2 text-sm text-white hover:bg-[#013d58]"
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]"
           >
             {t("clin.create_work_btn")}
           </button>
@@ -312,7 +338,7 @@ export default function WorksPage() {
                     <td className="px-3 py-3 text-slate-700">{w.name}</td>
                     <td className="px-3 py-3 text-slate-800">{formatMoney(w.min_price)}</td>
                     <td className="px-3 py-3">
-                      <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#015478]/10 text-[#015478]" : "bg-slate-100 text-slate-500"}`}>
+                      <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-slate-100 text-slate-500"}`}>
                         {w.allow_installments ? t("clin.yes") : t("clin.no")}
                       </span>
                     </td>
@@ -320,7 +346,7 @@ export default function WorksPage() {
                       {w.allow_installments ? formatMoney(w.min_installment_amount) : "—"}
                     </td>
                     <td className="px-3 py-3">
-                      <span className={`rounded-full px-3 py-1 text-xs ${w.is_active ? "bg-[#015478]/10 text-[#015478]" : "bg-red-100 text-red-700"}`}>
+                      <span className={`rounded-full px-3 py-1 text-xs ${w.is_active ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-red-100 text-red-700"}`}>
                         {w.is_active ? t("clin.active") : t("clin.inactive")}
                       </span>
                     </td>
@@ -328,21 +354,21 @@ export default function WorksPage() {
                       <button
                         type="button"
                         onClick={() => setViewWork(w)}
-                        className="rounded-lg border border-slate-200 bg-[#015478] px-3 py-2 text-xs text-slate-100 hover:bg-[#013d58]"
+                        className="rounded-lg border border-slate-200 bg-[#0E6E75] px-3 py-2 text-xs text-slate-100 hover:bg-[#0A565C]"
                       >
                         {t("common.view")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditWork(w)}
-                        className="rounded-lg border border-slate-200 bg-yellow-600 px-3 py-2 text-xs text-slate-100 hover:bg-yellow-900"
+                        className="rounded-lg border border-slate-200 bg-amber-600 px-3 py-2 text-xs text-slate-100 hover:bg-amber-700"
                       >
                         {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(w.id)}
-                        className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-900"
+                        className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-700"
                       >
                         {t("common.delete")}
                       </button>

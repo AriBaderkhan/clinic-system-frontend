@@ -123,7 +123,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("labm.lab_name_ph")}
-                  className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                  className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                 />
               </div>
               <div className="space-y-1">
@@ -133,7 +133,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder={t("labm.phone_ph")}
-                  className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                  className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                 />
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                 <button
                   type="button"
                   onClick={addRow}
-                  className="rounded-md bg-[#015478] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#013d58]"
+                  className="rounded-md bg-[#0E6E75] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#0A565C]"
                 >
                   {t("labm.add_treatment")}
                 </button>
@@ -162,7 +162,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                       <select
                         value={row.work_id}
                         onChange={(e) => updateRow(idx, "work_id", e.target.value)}
-                        className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                        className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                       >
                         <option value="">{t("labm.select_treatment")}</option>
                         {works.map((w) => (
@@ -183,14 +183,14 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
                         value={row.cost}
                         onChange={(e) => updateRow(idx, "cost", e.target.value)}
                         placeholder={t("labm.cost_ph")}
-                        className="w-32 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#015478] focus:outline-none focus:ring-1 focus:ring-[#015478]"
+                        className="w-32 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
                       />
 
                       <button
                         type="button"
                         onClick={() => removeRow(idx)}
                         disabled={rows.length === 1}
-                        className="rounded-md border border-red-200 bg-red-600 px-3 py-2 text-[11px] text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="rounded-md border border-red-200 bg-red-600 px-3 py-2 text-[11px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         ✕
                       </button>
@@ -212,7 +212,7 @@ export default function LabFormModal({ mode = "add", labId, onClose, onSubmit, i
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-[#015478] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#013d58] disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? t("labm.saving") : mode === "add" ? t("labm.create_lab") : t("labm.save_changes")}
               </button>
