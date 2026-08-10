@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 // import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
 import useActiveApptsTodayPerDoctor from "../../hooks/useActiveApptsTodayPerDoctor";
 import useOpenApptsPerDoctor from "../../hooks/useOpenApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
+import { inProgressAppointment } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
 
 function statusBadgeClasses(status) {
@@ -41,6 +43,21 @@ export default function DoctorDashboard() {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
   const [showOpen, setShowOpen] = useState(false);
+  const [startingId, setStartingId] = useState(null);
+
+  // Doctor moves a checked-in visit to in_progress (the only status change allowed here).
+  const handleStart = async (id) => {
+    try {
+      setStartingId(id);
+      await inProgressAppointment(id);
+      refreshToday();
+      refreshOpen();
+    } catch (err) {
+      toast.error(err.userMessage || t("dash.start_failed"));
+    } finally {
+      setStartingId(null);
+    }
+  };
  
 
   // only in_progress appointments (for right column)
@@ -138,95 +155,61 @@ export default function DoctorDashboard() {
                 </p>
               )}
 
-            {/* Table */}
+            {/* Cards — compact, never scroll sideways (fits the narrow column) */}
             {todayAppointments.length > 0 && (
-              <div className="mt-2 overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-xs text-slate-500">
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_patient')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_phone')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_doctor')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_time')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_type')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_complaint')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75]">
-                        {t('dash.col_status')}
-                      </th>
-                      <th className="px-3 py-2 font-medium text-[#0E6E75] text-end">
-                        {t('dash.col_actions')}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {todayAppointments.map((a) => {
-                      const id = a.id ?? a.appointment_id;
-
-                      return (
-                        <tr
-                          key={id}
-                          className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+              <div className="mt-2 space-y-2">
+                {todayAppointments.map((a) => {
+                  const id = a.id ?? a.appointment_id;
+                  return (
+                    <div
+                      key={id}
+                      className="rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-[#0E6E75]/40 hover:shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-900">{a.patient_name}</p>
+                          <p className="mt-0.5 truncate text-[11px] text-slate-500">
+                            {a.patient_phone} · {formatTime(a.scheduled_start)} · <span className="capitalize">{a.appointment_type}</span>
+                          </p>
+                        </div>
+                        <span
+                          className={
+                            "shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium capitalize " +
+                            statusBadgeClasses(a.status)
+                          }
                         >
-                          <td className="px-3 py-2 text-slate-800">
-                            {a.patient_name}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            {a.patient_phone}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            {a.doctor_name}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            {formatTime(a.scheduled_start)}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            {a.appointment_type}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700 max-w-[280px] align-top">
-                            {a.complaint ? (
-                              <span className="block whitespace-pre-wrap break-words">
-                                {a.complaint}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-slate-700">
-                            <span
-                              className={
-                                "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
-                                statusBadgeClasses(a.status)
-                              }
-                            >
-                              {a.status?.replace("_", " ")}
-                            </span>
-                          </td>
-                          <td className="px-3 py-2 text-end">
-                            <button
-                              type="button"
-                              onClick={() => setSelectedAppointment(a)}
-                              className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
-                            >
-                              {t('common.view')}
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          {a.status?.replace("_", " ")}
+                        </span>
+                      </div>
+
+                      {a.complaint && (
+                        <p className="mt-2 line-clamp-2 whitespace-pre-wrap break-words text-[12px] text-slate-600">
+                          {a.complaint}
+                        </p>
+                      )}
+
+                      <div className="mt-2.5 flex items-center justify-end gap-1.5">
+                        {a.status === "checked_in" && (
+                          <button
+                            type="button"
+                            onClick={() => handleStart(id)}
+                            disabled={startingId === id}
+                            className="rounded-md border border-purple-200 bg-purple-50 px-3 py-1 text-[11px] font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+                          >
+                            {startingId === id ? t('dash.starting') : t('dash.start')}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAppointment(a)}
+                          className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
+                        >
+                          {t('common.view')}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
