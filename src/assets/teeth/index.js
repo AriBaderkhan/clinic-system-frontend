@@ -17,4 +17,9 @@ TEETH["38"] = TEETH["37"];
 TEETH["46"] = TEETH["47"];
 TEETH["48"] = TEETH["47"];
 
+// Upper second molars (17/27) should look like the 3-root upper molar 18. Use the
+// side-correct twin so orientation stays right: 17 -> 18 (right), 27 -> 28 (left).
+TEETH["17"] = TEETH["18"];
+TEETH["27"] = TEETH["28"];
+
 export default TEETH;
