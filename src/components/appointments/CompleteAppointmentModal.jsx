@@ -120,7 +120,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
   const [plans, setPlans] = useState({});
 
-  const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "" });
+  const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
   const [confirmed, setConfirmed] = useState([]);
   const [completedPlanIds, setCompletedPlanIds] = useState([]);
   const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
@@ -243,7 +243,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       const list = plans[code]?.list || [];
       if (list.length > 0) { plan_mode = String(list[0].id); agreed_total = ""; }
     }
-    setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total });
+    setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total, arch: null });
   };
 
   const setQty = (val) => {
@@ -297,9 +297,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         teeth: whole ? [] : [...draft.teeth],
         plan_mode: isPlan ? draft.plan_mode : null,
         agreed_total: isPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
+        arch: whole ? (draft.arch ?? null) : null,
       },
     ]);
-    setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "" });
+    setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
   };
 
   const editTreatment = (uid) => {
@@ -311,6 +312,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       teeth: [...e.teeth],
       plan_mode: e.plan_mode || "new",
       agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""),
+      arch: e.arch ?? null,
     });
     setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
   };
@@ -387,7 +389,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     const works = [];
     for (const c of confirmed) {
       if (c.wholeMouth) {
-        works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null });
+        works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null, arch: c.arch ?? null });
       } else if (c.isPlan) {
         works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0] ?? null, treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null });
       } else if (c.teeth.length > 0) {
@@ -573,7 +575,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     {confirmed.map((c) => (
                       <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                         <span className="font-semibold">{c.name}</span>
-                        <span className="text-slate-500">· {c.wholeMouth ? t("appt.comp_whole_mouth") : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
+                        <span className="text-slate-500">· {c.wholeMouth ? t("appt.arch_" + (c.arch || "whole")) : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
                         {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("appt.comp_new_plan_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
                         <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
                         <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
@@ -636,10 +638,18 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
               </div>
 
               {dWhole && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                   <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm">
                     {t("appt.comp_whole_overlay", { name: dMeta?.name })}
                   </span>
+                  <div className="flex gap-2">
+                    {[{ v: null, l: t("appt.arch_whole") }, { v: "upper", l: t("appt.arch_upper") }, { v: "lower", l: t("appt.arch_lower") }].map((o) => (
+                      <button key={String(o.v)} type="button" onClick={() => setDraft((d) => ({ ...d, arch: o.v }))}
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-300 bg-white text-slate-600 hover:border-[#0E6E75]"}`}>
+                        {o.l}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

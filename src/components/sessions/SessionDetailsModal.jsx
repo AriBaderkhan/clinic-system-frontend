@@ -162,7 +162,7 @@ export default function SessionDetailsModal({ sessionId, onClose }) {
                                 )}
                               </td>
                               <td className="px-3 py-2 text-slate-700">{w.quantity}x</td>
-                              <td className="px-3 py-2 text-slate-700">{w.teeth && w.teeth.length > 0 ? w.teeth.join(", ") : "-"}</td>
+                              <td className="px-3 py-2 text-slate-700">{w.teeth && w.teeth.length > 0 ? w.teeth.join(", ") : (w.is_whole_mouth ? t("appt.arch_" + (w.arch || "whole")) : "-")}</td>
                               <td className="px-3 py-2 text-slate-800">{formatMoney(w.total_price, session.currency_code)}</td>
                             </tr>
                           ))}

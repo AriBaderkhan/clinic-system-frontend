@@ -35,13 +35,13 @@ function buildNormalWorks(confirmed) {
     const works = [];
     for (const c of confirmed) {
         if (c.isPlan) continue;
-        if (c.wholeMouth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: null });
+        if (c.wholeMouth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, arch: c.arch ?? null });
         else if (c.teeth.length > 0) for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t });
         else works.push({ work_id: c.work_id, quantity: c.quantity || 1, tooth_number: null });
     }
     return works;
 }
-const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}`).sort());
+const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}:${w.arch || ''}`).sort());
 
 function parseTeeth(s) {
     if (!s) return [];
@@ -148,7 +148,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
 
     const [confirmed, setConfirmed] = useState([]);          // normal + newly-added plan works
     const [origWorksSig, setOrigWorksSig] = useState("[]");
-    const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "" });
+    const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
     const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
 
     const [planWorks, setPlanWorks] = useState([]);          // existing plan works (tooth only)
@@ -202,6 +202,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                         isPlan: false,
                         quantity: Number(g.quantity || 1),
                         teeth: Array.isArray(g.teeth) ? g.teeth.map(Number).filter(Number.isFinite) : [],
+                        arch: g.arch ?? null,
                     };
                 });
                 setConfirmed(initialConfirmed);
@@ -276,7 +277,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             const list = plans[code]?.list || [];
             if (list.length > 0) { plan_mode = String(list[0].id); agreed_total = ""; }
         }
-        setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total });
+        setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total, arch: null });
     };
     const setQty = (val) => {
         const q = Math.max(1, Number(val) || 1);
@@ -313,14 +314,15 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 teeth: dWhole ? [] : [...draft.teeth],
                 plan_mode: dPlan ? draft.plan_mode : null,
                 agreed_total: dPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
+                arch: dWhole ? (draft.arch ?? null) : null,
             },
         ]);
-        setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "" });
+        setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
     };
     const editTreatment = (uid) => {
         const e = confirmed.find((c) => c.uid === uid);
         if (!e) return;
-        setDraft({ work_id: String(e.work_id), quantity: e.wholeMouth ? 1 : e.teeth.length || e.quantity || 1, teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : "") });
+        setDraft({ work_id: String(e.work_id), quantity: e.wholeMouth ? 1 : e.teeth.length || e.quantity || 1, teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""), arch: e.arch ?? null });
         setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
     };
     const removeTreatment = (uid) => setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
@@ -384,6 +386,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 tooth_number: c.wholeMouth ? null : (c.teeth[0] ?? null),
                 treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null,
                 agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null,
+                arch: c.wholeMouth ? (c.arch ?? null) : null,
             });
         }
 
@@ -548,7 +551,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                         {confirmed.map((c) => (
                                             <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
                                                 <span className="font-semibold">{c.name}</span>
-                                                <span className="text-slate-500">· {c.wholeMouth ? t("appt.comp_whole_mouth") : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("es.qty_no_tooth", { quantity: c.quantity })}</span>
+                                                <span className="text-slate-500">· {c.wholeMouth ? t("appt.arch_" + (c.arch || "whole")) : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("es.qty_no_tooth", { quantity: c.quantity })}</span>
                                                 {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("es.new_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
                                                 <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
                                                 <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
@@ -644,10 +647,21 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                 <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
                                 {dMeta && !dWhole && (<span className="text-xs text-slate-500">{draft.teeth.length ? t("appt.comp_tooth_label", { teeth: draft.teeth.join(", ") }) : t("appt.comp_tooth_optional")}</span>)}
                             </div>
-                            <div className="flex flex-1 items-center justify-center">
+                            <div className="relative flex flex-1 items-center justify-center">
                                 <div className={`w-full transition-opacity ${dWhole ? "opacity-40 pointer-events-none" : !draft.work_id ? "opacity-70" : ""}`}>
                                     <TeethDiagram age={base?.session?.patient?.age} selected={draft.teeth} done={confirmedTeeth} marked={planTeeth} labels={planLabels} onToothClick={toggleTooth} onToothDoubleClick={(n) => setPopupTooth(n)} disabled={isSaving || dWhole || !draft.work_id} />
                                 </div>
+                                {dWhole && (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                                        <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm">{t("appt.comp_whole_overlay", { name: dMeta?.name })}</span>
+                                        <div className="flex gap-2">
+                                            {[{ v: null, l: t("appt.arch_whole") }, { v: "upper", l: t("appt.arch_upper") }, { v: "lower", l: t("appt.arch_lower") }].map((o) => (
+                                                <button key={String(o.v)} type="button" onClick={() => setDraft((d) => ({ ...d, arch: o.v }))}
+                                                    className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-300 bg-white text-slate-600 hover:border-[#0E6E75]"}`}>{o.l}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <p className="mt-2 text-center text-[11px] text-slate-400">{t("es.chart_hint")}</p>
                         </div>
