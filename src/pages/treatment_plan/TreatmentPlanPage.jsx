@@ -14,6 +14,7 @@ function getPageNumbers(currentPage, totalPages) {
 import { useTranslation } from "react-i18next";
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 import { useSettings } from "../../context/SettingContext";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 export default function TreatmentPlanPage() {
     const { t } = useTranslation();
@@ -42,6 +43,10 @@ export default function TreatmentPlanPage() {
         savingTp,
 
         handleDeleteTp,
+        deletingTp,
+        deletingBusy,
+        cancelDeleteTp,
+        confirmDeleteTp,
 
         editingPaid,
         startEditPaid,
@@ -280,7 +285,7 @@ export default function TreatmentPlanPage() {
                                                                 </button>
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => handleDeleteTp(tp.id)}
+                                                                    onClick={() => handleDeleteTp(tp)}
                                                                     className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
                                                                 >
                                                                     {t("common.delete")}
@@ -458,6 +463,19 @@ export default function TreatmentPlanPage() {
                     </div>
                 )}
             </div>
+
+            {deletingTp && (
+                <ConfirmModal
+                    danger
+                    title={t("tp.delete_title")}
+                    message={t("tp.delete_message", { type: String(deletingTp.type || "").toUpperCase() })}
+                    confirmLabel={t("common.delete")}
+                    cancelLabel={t("common.cancel")}
+                    loading={deletingBusy}
+                    onConfirm={confirmDeleteTp}
+                    onClose={cancelDeleteTp}
+                />
+            )}
         </div>
     );
 }

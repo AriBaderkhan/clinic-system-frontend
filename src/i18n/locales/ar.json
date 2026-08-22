@@ -304,6 +304,10 @@
   },
   "insights": {
     "title": "مساعد التحليلات",
+    "export_title": "تصدير إلى Excel (شهر واحد)",
+    "export_excel": "تصدير Excel",
+    "exporting": "جارٍ التصدير…",
+    "export_failed": "تعذّر تصدير ملف Excel",
     "pick_topic": "اختر موضوعاً",
     "loading": "جارٍ التحميل…",
     "could_not_load_questions": "تعذّر تحميل الأسئلة",
@@ -667,6 +671,7 @@
     "next": "التالي",
     "showing_of": "عرض {{start}}–{{end}} من {{total}} موعد",
     "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا الموعد؟",
+    "delete_title": "حذف هذا الموعد؟",
     "delete_failed": "فشل حذف الموعد. يرجى المحاولة مرة أخرى.",
     "add_title": "إضافة موعد",
     "add_subtitle": "إنشاء موعد جديد لمريض وتعيين طبيب ووقت.",
@@ -919,9 +924,11 @@
     "sess_col_notes": "ملاحظات",
     "sess_col_actions": "إجراءات",
     "sess_treatment_plan_badge": "خطة علاج",
+    "sess_no_works_badge": "لا أعمال",
     "sess_paid": "مدفوع",
     "sess_unpaid": "غير مدفوع",
     "sess_delete_confirm": "هل أنت متأكد أنك تريد حذف هذه الجلسة؟",
+    "sess_delete_title": "حذف هذه الزيارة؟",
     "sess_delete_failed": "فشل حذف الجلسة.",
     "sess_showing_of": "عرض {{start}}–{{end}} من {{total}} جلسة"
   },
@@ -967,7 +974,9 @@
     "col_action": "إجراء",
     "no_sessions": "لا توجد جلسات",
     "no_plans": "لا توجد خطط علاج",
-    "showing_of": "عرض {{start}}–{{end}} من {{total}} خطة علاج"
+    "showing_of": "عرض {{start}}–{{end}} من {{total}} خطة علاج",
+    "delete_title": "حذف هذه الخطة؟",
+    "delete_message": "سيتم حذف خطة {{type}} مع أعمالها ومدفوعاتها، ولن تُحتسب أموالها في التقارير بعد الآن."
   },
   "lab": {
     "title": "المختبر",
@@ -1038,6 +1047,9 @@
     "payment_note_ph": "ملاحظة لهذه الدفعة",
     "plan_works_title": "أعمال خطة العلاج — السن فقط",
     "plan_works_hint": "المبلغ والنوع يُداران في خطط العلاج.",
+    "mark_done": "منجز",
+    "mark_done_hint": "وضع خطة العلاج كمكتملة",
+    "plan_completed": "مكتمل",
     "whole_no_tooth": "الفم بالكامل · بدون سن",
     "tooth_ph": "سن",
     "chart_hint": "كهرماني = سن خطة العلاج · اختر علاجاً ثم اضغط الأسنان",

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
   deleteTreatmentPlan,
   editTreatmentPlan,
@@ -40,6 +41,10 @@ export default function useTreatmentPlansSection() {
   const [editingPaid, setEditingPaid] = useState({ tpId: null, sessionId: null });
   const [paidDraft, setPaidDraft] = useState("");
   const [savingPaid, setSavingPaid] = useState(false);
+
+  // Delete-confirmation modal: the plan awaiting confirmation (or null), + busy flag.
+  const [deletingTp, setDeletingTp] = useState(null);
+  const [deletingBusy, setDeletingBusy] = useState(false);
 
   const pageLimit = 20;
 
@@ -133,20 +138,38 @@ export default function useTreatmentPlansSection() {
     }
   }, [tpDraft, cancelEditTp, fetchTps]);
 
-  const handleDeleteTp = useCallback(async (tpId) => {
-    const ok = window.confirm("Delete this treatment plan?");
-    if (!ok) return;
+  // Step 1: open the confirm modal (pass the whole plan so the modal can show it).
+  const handleDeleteTp = useCallback((tp) => {
+    setDeletingTp(tp);
+  }, []);
 
-    await deleteTreatmentPlan(tpId);
-    await fetchTps();
+  // Step 2: cancel = just close the modal.
+  const cancelDeleteTp = useCallback(() => {
+    setDeletingTp(null);
+  }, []);
 
-    setExpandedTpId((prev) => (prev === tpId ? null : prev));
-    setTpSessions((prev) => {
-      const copy = { ...prev };
-      delete copy[tpId];
-      return copy;
-    });
-  }, [fetchTps]);
+  // Step 3: confirm = actually void the plan, then refresh + close.
+  const confirmDeleteTp = useCallback(async () => {
+    if (!deletingTp) return;
+    const tpId = deletingTp.id;
+    try {
+      setDeletingBusy(true);
+      await deleteTreatmentPlan(tpId);
+      await fetchTps();
+
+      setExpandedTpId((prev) => (prev === tpId ? null : prev));
+      setTpSessions((prev) => {
+        const copy = { ...prev };
+        delete copy[tpId];
+        return copy;
+      });
+      setDeletingTp(null);
+    } catch (err) {
+      toast.error(err.userMessage || "Failed to delete");
+    } finally {
+      setDeletingBusy(false);
+    }
+  }, [deletingTp, fetchTps]);
 
   const startEditPaid = useCallback((tpId, sessionId, currentPaid) => {
     setEditingPaid({ tpId, sessionId });
@@ -182,7 +205,7 @@ export default function useTreatmentPlansSection() {
       page, setPage, pagination,
       expandedTpId, toggleExpand, tpSessions, sessionsLoading,
       editingTpId, startEditTp, cancelEditTp, saveEditTp, tpDraft, setTpDraft, savingTp,
-      handleDeleteTp,
+      handleDeleteTp, deletingTp, deletingBusy, cancelDeleteTp, confirmDeleteTp,
       editingPaid, startEditPaid, cancelEditPaid, saveEditPaid, paidDraft, setPaidDraft, savingPaid,
     }),
     [
@@ -191,6 +214,7 @@ export default function useTreatmentPlansSection() {
       editingTpId, tpDraft, savingTp,
       editingPaid, paidDraft, savingPaid,
       toggleExpand, startEditTp, cancelEditTp, saveEditTp, handleDeleteTp,
+      deletingTp, deletingBusy, cancelDeleteTp, confirmDeleteTp,
       startEditPaid, cancelEditPaid, saveEditPaid,
     ]
   );

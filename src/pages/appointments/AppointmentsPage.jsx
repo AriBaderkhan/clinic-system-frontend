@@ -8,6 +8,7 @@ import AppointmentDetailsModal from "../../components/appointments/AppointmentDe
 import { deleteAppointment } from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -41,6 +42,8 @@ export default function AppointmentPage() {
   const [selectedForStatus, setSelectedForStatus] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
   const [selectedDetailsId, setSelectedDetailsId] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -48,14 +51,19 @@ export default function AppointmentPage() {
     if (el) el.scrollTop = 0;
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(t("appt.delete_confirm"));
-    if (!confirmDelete) return;
+  const handleDelete = (id) => setPendingDeleteId(id);
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
     try {
-      await deleteAppointment(id);
+      setDeleting(true);
+      await deleteAppointment(pendingDeleteId);
       await refresh();
+      setPendingDeleteId(null);
     } catch (err) {
       toast.error(err.userMessage || t("appt.delete_failed"));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -90,6 +98,19 @@ export default function AppointmentPage() {
           appointment={selectedForComplete}
           onClose={() => setSelectedForComplete(null)}
           onCompleted={refresh}
+        />
+      )}
+
+      {pendingDeleteId && (
+        <ConfirmModal
+          danger
+          title={t("appt.delete_title")}
+          message={t("appt.delete_confirm")}
+          confirmLabel={t("common.delete")}
+          cancelLabel={t("common.cancel")}
+          loading={deleting}
+          onConfirm={confirmDelete}
+          onClose={() => setPendingDeleteId(null)}
         />
       )}
 

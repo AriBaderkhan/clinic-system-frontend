@@ -50,9 +50,8 @@ function parseTeeth(s) {
 
 // Per-tooth quick-add popup (opened by double-clicking a tooth) — mirrors the
 // Complete-Appointment screen: click a normal work → added instantly; click a
-// plan work → CONTINUE an existing plan on this tooth, or enter the agreed total
-// for a new one. Note: editing a PAST session can't mark a plan "completed"
-// (that's a completion-flow action), so there is no done/not-done here.
+// plan work → CONTINUE an existing plan on this tooth (with a Done / not-done
+// choice that can mark the plan completed), or enter the agreed total for a new one.
 function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose }) {
     const { t } = useTranslation();
     const [step, setStep] = useState(null);   // { work, existing } when a PLAN work needs a follow-up
@@ -106,8 +105,13 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
                                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-slate-700">
                                     {t("appt.tw_existing")} · {t("appt.pay_agreed")} <b>{formatMoney(step.existing.agreed_total)}</b> · {t("appt.pay_remaining")} <b>{formatMoney(Number(step.existing.agreed_total) - Number(step.existing.total_paid || 0))}</b>
                                 </div>
-                                <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, amount: 0 })}
-                                    className="w-full rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_add")}</button>
+                                <p className="text-xs font-medium text-slate-700">{t("appt.tw_done_q")}</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: true, amount: 0 })}
+                                        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
+                                    <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: false, amount: 0 })}
+                                        className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_done_no")}</button>
+                                </div>
                             </div>
                         ) : (
                             <div className="space-y-2">
@@ -149,6 +153,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
 
     const [planWorks, setPlanWorks] = useState([]);          // existing plan works (tooth only)
     const [plans, setPlans] = useState({ ortho: { list: [] }, implant: { list: [] }, rct: { list: [] }, re_rct: { list: [] } });
+    const [completedPlanIds, setCompletedPlanIds] = useState([]); // plans ticked "Done" this edit
 
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDelete, setImagesToDelete] = useState([]);
@@ -324,7 +329,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const activePlanForTooth = (tooth, code) =>
         (plans[code]?.list || []).find((p) => parseTeeth(p.teeth).includes(tooth)) || null;
 
-    const addToothWork = ({ work, existingPlan, amount }) => {
+    const addToothWork = ({ work, existingPlan, markDone, amount }) => {
         const isPlan = !!work.is_plan;
         setConfirmed((prev) => [
             ...prev,
@@ -339,11 +344,19 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 agreed_total: isPlan && !existingPlan ? Number(amount) : null,
             },
         ]);
+        // "Done" on an existing plan → mark that plan completed on save.
+        if (isPlan && existingPlan && markDone) {
+            setCompletedPlanIds((prev) => (prev.includes(existingPlan.id) ? prev : [...prev, existingPlan.id]));
+        }
         setPopupTooth(null);
     };
 
     const setPlanTooth = (sessionWorkId, value) =>
         setPlanWorks((prev) => prev.map((p) => (p.session_work_id === sessionWorkId ? { ...p, tooth_number: value } : p)));
+
+    // Tick / untick a plan as "Done" (marks the treatment plan completed on save).
+    const toggleCompleted = (planId) =>
+        setCompletedPlanIds((prev) => (prev.includes(planId) ? prev.filter((id) => id !== planId) : [...prev, planId]));
 
     const onPickImages = (e) => {
         const picked = Array.from(e.target.files || []);
@@ -398,6 +411,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             payload.prescription = prescription.filter((r) => r.drug_name && r.drug_name.trim());
         }
 
+        // plans the doctor ticked "Done" this edit → mark completed
+        const doneIds = [...new Set(completedPlanIds.filter(Boolean))];
+        if (doneIds.length > 0) payload.completedPlanIds = doneIds;
+
         const planToothUpdates = planWorks
             .filter((p) => !wholeMouthCodes.has(String(p.plan_type || "").toLowerCase()))
             .filter((p) => String(p.tooth_number) !== String(p._origTooth))
@@ -423,10 +440,18 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         }
     }
 
-    // chart highlights
-    const planTeeth = planWorks.map((p) => Number(p.tooth_number)).filter(Number.isFinite);
+    // chart highlights — mark teeth from the patient's ACTIVE plans (so existing
+    // implants/RCTs show on the chart even when they aren't part of THIS session),
+    // plus this session's own plan works. Mirrors the Complete-Appointment chart.
+    const planTypeByTooth = useMemo(() => {
+        const m = {};
+        treatmentTypes.forEach((type) => (plans[type]?.list || []).forEach((p) => parseTeeth(p.teeth).forEach((n) => { m[n] = type; })));
+        planWorks.forEach((p) => { const n = Number(p.tooth_number); if (Number.isFinite(n)) m[n] = String(p.plan_type || m[n] || "").toLowerCase(); });
+        return m;
+    }, [plans, treatmentTypes, planWorks]);
+    const planTeeth = Object.keys(planTypeByTooth).map(Number).filter(Number.isFinite);
     const planLabels = {};
-    planWorks.forEach((p) => { const t = Number(p.tooth_number); if (Number.isFinite(t)) planLabels[t] = ABBR[p.plan_type] || String(p.plan_type || "").toUpperCase(); });
+    Object.entries(planTypeByTooth).forEach(([n, type]) => { planLabels[n] = ABBR[type] || String(type || "").toUpperCase(); });
 
     // teeth that already have a work added THIS edit → shown green on the chart
     const confirmedTeeth = useMemo(() => {
@@ -533,6 +558,27 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                 )}
                             </div>
 
+                            {/* Existing plans of the selected type — tick "Done" to complete one */}
+                            {dPlan && existingForType.length > 0 && (
+                                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                    <p className="mb-1.5 text-[11px] font-semibold text-slate-700">{t("appt.comp_existing", { code: dCode.toUpperCase() })}</p>
+                                    <div className="max-h-28 space-y-1.5 overflow-y-auto">
+                                        {existingForType.map((p) => {
+                                            const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
+                                            return (
+                                                <label key={p.id} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px]">
+                                                    <span>{p.teeth ? t("appt.comp_tooth_label", { teeth: p.teeth }) : t("appt.comp_tooth_not_set")} · {t("appt.comp_remaining", { amount: formatMoney(rem) })}</span>
+                                                    <span className="flex shrink-0 items-center gap-1 font-medium text-slate-600">
+                                                        {t("es.mark_done")}
+                                                        <input type="checkbox" checked={completedPlanIds.includes(p.id)} onChange={() => toggleCompleted(p.id)} disabled={isSaving} />
+                                                    </span>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Money — hidden for doctors (works + images only, no money) */}
                             {canEditPayment && (
                                 <>
@@ -571,6 +617,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                     ) : (
                                                         <input type="number" min={11} max={85} value={p.tooth_number} onChange={(e) => setPlanTooth(p.session_work_id, e.target.value)} disabled={isSaving} placeholder={t("es.tooth_ph")} className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]" />
                                                     )}
+                                                    {p.is_completed ? (
+                                                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">{t("es.plan_completed")}</span>
+                                                    ) : p.treatment_plan_id ? (
+                                                        <label className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-slate-600" title={t("es.mark_done_hint")}>
+                                                            <input type="checkbox" checked={completedPlanIds.includes(p.treatment_plan_id)} onChange={() => toggleCompleted(p.treatment_plan_id)} disabled={isSaving} />
+                                                            {t("es.mark_done")}
+                                                        </label>
+                                                    ) : null}
                                                 </div>
                                             );
                                         })}

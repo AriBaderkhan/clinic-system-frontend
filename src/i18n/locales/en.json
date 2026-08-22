@@ -304,6 +304,10 @@
   },
   "insights": {
     "title": "Insights Assistant",
+    "export_title": "Export to Excel (one month)",
+    "export_excel": "Export Excel",
+    "exporting": "Exporting…",
+    "export_failed": "Could not export the Excel file",
     "pick_topic": "Pick a topic",
     "loading": "Loading…",
     "could_not_load_questions": "Could not load questions",
@@ -667,6 +671,7 @@
     "next": "Next",
     "showing_of": "Showing {{start}}–{{end}} of {{total}} appointments",
     "delete_confirm": "Are you sure you want to delete this appointment?",
+    "delete_title": "Delete this appointment?",
     "delete_failed": "Failed to delete appointment. Please try again.",
     "add_title": "Add Appointment",
     "add_subtitle": "Create a new appointment for a patient and assign a doctor & time.",
@@ -919,9 +924,11 @@
     "sess_col_notes": "Notes",
     "sess_col_actions": "Actions",
     "sess_treatment_plan_badge": "Treatment plan",
+    "sess_no_works_badge": "No works",
     "sess_paid": "Paid",
     "sess_unpaid": "Unpaid",
     "sess_delete_confirm": "Are you sure you want to delete this session?",
+    "sess_delete_title": "Delete this visit?",
     "sess_delete_failed": "Failed to delete session.",
     "sess_showing_of": "Showing {{start}}–{{end}} of {{total}} sessions"
   },
@@ -967,7 +974,9 @@
     "col_action": "Action",
     "no_sessions": "No sessions",
     "no_plans": "No treatment plans found",
-    "showing_of": "Showing {{start}}–{{end}} of {{total}} treatment plans"
+    "showing_of": "Showing {{start}}–{{end}} of {{total}} treatment plans",
+    "delete_title": "Delete this plan?",
+    "delete_message": "This {{type}} plan, its works and its payments will be removed. Its money will no longer count in your reports."
   },
   "lab": {
     "title": "Lab",
@@ -1038,6 +1047,9 @@
     "payment_note_ph": "Note for this payment",
     "plan_works_title": "Treatment-plan works — tooth only",
     "plan_works_hint": "Money & type are managed in Treatment Plans.",
+    "mark_done": "Done",
+    "mark_done_hint": "Mark this treatment plan as completed",
+    "plan_completed": "Completed",
     "whole_no_tooth": "whole mouth · no tooth",
     "tooth_ph": "tooth",
     "chart_hint": "Amber = treatment-plan tooth · pick a treatment then tap teeth",

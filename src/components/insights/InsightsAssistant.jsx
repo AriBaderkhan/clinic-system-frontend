@@ -1,7 +1,19 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { getInsightsCatalog, getInsight } from "../../api/reportsApi";
+import { getInsightsCatalog, getInsight, getInsightsMeta, downloadInsightsExcel } from "../../api/reportsApi";
 import { INSIGHT_CATEGORIES } from "./insightsConfig";
+
+// Trigger a browser download from a Blob (used by the Excel export).
+function triggerDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
 
 // Floating "ask" assistant for the tenant_manager. Click the bubble → pick a
 // category → pick a question → see the answer (per-branch + totals + rate).
@@ -38,6 +50,12 @@ export default function InsightsAssistant() {
     const [loadingResult, setLoadingResult] = useState(false);
     const [resultError, setResultError] = useState("");
 
+    // Excel export (first page): one month, bounded to [join month .. this month].
+    const [exportMonth, setExportMonth] = useState(currentMonth());
+    const [meta, setMeta] = useState(null); // { earliest_month, latest_month }
+    const [exporting, setExporting] = useState(false);
+    const [exportError, setExportError] = useState("");
+
     // Load the question catalog once, the first time the panel opens.
     useEffect(() => {
         if (!open || catalog || loadingCatalog) return;
@@ -48,6 +66,25 @@ export default function InsightsAssistant() {
             .catch((e) => setCatalogError(e?.userMessage || t("insights.could_not_load_questions")))
             .finally(() => setLoadingCatalog(false));
     }, [open, catalog, loadingCatalog]);
+
+    // Load the month bounds once, when the panel first opens.
+    useEffect(() => {
+        if (!open || meta) return;
+        getInsightsMeta().then((m) => { if (m) setMeta(m); }).catch(() => {});
+    }, [open, meta]);
+
+    const handleExport = async () => {
+        setExporting(true);
+        setExportError("");
+        try {
+            const { blob, filename } = await downloadInsightsExcel(exportMonth);
+            triggerDownload(blob, filename);
+        } catch (e) {
+            setExportError(e?.userMessage || t("insights.export_failed"));
+        } finally {
+            setExporting(false);
+        }
+    };
 
     const categories = useMemo(() => {
         if (!catalog) return [];
@@ -147,6 +184,30 @@ export default function InsightsAssistant() {
                         {/* CATEGORIES */}
                         {view === "categories" && (
                             <>
+                                {/* Excel export — one month, bounded to [join month .. this month] */}
+                                <div className="mb-3 rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-3">
+                                    <p className="mb-2 text-xs font-semibold text-slate-700">{t("insights.export_title")}</p>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="month"
+                                            value={exportMonth}
+                                            min={meta?.earliest_month || undefined}
+                                            max={meta?.latest_month || undefined}
+                                            onChange={(e) => setExportMonth(e.target.value)}
+                                            className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleExport}
+                                            disabled={exporting || !exportMonth}
+                                            className="shrink-0 rounded-md bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#013f5a] disabled:opacity-50"
+                                        >
+                                            {exporting ? t("insights.exporting") : t("insights.export_excel")}
+                                        </button>
+                                    </div>
+                                    {exportError && <p className="mt-1 text-[11px] text-red-600">{exportError}</p>}
+                                </div>
+
                                 {loadingCatalog && <p className="p-4 text-sm text-slate-500">{t("insights.loading")}</p>}
                                 {catalogError && <p className="p-4 text-sm text-red-600">{catalogError}</p>}
                                 {!loadingCatalog && !catalogError && (

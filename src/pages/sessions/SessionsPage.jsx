@@ -7,6 +7,7 @@ import EditSessionModal from "../../components/sessions/EditSessionModal";
 import TreatmentPlanPage from "../treatment_plan/TreatmentPlanPage";
 import { deleteSession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -28,6 +29,8 @@ export default function Sessions() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [dayFilter, setDayFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const { sessions, isLoading, error, refresh, page, setPage, pagination } = useSessions({
     day: dayFilter,
@@ -53,14 +56,21 @@ export default function Sessions() {
     setIsEditOpen(false);
   }
 
-  const handleDelete = async (sessionId) => {
-    const confirmDelete = window.confirm(t("clin.sess_delete_confirm"));
-    if (!confirmDelete) return;
+  // Open the confirm modal.
+  const handleDelete = (sessionId) => setPendingDeleteId(sessionId);
+
+  // Confirm = actually void the visit.
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
     try {
-      await deleteSession(sessionId);
+      setDeleting(true);
+      await deleteSession(pendingDeleteId);
       await refresh();
+      setPendingDeleteId(null);
     } catch (err) {
       toast.error(err.userMessage || t("clin.sess_delete_failed"));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -215,7 +225,11 @@ export default function Sessions() {
                       </td>
                       <td className="px-3 py-2 text-slate-800">
                         {s.has_normal_works === false ? (
-                          <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">{t("clin.sess_treatment_plan_badge")}</span>
+                          s.has_plan_works ? (
+                            <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">{t("clin.sess_treatment_plan_badge")}</span>
+                          ) : (
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-medium text-slate-500">{t("clin.sess_no_works_badge")}</span>
+                          )
                         ) : (
                           formatMoney(s.total, s.currency_code)
                         )}
@@ -336,6 +350,19 @@ export default function Sessions() {
           onUpdated={() => {
             refresh();
           }}
+        />
+      )}
+
+      {pendingDeleteId && (
+        <ConfirmModal
+          danger
+          title={t("clin.sess_delete_title")}
+          message={t("clin.sess_delete_confirm")}
+          confirmLabel={t("common.delete")}
+          cancelLabel={t("common.cancel")}
+          loading={deleting}
+          onConfirm={confirmDelete}
+          onClose={() => setPendingDeleteId(null)}
         />
       )}
         </>

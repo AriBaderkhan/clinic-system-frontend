@@ -34,3 +34,21 @@ export async function getInsight(metricId, params = {}) {
   const res = await api.get(`/api/reports/insights/${metricId}`, { params });
   return res.data?.data || null;
 }
+
+// Bounds for the Excel month picker: { earliest_month, latest_month } as 'YYYY-MM'.
+export async function getInsightsMeta() {
+  const res = await api.get("/api/reports/insights/meta");
+  return res.data?.data || null;
+}
+
+// Download the styled Insights Excel for ONE month ('YYYY-MM'). Returns { blob, filename }.
+export async function downloadInsightsExcel(month) {
+  const res = await api.get("/api/reports/insights/excel", {
+    params: { month },
+    responseType: "blob",
+  });
+  const cd = res.headers?.["content-disposition"] || "";
+  const match = cd.match(/filename="?([^"]+)"?/i);
+  const filename = match?.[1] || `Insights-${month}.xlsx`;
+  return { blob: res.data, filename };
+}
