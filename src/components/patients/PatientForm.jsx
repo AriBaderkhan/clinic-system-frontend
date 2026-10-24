@@ -14,7 +14,8 @@ export default function PatientForm({
     const { t } = useTranslation();
     const [form, setForm] = useState(() => ({
         name: initialData?.name ?? "",
-        phone: initialData?.phone ?? "",
+        phone: initialData?.phone ?? "750",
+        extra_phones: initialData?.extra_phones ?? [],
         age: initialData?.age ? String(initialData.age) : "",
         gender: initialData?.gender ?? "",
         address: initialData?.address ?? "",
@@ -60,6 +61,18 @@ export default function PatientForm({
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    // Extra phones: up to 3 more (4 in total), each starts with "750"
+    const addExtraPhone = () => {
+        setForm((prev) => ({ ...prev, extra_phones: [...prev.extra_phones, "750"] }));
+    };
+
+    const handleExtraPhoneChange = (index, value) => {
+        setForm((prev) => ({
+            ...prev,
+            extra_phones: prev.extra_phones.map((p, i) => (i === index ? value : p)),
+        }));
+    };
+
     // Age helper: reception may type either a real age (e.g. 32) OR a birth year
     // (e.g. 1989). A 4-digit value within [1900, this year] is treated as a year
     // and converted to age. Done on the frontend so it's instant and we save the
@@ -94,6 +107,8 @@ export default function PatientForm({
         const payload = {
             name: form.name.trim(),
             phone: form.phone.trim(),
+            // skip extra fields left empty or with only the "750" prefix
+            extra_phones: form.extra_phones.map((p) => p.trim()).filter((p) => p && p !== "750"),
             age: Number(form.age),
             gender: form.gender,
             address: form.address.trim() || null,
@@ -172,6 +187,25 @@ export default function PatientForm({
                                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
                                     placeholder={t("patient_form.phone_ph")}
                                 />
+                                {form.extra_phones.map((p, index) => (
+                                    <input
+                                        key={index}
+                                        type="text"
+                                        value={p}
+                                        onChange={(e) => handleExtraPhoneChange(index, e.target.value)}
+                                        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                        placeholder={t("patient_form.phone_ph")}
+                                    />
+                                ))}
+                                {form.extra_phones.length < 3 && (
+                                    <button
+                                        type="button"
+                                        onClick={addExtraPhone}
+                                        className="mt-1 text-xs font-semibold text-[#0E6E75] hover:underline"
+                                    >
+                                        + {t("patient_form.add_phone")}
+                                    </button>
+                                )}
                             </div>
 
                             {/* Age + Gender */}
