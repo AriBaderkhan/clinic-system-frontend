@@ -5,9 +5,11 @@ import BranchSwitcher from "../components/BranchSwitcher";
 import NotificationBell from "../components/NotificationBell";
 import TopNav from "../components/TopNav";
 import { clearStorageKeepingTheme } from "../utils/theme";
+import { useAuth } from "../context/AuthContext";
 
 export default function DoctorLayout() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const name = localStorage.getItem('name');
 
   const handleLogout = () => {
@@ -33,7 +35,7 @@ export default function DoctorLayout() {
     <div className="flex h-screen flex-col overflow-hidden bg-slate-50 text-slate-900">
       <TopNav
         items={navItems}
-        title="Crown Dental Clinic"
+        title={user?.clinic_name || ""}
         subtitle={t('layout.dr_dashboard', { name })}
         onLogout={handleLogout}
         logoutLabel={t('nav.logout')}

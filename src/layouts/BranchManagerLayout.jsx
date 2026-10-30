@@ -10,6 +10,7 @@ import NotificationBell from "../components/NotificationBell";
 import TopNav from "../components/TopNav";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
+import { useAuth } from "../context/AuthContext";
 
 // `feature` items are hidden unless the tenant's plan includes that feature code.
 const navItems = [
@@ -29,6 +30,7 @@ export default function BranchManagerLayout() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasFeature } = useSubscription();
+  const { user } = useAuth();
   const isTenantViewing = !!localStorage.getItem('tenant_token');
 
   const handleLogout = () => {
@@ -99,7 +101,7 @@ export default function BranchManagerLayout() {
     <div className="flex h-screen flex-col overflow-hidden bg-slate-50 text-slate-900">
       <TopNav
         items={visibleNav}
-        title="Crown Dental Clinic"
+        title={user?.clinic_name || ""}
         subtitle={t('layout.branch_manager')}
         onLogout={handleLogout}
         logoutLabel={t('nav.logout')}

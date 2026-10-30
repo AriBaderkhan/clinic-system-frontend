@@ -93,6 +93,8 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
     const rows = items.filter((r) => r.drug_name && r.drug_name.trim());
     if (rows.length === 0) { toast.error(t("rx.add_one_print")); return; }
     const doctor = localStorage.getItem("name") || "";
+    let clinicName = "";
+    try { clinicName = JSON.parse(localStorage.getItem("user") || "null")?.clinic_name || ""; } catch { clinicName = ""; }
     const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
     const body = rows.map((r, i) => `
@@ -110,7 +112,7 @@ export default function PrescriptionEditor({ items = [], onChange, patientName =
         th{background:#f1f5f9}
         .sign{margin-top:48px;font-size:13px}
       </style></head><body>
-        <h1>Crown Dental Clinic</h1>
+        <h1>${esc(clinicName)}</h1>
         <div class="meta">Patient: <b>${esc(patientName)}</b> &nbsp;·&nbsp; Date: ${today}${doctor ? ` &nbsp;·&nbsp; Doctor: ${esc(doctor)}` : ""}</div>
         <table>
           <thead><tr><th>#</th><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead>

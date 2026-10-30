@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import usePatients from "../../hooks/usePatients";
+import { useAuth } from "../../context/AuthContext";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -18,6 +19,7 @@ function getPageNumbers(currentPage, totalPages) {
 
 export default function PatientsPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const { patients, isLoading, error, refresh, deletePatient, page, setPage, pagination } = usePatients({
     search: searchTerm,
@@ -62,7 +64,7 @@ export default function PatientsPage() {
         <div>
           <h1 className="text-lg font-semibold text-slate-900">{t("patients.title")}</h1>
           <p className="text-xs text-slate-500">
-            {t("patients.subtitle")}
+            {t("patients.subtitle", { clinic: user?.clinic_name || "" })}
           </p>
         </div>
         <button

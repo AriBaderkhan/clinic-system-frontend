@@ -9,6 +9,7 @@ import { deleteAppointment } from "../../api/appointmentApi";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import { useAuth } from "../../context/AuthContext";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -25,6 +26,7 @@ function getPageNumbers(currentPage, totalPages) {
 export default function AppointmentPage() {
   const { t } = useTranslation();
   const { formatDateTime } = useSettings();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const role = localStorage.getItem("role") || "reception";
   const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
@@ -119,7 +121,7 @@ export default function AppointmentPage() {
         <div>
           <h1 className="text-lg font-semibold text-slate-900">{t("appt.title")}</h1>
           <p className="text-xs text-slate-500">
-            {t("appt.subtitle")}
+            {t("appt.subtitle", { clinic: user?.clinic_name || "" })}
           </p>
         </div>
         <button

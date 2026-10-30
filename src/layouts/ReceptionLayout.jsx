@@ -6,6 +6,7 @@ import NotificationBell from "../components/NotificationBell";
 import TopNav from "../components/TopNav";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
+import { useAuth } from "../context/AuthContext";
 
 // Helper to check permission safely
 const hasPermission = (permission) => {
@@ -40,6 +41,7 @@ const getNavItems = () => {
 export default function ReceptionLayout() {
   const { t } = useTranslation();
   const { hasFeature } = useSubscription();
+  const { user } = useAuth();
 
   const handleLogout = () => {
     if (window.confirm(t('layout.logout_confirm'))) {
@@ -58,7 +60,7 @@ export default function ReceptionLayout() {
     <div className="flex h-screen flex-col overflow-hidden bg-slate-50 text-slate-900">
       <TopNav
         items={navItems}
-        title="Crown Dental Clinic"
+        title={user?.clinic_name || ""}
         subtitle={t('layout.reception_dashboard')}
         onLogout={handleLogout}
         logoutLabel={t('nav.logout')}

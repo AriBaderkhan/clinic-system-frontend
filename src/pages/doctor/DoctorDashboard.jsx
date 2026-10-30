@@ -9,6 +9,7 @@ import CalendarAppointmentModal from "../../components/appointments/CalendarAppo
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import { inProgressAppointment } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
+import { useAuth } from "../../context/AuthContext";
 
 function statusBadgeClasses(status) {
   switch (status) {
@@ -39,6 +40,7 @@ export default function DoctorDashboard() {
 
   const { formatTime, formatDateTime } = useSettings();
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
@@ -98,7 +100,7 @@ export default function DoctorDashboard() {
       {/* Top intro */}
       <div className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-slate-900">
-          Crown Dental Clinic — {t('dash.overview')}
+          {user?.clinic_name ? `${user.clinic_name} — ` : ""}{t('dash.overview')}
         </h1>
         <p className="text-xs text-slate-500">
           {t('dash.subtitle')}

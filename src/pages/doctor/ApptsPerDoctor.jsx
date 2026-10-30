@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
+import { useAuth } from "../../context/AuthContext";
 
 
 export default function ApptsPerDoctor() {
     const { t } = useTranslation();
     const { formatDateTime } = useSettings();
+    const { user } = useAuth();
 
 
     // ---------- FILTER STATE ----------
@@ -67,7 +69,7 @@ export default function ApptsPerDoctor() {
                         {t("appt.title")}
                     </h1>
                     <p className="text-xs text-slate-500">
-                        {t("appt.subtitle")}
+                        {t("appt.subtitle", { clinic: user?.clinic_name || "" })}
                     </p>
                 </div>
 
