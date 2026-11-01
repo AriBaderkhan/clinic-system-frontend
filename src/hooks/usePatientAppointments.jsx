@@ -25,5 +25,5 @@ export default function usePatientAppointments(patientId) {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  return { appointments, isLoading, error };
+  return { appointments, isLoading, error, refresh: fetchAppointments };
 }

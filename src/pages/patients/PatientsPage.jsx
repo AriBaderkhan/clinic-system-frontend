@@ -162,7 +162,11 @@ export default function PatientsPage() {
                       <td className="px-3 py-2 text-slate-800">{p.name}</td>
                       <td className="px-3 py-2 text-slate-700">{p.age}</td>
                       <td className="px-3 py-2 text-slate-700 capitalize">{p.gender}</td>
-                      <td className="px-3 py-2 text-slate-700">{p.phone}</td>
+                      <td className="px-3 py-2 text-slate-700">
+                        {[p.phone, ...(p.extra_phones || [])].map((ph) => (
+                          <div key={ph} className="whitespace-nowrap">{ph}</div>
+                        ))}
+                      </td>
                       <td className="px-3 py-2 text-slate-700">{p.address || "-"}</td>
                       <td className="px-3 py-2">
                         <div className="flex items-center justify-end gap-2 text-xs">

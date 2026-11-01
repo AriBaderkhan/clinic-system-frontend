@@ -64,6 +64,8 @@ export default function useTreatmentPlansSection() {
         limit: pageLimit,
         totalPages: Math.ceil((res.total ?? 0) / pageLimit) || 1,
       });
+    } catch (err) {
+      toast.error(err.userMessage);
     } finally {
       setLoading(false);
     }
@@ -133,6 +135,8 @@ export default function useTreatmentPlansSection() {
       await editTreatmentPlan(tp.id, payload);
       await fetchTps();
       cancelEditTp();
+    } catch (err) {
+      toast.error(err.userMessage); // e.g. agreed total below what was already paid
     } finally {
       setSavingTp(false);
     }
@@ -194,6 +198,8 @@ export default function useTreatmentPlansSection() {
       await refreshTpSessions(tpId);
       await fetchTps();
       cancelEditPaid();
+    } catch (err) {
+      toast.error(err.userMessage); // e.g. more than the agreed total
     } finally {
       setSavingPaid(false);
     }

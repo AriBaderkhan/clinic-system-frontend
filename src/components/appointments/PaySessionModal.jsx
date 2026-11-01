@@ -93,9 +93,11 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   // const noPaymentProvided = !payNormal && !payPlans;
   const hasPlanErrors = Object.keys(planErrors).length > 0;
 
-  //isNormalBelowMin
+  // the server refuses more than what is still owed — say it before sending
+  const normalTooMuch = payNormal && normalNumeric > remaining;
+
   const disableSubmit =
-    isSubmitting   || hasPlanErrors;
+    isSubmitting || hasPlanErrors || normalTooMuch;
 
   const handleChangePlanAmount = (planId, value) => {
     setPlanAmounts((prev) => ({ ...prev, [String(planId)]: value }));
@@ -275,11 +277,9 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
               className={`w-full rounded-lg border px-3 py-2 text-sm outline-none`}
               placeholder={shownRemaining ? String(shownRemaining) : t("appt.pay_enter_amount")}
             />
-            {/* {isNormalBelowMin && (
-              <p className="text-[11px] text-red-500">
-                Amount cannot be less than minimum total ({formatMoney(minTotal)}).
-              </p>
-            )} */}
+            {normalTooMuch && (
+              <p className="text-[11px] text-red-500">{t("appt.pay_exceed", { amount: formatMoney(remaining, curr) })}</p>
+            )}
             
             
           </div>
@@ -349,7 +349,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
             </button>
             <button
               type="submit"
-              // disabled={disableSubmit}
+              disabled={disableSubmit}
               className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white
                 ${ disableSubmit ? "bg-[#0E6E75]/50 cursor-not-allowed" : "bg-[#0E6E75] hover:bg-[#0A565C]"}
                   `}

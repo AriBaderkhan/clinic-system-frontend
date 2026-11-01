@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useWorks from "../../hooks/useWorks";
 import { useSettings } from "../../context/SettingContext";
+import { getSpecialties } from "../../api/specialtyApi";
+import SpecialtiesSection from "../../components/works/SpecialtiesSection";
 
 const emptyForm = {
   code: "",
@@ -13,6 +15,7 @@ const emptyForm = {
   is_active: true,
   is_plan: false,
   is_whole_mouth: false,
+  specialty_id: "",
 };
 
 // ── View Modal ────────────────────────────────────────────────────────────────
@@ -76,13 +79,13 @@ function DetailRow({ label, value }) {
 }
 
 // ── Form Modal (create + edit) ────────────────────────────────────────────────
-function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
+function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmitting }) {
   const { t } = useTranslation();
   const { settings } = useSettings();
   const curr = settings?.currency_code || "";
   const [form, setForm] = useState(
     mode === "edit"
-      ? { ...initial, min_installment_amount: initial.min_installment_amount ?? "" }
+      ? { ...initial, min_installment_amount: initial.min_installment_amount ?? "", specialty_id: initial.specialty_id ?? "" }
       : emptyForm
   );
 
@@ -100,6 +103,8 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
       is_active: form.is_active,
       is_plan: form.is_plan,
       is_whole_mouth: form.is_whole_mouth,
+      // empty = for every doctor
+      specialty_id: form.specialty_id ? Number(form.specialty_id) : null,
     };
     if (form.allow_installments) {
       payload.min_installment_amount = Number(form.min_installment_amount);
@@ -139,6 +144,17 @@ function WorkFormModal({ mode, initial, onClose, onSubmit, isSubmitting }) {
               placeholder={t("clin.name_ph")}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
             />
+          </FormField>
+
+          <FormField label={t("spec.specialty")}>
+            <select
+              value={form.specialty_id ?? ""}
+              onChange={(e) => set("specialty_id", e.target.value)}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+            >
+              <option value="">{t("spec.any_specialty")}</option>
+              {specialties.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
           </FormField>
 
           <FormField label={`${t("clin.min_price")}${curr ? ` (${curr})` : ""}`}>
@@ -255,6 +271,26 @@ export default function WorksPage() {
   const [viewWork, setViewWork] = useState(null);
   const [editWork, setEditWork] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+
+  const loadSpecialties = useCallback(async () => {
+    try {
+      const res = await getSpecialties();
+      setSpecialties(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      toast.error(err.userMessage);
+    }
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    getSpecialties()
+      .then((res) => { if (alive) setSpecialties(Array.isArray(res.data) ? res.data : []); })
+      .catch((err) => toast.error(err.userMessage));
+    return () => { alive = false; };
+  }, []);
+
+  const specialtyName = (id) => specialties.find((s) => Number(s.id) === Number(id))?.name || t("spec.any_specialty");
 
   const handleCreate = async (payload) => {
     const result = await create(payload);
@@ -323,6 +359,7 @@ export default function WorksPage() {
                   <th className="px-3 py-3">#</th>
                   <th className="px-3 py-3">{t("clin.col_code")}</th>
                   <th className="px-3 py-3">{t("clin.col_name")}</th>
+                  <th className="px-3 py-3">{t("spec.specialty")}</th>
                   <th className="px-3 py-3">{t("clin.col_min_price")}</th>
                   <th className="px-3 py-3">{t("clin.col_installments")}</th>
                   <th className="px-3 py-3">{t("clin.col_min_installment")}</th>
@@ -336,6 +373,7 @@ export default function WorksPage() {
                     <td className="px-3 py-3 text-slate-500">{idx + 1}</td>
                     <td className="px-3 py-3 font-mono font-medium text-slate-800">{w.code}</td>
                     <td className="px-3 py-3 text-slate-700">{w.name}</td>
+                    <td className="px-3 py-3 text-slate-600">{specialtyName(w.specialty_id)}</td>
                     <td className="px-3 py-3 text-slate-800">{formatMoney(w.min_price)}</td>
                     <td className="px-3 py-3">
                       <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-slate-100 text-slate-500"}`}>
@@ -377,7 +415,7 @@ export default function WorksPage() {
                 ))}
                 {works.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-3 py-10 text-center text-slate-500">
+                    <td colSpan={9} className="px-3 py-10 text-center text-slate-500">
                       {t("clin.no_works")}
                     </td>
                   </tr>
@@ -388,6 +426,8 @@ export default function WorksPage() {
         )}
       </div>
 
+      <SpecialtiesSection specialties={specialties} works={works} onSpecialtiesChanged={loadSpecialties} />
+
       {viewWork && (
         <ViewModal work={viewWork} onClose={() => setViewWork(null)} />
       )}
@@ -395,6 +435,7 @@ export default function WorksPage() {
       {isCreateOpen && (
         <WorkFormModal
           mode="create"
+          specialties={specialties}
           onClose={() => setIsCreateOpen(false)}
           onSubmit={handleCreate}
           isSubmitting={isSubmitting}
@@ -405,6 +446,7 @@ export default function WorksPage() {
         <WorkFormModal
           mode="edit"
           initial={editWork}
+          specialties={specialties}
           onClose={() => setEditWork(null)}
           onSubmit={handleUpdate}
           isSubmitting={isSubmitting}

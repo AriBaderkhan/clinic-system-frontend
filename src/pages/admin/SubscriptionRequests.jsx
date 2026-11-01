@@ -77,7 +77,7 @@ export default function SubscriptionRequestsPage() {
                                 <div className="min-w-0">
                                     <p className="truncate font-semibold text-slate-900">{r.tenant_name}</p>
                                     <p className="text-xs text-slate-500">
-                                        wants <b>{r.plan_name}</b> · ${r.amount ?? r.plan_price}
+                                        wants <b>{r.plan_name}</b> · <span className="capitalize">{r.billing_period}</span> · ${r.amount ?? r.plan_price}
                                     </p>
                                     <p className="mt-0.5 text-[11px] text-slate-400">
                                         {new Date(r.created_at).toLocaleString()}

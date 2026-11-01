@@ -12,6 +12,7 @@ export default function useAppointments(filters = {}) {
     day: filters.day || "",
     type: filters.type || "",
     search: filters.search || "",
+    floor: filters.floor_id ?? "",
   });
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function useAppointments(filters = {}) {
   const pageLimit = isSearching ? 25 : 20;
 
   const fetchAppointments = useCallback(async () => {
+    if (filters.floor_id === null) return; // floor filter still loading
     try {
       setIsLoading(true);
       setError("");
@@ -30,6 +32,7 @@ export default function useAppointments(filters = {}) {
         ...(filters.day ? { day: filters.day } : {}),
         ...(filters.type ? { type: filters.type } : {}),
         ...(filters.search ? { q: filters.search } : {}),
+        ...(filters.floor_id ? { floor_id: filters.floor_id } : {}),
         page,
         limit: pageLimit,
       };

@@ -15,6 +15,7 @@ import EditSessionModal from "../../components/sessions/EditSessionModal";
 import EditTreatmentPlanModal from "../../components/treatment_plan/EditTreatmentPlanModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { useSettings } from "../../context/SettingContext";
+import { useAuth } from "../../context/AuthContext";
 
 // Edit appointments go to the same edit route the general Appointments page uses;
 // the base path depends on the role viewing the folder.
@@ -29,6 +30,8 @@ export default function PatientFolderPage() {
   const { patientId } = useParams();
   const navigate = useNavigate();
   const prefix = rolePrefix();
+  const { user } = useAuth();
+  const canEditPatient = (user?.permissions || []).includes("update_patient");
 
   const [activeTab, setActiveTab] = useState("appointments");
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -45,13 +48,13 @@ export default function PatientFolderPage() {
     usePatientById(patientId);
 
   // ---- Lists ----
-  const { appointments, isLoading: isApptsLoading, error: apptsError } =
+  const { appointments, isLoading: isApptsLoading, error: apptsError, refresh: refreshAppointments } =
     usePatientAppointments(patientId);
 
   const { sessions, isLoading: isSessionsLoading, error: sessionsError, refresh: refreshSessions } =
     usePatientSessions(patientId);
 
-  const { payments } = usePatientPayments(patientId);
+  const { payments, refresh: refreshPayments } = usePatientPayments(patientId);
 
   // ---- Treatment plans ----
   const { plans, isLoading: isPlansLoading, error: plansError, refresh: refreshPlans } =
@@ -61,17 +64,21 @@ export default function PatientFolderPage() {
     useTreatmentPlanSessions();
 
   // After a session is edited (from the Sessions tab or a plan's sub-table),
-  // refresh the session list, the plan totals, and the open plan's sub-table.
+  // refresh everything it can change: sessions, plans, the open plan's
+  // sub-table, the total paid (payments) and appointments (a deleted visit).
   const handleSessionUpdated = () => {
     refreshSessions();
     refreshPlans();
+    refreshPayments();
+    refreshAppointments();
     if (expandedPlanId != null) reloadTpSessions(expandedPlanId);
   };
 
-  const totalPaidForPatient = payments.reduce(
-    (sum, p) => sum + Number(p.amount || 0),
-    0
-  );
+  // payments has normal (session) and treatment-plan payments, split by kind
+  const sumPaid = (list) => list.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const planPaidForPatient = sumPaid(payments.filter((p) => p.kind === "plan"));
+  const normalPaidForPatient = sumPaid(payments.filter((p) => p.kind !== "plan"));
+  const totalPaidForPatient = sumPaid(payments);
 
   const filteredPlans = useMemo(() => {
     const list = Array.isArray(plans) ? plans : [];
@@ -135,11 +142,19 @@ export default function PatientFolderPage() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-slate-900">{patient.name}</p>
+                {/* Phones: main first, extra ones below it */}
+                <div className="mt-1 flex gap-1 text-xs text-slate-600">
+                  <span>{t("patient_folder.phone")}:</span>
+                  <div>
+                    {[patient.phone, ...(patient.extra_phones || [])].map((ph) => (
+                      <p key={ph} className="font-medium">{ph}</p>
+                    ))}
+                  </div>
+                </div>
                 <p className="mt-1 text-xs text-slate-600">
-                  {t("patient_folder.phone")}: <span className="font-medium">{patient.phone}</span>
                   {patient.age && (
                     <>
-                      {" · "}{t("patient_folder.age")}: <span className="font-medium">{patient.age}</span>
+                      {t("patient_folder.age")}: <span className="font-medium">{patient.age}</span>
                     </>
                   )}
                   {patient.gender && (
@@ -168,13 +183,27 @@ export default function PatientFolderPage() {
                   )}
                 </p>
               </div>
-              <div className="text-end text-xs text-slate-500">
+              <div className="flex flex-col items-end gap-2 text-end text-xs text-slate-500">
                 <p>
                   {t("patient_folder.total_payments")}:{" "}
                   <span className="font-semibold text-[#0E6E75]">
                     {formatMoney(totalPaidForPatient)}
                   </span>
                 </p>
+                <p className="text-[11px] text-slate-400">
+                  {t("patient_folder.normal_payments")}: {formatMoney(normalPaidForPatient)}
+                  {" · "}
+                  {t("patient_folder.plan_payments")}: {formatMoney(planPaidForPatient)}
+                </p>
+                {canEditPatient && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(`${prefix}/patients/${patientId}/edit`, { state: { returnTo: `${prefix}/patients/${patientId}` } })}
+                    className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
+                  >
+                    {t("patient_folder.edit_patient")}
+                  </button>
+                )}
               </div>
             </div>
 

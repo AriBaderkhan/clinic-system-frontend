@@ -31,10 +31,11 @@ export const getMyFeatures = async () => {
     return res.data;
 };
 
-// plan_id + payment-evidence image (field name 'images', same as session images)
-export const createSubscriptionRequest = async (planId, file) => {
+// plan_id + billing_period + payment-evidence image (field name 'images', same as session images)
+export const createSubscriptionRequest = async (planId, billingPeriod, file) => {
     const form = new FormData();
     form.append('plan_id', planId);
+    form.append('billing_period', billingPeriod);
     form.append('images', file);
     const res = await api.post('/api/subscriptions/request', form, {
         headers: { 'Content-Type': 'multipart/form-data' },

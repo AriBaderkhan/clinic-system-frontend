@@ -3,6 +3,8 @@ import toast from 'react-hot-toast';
 import { getAllTenants, registerTenant } from '../../api/adminApi';
 import { getPlans } from '../../api/planApi';
 import { updateSubscription } from '../../api/subscriptionApi';
+import BillingPeriodToggle from '../../components/subscription/BillingPeriodToggle';
+import { planPrice } from '../../utils/billing';
 
 export default function AdminDashboard() {
     const [tenants, setTenants] = useState([]);
@@ -21,6 +23,7 @@ export default function AdminDashboard() {
         manager_email: '',
         manager_password: '',
         plan_id: '',
+        billing_period: 'monthly',
         phone: '',
         address: '',
         timezone: 'UTC',
@@ -66,7 +69,7 @@ export default function AdminDashboard() {
             setIsRegisterOpen(false);
             setRegisterForm({
                 tenant_name: '', manager_name: '', manager_email: '', manager_password: '',
-                plan_id: plans.length > 0 ? plans[0].id : '', phone: '', address: '', timezone: 'UTC', currency: 'USD'
+                plan_id: plans.length > 0 ? plans[0].id : '', billing_period: 'monthly', phone: '', address: '', timezone: 'UTC', currency: 'USD'
             });
             loadData(); // reload list
         } catch (error) {
@@ -147,6 +150,9 @@ export default function AdminDashboard() {
                                         }`}>
                                         {tenant.plan_name || 'No Plan'}
                                     </span>
+                                    {tenant.billing_period && (
+                                        <span className="ms-2 text-xs capitalize text-slate-500">{tenant.billing_period}</span>
+                                    )}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tenant.status === 'active' ? 'bg-[#0E6E75]/20 text-[#0E6E75]' : 'bg-red-100 text-red-800'
@@ -222,7 +228,13 @@ export default function AdminDashboard() {
                                 <h4 className="mb-2 text-sm font-semibold text-slate-500">Subscription</h4>
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-slate-700">Select Plan</label>
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <label className="block text-sm font-medium text-slate-700">Select Plan</label>
+                                    <BillingPeriodToggle
+                                        value={registerForm.billing_period}
+                                        onChange={(v) => setRegisterForm({ ...registerForm, billing_period: v })}
+                                    />
+                                </div>
                                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
                                     {plans.map(plan => (
                                         <div key={plan.id}
@@ -231,7 +243,9 @@ export default function AdminDashboard() {
                                                 }`}
                                         >
                                             <div className="font-medium text-slate-900">{plan.name}</div>
-                                            <div className="text-sm text-slate-500">${plan.price}</div>
+                                            <div className="text-sm text-slate-500">
+                                                ${planPrice(plan, registerForm.billing_period)} / {registerForm.billing_period === 'yearly' ? 'year' : 'month'}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

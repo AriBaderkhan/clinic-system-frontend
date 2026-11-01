@@ -21,11 +21,21 @@ export default function PlansPage() {
     // Form State
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         price: '',
+        yearly_price: '',
         max_branches: 1,
         max_users: 5
     });
+    // Yearly price follows monthly x 12 until the admin edits it by hand.
+    const [yearlyEdited, setYearlyEdited] = useState(false);
+
+    const handleMonthlyChange = (value) => {
+        setFormData((prev) => ({
+            ...prev,
+            price: value,
+            yearly_price: yearlyEdited || value === '' ? prev.yearly_price : String(Math.round(Number(value) * 12 * 100) / 100),
+        }));
+    };
 
     useEffect(() => {
         loadPlans();
@@ -48,20 +58,22 @@ export default function PlansPage() {
             setEditingPlan(plan);
             setFormData({
                 name: plan.name,
-                description: plan.description || '',
                 price: plan.price,
+                yearly_price: plan.yearly_price,
                 max_branches: plan.max_branches,
                 max_users: plan.max_users
             });
+            setYearlyEdited(true); // existing plan: keep its saved yearly price
         } else {
             setEditingPlan(null);
             setFormData({
                 name: '',
-                description: '',
                 price: '',
+                yearly_price: '',
                 max_branches: 1,
                 max_users: 5
             });
+            setYearlyEdited(false);
         }
         setIsModalOpen(true);
     };
@@ -134,11 +146,13 @@ export default function PlansPage() {
                     <div key={plan.id} className="flex flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
-                            <span className="text-xl font-bold text-[#0E6E75]">${plan.price}</span>
+                            <div className="text-end">
+                                <div className="text-xl font-bold text-[#0E6E75]">${plan.price} <span className="text-xs font-medium text-slate-500">/ month</span></div>
+                                <div className="text-sm font-semibold text-slate-700">${plan.yearly_price} <span className="text-xs font-medium text-slate-500">/ year</span></div>
+                            </div>
                         </div>
-                        <p className="mb-6 flex-1 text-sm text-slate-500">{plan.description}</p>
 
-                        <div className="mb-6 space-y-2 text-sm text-slate-600">
+                        <div className="mb-6 flex-1 space-y-2 text-sm text-slate-600">
                             <div className="flex justify-between border-b pb-1">
                                 <span>Max Branches</span>
                                 <span className="font-medium">{plan.max_branches === -1 ? 'Unlimited' : plan.max_branches}</span>
@@ -188,18 +202,9 @@ export default function PlansPage() {
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700">Description</label>
-                                <textarea
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
-                                    rows="2"
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                />
-                            </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700">Price ($)</label>
+                                    <label className="block text-sm font-medium text-slate-700">Monthly price ($)</label>
                                     <input
                                         type="number"
                                         required
@@ -207,8 +212,21 @@ export default function PlansPage() {
                                         step="0.01"
                                         className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
                                         value={formData.price}
-                                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                        onChange={(e) => handleMonthlyChange(e.target.value)}
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700">Yearly price ($)</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        step="0.01"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        value={formData.yearly_price}
+                                        onChange={(e) => { setYearlyEdited(true); setFormData({ ...formData, yearly_price: e.target.value }); }}
+                                    />
+                                    <p className="mt-1 text-xs text-slate-400">Starts as monthly × 12. You can change it.</p>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

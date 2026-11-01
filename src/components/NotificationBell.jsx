@@ -74,7 +74,7 @@ export default function NotificationBell() {
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className="relative flex h-9 w-9 items-center justify-center rounded-full text-white transition hover:bg-white/10"
+                className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
                 title={t("notif.title")}
             >
                 <FiBell size={18} />
@@ -86,7 +86,8 @@ export default function NotificationBell() {
             </button>
 
             {open && (
-                <div className="absolute start-0 top-11 z-50 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                // phone: full-width panel under the top bar; sm+: dropdown aligned to the bell
+                <div className="fixed inset-x-3 top-16 z-50 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg sm:absolute sm:inset-x-auto sm:end-0 sm:top-11 sm:w-80">
                     <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
                         <span className="text-xs font-semibold text-slate-700">{t("notif.title")}</span>
                         {unreadNotifications > 0 && (

@@ -5,6 +5,12 @@ export const getWorks = async () => {
     return res.data;
 };
 
+// treatments one doctor may use + uses_teeth (show the teeth chart or not)
+export const getWorksForDoctor = async (doctorId) => {
+    const res = await api.get(`/api/works/doctor/${doctorId}`);
+    return res.data;
+};
+
 export const getWorkById = async (id) => {
     const res = await api.get(`/api/works/${id}`);
     return res.data;

@@ -2,12 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useActiveTodayAppointments from "../../hooks/useActiveTodayAppointments";
+import useFloorFilter from "../../hooks/useFloorFilter";
+import FloorFilter from "../../components/floors/FloorFilter";
 import useUnpaidSessions from "../../hooks/useUnPaidSessions";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import CompleteAppointmentModal from "../../components/appointments/CompleteAppointmentModal";
 import PaySessionModal from "../../components/appointments/PaySessionModal";
 import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsModal";
 import { useSettings } from "../../context/SettingContext";
+import UnpaidMoneyLines from "../../components/sessions/UnpaidMoneyLines";
+import { unpaidBreakdown } from "../../utils/unpaid";
 
 // Status pill colors (labels come from the shared appt.st_* keys)
 const STATUS_CHIP = {
@@ -23,13 +27,15 @@ export default function Dashboard() {
   const { t, i18n } = useTranslation();
   const { formatTime, formatMoney } = useSettings();
   const navigate = useNavigate();
+  const floor = useFloorFilter(); // today's list starts on my floor
+  const payFloor = useFloorFilter(); // payment box has its own floor dropdown (same default)
 
   const {
     appointments: todayAppointments,
     isLoading: isTodayLoading,
     error: todayError,
     refresh: refreshToday,
-  } = useActiveTodayAppointments();
+  } = useActiveTodayAppointments(floor.floorId);
 
   const {
     sessions: unpaidSessions,
@@ -37,7 +43,7 @@ export default function Dashboard() {
     isLoading: isUnpaidLoading,
     error: unpaidError,
     refresh: refreshUnpaid,
-  } = useUnpaidSessions({ limit: 5 });
+  } = useUnpaidSessions({ limit: 5, floorId: payFloor.floorId });
 
   const [selectedForStatusDashboard, setSelectedForStatusDashboard] = useState(null);
   const [selectedForComplete, setSelectedForComplete] = useState(null);
@@ -77,7 +83,7 @@ export default function Dashboard() {
         <CompleteAppointmentModal
           appointment={selectedForComplete}
           onClose={() => setSelectedForComplete(null)}
-          onCompleted={refreshToday}
+          onCompleted={() => { refreshToday(); refreshUnpaid(); }}
         />
       )}
 
@@ -90,7 +96,7 @@ export default function Dashboard() {
       )}
 
       {showAllUnpaid && (
-        <AllUnpaidSessionsModal onClose={() => setShowAllUnpaid(false)} />
+        <AllUnpaidSessionsModal floor={payFloor} onClose={() => { setShowAllUnpaid(false); refreshUnpaid(); }} />
       )}
 
       {/* Date line */}
@@ -146,13 +152,16 @@ export default function Dashboard() {
                 <h2 className="text-sm font-semibold text-slate-900">{t('dash.today_active')}</h2>
                 <p className="text-[11px] text-slate-500">{t('dash.today_active_hint')}</p>
               </div>
-              <button
-                type="button"
-                onClick={refreshToday}
-                className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-100"
-              >
-                {t('dash.refresh')}
-              </button>
+              <div className="flex items-center gap-2">
+                <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} withLabel={false} />
+                <button
+                  type="button"
+                  onClick={refreshToday}
+                  className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-100"
+                >
+                  {t('dash.refresh')}
+                </button>
+              </div>
             </div>
 
             {todayError && (
@@ -262,6 +271,7 @@ export default function Dashboard() {
                 <p className="text-[11px] text-slate-500">{t('dash.waiting_payment_hint')}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <FloorFilter floors={payFloor.floors} value={payFloor.floorId} onChange={payFloor.setFloorId} show={payFloor.show} withLabel={false} />
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700">
                   {isUnpaidLoading ? t('dash.unpaid_count', { count: "…" }) : t('dash.unpaid_count', { count: unpaidTotal })}
                 </span>
@@ -298,28 +308,38 @@ export default function Dashboard() {
 
             {unpaidSessions.length > 0 && (
               <div className="mt-2 space-y-1.5 text-sm">
-                {unpaidSessions.map((s) => (
-                  <div
-                    key={s.session_id}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-2"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-800">{s.patient.full_name}</p>
-                      <p className="text-xs text-slate-500">
-                        {s.doctor.full_name} · {formatTime(s.appointment.start_time)} ·{" "}
-                        {t('dash.works_count', { count: s.works_summary.items_count })}
-                        {" "}· <span className="font-medium text-slate-700">{formatMoney(s.totals.total, s.currency_code)}</span>
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedForPayment(s)}
-                      className="ms-3 shrink-0 rounded-full bg-[#0E6E75] px-3.5 py-1 text-[10px] font-semibold text-white transition hover:bg-[#0A565C]"
+                {unpaidSessions.map((s) => {
+                  const b = unpaidBreakdown(s);
+                  const works = [
+                    b.normalWorks > 0 || b.planWorks === 0 ? t('dash.works_count', { count: b.normalWorks }) : null,
+                    b.planWorks > 0 ? t('unpaid.plan_works', { count: b.planWorks }) : null,
+                  ].filter(Boolean).join(" · ");
+                  return (
+                    <div
+                      key={s.session_id}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2"
                     >
-                      {t('dash.pay')}
-                    </button>
-                  </div>
-                ))}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-800">{s.patient.full_name}</p>
+                        <p className="text-xs text-slate-500">
+                          {s.doctor.full_name} · {formatTime(s.appointment.start_time)} · {works}
+                        </p>
+                        <UnpaidMoneyLines breakdown={b} className="mt-0.5" />
+                      </div>
+                      <div className="shrink-0 text-end">
+                        <p className="text-[10px] text-slate-400">{t('unpaid.remaining')}</p>
+                        <p className="text-sm font-semibold text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedForPayment(s)}
+                        className="shrink-0 rounded-full bg-[#0E6E75] px-3.5 py-1 text-[10px] font-semibold text-white transition hover:bg-[#0A565C]"
+                      >
+                        {t('dash.pay')}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

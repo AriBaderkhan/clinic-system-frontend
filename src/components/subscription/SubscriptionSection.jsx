@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { getMySubscription, createSubscriptionRequest } from "../../api/subscriptionApi";
 import { getPlans } from "../../api/planApi";
 import { useSubscription } from "../../context/SubscriptionContext";
+import BillingPeriodToggle from "./BillingPeriodToggle";
+import { planPrice } from "../../utils/billing";
 
 // Manual bank-transfer details the tenant pays to (same number for both).
 const BANK_ACCOUNTS = [
@@ -27,6 +29,7 @@ export default function SubscriptionSection() {
     const [loading, setLoading] = useState(true);
 
     const [selectedPlanId, setSelectedPlanId] = useState(null);
+    const [billingPeriod, setBillingPeriod] = useState("monthly");
     const [file, setFile] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -36,6 +39,7 @@ export default function SubscriptionSection() {
             const [statusRes, plansRes] = await Promise.all([getMySubscription(), getPlans()]);
             setStatus(statusRes.data);
             setPlans(plansRes.data ?? []);
+            setBillingPeriod(statusRes.data?.billing_period || "monthly"); // start on the clinic's current period
         } catch (err) {
             toast.error(err.userMessage || t('subscription.failed_load'));
         } finally {
@@ -50,7 +54,7 @@ export default function SubscriptionSection() {
         if (!file) return toast.error(t('subscription.attach_evidence'));
         try {
             setSubmitting(true);
-            await createSubscriptionRequest(selectedPlanId, file);
+            await createSubscriptionRequest(selectedPlanId, billingPeriod, file);
             toast.success(t('subscription.request_sent'));
             setSelectedPlanId(null);
             setFile(null);
@@ -75,7 +79,13 @@ export default function SubscriptionSection() {
                     <div>
                         <p className="text-sm font-medium text-gray-500">{t('subscription.current_plan')}</p>
                         <p className="mt-0.5 text-xl font-bold text-gray-900">{status?.plan_name || t('subscription.no_plan')}</p>
-                        {status?.price != null && <p className="text-sm text-gray-500">{t('subscription.price_period', { price: status.price })}</p>}
+                        {status?.price != null && (
+                            <p className="text-sm text-gray-500">
+                                {status.billing_period === "yearly"
+                                    ? t('subscription.price_yearly', { price: status.yearly_price })
+                                    : t('subscription.price_monthly', { price: status.price })}
+                            </p>
+                        )}
                     </div>
                     <div className="text-end">
                         <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${badge}`}>
@@ -101,6 +111,10 @@ export default function SubscriptionSection() {
                         <h3 className="text-lg font-bold text-gray-800">{t('subscription.renew_upgrade')}</h3>
                         <p className="mb-4 text-sm text-gray-500">{t('subscription.renew_hint')}</p>
 
+                        <div className="mb-4">
+                            <BillingPeriodToggle value={billingPeriod} onChange={setBillingPeriod} />
+                        </div>
+
                         {/* Plans */}
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {plans.map((plan) => {
@@ -114,7 +128,9 @@ export default function SubscriptionSection() {
                                     >
                                         <div className="flex items-center justify-between">
                                             <span className="font-bold text-slate-900">{plan.name}</span>
-                                            <span className="font-bold text-[#0E6E75]">${plan.price}</span>
+                                            <span className="font-bold text-[#0E6E75]">
+                                                {t(`subscription.price_${billingPeriod}`, { price: planPrice(plan, billingPeriod) })}
+                                            </span>
                                         </div>
                                         <p className="mt-2 text-xs text-slate-500">
                                             {t('subscription.plan_limits', {

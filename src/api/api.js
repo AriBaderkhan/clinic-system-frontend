@@ -58,6 +58,10 @@ api.interceptors.response.use(
                 ? (data.support_code ? `${data.message} (Support Code: ${data.support_code})` : data.message)
                 : i18n.t('errors.INTERNAL_ERROR'));
 
+        // the plan ran out while the app was open → let the subscription screen
+        // reload now (it shows the renew page) instead of on the next focus
+        if (code === 'SUBSCRIPTION_EXPIRED') window.dispatchEvent(new Event('subscription-expired'));
+
         // don't try to refresh auth endpoints themselves, and only retry once
         const url = original?.url || "";
         const isAuthCall = url.includes("/login") || url.includes("/refresh") || url.includes("/logout");

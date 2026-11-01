@@ -25,5 +25,5 @@ export default function usePatientPayments(patientId) {
     fetchPayments();
   }, [fetchPayments]);
 
-  return { payments, isLoading, error };
+  return { payments, isLoading, error, refresh: fetchPayments };
 }

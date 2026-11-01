@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import BranchSwitcher from "../components/BranchSwitcher";
 import NotificationBell from "../components/NotificationBell";
 import TopNav from "../components/TopNav";
+import SubscriptionGate from "../components/subscription/SubscriptionGate";
 import { clearStorageKeepingTheme } from "../utils/theme";
 import { useAuth } from "../context/AuthContext";
 
@@ -45,7 +46,7 @@ export default function DoctorLayout() {
 
       <div className="flex-1 overflow-y-auto">
         <main className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-6">
-          <Outlet />
+          <SubscriptionGate><Outlet /></SubscriptionGate>
         </main>
       </div>
     </div>

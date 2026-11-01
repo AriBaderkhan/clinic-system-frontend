@@ -3,8 +3,12 @@ import { useTranslation } from "react-i18next";
 import { getUnpaidSessions } from "../../api/sessionApi";
 import PaySessionModal from "../appointments/PaySessionModal";
 import { useSettings } from "../../context/SettingContext";
+import UnpaidMoneyLines from "./UnpaidMoneyLines";
+import { unpaidBreakdown } from "../../utils/unpaid";
+import FloorFilter from "../floors/FloorFilter";
 
-export default function AllUnpaidSessionsModal({ onClose }) {
+// floor = the dashboard payment box floor filter (shared, so both stay in step)
+export default function AllUnpaidSessionsModal({ onClose, floor }) {
   const { t } = useTranslation();
   const { formatTime, formatMoney } = useSettings();
   const [sessions, setSessions] = useState([]);
@@ -13,12 +17,13 @@ export default function AllUnpaidSessionsModal({ onClose }) {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [selectedForPayment, setSelectedForPayment] = useState(null);
+  const floorId = floor?.floorId ?? "";
 
   const fetchAll = async () => {
     setIsLoading(true);
     setError("");
     try {
-      const res = await getUnpaidSessions();
+      const res = await getUnpaidSessions(floorId ? { floor_id: floorId } : {});
       setSessions(res.data || []);
       setTotal(res.total ?? (res.data || []).length);
     } catch (err) {
@@ -30,11 +35,14 @@ export default function AllUnpaidSessionsModal({ onClose }) {
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [floorId]);
 
-  const filtered = search.trim()
+  // match patient name, main phone, or any extra phone
+  const term = search.trim().toLowerCase();
+  const filtered = term
     ? sessions.filter((s) =>
-        s.patient?.full_name?.toLowerCase().includes(search.trim().toLowerCase())
+        [s.patient?.full_name, s.patient?.phone, ...(s.patient?.extra_phones || [])]
+          .some((v) => v?.toLowerCase().includes(term))
       )
     : sessions;
 
@@ -65,15 +73,18 @@ export default function AllUnpaidSessionsModal({ onClose }) {
                 {isLoading ? t("aus.loading") : t("aus.waiting", { count: total })}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-2">
+              {floor && <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} withLabel={false} />}
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Search */}
@@ -147,38 +158,49 @@ export default function AllUnpaidSessionsModal({ onClose }) {
             {/* Session list */}
             {!isLoading && filtered.length > 0 && (
               <div className="space-y-2.5">
-                {filtered.map((s) => (
-                  <div
-                    key={s.session_id}
-                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-800">
-                        {s.patient?.full_name}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
-                        {s.doctor?.full_name} · {formatTime(s.appointment?.start_time)} ·{" "}
-                        {(s.works_summary?.items_count ?? 0) === 1
-                          ? t("aus.work_one", { count: s.works_summary?.items_count ?? 0 })
-                          : t("aus.work_other", { count: s.works_summary?.items_count ?? 0 })}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-slate-600">
-                        {t("aus.total_label")}{" "}
-                        <span className="font-semibold">{formatMoney(s.totals?.total, s.currency_code)}</span>{" "}
-                        · {t("aus.min_label")}{" "}
-                        <span className="font-semibold">{formatMoney(s.totals?.min_total, s.currency_code)}</span>
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setSelectedForPayment(s)}
-                      className="ms-4 flex-shrink-0 rounded-full bg-[#0E6E75] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#0A565C]"
+                {filtered.map((s) => {
+                  const b = unpaidBreakdown(s);
+                  const works = [
+                    b.normalWorks > 0 || b.planWorks === 0
+                      ? t(b.normalWorks === 1 ? "aus.work_one" : "aus.work_other", { count: b.normalWorks })
+                      : null,
+                    b.planWorks > 0 ? t("unpaid.plan_works", { count: b.planWorks }) : null,
+                  ].filter(Boolean).join(" · ");
+                  return (
+                    <div
+                      key={s.session_id}
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
                     >
-                      {t("aus.pay")}
-                    </button>
-                  </div>
-                ))}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-800">
+                          {s.patient?.full_name}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-slate-500">
+                          {s.doctor?.full_name} · {formatTime(s.appointment?.start_time)} · {works}
+                        </p>
+                        <UnpaidMoneyLines breakdown={b} className="mt-0.5" />
+                        {b.normal.show && (
+                          <p className="mt-0.5 text-[11px] text-slate-500">
+                            {t("aus.min_label")} {formatMoney(s.totals?.min_total, s.currency_code)}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="shrink-0 text-end">
+                        <p className="text-[10px] text-slate-400">{t("unpaid.remaining")}</p>
+                        <p className="text-sm font-semibold text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedForPayment(s)}
+                        className="flex-shrink-0 rounded-full bg-[#0E6E75] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#0A565C]"
+                      >
+                        {t("aus.pay")}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

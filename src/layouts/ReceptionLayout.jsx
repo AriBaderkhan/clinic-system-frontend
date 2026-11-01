@@ -4,6 +4,7 @@ import { disconnectSocket } from "../realtime/socket";
 import BranchSwitcher from "../components/BranchSwitcher";
 import NotificationBell from "../components/NotificationBell";
 import TopNav from "../components/TopNav";
+import SubscriptionGate from "../components/subscription/SubscriptionGate";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 import { useAuth } from "../context/AuthContext";
@@ -70,7 +71,7 @@ export default function ReceptionLayout() {
 
       <div id="main-scroll" className="flex-1 overflow-y-auto">
         <main className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-6">
-          <Outlet />
+          <SubscriptionGate><Outlet /></SubscriptionGate>
         </main>
       </div>
     </div>

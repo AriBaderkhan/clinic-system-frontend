@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { getWorks } from "../../api/workApi";
+import { getWorks, getWorksForDoctor } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 import {
     getNormalSessionDetails,
@@ -10,10 +10,19 @@ import {
     uploadSessionImages,
     deleteSessionImage,
     updatePlanWorkTeeth,
+    editSessionPayment,
+    deleteSessionPayment,
+    editSessionPlanPayment,
+    deleteSessionPlanPayment,
+    deleteSessionPlanWork,
+    moveSessionPlanWork,
+    deleteSession,
 } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
+import { useAuth } from "../../context/AuthContext";
 import TeethDiagram from "./TeethDiagram";
 import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
+import ConfirmModal from "../common/ConfirmModal";
 
 // stable signature of the prescription so we only send it when it actually changed
 const prescSig = (items) =>
@@ -30,18 +39,58 @@ const metaFrom = (catalog, id) => {
     return { id: Number(item.id), name: item.name, code: String(item.code || "").toLowerCase(), min_price: Number(item.min_price || 0), is_plan: !!item.is_plan, is_whole_mouth: !!item.is_whole_mouth };
 };
 
-// normal (non-plan) works -> the works array editNormal expects
+// units a work line counts for: whole-mouth = its quantity; per-tooth = its
+// quantity (some units may have a tooth, the rest none)
+const unitsOf = (c) => Math.max(Number(c.quantity) || 1, c.wholeMouth ? 0 : c.teeth.length);
+
+// normal (non-plan) works -> the works array editNormal expects. Every unit is
+// kept: one row per tooth + one row for the units without a tooth, each with its price.
 function buildNormalWorks(confirmed) {
     const works = [];
     for (const c of confirmed) {
         if (c.isPlan) continue;
-        if (c.wholeMouth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, arch: c.arch ?? null });
-        else if (c.teeth.length > 0) for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t });
-        else works.push({ work_id: c.work_id, quantity: c.quantity || 1, tooth_number: null });
+        const unit_price = Number(c.unit_price);
+        if (c.wholeMouth) {
+            works.push({ work_id: c.work_id, quantity: Number(c.quantity) || 1, tooth_number: null, arch: c.arch ?? null, unit_price });
+            continue;
+        }
+        for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t, unit_price });
+        const noTooth = unitsOf(c) - c.teeth.length;
+        if (noTooth > 0) works.push({ work_id: c.work_id, quantity: noTooth, tooth_number: null, unit_price });
     }
     return works;
 }
-const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}:${w.arch || ''}`).sort());
+const sigOf = (works) => JSON.stringify(works.map((w) => `${w.work_id}:${w.tooth_number}:${w.quantity}:${w.arch || ''}:${w.unit_price}`).sort());
+
+// stored normal-work rows -> editable lines (same work + price + arch grouped)
+function linesFromRows(rows, catalog) {
+    const groups = new Map();
+    for (const r of rows || []) {
+        const key = `${r.work_id}-${r.unit_price}-${r.arch || ""}`;
+        if (!groups.has(key)) {
+            const meta = metaFrom(catalog, r.work_id);
+            groups.set(key, {
+                uid: `init-${key}`,
+                work_id: Number(r.work_id),
+                code: meta?.code || "",
+                name: r.work_name || meta?.name || "Work",
+                // an old work may keep the price it was saved with, even if the
+                // catalog minimum was raised later
+                min_price: Math.min(meta ? meta.min_price : Number(r.min_unit_price || 0), Number(r.unit_price)),
+                wholeMouth: !!(meta?.is_whole_mouth ?? r.is_whole_mouth),
+                isPlan: false,
+                quantity: 0,
+                teeth: [],
+                arch: r.arch ?? null,
+                unit_price: Number(r.unit_price),
+            });
+        }
+        const g = groups.get(key);
+        g.quantity += Number(r.quantity || 1);
+        if (r.tooth_number !== null && r.tooth_number !== undefined) g.teeth.push(Number(r.tooth_number));
+    }
+    return [...groups.values()];
+}
 
 function parseTeeth(s) {
     if (!s) return [];
@@ -131,24 +180,33 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
 
 export default function EditSessionModal({ sessionId, onClose, onUpdated, canEditPayment = true }) {
     const { t } = useTranslation();
-    const { formatDate, formatTime, formatMoney, settings } = useSettings();
-    const curr = settings?.currency_code || "";
+    const { formatDate, formatTime, formatMoney } = useSettings();
+    const { user } = useAuth();
+    const perms = user?.permissions || [];
+    const canChangePayments = canEditPayment && perms.includes("edit_payment");
+    const canDeleteVisit = canEditPayment && perms.includes("delete_session");
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState("");
 
-    const [catalog, setCatalog] = useState([]);
+    const [catalog, setCatalog] = useState([]);            // every treatment (names/prices of saved rows)
+    const [allowedIds, setAllowedIds] = useState(null);    // what this visit's doctor may ADD (null = all)
+    const [usesTeeth, setUsesTeeth] = useState(true);      // false → specialty without teeth chart
     const [base, setBase] = useState(null);
 
     const [notes, setNotes] = useState("");
     const [nextPlan, setNextPlan] = useState("");
-    const [totalPaid, setTotalPaid] = useState("");
-    const [paymentNote, setPaymentNote] = useState("");
+
+    // immediate corrections (payments / plan works / delete visit)
+    const [busy, setBusy] = useState(false);
+    const [changed, setChanged] = useState(false);          // something was saved → parent must refresh
+    const [editingPay, setEditingPay] = useState(null);     // { kind: 'normal'|'plan', id, amount, note }
+    const [confirmAction, setConfirmAction] = useState(null); // { title, message, run }
 
     const [confirmed, setConfirmed] = useState([]);          // normal + newly-added plan works
     const [origWorksSig, setOrigWorksSig] = useState("[]");
-    const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
+    const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null, unit_price: "" });
     const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
 
     const [planWorks, setPlanWorks] = useState([]);          // existing plan works (tooth only)
@@ -186,25 +244,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 setBase(sessionData);
                 setNotes(sessionData?.session?.plan?.notes ?? "");
                 setNextPlan(sessionData?.session?.plan?.next_plan ?? "");
-                const paid0 = sessionData?.session?.totals?.total_paid;
-                setTotalPaid(paid0 === null || paid0 === undefined ? "" : Number(paid0));
-                setPaymentNote(sessionData?.session?.payment_note ?? "");
 
-                const initialConfirmed = (sessionData?.works_summary?.works || []).map((g, i) => {
-                    const meta = metaFrom(catalogRows, g.work_id);
-                    const code = meta?.code || "";
-                    return {
-                        uid: `init-${i}-${g.work_id}`,
-                        work_id: Number(g.work_id),
-                        code,
-                        name: g.work_name || meta?.name || "Work",
-                        wholeMouth: !!meta?.is_whole_mouth,
-                        isPlan: false,
-                        quantity: Number(g.quantity || 1),
-                        teeth: Array.isArray(g.teeth) ? g.teeth.map(Number).filter(Number.isFinite) : [],
-                        arch: g.arch ?? null,
-                    };
-                });
+                // every stored unit + its real price (nothing is dropped or re-priced)
+                const initialConfirmed = linesFromRows(sessionData?.normal_works, catalogRows);
                 setConfirmed(initialConfirmed);
                 setOrigWorksSig(sigOf(buildNormalWorks(initialConfirmed)));
 
@@ -212,6 +254,19 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                     (sessionData?.plan_works || []).map((p) => ({ ...p, tooth_number: p.tooth_number ?? "", _origTooth: p.tooth_number ?? "" }))
                 );
                 setExistingImages(imagesRes?.data || []);
+
+                // what this visit's doctor may add (specialty + extras). If it fails,
+                // keep the full list — the server still checks on save.
+                const doctorId = sessionData?.session?.doctor?.id;
+                if (doctorId) {
+                    try {
+                        const dRes = await getWorksForDoctor(doctorId);
+                        if (alive) {
+                            setAllowedIds(new Set((dRes?.data?.works || []).map((w) => Number(w.id))));
+                            setUsesTeeth(dRes?.data?.uses_teeth !== false);
+                        }
+                    } catch { /* keep the full list */ }
+                }
 
                 const pItems = sessionData?.session?.prescription?.items || [];
                 setPrescription(pItems.map((i) => ({ drug_name: i.drug_name || "", dosage: i.dosage || "", frequency: i.frequency || "", duration: i.duration || "", instructions: i.instructions || "" })));
@@ -225,6 +280,49 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         return () => { alive = false; };
     }, [sessionId]);
 
+    // After an immediate correction: reload money + plan works from the server.
+    // Unsaved work/notes edits in the form are kept.
+    const reloadSession = async () => {
+        const res = await getNormalSessionDetails(sessionId);
+        const payload = res?.data || res;
+        const sessionData = payload?.data ? payload.data : payload;
+        setBase(sessionData);
+        // keep tooth changes the user typed but has not saved yet
+        setPlanWorks((prev) => {
+            const typed = new Map(prev.filter((p) => String(p.tooth_number) !== String(p._origTooth)).map((p) => [p.session_work_id, p.tooth_number]));
+            return (sessionData?.plan_works || []).map((p) => ({
+                ...p,
+                tooth_number: typed.has(p.session_work_id) ? typed.get(p.session_work_id) : (p.tooth_number ?? ""),
+                _origTooth: p.tooth_number ?? "",
+            }));
+        });
+    };
+
+    // run one correction (payment edit/delete, plan work move/delete); success → reload
+    const runCorrection = async (fn, okMessage) => {
+        setBusy(true);
+        try {
+            await fn();
+            toast.success(okMessage);
+            setChanged(true);
+            setEditingPay(null);
+            setConfirmAction(null);
+            await reloadSession();
+        } catch (err) {
+            toast.error(err.userMessage || t("es.save_failed"));
+            setConfirmAction(null);
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    // closing after a correction refreshes the list behind the modal
+    const closeModal = () => {
+        if (isSaving || busy) return;
+        if (changed) onUpdated?.();
+        onClose();
+    };
+
     // Behavior is data-driven: derive plan / whole-mouth codes from the catalog
     // flags (is_plan / is_whole_mouth) instead of hardcoded treatment codes.
     const planCodes = useMemo(
@@ -236,6 +334,14 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         [catalog]
     );
     const treatmentTypes = useMemo(() => [...planCodes], [planCodes]);
+
+    // treatments that can be picked in this visit: the doctor's allowed ones + the
+    // ones already saved in this visit (stay editable even if unticked later)
+    const pickable = useMemo(() => {
+        if (!allowedIds) return catalog;
+        const saved = new Set((base?.normal_works || []).map((r) => Number(r.work_id)));
+        return catalog.filter((w) => allowedIds.has(Number(w.id)) || saved.has(Number(w.id)));
+    }, [catalog, allowedIds, base]);
 
     // active plans for the patient (to "continue" an existing plan)
     useEffect(() => {
@@ -277,7 +383,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
             const list = plans[code]?.list || [];
             if (list.length > 0) { plan_mode = String(list[0].id); agreed_total = ""; }
         }
-        setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total, arch: null });
+        setDraft({ work_id: value, quantity: 1, teeth: [], plan_mode, agreed_total, arch: null, unit_price: meta ? meta.min_price : "" });
     };
     const setQty = (val) => {
         const q = Math.max(1, Number(val) || 1);
@@ -307,7 +413,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 work_id: Number(draft.work_id),
                 code: dMeta.code,
                 name: dMeta.name,
-                min_price: dMeta.min_price,
+                min_price: draft.min_floor ?? dMeta.min_price,
                 wholeMouth: dWhole,
                 isPlan: dPlan,
                 quantity: dWhole || dPlan ? 1 : Number(draft.quantity) || 1,
@@ -315,17 +421,19 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 plan_mode: dPlan ? draft.plan_mode : null,
                 agreed_total: dPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
                 arch: dWhole ? (draft.arch ?? null) : null,
+                unit_price: draft.unit_price !== "" && draft.unit_price !== undefined ? Number(draft.unit_price) : dMeta.min_price,
             },
         ]);
-        setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
+        setDraft({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null, unit_price: "" });
     };
     const editTreatment = (uid) => {
         const e = confirmed.find((c) => c.uid === uid);
         if (!e) return;
-        setDraft({ work_id: String(e.work_id), quantity: e.wholeMouth ? 1 : e.teeth.length || e.quantity || 1, teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""), arch: e.arch ?? null });
+        setDraft({ work_id: String(e.work_id), quantity: unitsOf(e), teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""), arch: e.arch ?? null, unit_price: e.unit_price ?? "", min_floor: e.min_price });
         setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
     };
     const removeTreatment = (uid) => setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
+    const setLinePrice = (uid, value) => setConfirmed((prev) => prev.map((c) => (c.uid === uid ? { ...c, unit_price: value } : c)));
 
     // Double-click quick-add (per tooth), mirroring the Complete-Appointment popup.
     const activePlanForTooth = (tooth, code) =>
@@ -344,6 +452,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 teeth: [popupTooth],
                 plan_mode: isPlan ? (existingPlan ? String(existingPlan.id) : "new") : null,
                 agreed_total: isPlan && !existingPlan ? Number(amount) : null,
+                unit_price: Number(work.min_price || 0),
             },
         ]);
         // "Done" on an existing plan → mark that plan completed on save.
@@ -376,6 +485,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     async function handleSave() {
         setError("");
 
+        // a price can never go below the treatment's catalog (minimum) price
+        const lowLine = confirmed.find((c) => !c.isPlan && !(Number(c.unit_price) >= Number(c.min_price || 0)));
+        if (lowLine) return setError(`${lowLine.name}: ${t("es.price_below_min", { amount: formatMoney(lowLine.min_price || 0) })}`);
+
         // normal works (for total recalc) + newly added plan works (create/continue)
         const works = buildNormalWorks(confirmed);
         for (const c of confirmed) {
@@ -394,20 +507,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         if (notes !== (base?.session?.plan?.notes ?? "")) payload.notes = notes;
         if (nextPlan !== (base?.session?.plan?.next_plan ?? "")) payload.next_plan = nextPlan;
 
+        // the works list is the FULL new list — it may be empty (last work removed)
         const hasNewPlan = confirmed.some((c) => c.isPlan);
         const normalSig = sigOf(buildNormalWorks(confirmed));
-        if (works.length > 0 && (hasNewPlan || normalSig !== origWorksSig)) payload.works = works;
-
-        const oldPaid = Number(base?.session?.totals?.total_paid || 0);
-        if (canEditPayment && totalPaid !== "" && Number(totalPaid) !== oldPaid) {
-            const v = Number(totalPaid);
-            if (!Number.isFinite(v) || v < 0) return setError(t("es.paid_invalid"));
-            payload.total_paid = v;
-        }
-
-        if (canEditPayment && paymentNote !== (base?.session?.payment_note ?? "")) {
-            payload.payment_note = paymentNote;
-        }
+        if (hasNewPlan || normalSig !== origWorksSig) payload.works = works;
 
         // prescription — only send if it changed (cleaned of empty drug rows)
         if (prescSig(prescription) !== origPrescSig) {
@@ -426,22 +529,89 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         const hasSessionChange = Object.keys(payload).length > 0;
         const hasPlanChange = planToothUpdates.length > 0;
         const hasImageChange = imagesToDelete.length > 0 || newImages.length > 0;
-        if (!hasSessionChange && !hasPlanChange && !hasImageChange) return onClose();
+        if (!hasSessionChange && !hasPlanChange && !hasImageChange) return closeModal();
 
         setIsSaving(true);
+        let sessionSaved = false;
         try {
             if (hasSessionChange) await updateNormalSession(sessionId, payload);
+            sessionSaved = true;
             if (hasPlanChange) await updatePlanWorkTeeth(sessionId, planToothUpdates);
             for (const imageId of imagesToDelete) await deleteSessionImage(sessionId, imageId);
             if (newImages.length > 0) await uploadSessionImages(sessionId, newImages.map((im) => im.file));
             onUpdated?.();
             onClose();
         } catch (err) {
-            toast.error(err.userMessage || t("es.save_failed"));
+            // the works are already saved: close, so a second Save can't add them
+            // (or create a new plan) twice — the user reopens to retry the rest
+            if (sessionSaved && hasSessionChange) {
+                toast.error(t("es.saved_but_rest_failed"), { duration: 7000 });
+                onUpdated?.();
+                onClose();
+            } else {
+                toast.error(err.userMessage || t("es.save_failed"));
+                setChanged(true);
+            }
         } finally {
             setIsSaving(false);
         }
     }
+
+    // ── immediate corrections ───────────────────────────────────────────────
+    const savePayment = () => {
+        const amount = Number(editingPay.amount);
+        if (!Number.isFinite(amount) || amount <= 0) return toast.error(t("es.paid_invalid"));
+        const body = { amount, note: editingPay.note || null };
+        runCorrection(
+            () => (editingPay.kind === "plan"
+                ? editSessionPlanPayment(sessionId, editingPay.id, body)
+                : editSessionPayment(sessionId, editingPay.id, body)),
+            t("es.payment_saved")
+        );
+    };
+
+    const askDeletePayment = (kind, p) => setConfirmAction({
+        title: t("es.confirm_delete_payment_title"),
+        message: t("es.confirm_delete_payment", { amount: formatMoney(p.amount, p.currency_code) }),
+        run: () => runCorrection(
+            () => (kind === "plan" ? deleteSessionPlanPayment(sessionId, p.id) : deleteSessionPayment(sessionId, p.id)),
+            t("es.payment_deleted")
+        ),
+    });
+
+    const askDeletePlanWork = (p) => setConfirmAction({
+        title: t("es.confirm_delete_plan_work_title"),
+        message: t("es.confirm_delete_plan_work", { name: p.work_name }),
+        run: () => runCorrection(() => deleteSessionPlanWork(sessionId, p.session_work_id), t("es.plan_work_deleted")),
+    });
+
+    const movePlanWork = (p, toPlanId) => {
+        if (!toPlanId) return;
+        runCorrection(() => moveSessionPlanWork(sessionId, p.session_work_id, Number(toPlanId)), t("es.moved"));
+    };
+
+    const askDeleteVisit = () => {
+        const works = (base?.normal_works?.length || 0) + (base?.plan_works?.length || 0);
+        const money = [...(base?.payments || []), ...(base?.plan_payments || [])].reduce((s, p) => s + Number(p.amount || 0), 0);
+        setConfirmAction({
+            title: t("es.delete_visit_title"),
+            message: t("es.delete_visit_confirm", { works, money: formatMoney(money, base?.session?.currency_code) }),
+            run: async () => {
+                setBusy(true);
+                try {
+                    await deleteSession(sessionId);
+                    toast.success(t("es.visit_deleted"));
+                    onUpdated?.();
+                    onClose();
+                } catch (err) {
+                    toast.error(err.userMessage || t("es.save_failed"));
+                    setConfirmAction(null);
+                } finally {
+                    setBusy(false);
+                }
+            },
+        });
+    };
 
     // chart highlights — mark teeth from the patient's ACTIVE plans (so existing
     // implants/RCTs show on the chart even when they aren't part of THIS session),
@@ -463,19 +633,18 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
         return [...s];
     }, [confirmed]);
 
-    // live session total = normal works × catalog price (plan works excluded)
-    const unitsOf = (c) => (c.wholeMouth ? 1 : c.teeth.length > 0 ? c.teeth.length : Number(c.quantity) || 1);
-    const liveTotal = confirmed.reduce((sum, c) => {
-        if (c.isPlan) return sum;
-        const meta = metaFrom(catalog, c.work_id);
-        return meta ? sum + meta.min_price * unitsOf(c) : sum;
-    }, 0);
+    // live session total = normal works × the price charged (plan works excluded)
+    const liveTotal = confirmed.reduce((sum, c) => (c.isPlan ? sum : sum + (Number(c.unit_price) || 0) * unitsOf(c)), 0);
+    const totals = base?.session?.totals || {};
+    const sessCurr = base?.session?.currency_code;
+    const livePaid = Number(totals.total_paid || 0);
+    const liveRemaining = Math.max(0, liveTotal - livePaid - Number(totals.discount_amount || 0));
 
     const existingForType = dPlan ? plans[dCode]?.list || [] : [];
     const inputCls = "w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]";
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4" onClick={(e) => e.target === e.currentTarget && closeModal()}>
             <div className="flex max-h-[96vh] w-full max-w-7xl flex-col rounded-2xl bg-white shadow-xl">
                 <div className="flex items-start justify-between border-b border-slate-100 px-4 sm:px-5 py-3 shrink-0">
                     <div>
@@ -485,7 +654,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             {header.apptTime ? ` · ${formatDate(header.apptTime)} ${formatTime(header.apptTime)}` : ""}
                         </p>
                     </div>
-                    <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
+                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="text-slate-400 hover:text-slate-600 disabled:opacity-40">✕</button>
                 </div>
 
                 {error && <div className="mx-4 sm:mx-5 mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 shrink-0">{error}</div>}
@@ -494,7 +663,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                     <div className="p-6 text-sm text-slate-500">{t("appt.loading_short")}</div>
                 ) : (
                     <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
-                      <div className="grid gap-3 lg:grid-cols-[minmax(300px,0.85fr),2fr] lg:items-start">
+                      <div className={`grid gap-3 lg:items-start ${usesTeeth ? "lg:grid-cols-[minmax(300px,0.85fr),2fr]" : ""}`}>
                         {/* LEFT */}
                         <div className="flex flex-col gap-3">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -509,7 +678,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                     <div className="flex-1">
                                         <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} className={inputCls}>
                                             <option value="">{t("appt.comp_select_treatment")}</option>
-                                            {catalog.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+                                            {pickable.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
                                         </select>
                                     </div>
                                     {dMeta && !dWhole && !dPerToothPlan && (
@@ -548,15 +717,28 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                     <p className="text-[11px] text-slate-500">{t("es.saved_hint")}</p>
                                 ) : (
                                     <div className="flex flex-wrap gap-1.5">
-                                        {confirmed.map((c) => (
-                                            <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
-                                                <span className="font-semibold">{c.name}</span>
-                                                <span className="text-slate-500">· {c.wholeMouth ? t("appt.arch_" + (c.arch || "whole")) : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("es.qty_no_tooth", { quantity: c.quantity })}</span>
-                                                {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("es.new_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
-                                                <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
-                                                <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
-                                            </span>
-                                        ))}
+                                        {confirmed.map((c) => {
+                                            const units = unitsOf(c);
+                                            const extraNoTooth = !c.wholeMouth && c.teeth.length > 0 && units > c.teeth.length;
+                                            const lowPrice = !c.isPlan && !(Number(c.unit_price) >= Number(c.min_price || 0));
+                                            return (
+                                                <span key={c.uid} className="inline-flex flex-wrap items-center gap-1.5 rounded-xl border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
+                                                    <span className="font-semibold">{c.name}</span>
+                                                    <span className="text-slate-500">· {c.wholeMouth ? `${t("appt.arch_" + (c.arch || "whole"))}${units > 1 ? ` ×${units}` : ""}` : c.teeth.length ? `${t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") })}${extraNoTooth ? ` + ${t("es.qty_no_tooth", { quantity: units - c.teeth.length })}` : ""}` : t("es.qty_no_tooth", { quantity: units })}</span>
+                                                    {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("es.new_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
+                                                    {!c.isPlan && (
+                                                        <label className="flex items-center gap-1 text-[11px] text-slate-500" title={t("es.price_below_min", { amount: formatMoney(c.min_price || 0) })}>
+                                                            {t("es.price")}
+                                                            <input type="number" min={c.min_price || 0} step="any" value={c.unit_price} disabled={isSaving}
+                                                                onChange={(e) => setLinePrice(c.uid, e.target.value)}
+                                                                className={`w-24 rounded-md border px-1.5 py-0.5 text-xs focus:outline-none ${lowPrice ? "border-red-400 bg-red-50 text-red-700" : "border-slate-200 focus:border-[#0E6E75]"}`} />
+                                                        </label>
+                                                    )}
+                                                    <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
+                                                    <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
+                                                </span>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -584,23 +766,82 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
 
                             {/* Money — hidden for doctors (works + images only, no money) */}
                             {canEditPayment && (
-                                <>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                            <p className="text-[11px] font-medium text-slate-600">{t("es.session_total")}</p>
-                                            <p className="mt-1 text-base font-semibold text-slate-900">{formatMoney(liveTotal)}</p>
-                                            <p className="text-[10px] text-slate-400">{t("es.session_total_hint")}</p>
+                                <div className="rounded-xl border border-slate-200 bg-white p-3">
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <p className="text-[11px] font-semibold text-slate-700">{t("es.money_title")}</p>
+                                        {totals.is_settled && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">{t("es.settled")}</span>}
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 text-center">
+                                        <div className="rounded-lg bg-slate-50 p-2">
+                                            <p className="text-[10px] text-slate-500">{t("es.total")}</p>
+                                            <p className="text-sm font-semibold text-slate-900">{formatMoney(liveTotal, sessCurr)}</p>
                                         </div>
-                                        <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                            <label className="text-[11px] font-medium text-slate-600">{t("es.total_paid")}{curr ? ` (${curr})` : ""}</label>
-                                            <input type="number" min={0} step="0.01" value={totalPaid} onChange={(e) => setTotalPaid(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} />
+                                        <div className="rounded-lg bg-slate-50 p-2">
+                                            <p className="text-[10px] text-slate-500">{t("es.paid")}</p>
+                                            <p className="text-sm font-semibold text-slate-900">{formatMoney(livePaid, sessCurr)}</p>
+                                        </div>
+                                        <div className="rounded-lg bg-slate-50 p-2">
+                                            <p className="text-[10px] text-slate-500">{t("es.remaining")}</p>
+                                            <p className="text-sm font-semibold text-amber-700">{formatMoney(totals.is_settled ? 0 : liveRemaining, sessCurr)}</p>
                                         </div>
                                     </div>
-                                    <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                        <label className="text-[11px] font-medium text-slate-600">{t("es.payment_note")}</label>
-                                        <input type="text" value={paymentNote} onChange={(e) => setPaymentNote(e.target.value)} disabled={isSaving} className={`${inputCls} mt-1`} placeholder={t("es.payment_note_ph")} />
-                                    </div>
-                                </>
+                                    <p className="mt-1 text-[10px] text-slate-400">{t("es.session_total_hint")}</p>
+
+                                    {[
+                                        { kind: "normal", title: t("es.payments_title"), rows: base?.payments || [] },
+                                        { kind: "plan", title: t("es.plan_payments_title"), rows: base?.plan_payments || [] },
+                                    ].filter((g) => g.kind === "normal" || g.rows.length > 0).map((g) => (
+                                        <div key={g.kind} className="mt-3">
+                                            <p className="mb-1 text-[11px] font-semibold text-slate-700">{g.title}</p>
+                                            {g.rows.length === 0 ? (
+                                                <p className="text-[11px] text-slate-400">{t("es.no_payments")}</p>
+                                            ) : (
+                                                <div className="space-y-1.5">
+                                                    {g.rows.map((p) => {
+                                                        const editing = editingPay && editingPay.kind === g.kind && editingPay.id === p.id;
+                                                        return (
+                                                            <div key={p.id} className="rounded-lg border border-slate-100 bg-slate-50 px-2.5 py-1.5 text-[11px]">
+                                                                {editing ? (
+                                                                    <div className="flex flex-wrap items-center gap-1.5">
+                                                                        <input type="number" min="1" step="any" value={editingPay.amount} autoFocus disabled={busy}
+                                                                            onChange={(e) => setEditingPay((x) => ({ ...x, amount: e.target.value }))}
+                                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-[#0E6E75] focus:outline-none" />
+                                                                        <input type="text" value={editingPay.note} placeholder={t("es.payment_note_ph")} disabled={busy}
+                                                                            onChange={(e) => setEditingPay((x) => ({ ...x, note: e.target.value }))}
+                                                                            className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-[#0E6E75] focus:outline-none" />
+                                                                        <button type="button" onClick={savePayment} disabled={busy} className="rounded-md bg-[#0E6E75] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">{t("common.save")}</button>
+                                                                        <button type="button" onClick={() => setEditingPay(null)} disabled={busy} className="rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-white">{t("common.cancel")}</button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="min-w-0 flex-1">
+                                                                            <span className="font-semibold text-slate-800">{formatMoney(p.amount, p.currency_code)}</span>
+                                                                            {g.kind === "plan" && <span className="ms-1.5 rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-purple-700">{p.plan_type}</span>}
+                                                                            <span className="ms-1.5 text-slate-500">{formatDate(p.created_at)}</span>
+                                                                            {p.created_by_name && <span className="ms-1.5 text-slate-400">{t("es.by", { name: p.created_by_name })}</span>}
+                                                                            {p.note && <p className="truncate text-slate-500">{p.note}</p>}
+                                                                        </div>
+                                                                        {canChangePayments && (
+                                                                            <>
+                                                                                <button type="button" title={t("common.edit")} disabled={busy}
+                                                                                    onClick={() => setEditingPay({ kind: g.kind, id: p.id, amount: String(p.amount), note: p.note || "" })}
+                                                                                    className="rounded p-1 text-slate-400 hover:bg-white hover:text-[#0E6E75] disabled:opacity-40">✎</button>
+                                                                                <button type="button" title={t("common.delete")} disabled={busy}
+                                                                                    onClick={() => askDeletePayment(g.kind, p)}
+                                                                                    className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40">✕</button>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    {canChangePayments && <p className="mt-2 text-[10px] text-slate-400">{t("es.payments_hint")}</p>}
+                                </div>
                             )}
 
                             {/* Existing plan works (tooth only) */}
@@ -610,9 +851,11 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                     <p className="text-[11px] text-slate-500">{t("es.plan_works_hint")}</p>
                                     <div className="mt-2 space-y-2">
                                         {planWorks.map((p) => {
-                                            const wholeMouthPlan = wholeMouthCodes.has(String(p.plan_type || "").toLowerCase());
+                                            const type = String(p.plan_type || "").toLowerCase();
+                                            const wholeMouthPlan = wholeMouthCodes.has(type);
+                                            const moveTargets = (plans[type]?.list || []).filter((pl) => Number(pl.id) !== Number(p.treatment_plan_id));
                                             return (
-                                                <div key={p.session_work_id} className="flex items-center gap-2 rounded-lg border border-purple-100 bg-white p-2">
+                                                <div key={p.session_work_id} className="flex flex-wrap items-center gap-2 rounded-lg border border-purple-100 bg-white p-2">
                                                     <span className="flex-1 truncate text-sm font-medium text-slate-800">{p.work_name}</span>
                                                     {p.plan_type && <span className="rounded-full border border-purple-100 bg-purple-50 px-2 py-0.5 text-[10px] font-medium uppercase text-purple-700">{p.plan_type}</span>}
                                                     {wholeMouthPlan ? (
@@ -628,6 +871,19 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                             {t("es.mark_done")}
                                                         </label>
                                                     ) : null}
+                                                    {moveTargets.length > 0 && (
+                                                        <select value="" disabled={isSaving || busy} onChange={(e) => movePlanWork(p, e.target.value)}
+                                                            className="rounded-md border border-slate-200 bg-white px-1.5 py-1 text-[11px] text-slate-600 focus:border-[#0E6E75] focus:outline-none">
+                                                            <option value="">{t("es.move_to_plan")}</option>
+                                                            {moveTargets.map((pl) => (
+                                                                <option key={pl.id} value={pl.id}>
+                                                                    {`${type.toUpperCase()} · ${pl.teeth ? t("appt.comp_tooth_label", { teeth: pl.teeth }) : t("appt.comp_no_tooth")} · ${t("appt.comp_remaining", { amount: formatMoney(Number(pl.agreed_total) - Number(pl.total_paid || 0)) })}`}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    )}
+                                                    <button type="button" title={t("common.delete")} disabled={isSaving || busy} onClick={() => askDeletePlanWork(p)}
+                                                        className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40">✕</button>
                                                 </div>
                                             );
                                         })}
@@ -641,7 +897,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             </div>
                         </div>
 
-                        {/* RIGHT: tooth chart */}
+                        {/* RIGHT: tooth chart — only for specialties that use teeth */}
+                        {usesTeeth && (
                         <div className="flex flex-col rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-3 sm:p-4 lg:min-h-[420px]">
                             <div className="mb-2 flex items-center justify-between">
                                 <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
@@ -665,6 +922,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             </div>
                             <p className="mt-2 text-center text-[11px] text-slate-400">{t("es.chart_hint")}</p>
                         </div>
+                        )}
                       </div>
 
                       {/* Case images — full width at the bottom, responsive grid (like the add flow) */}
@@ -703,15 +961,32 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 )}
 
                 <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-4 sm:px-5 py-3">
-                    <button type="button" onClick={onClose} disabled={isSaving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">{t("common.cancel")}</button>
-                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading} className="rounded-md bg-[#0E6E75] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">{isSaving ? t("es.saving") : t("es.save_changes")}</button>
+                    {canDeleteVisit && !isLoading && (
+                        <button type="button" onClick={askDeleteVisit} disabled={isSaving || busy}
+                            className="me-auto rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50">{t("es.delete_visit")}</button>
+                    )}
+                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50">{t("common.cancel")}</button>
+                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading || busy} className="rounded-md bg-[#0E6E75] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">{isSaving ? t("es.saving") : t("es.save_changes")}</button>
                 </div>
             </div>
+
+            {confirmAction && (
+                <ConfirmModal
+                    title={confirmAction.title}
+                    message={confirmAction.message}
+                    confirmLabel={t("common.delete")}
+                    cancelLabel={t("common.cancel")}
+                    onConfirm={confirmAction.run}
+                    onClose={() => !busy && setConfirmAction(null)}
+                    loading={busy}
+                    danger
+                />
+            )}
 
             {popupTooth != null && (
                 <ToothWorkPopup
                     tooth={popupTooth}
-                    works={catalog.filter((w) => !w.is_whole_mouth).map((w) => ({ ...w, code: String(w.code || "").toLowerCase() }))}
+                    works={pickable.filter((w) => !w.is_whole_mouth).map((w) => ({ ...w, code: String(w.code || "").toLowerCase() }))}
                     planFor={activePlanForTooth}
                     formatMoney={formatMoney}
                     onConfirm={addToothWork}

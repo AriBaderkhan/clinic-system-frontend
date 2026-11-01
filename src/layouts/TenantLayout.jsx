@@ -5,6 +5,7 @@ import SubscriptionBanner from "../components/SubscriptionBanner";
 import NotificationBell from "../components/NotificationBell";
 import InsightsAssistant from "../components/insights/InsightsAssistant";
 import TopNav from "../components/TopNav";
+import SubscriptionGate from "../components/subscription/SubscriptionGate";
 import { useSubscription } from "../context/SubscriptionContext";
 import { clearStorageKeepingTheme } from "../utils/theme";
 
@@ -49,7 +50,7 @@ export default function TenantLayout() {
             <div className="flex-1 overflow-y-auto">
                 <main className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-6">
                     <SubscriptionBanner />
-                    <Outlet />
+                    <SubscriptionGate><Outlet /></SubscriptionGate>
                 </main>
             </div>
 

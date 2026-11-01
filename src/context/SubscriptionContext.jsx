@@ -43,8 +43,16 @@ export const SubscriptionProvider = ({ children }) => {
     useEffect(() => {
         if (!isAuthenticated) return;
         const onFocus = () => refresh();
+        // many requests can fail at once → one refresh
+        let timer;
+        const onExpired = () => { clearTimeout(timer); timer = setTimeout(refresh, 300); };
         window.addEventListener("focus", onFocus);
-        return () => window.removeEventListener("focus", onFocus);
+        window.addEventListener("subscription-expired", onExpired);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener("focus", onFocus);
+            window.removeEventListener("subscription-expired", onExpired);
+        };
     }, [isAuthenticated, refresh]);
 
     // While features haven't loaded yet, don't hide anything (avoids a flash of

@@ -33,7 +33,7 @@ function dateKey(date) {
 
 import { useSettings } from "../../context/SettingContext";
 
-export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay }) {
+export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay, floorId = "" }) {
   const { t } = useTranslation();
   const { formatTime } = useSettings();
   const [view, setView] = useState("month"); // month | week
@@ -56,7 +56,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay 
   const from = useMemo(() => gridStart.toISOString(), [gridStart]);
   const to = useMemo(() => addDays(gridStart, gridDays).toISOString(), [gridStart, gridDays]);
 
-  const { appointments, isLoading, error, refresh } = useCalendarAppointments(from, to);
+  const { appointments, isLoading, error, refresh } = useCalendarAppointments(from, to, floorId);
 
   // ---- group appointments by day ----
   const apptsByDay = useMemo(() => {

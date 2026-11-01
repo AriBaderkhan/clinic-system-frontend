@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AppointmentsCalendar from "../../components/appointments/AppointmentsCalendar";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
+import useFloorFilter from "../../hooks/useFloorFilter";
+import FloorFilter from "../../components/floors/FloorFilter";
 
 function toDateParam(day) {
   return `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
@@ -18,6 +20,7 @@ export default function AppointmentsCalendarPage() {
   const canCreate = role !== "doctor";
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const floor = useFloorFilter(); // starts on my floor; hidden for doctors / one floor
 
   const handleSelectDay = (day) => {
     navigate(`${prefix}/appointments/add?date=${toDateParam(day)}`);
@@ -33,18 +36,22 @@ export default function AppointmentsCalendarPage() {
       )}
 
       {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900">{t("appt.cal_title")}</h1>
-        <p className="text-xs text-slate-500">
-          {role === "doctor"
-            ? t("appt.cal_subtitle_doctor")
-            : t("appt.cal_subtitle_other")}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold text-slate-900">{t("appt.cal_title")}</h1>
+          <p className="text-xs text-slate-500">
+            {role === "doctor"
+              ? t("appt.cal_subtitle_doctor")
+              : t("appt.cal_subtitle_other")}
+          </p>
+        </div>
+        <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} />
       </div>
 
       <AppointmentsCalendar
         onSelectAppointment={setSelectedAppointment}
         onSelectDay={canCreate ? handleSelectDay : undefined}
+        floorId={floor.floorId}
       />
     </div>
   );

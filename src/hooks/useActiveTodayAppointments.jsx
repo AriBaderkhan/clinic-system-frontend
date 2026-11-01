@@ -1,16 +1,18 @@
 import { useEffect, useState, useCallback } from "react";
 import { getActiveTodayAppointments } from "../api/appointmentApi";
 
-export default function useActiveTodayAppointments() {
+// floorId: "" = all floors, null = floor filter still loading (wait)
+export default function useActiveTodayAppointments(floorId = "") {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetchAppointments = useCallback(async () => {
+    if (floorId === null) return;
     try {
       setIsLoading(true);
       setError("");
-      const res = await getActiveTodayAppointments();
+      const res = await getActiveTodayAppointments(floorId ? { floor_id: floorId } : {});
       setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage);
@@ -18,7 +20,7 @@ export default function useActiveTodayAppointments() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [floorId]);
 
   useEffect(() => {
     fetchAppointments();

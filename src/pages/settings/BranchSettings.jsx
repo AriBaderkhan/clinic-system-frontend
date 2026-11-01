@@ -10,6 +10,7 @@ import { getTheme, toggleTheme } from "../../utils/theme";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import DiscountsSettings from "../../components/settings/DiscountsSettings";
+import FloorsSettings from "../../components/settings/FloorsSettings";
 import toast from "react-hot-toast";
 
 export default function BranchSettingsPage() {
@@ -393,6 +394,11 @@ export default function BranchSettingsPage() {
             {/* ===== Section: Discounts ===== */}
             <section className="mt-6">
                 <DiscountsSettings />
+            </section>
+
+            {/* ===== Section: Floors ===== */}
+            <section className="mt-6">
+                <FloorsSettings />
             </section>
 
             {/* ===== Edit template modal ===== */}

@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useAppointments from "../../hooks/useAppointments";
+import useFloorFilter from "../../hooks/useFloorFilter";
+import FloorFilter from "../../components/floors/FloorFilter";
 import AppointmentStatusModal from "../../components/appointments/AppointmentStatusModal";
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { deleteAppointment } from "../../api/appointmentApi";
@@ -34,11 +36,13 @@ export default function AppointmentPage() {
   const [dayFilter, setDayFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const floor = useFloorFilter(); // starts on my floor; hidden with one floor
 
   const { appointments, isLoading, error, refresh, page, setPage, pagination, isSearching } = useAppointments({
     day: dayFilter,
     type: typeFilter,
     search: searchTerm,
+    floor_id: floor.floorId,
   });
 
   const [selectedForStatus, setSelectedForStatus] = useState(null);
@@ -181,6 +185,9 @@ export default function AppointmentPage() {
               <option value="walk_in">{t("appt.type_walk_in")}</option>
             </select>
           </div>
+
+          {/* Floor */}
+          <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} />
 
           {/* Actions */}
           <div className="flex gap-2">

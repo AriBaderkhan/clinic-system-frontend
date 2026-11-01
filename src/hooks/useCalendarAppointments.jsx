@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { getCalendarAppointments } from "../api/appointmentApi";
 
-export default function useCalendarAppointments(from, to) {
+// floorId: "" = all floors, null = floor filter still loading (wait)
+export default function useCalendarAppointments(from, to, floorId = "") {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetchAppointments = useCallback(async () => {
-    if (!from || !to) return;
+    if (!from || !to || floorId === null) return;
     try {
       setIsLoading(true);
       setError("");
-      const res = await getCalendarAppointments({ from, to });
+      const res = await getCalendarAppointments({ from, to, ...(floorId ? { floor_id: floorId } : {}) });
       setAppointments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.userMessage || "Failed to load calendar appointments");
@@ -19,7 +20,7 @@ export default function useCalendarAppointments(from, to) {
     } finally {
       setIsLoading(false);
     }
-  }, [from, to]);
+  }, [from, to, floorId]);
 
   useEffect(() => {
     fetchAppointments();

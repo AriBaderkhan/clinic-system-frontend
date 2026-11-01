@@ -37,6 +37,7 @@ export default function ApptsPerDoctor() {
         const fields = [
             a.patient_name,
             a.patient_phone,
+            ...(a.patient_extra_phones || []),
             a.doctor_name,
             a.appointment_type,
             a.status,

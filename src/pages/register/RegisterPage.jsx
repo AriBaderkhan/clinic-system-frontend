@@ -3,6 +3,8 @@ import { useSearchParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getPublicPlans } from "../../api/planApi";
 import { sendRegisterCode, verifyRegisterCode, registerTenant } from "../../api/registrationApi";
+import BillingPeriodToggle from "../../components/subscription/BillingPeriodToggle";
+import { planPrice } from "../../utils/billing";
 
 const BANK_ACCOUNTS = [
     { label: "FIB", number: "7501437572" },
@@ -18,6 +20,8 @@ export default function RegisterPage() {
     const [plans, setPlans] = useState([]);
     const [loadingPlans, setLoadingPlans] = useState(true);
     const [selectedPlanId, setSelectedPlanId] = useState(null);
+    const [billingPeriod, setBillingPeriod] = useState("monthly");
+    const periodLabel = billingPeriod === "yearly" ? "year" : "month";
 
     const [form, setForm] = useState({
         tenant_name: "", manager_name: "", phone: "", address: "",
@@ -111,7 +115,7 @@ export default function RegisterPage() {
         if (!file) return toast.error("Upload your payment evidence image.");
         try {
             setSubmitting(true);
-            await registerTenant({ ...form, plan_id: selectedPlanId }, file);
+            await registerTenant({ ...form, plan_id: selectedPlanId, billing_period: billingPeriod }, file);
             setDone(true);
         } catch (err) {
             toast.error(err.userMessage || "Failed to submit registration");
@@ -170,7 +174,10 @@ export default function RegisterPage() {
                     {/* ── Step 1: Plan ── */}
                     {step === 1 && (
                         <div>
-                            <h2 className="mb-4 text-lg font-bold text-slate-800">Choose a plan</h2>
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                                <h2 className="text-lg font-bold text-slate-800">Choose a plan</h2>
+                                <BillingPeriodToggle value={billingPeriod} onChange={setBillingPeriod} />
+                            </div>
                             {loadingPlans ? (
                                 <p className="text-sm text-slate-500">Loading plans…</p>
                             ) : (
@@ -186,7 +193,7 @@ export default function RegisterPage() {
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-bold text-slate-900">{plan.name}</span>
-                                                    <span className="font-bold text-[#0E6E75]">${plan.price}</span>
+                                                    <span className="font-bold text-[#0E6E75]">${planPrice(plan, billingPeriod)} / {periodLabel}</span>
                                                 </div>
                                                 <p className="mt-1 text-xs text-slate-500">
                                                     {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {plan.max_users === -1 ? "Unlimited" : plan.max_users} users
@@ -292,7 +299,7 @@ export default function RegisterPage() {
                         <div>
                             <h2 className="mb-1 text-lg font-bold text-slate-800">Payment</h2>
                             <p className="mb-4 text-sm text-slate-500">
-                                Transfer <b className="text-[#0E6E75]">${selectedPlan?.price}</b> for the <b>{selectedPlan?.name}</b> plan, then upload your payment screenshot.
+                                Transfer <b className="text-[#0E6E75]">${planPrice(selectedPlan, billingPeriod)}</b> for the <b>{selectedPlan?.name}</b> plan ({billingPeriod}), then upload your payment screenshot.
                             </p>
 
                             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">

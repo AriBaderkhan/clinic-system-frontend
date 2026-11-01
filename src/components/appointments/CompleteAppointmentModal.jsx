@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { completeAppointmentWithSession, saveVisitDraft, getAppointmentById } from "../../api/appointmentApi";
 import { uploadSessionImages } from "../../api/sessionApi";
-import { getWorks } from "../../api/workApi";
+import { getWorksForDoctor } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 import { useSettings } from "../../context/SettingContext";
 import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
@@ -114,6 +114,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [catalog, setCatalog] = useState([]);
+  const [usesTeeth, setUsesTeeth] = useState(true); // false → this doctor's specialty has no teeth chart
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -137,38 +138,38 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const apptId = appointment.id ?? appointment.appointment_id;
   const patientId = Number(appointment.patient_id);
 
+  // Load the visit (draft + its doctor), then only the treatments THIS doctor may
+  // use (their specialty + extras the manager ticked).
   useEffect(() => {
     (async () => {
+      let a = {};
+      try {
+        const res = await getAppointmentById(apptId);
+        a = res.data || {};
+        // Prefill complaint + notes + next plan from the saved visit draft so a refresh
+        // (or reopening) never loses what was typed. Falls back to the booking complaint.
+        setComplaint(a.complaint || "");
+        setNotes(a.draft_notes || "");
+        setNextPlan(a.draft_next_plan || "");
+      } catch { /* keep whatever is already there */ }
+
       try {
         setLoadingCatalog(true);
-        const res = await getWorks();
-        const data = res.data?.works || res.data?.data || res.data;
+        const res = await getWorksForDoctor(a.doctor_id ?? appointment.doctor_id);
+        const data = res.data || {};
         // Canonicalise code to lowercase ONCE, here. The backend stores codes
         // uppercase but the whole frontend compares them lowercase (plans keys,
         // planCodes, getMeta). Normalising at ingestion keeps a single source of
         // truth so no lookup/popup ever has to remember to convert.
-        setCatalog(Array.isArray(data) ? data.map((w) => ({ ...w, code: String(w.code || "").toLowerCase() })) : []);
+        setCatalog(Array.isArray(data.works) ? data.works.map((w) => ({ ...w, code: String(w.code || "").toLowerCase() })) : []);
+        setUsesTeeth(data.uses_teeth !== false);
       } catch (err) {
         setError(err.userMessage);
       } finally {
         setLoadingCatalog(false);
       }
     })();
-  }, []);
-
-  // Prefill complaint + notes + next plan from the saved visit draft so a refresh
-  // (or reopening) never loses what was typed. Falls back to the booking complaint.
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAppointmentById(apptId);
-        const a = res.data || {};
-        setComplaint(a.complaint || "");
-        setNotes(a.draft_notes || "");
-        setNextPlan(a.draft_next_plan || "");
-      } catch { /* keep whatever is already there */ }
-    })();
-  }, [apptId]);
+  }, [apptId, appointment.doctor_id]);
 
   // Behavior is data-driven now: the catalog carries is_plan / is_whole_mouth,
   // so we derive the code sets from it instead of hardcoding treatment codes.
@@ -507,7 +508,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           </div>
 
           {/* Middle: treatment controls (left) | teeth chart (right) */}
-          <div className="grid gap-3 lg:grid-cols-[minmax(280px,0.85fr),2fr] lg:items-start">
+          <div className={`grid gap-3 lg:items-start ${usesTeeth ? "lg:grid-cols-[minmax(280px,0.85fr),2fr]" : ""}`}>
           {/* ===== LEFT: controls ===== */}
           <div className="flex flex-col gap-3">
             {/* Choose treatment */}
@@ -610,7 +611,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
           </div>
 
-          {/* ===== RIGHT: teeth chart (hero) ===== */}
+          {/* ===== RIGHT: teeth chart (hero) — only for specialties that use teeth ===== */}
+          {usesTeeth && (
           <div className="flex flex-col rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-4 lg:min-h-[420px]">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
@@ -655,6 +657,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
             <p className="mt-2 text-center text-[11px] text-slate-400">{t("appt.comp_teeth_hint")}</p>
           </div>
+          )}
           </div>
 
           {/* Case images (optional) — full width at the bottom, responsive grid */}

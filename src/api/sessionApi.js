@@ -55,3 +55,34 @@ export const updatePlanWorkTeeth = async (sessionId, updates) => {
     const res = await api.patch(`/api/sessions/${sessionId}/plan-works/tooth`, { updates });
     return res.data;
 };
+
+// ── Correcting a visit (each call is saved immediately, totals recalculated) ──
+export const editSessionPayment = async (sessionId, paymentId, payload) => {
+    const res = await api.patch(`/api/sessions/${sessionId}/payments/${paymentId}`, payload);
+    return res.data;
+};
+
+export const deleteSessionPayment = async (sessionId, paymentId) => {
+    const res = await api.delete(`/api/sessions/${sessionId}/payments/${paymentId}`);
+    return res.data;
+};
+
+export const editSessionPlanPayment = async (sessionId, paymentId, payload) => {
+    const res = await api.patch(`/api/sessions/${sessionId}/plan-payments/${paymentId}`, payload);
+    return res.data;
+};
+
+export const deleteSessionPlanPayment = async (sessionId, paymentId) => {
+    const res = await api.delete(`/api/sessions/${sessionId}/plan-payments/${paymentId}`);
+    return res.data;
+};
+
+export const deleteSessionPlanWork = async (sessionId, sessionWorkId) => {
+    const res = await api.delete(`/api/sessions/${sessionId}/plan-works/${sessionWorkId}`);
+    return res.data;
+};
+
+export const moveSessionPlanWork = async (sessionId, sessionWorkId, treatmentPlanId) => {
+    const res = await api.patch(`/api/sessions/${sessionId}/plan-works/${sessionWorkId}/plan`, { treatment_plan_id: treatmentPlanId });
+    return res.data;
+};

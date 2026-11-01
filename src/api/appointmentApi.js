@@ -30,8 +30,8 @@ export const getCalendarAppointments = async (params = {}) => {
     return res.data;
 };
 
-export const getActiveTodayAppointments = async () => {
-    const res = await api.get('/api/appointments/active/today');
+export const getActiveTodayAppointments = async (params = {}) => {
+    const res = await api.get('/api/appointments/active/today', { params });
     return res.data;
 };
 

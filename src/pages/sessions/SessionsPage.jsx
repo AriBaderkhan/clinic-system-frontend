@@ -54,6 +54,7 @@ export default function Sessions() {
 
   function closeEdit() {
     setIsEditOpen(false);
+    setSelectedId(null); // otherwise the View modal pops up right after closing Edit
   }
 
   // Open the confirm modal.
