@@ -12,10 +12,7 @@ export default function EditPatient() {
   const navigate = useNavigate();
   const location = useLocation();
   // back to where the edit was opened from (the patient's folder), else the
-  // patients list of THIS role (managers live under /branch, reception /reception)
-  const role = localStorage.getItem("role") || "reception";
-  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
-  const returnTo = location.state?.returnTo || `${prefix}/patients`;
+  const returnTo = location.state?.returnTo || `/patients`;
 
   const { updatePatient, isSubmitting } = usePatients({ skipFetch: true });
 

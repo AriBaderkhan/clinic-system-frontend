@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import { getFloors } from "../api/floorApi";
+import { useAuth } from "../context/AuthContext";
+import { isOwnOnly } from "../utils/can";
 
 // Floor filter for appointment lists.
 //   floorId = null while loading (lists wait, so they don't flash every floor first)
 //           = ""   → all floors
 //           = id   → that floor (starts on MY home floor)
 // show = false when the branch has only one floor (the filter is hidden).
-// Doctors don't filter by floor: their lists already follow them.
+// People who see only their OWN appointments don't filter by floor: their lists already follow them.
 export default function useFloorFilter() {
-  const isDoctor = localStorage.getItem("role") === "doctor";
+  const { user } = useAuth();
+  const ownOnly = isOwnOnly(user, "view_appointment");
   const [floors, setFloors] = useState([]);
-  const [floorId, setFloorId] = useState(isDoctor ? "" : null);
+  const [floorId, setFloorId] = useState(ownOnly ? "" : null);
 
   useEffect(() => {
-    if (isDoctor) return;
+    if (ownOnly) return;
     let alive = true;
     getFloors()
       .then((res) => {
@@ -26,7 +29,7 @@ export default function useFloorFilter() {
       })
       .catch(() => { if (alive) setFloorId(""); });
     return () => { alive = false; };
-  }, [isDoctor]);
+  }, [ownOnly]);
 
-  return { floors, floorId, setFloorId, show: !isDoctor && floors.length > 1 };
+  return { floors, floorId, setFloorId, show: !ownOnly && floors.length > 1 };
 }

@@ -58,3 +58,8 @@ export const rejectSubscriptionRequest = async (requestId, note) => {
     const res = await api.post(`/api/subscriptions/requests/${requestId}/reject`, { note });
     return res.data;
 };
+// what a renewal / plan change costs right now: { total, base, doctors, included_doctors, extra_doctors, extra_doctor_price, price_locked }
+export const getSubscriptionQuote = async (planId, billingPeriod) => {
+    const res = await api.get('/api/subscriptions/me/quote', { params: { plan_id: planId, billing_period: billingPeriod } });
+    return res.data;
+};

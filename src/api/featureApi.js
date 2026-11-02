@@ -24,3 +24,18 @@ export const getPlanFeatures = async (planId) => {
     const res = await api.get(`/api/features/plan/${planId}`);
     return res.data;
 };
+// ---- per-clinic extras (platform admin): a feature for ONE clinic, optionally until a date ----
+export const getTenantGrants = async (tenantId) => {
+    const res = await api.get(`/api/features/tenant/${tenantId}`);
+    return res.data;
+};
+
+export const grantTenantFeature = async (tenantId, data) => {
+    const res = await api.post(`/api/features/tenant/${tenantId}`, data);
+    return res.data;
+};
+
+export const revokeTenantFeature = async (tenantId, featureId) => {
+    const res = await api.delete(`/api/features/tenant/${tenantId}/feature/${featureId}`);
+    return res.data;
+};

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -16,22 +16,24 @@ import EditTreatmentPlanModal from "../../components/treatment_plan/EditTreatmen
 import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { useSettings } from "../../context/SettingContext";
 import { useAuth } from "../../context/AuthContext";
+import PatientShareBox from "../../components/patients/PatientShareBox";
+import { getPatientShares } from "../../api/patientApi";
 
-// Edit appointments go to the same edit route the general Appointments page uses;
-// the base path depends on the role viewing the folder.
-function rolePrefix() {
-  const role = localStorage.getItem("role") || "reception";
-  return role === "branch_manager" || role === "tenant_manager" ? "/branch" : "/reception";
-}
 
 export default function PatientFolderPage() {
   const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
   const { patientId } = useParams();
   const navigate = useNavigate();
-  const prefix = rolePrefix();
   const { user } = useAuth();
-  const canEditPatient = (user?.permissions || []).includes("update_patient");
+
+  // home branch + sharing (only the home branch edits the patient's details)
+  const [shares, setShares] = useState(null);
+  const loadShares = () => getPatientShares(patientId).then((res) => setShares(res.data)).catch(() => setShares(null));
+  useEffect(() => { loadShares(); }, [patientId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const canEditPatient = (user?.permissions || []).includes("update_patient") && shares?.is_home !== false;
+  // a record from another branch (shared patient) is read-only here
+  const isHere = (row) => !row.branch_id || Number(row.branch_id) === Number(user?.branch_id);
 
   const [activeTab, setActiveTab] = useState("appointments");
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -76,9 +78,10 @@ export default function PatientFolderPage() {
 
   // payments has normal (session) and treatment-plan payments, split by kind
   const sumPaid = (list) => list.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-  const planPaidForPatient = sumPaid(payments.filter((p) => p.kind === "plan"));
-  const normalPaidForPatient = sumPaid(payments.filter((p) => p.kind !== "plan"));
-  const totalPaidForPatient = sumPaid(payments);
+  const paymentsHere = payments.filter(isHere);
+  const planPaidForPatient = sumPaid(paymentsHere.filter((p) => p.kind === "plan"));
+  const normalPaidForPatient = sumPaid(paymentsHere.filter((p) => p.kind !== "plan"));
+  const totalPaidForPatient = sumPaid(paymentsHere);
 
   const filteredPlans = useMemo(() => {
     const list = Array.isArray(plans) ? plans : [];
@@ -198,7 +201,7 @@ export default function PatientFolderPage() {
                 {canEditPatient && (
                   <button
                     type="button"
-                    onClick={() => navigate(`${prefix}/patients/${patientId}/edit`, { state: { returnTo: `${prefix}/patients/${patientId}` } })}
+                    onClick={() => navigate(`/patients/${patientId}/edit`, { state: { returnTo: `/patients/${patientId}` } })}
                     className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                   >
                     {t("patient_folder.edit_patient")}
@@ -206,6 +209,8 @@ export default function PatientFolderPage() {
                 )}
               </div>
             </div>
+
+            <PatientShareBox patientId={patientId} shares={shares} onChanged={loadShares} />
 
             {/* Medical info — same card, highlighted so it can't be missed */}
             {(patient.blood_type || patient.allergies || patient.chronic_diseases) && (
@@ -288,6 +293,7 @@ export default function PatientFolderPage() {
                         <td className="px-3 py-2 text-slate-700 capitalize">{a.status}</td>
                         <td className="px-3 py-2 text-slate-700">{a.created_by_name}</td>
                         <td className="px-3 py-2 text-end">
+                          {!isHere(a) ? <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700" title={t("share.other_branch_hint")}>{a.branch_name}</span> : (
                           <div className="flex justify-end gap-2">
                             <button
                               type="button"
@@ -298,12 +304,13 @@ export default function PatientFolderPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => navigate(`${prefix}/appointments/${a.appointment_id}/edit`)}
+                              onClick={() => navigate(`/appointments/${a.appointment_id}/edit`)}
                               className="rounded-md border border-yellow-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-yellow-700"
                             >
                               {t("common.edit")}
                             </button>
                           </div>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -360,6 +367,7 @@ export default function PatientFolderPage() {
                           )}
                         </td>
                         <td className="px-3 py-2 text-end">
+                          {!isHere(s) ? <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700" title={t("share.other_branch_hint")}>{s.branch_name}</span> : (
                           <div className="flex justify-end gap-2">
                             <button
                               type="button"
@@ -376,6 +384,7 @@ export default function PatientFolderPage() {
                               {t("common.edit")}
                             </button>
                           </div>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -448,8 +457,8 @@ export default function PatientFolderPage() {
                         <>
                           <tr
                             key={tp.id}
-                            onClick={() => handleTogglePlan(tp.id)}
-                            className="cursor-pointer border-b border-slate-100 hover:bg-slate-50"
+                            onClick={() => isHere(tp) && handleTogglePlan(tp.id)}
+                            className={`border-b border-slate-100 hover:bg-slate-50 ${isHere(tp) ? "cursor-pointer" : ""}`}
                           >
                             <td className="px-3 py-2 font-medium text-slate-800">
                               {String(tp.type || "").toUpperCase()}
@@ -481,6 +490,7 @@ export default function PatientFolderPage() {
                             </td>
                             <td className="px-3 py-2 text-slate-700">{formatDateTime(tp.created_at)}</td>
                             <td className="px-3 py-2 text-end">
+                              {!isHere(tp) ? <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700" title={t("share.other_branch_hint")}>{tp.branch_name}</span> : (
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -491,6 +501,7 @@ export default function PatientFolderPage() {
                               >
                                 {t("common.edit")}
                               </button>
+                              )}
                             </td>
                           </tr>
 

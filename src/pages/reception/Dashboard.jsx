@@ -12,6 +12,7 @@ import AllUnpaidSessionsModal from "../../components/sessions/AllUnpaidSessionsM
 import { useSettings } from "../../context/SettingContext";
 import UnpaidMoneyLines from "../../components/sessions/UnpaidMoneyLines";
 import { unpaidBreakdown } from "../../utils/unpaid";
+import useCan from "../../utils/can";
 
 // Status pill colors (labels come from the shared appt.st_* keys)
 const STATUS_CHIP = {
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const { t, i18n } = useTranslation();
   const { formatTime, formatMoney } = useSettings();
   const navigate = useNavigate();
+  const can = useCan();
   const floor = useFloorFilter(); // today's list starts on my floor
   const payFloor = useFloorFilter(); // payment box has its own floor dropdown (same default)
 
@@ -110,9 +112,10 @@ export default function Dashboard() {
         <div className="space-y-4">
           {/* Quick actions (above today's active appointments) */}
           <div className="flex flex-col gap-3 sm:flex-row">
+            {can("create_patient") && (
             <button
               type="button"
-              onClick={() => navigate("patients/add")}
+              onClick={() => navigate("/patients/add")}
               className="group flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#0E6E75]/40 hover:shadow-md"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0E6E75] text-white">
@@ -126,10 +129,12 @@ export default function Dashboard() {
               </span>
               <span className="ms-auto text-xl font-light text-slate-300">+</span>
             </button>
+            )}
 
+            {can("create_appointment") && (
             <button
               type="button"
-              onClick={() => navigate("appointments/add")}
+              onClick={() => navigate("/appointments/add")}
               className="group flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#0E6E75]/40 hover:shadow-md"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0E6E75] text-white">
@@ -143,6 +148,7 @@ export default function Dashboard() {
               </span>
               <span className="ms-auto text-xl font-light text-slate-300">+</span>
             </button>
+            )}
           </div>
 
           {/* Today's active appointments */}
@@ -204,7 +210,8 @@ export default function Dashboard() {
                           <td className="px-3 py-2">
                             <button
                               type="button"
-                              onClick={() => setSelectedForStatusDashboard(a)}
+                              onClick={() => can("update_appointment_status") && setSelectedForStatusDashboard(a)}
+                              disabled={!can("update_appointment_status")}
                               className={`rounded-full border px-3 py-1 text-[11px] font-medium transition hover:opacity-80 ${chipClass(a.status)}`}
                             >
                               {t(`appt.st_${a.status}`, a.status)}
@@ -245,7 +252,8 @@ export default function Dashboard() {
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setSelectedForComplete(a)}
+                    onClick={() => can("finalize_session") && setSelectedForComplete(a)}
+                    disabled={!can("finalize_session")}
                     className="flex w-full items-center justify-between rounded-xl border border-[#0E6E75]/20 bg-white px-4 py-3 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
                     <div className="min-w-0">
@@ -330,6 +338,7 @@ export default function Dashboard() {
                         <p className="text-[10px] text-slate-400">{t('unpaid.remaining')}</p>
                         <p className="text-sm font-semibold text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
                       </div>
+                      {can("collect_payment") && (
                       <button
                         type="button"
                         onClick={() => setSelectedForPayment(s)}
@@ -337,6 +346,7 @@ export default function Dashboard() {
                       >
                         {t('dash.pay')}
                       </button>
+                      )}
                     </div>
                   );
                 })}

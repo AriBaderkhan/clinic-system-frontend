@@ -9,12 +9,13 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
-import RoleRoute from "./routes/RoleRoute";
 import PermissionRoute from "./routes/PermissionRoute";
-import ReceptionLayout from "./layouts/ReceptionLayout";
-import DoctorLayout from "./layouts/DoctorLayout";
+import HomeRedirect from "./routes/HomeRedirect";
+import OldLinkRedirect from "./routes/OldLinkRedirect";
+import AppLayout from "./layouts/AppLayout";
+import { BRANCH_SETTINGS_TICKS } from "./config/navItems";
 
-// Reception pages
+// Branch pages
 import ReceptionDashboard from "./pages/reception/Dashboard";
 import PatientsPage from "./pages/patients/PatientsPage";
 import AddPatient from "./pages/patients/AddPatient";
@@ -41,13 +42,13 @@ import DoctorReport from './pages/doctor/DoctorReport'
 import ApptsPerDoctor from './pages/doctor/ApptsPerDoctor'
 import TenantSettingsPage from "./pages/settings/TenantSettings";
 import BranchSettingsPage from "./pages/settings/BranchSettings";
+import RolesPermissionsPage from "./pages/settings/RolesPermissionsPage";
 import WorksPage from "./pages/works/WorksPage";
 import LabsPage from "./pages/labs/LabsPage";
 
-// Tenant pages
-import TenantLayout from "./layouts/TenantLayout";
-import BranchManagerLayout from "./layouts/BranchManagerLayout";
+// Clinic (owner) pages
 import TenantDashboard from "./pages/tenant/Dashboard";
+import BranchDashboard from "./pages/branch/BranchDashboard";
 import TenantBranches from "./pages/tenant/Branches";
 import TenantUsers from "./pages/tenant/Users";
 import AuditLogPage from "./pages/audit/AuditLogPage";
@@ -61,6 +62,9 @@ import FeaturesPage from "./pages/admin/Features";
 import SubscriptionRequestsPage from "./pages/admin/SubscriptionRequests";
 import RegistrationsPage from "./pages/admin/Registrations";
 import AnnouncementsPage from "./pages/admin/Announcements";
+
+// a page that needs ANY of these ticks
+const need = (ticks, page) => <PermissionRoute requiredPermission={ticks}>{page}</PermissionRoute>;
 
 export default function App() {
   return (
@@ -79,7 +83,7 @@ export default function App() {
         {/* Public patient feedback form (opened via the WhatsApp link, no auth) */}
         <Route path="/feedback/:token" element={<PublicFeedbackForm />} />
 
-        {/* Own profile — any authenticated role */}
+        {/* Own profile — any logged-in user */}
         <Route
           path="/profile"
           element={
@@ -89,126 +93,59 @@ export default function App() {
           }
         />
 
-        {/* Role home redirect */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardRedirect />
-            </ProtectedRoute>
-          }
-        />
+        {/* old home link + old role-based links keep working */}
+        <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+        {["/reception/*", "/reception", "/branch/*", "/branch", "/doctor/*", "/doctor", "/tenant/*", "/tenant"].map((p) => (
+          <Route key={p} path={p} element={<OldLinkRedirect />} />
+        ))}
 
-        {/* ===================== TENANT ADMIN ===================== */}
+        {/* ===================== THE APP (every clinic user, pages follow their ticks) ===================== */}
         <Route
-          path="/tenant"
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRoles={["tenant_manager"]}>
-                <TenantLayout />
-              </RoleRoute>
+              <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<TenantDashboard />} />
-          <Route path="branches" element={<TenantBranches />} />
-          <Route path="settings" element={<TenantSettingsPage />} />
-          <Route path="users" element={<TenantUsers />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="feedback" element={<FeedbackResultsPage />} />
-          <Route path="audit" element={<AuditLogPage />} />
-        </Route>
+          <Route path="/home" element={<HomeRedirect />} />
 
-        {/* ===================== BRANCH MANAGER ===================== */}
-        <Route
-          path="/branch"
-          element={
-            <ProtectedRoute>
-              <RoleRoute allowedRoles={["branch_manager", "tenant_manager"]}>
-                <BranchManagerLayout />
-              </RoleRoute>
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<ReceptionDashboard />} />
-          <Route path="patients" element={<PatientsPage />} />
-          <Route path="patients/add" element={<AddPatient />} />
-          <Route path="patients/:patientId/edit" element={<EditPatient />} />
-          <Route path="patients/:patientId" element={<PatientFolderPage />} />
+          {/* dashboards */}
+          <Route path="/overview" element={need("view_clinic_dashboard", <TenantDashboard />)} />
+          <Route path="/branch-overview" element={need("view_branch_dashboard", <BranchDashboard />)} />
+          <Route path="/front-desk" element={need("view_front_desk", <ReceptionDashboard />)} />
+          <Route path="/my-day" element={need("view_my_day", <DoctorDashboard />)} />
+          <Route path="/my-appointments" element={need("view_my_day", <ApptsPerDoctor />)} />
+          <Route path="/my-report" element={need("view_own_report", <DoctorReport />)} />
 
-          <Route path="appointments" element={<AppointmentsPage />} />
-          <Route path="appointments/calendar" element={<AppointmentsCalendarPage />} />
-          <Route path="appointments/add" element={<AddAppointment />} />
-          <Route path="appointments/:appointmentId/edit" element={<EditAppointment />} />
+          {/* branch pages */}
+          <Route path="/patients" element={need("view_patient", <PatientsPage />)} />
+          <Route path="/patients/add" element={need("create_patient", <AddPatient />)} />
+          <Route path="/patients/:patientId/edit" element={need("update_patient", <EditPatient />)} />
+          <Route path="/patients/:patientId" element={need("view_patient", <PatientFolderPage />)} />
 
-          <Route path="sessions" element={<SessionsPage />} />
-          <Route path="treatment_plan" element={<TreatmentPlanPage />} />
-          <Route path="appointments/reminders" element={<RemindersPage />} />
-          <Route path="appointments/feedback" element={<FeedbackPage />} />
-          <Route path="history" element={<PaymentHistory />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings/branch" element={<BranchSettingsPage />} />
-          <Route path="works" element={<WorksPage />} />
-          <Route path="lab" element={<LabsPage />} />
-        </Route>
+          <Route path="/appointments" element={need("view_appointment", <AppointmentsPage />)} />
+          <Route path="/appointments/calendar" element={need("view_appointment", <AppointmentsCalendarPage />)} />
+          <Route path="/appointments/add" element={need("create_appointment", <AddAppointment />)} />
+          <Route path="/appointments/:appointmentId/edit" element={need("update_appointment", <EditAppointment />)} />
+          <Route path="/appointments/reminders" element={need("send_reminders", <RemindersPage />)} />
+          <Route path="/appointments/feedback" element={need("send_reminders", <FeedbackPage />)} />
 
-        {/* ===================== RECEPTION ===================== */}
-        <Route
-          path="/reception"
-          element={
-            <ProtectedRoute>
-              <RoleRoute allowedRoles={["reception"]}>
-                <ReceptionLayout />
-              </RoleRoute>
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<ReceptionDashboard />} />
+          <Route path="/sessions" element={need("view_session", <SessionsPage />)} />
+          <Route path="/treatment_plan" element={need("manage_tp", <TreatmentPlanPage />)} />
+          <Route path="/history" element={need("view_payment", <PaymentHistory />)} />
+          <Route path="/reports" element={need("view_reports", <ReportsPage />)} />
+          <Route path="/settings/branch" element={need(BRANCH_SETTINGS_TICKS, <BranchSettingsPage />)} />
+          <Route path="/settings/roles" element={need("manage_permissions", <RolesPermissionsPage />)} />
+          <Route path="/works" element={need("manage_works", <WorksPage />)} />
+          <Route path="/lab" element={need("manage_lab", <LabsPage />)} />
+          <Route path="/settings" element={<AppearanceSettingsPage />} />
 
-          <Route path="patients" element={<PermissionRoute requiredPermission="view_patient"><PatientsPage /></PermissionRoute>} />
-          <Route path="patients/add" element={<PermissionRoute requiredPermission="create_patient"><AddPatient /></PermissionRoute>} />
-          <Route path="patients/:patientId/edit" element={<PermissionRoute requiredPermission="update_patient"><EditPatient /></PermissionRoute>} />
-          <Route path="patients/:patientId" element={<PermissionRoute requiredPermission="view_patient"><PatientFolderPage /></PermissionRoute>} />
-
-          <Route path="appointments" element={<PermissionRoute requiredPermission="view_appointment"><AppointmentsPage /></PermissionRoute>} />
-          <Route path="appointments/calendar" element={<PermissionRoute requiredPermission="view_appointment"><AppointmentsCalendarPage /></PermissionRoute>} />
-          <Route path="appointments/add" element={<PermissionRoute requiredPermission="create_appointment"><AddAppointment /></PermissionRoute>} />
-          <Route path="appointments/:appointmentId/edit" element={<PermissionRoute requiredPermission="update_appointment"><EditAppointment /></PermissionRoute>} />
-
-          <Route path="history" element={<PermissionRoute requiredPermission="view_payment"><PaymentHistory /></PermissionRoute>} />
-
-          {/* Reception allowed */}
-          <Route path="reports" element={<PermissionRoute requiredPermission="view_reports"><ReportsPage /></PermissionRoute>} />
-          <Route path="sessions" element={<PermissionRoute requiredPermission="view_session"><SessionsPage /></PermissionRoute>} />
-          <Route path="appointments/reminders" element={<PermissionRoute requiredPermission="send_reminders"><RemindersPage /></PermissionRoute>} />
-          <Route path="appointments/feedback" element={<PermissionRoute requiredPermission="send_reminders"><FeedbackPage /></PermissionRoute>} />
-          <Route path="treatment_plan" element={<PermissionRoute requiredPermission="manage_tp"><TreatmentPlanPage /></PermissionRoute>} />
-          <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
-          <Route path="settings/branch" element={
-            <RoleRoute allowedRoles={["branch_manager"]}>
-              <BranchSettingsPage />
-            </RoleRoute>
-          } />
-          <Route path="settings" element={<AppearanceSettingsPage />} />
-        </Route>
-
-        {/* ===================== DOCTOR ===================== */}
-        <Route
-          path="/doctor"
-          element={
-            <ProtectedRoute>
-              <RoleRoute allowedRoles={["doctor"]}>
-                <DoctorLayout />
-              </RoleRoute>
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DoctorDashboard />} />
-          <Route path="report" element={<DoctorReport />} />
-          <Route path="appts_per_doc" element={<ApptsPerDoctor />} />
-          <Route path="calendar" element={<AppointmentsCalendarPage />} />
-          <Route path="lab" element={<PermissionRoute requiredPermission="manage_lab"><LabsPage /></PermissionRoute>} />
-          <Route path="settings" element={<AppearanceSettingsPage />} />
+          {/* clinic pages (owner) */}
+          <Route path="/clinic/branches" element={need("manage_branches", <TenantBranches />)} />
+          <Route path="/clinic/users" element={need("manage_users", <TenantUsers />)} />
+          <Route path="/clinic/settings" element={need("manage_tenant_settings", <TenantSettingsPage />)} />
+          <Route path="/clinic/feedback" element={need("view_feedback", <FeedbackResultsPage />)} />
+          <Route path="/clinic/audit" element={need("view_audit_log", <AuditLogPage />)} />
         </Route>
 
         {/* ===================== PLATFORM ADMIN ===================== */}
@@ -216,10 +153,9 @@ export default function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              {/* Assuming 'platform_admin' role exists or we check permission */}
-              <RoleRoute allowedRoles={["platform_admin"]}>
+              <PermissionRoute requiredPermission="manage_system">
                 <AdminLayout />
-              </RoleRoute>
+              </PermissionRoute>
             </ProtectedRoute>
           }
         >
@@ -249,25 +185,4 @@ export default function App() {
       />
     </>
   );
-}
-
-/* =========================================================
-   /dashboard -> role based redirect
-   ========================================================= */
-function DashboardRedirect() {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-
-  if (!token || !role) return <Navigate to="/" replace />;
-
-  if (role === 'platform_admin') return <Navigate to="/admin" replace />;
-
-  if (role === 'tenant_manager') return <Navigate to="/tenant" replace />;
-
-  if (role === "branch_manager") return <Navigate to="/branch" replace />;
-
-  if (role === "reception") return <Navigate to="/reception" replace />;
-
-  // doctor
-  return <Navigate to="/doctor" replace />;
 }

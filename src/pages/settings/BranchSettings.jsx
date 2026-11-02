@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import DiscountsSettings from "../../components/settings/DiscountsSettings";
 import FloorsSettings from "../../components/settings/FloorsSettings";
+import WorkflowSettings from "../../components/settings/WorkflowSettings";
+import { hasTick } from "../../utils/can";
 import toast from "react-hot-toast";
 
 export default function BranchSettingsPage() {
@@ -306,13 +308,32 @@ export default function BranchSettingsPage() {
                         <p className="text-sm text-gray-500">{t("bs.works_hint")}</p>
                     </div>
                     <button
-                        onClick={() => navigate("/branch/works")}
+                        onClick={() => navigate("/works")}
                         className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
                     >
                         {t("bs.open_works")}
                     </button>
                 </div>
             </section>
+
+            {/* ===== Section: Roles & permissions ===== */}
+            {hasTick(effectiveUser, "manage_permissions") && (
+                <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("nav.roles_permissions")}</h2>
+                            <p className="text-sm text-gray-500">{t("bs.roles_hint")}</p>
+                        </div>
+                        <button
+                            data-open-roles
+                            onClick={() => navigate("/settings/roles")}
+                            className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                        >
+                            {t("bs.open_roles")}
+                        </button>
+                    </div>
+                </section>
+            )}
 
             {/* ===== Section: Appearance ===== */}
             <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
@@ -390,6 +411,9 @@ export default function BranchSettingsPage() {
                     </div>
                 </section>
             )}
+
+            {/* ===== Section: Workflow rules ===== */}
+            {hasTick(effectiveUser, "manage_branch_settings") && <WorkflowSettings />}
 
             {/* ===== Section: Discounts ===== */}
             <section className="mt-6">

@@ -49,3 +49,25 @@ export const getPatientPayments = async (patientId) => {
     const res = await api.get(`/api/patients/${patientId}/payments`);
     return res.data;
 };
+// ---- sharing with other branches of the clinic ----
+// { home, is_home, shared_with, shared_here, can_share_to }
+export const getPatientShares = async (patientId) => {
+    const res = await api.get(`/api/patients/${patientId}/shares`);
+    return res.data;
+};
+
+export const sharePatient = async (patientId, branchId) => {
+    const res = await api.post(`/api/patients/${patientId}/shares`, { branch_id: branchId });
+    return res.data;
+};
+
+export const unsharePatient = async (patientId, branchId) => {
+    const res = await api.delete(`/api/patients/${patientId}/shares/${branchId}`);
+    return res.data;
+};
+
+// before adding a patient: { elsewhere: [{ branch_id, branch_name }] }
+export const checkPatientPhone = async (phone) => {
+    const res = await api.get(`/api/patients/phone-check`, { params: { phone } });
+    return res.data;
+};

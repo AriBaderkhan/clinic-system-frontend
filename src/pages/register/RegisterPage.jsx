@@ -196,8 +196,15 @@ export default function RegisterPage() {
                                                     <span className="font-bold text-[#0E6E75]">${planPrice(plan, billingPeriod)} / {periodLabel}</span>
                                                 </div>
                                                 <p className="mt-1 text-xs text-slate-500">
-                                                    {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {plan.max_users === -1 ? "Unlimited" : plan.max_users} users
+                                                    {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {Number(plan.included_doctors) === -1 ? "Unlimited" : plan.included_doctors} doctors · staff free
                                                 </p>
+                                                {Number(plan.included_doctors) !== -1 && (
+                                                    <p className="text-xs text-slate-500">
+                                                        {Number(plan.extra_doctor_price) < 0
+                                                            ? "No extra doctors (upgrade for more)"
+                                                            : `+$${billingPeriod === "yearly" ? plan.extra_doctor_yearly_price : plan.extra_doctor_price} / ${periodLabel} per extra doctor`}
+                                                    </p>
+                                                )}
                                                 <ul className="mt-3 space-y-1">
                                                     {(plan.features ?? []).map((f) => (
                                                         <li key={f.code} className="flex items-center gap-1.5 text-xs text-slate-600">

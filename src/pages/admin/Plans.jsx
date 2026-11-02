@@ -19,12 +19,16 @@ export default function PlansPage() {
     const [togglingId, setTogglingId] = useState(null);
 
     // Form State
+    // -1 = unlimited (branches, doctors); extra doctor price -1 = no extra doctors on this plan
     const [formData, setFormData] = useState({
         name: '',
         price: '',
         yearly_price: '',
         max_branches: 1,
-        max_users: 5
+        included_doctors: 2,
+        extra_doctor_price: -1,
+        extra_doctor_yearly_price: -1,
+        sort_order: 0
     });
     // Yearly price follows monthly x 12 until the admin edits it by hand.
     const [yearlyEdited, setYearlyEdited] = useState(false);
@@ -61,7 +65,10 @@ export default function PlansPage() {
                 price: plan.price,
                 yearly_price: plan.yearly_price,
                 max_branches: plan.max_branches,
-                max_users: plan.max_users
+                included_doctors: plan.included_doctors,
+                extra_doctor_price: plan.extra_doctor_price,
+                extra_doctor_yearly_price: plan.extra_doctor_yearly_price,
+                sort_order: plan.sort_order
             });
             setYearlyEdited(true); // existing plan: keep its saved yearly price
         } else {
@@ -71,7 +78,10 @@ export default function PlansPage() {
                 price: '',
                 yearly_price: '',
                 max_branches: 1,
-                max_users: 5
+                included_doctors: 2,
+                extra_doctor_price: -1,
+                extra_doctor_yearly_price: -1,
+                sort_order: 0
             });
             setYearlyEdited(false);
         }
@@ -158,8 +168,18 @@ export default function PlansPage() {
                                 <span className="font-medium">{plan.max_branches === -1 ? 'Unlimited' : plan.max_branches}</span>
                             </div>
                             <div className="flex justify-between border-b pb-1">
-                                <span>Max Users</span>
-                                <span className="font-medium">{plan.max_users === -1 ? 'Unlimited' : plan.max_users}</span>
+                                <span>Doctors included</span>
+                                <span className="font-medium">{Number(plan.included_doctors) === -1 ? 'Unlimited' : plan.included_doctors}</span>
+                            </div>
+                            <div className="flex justify-between border-b pb-1">
+                                <span>Extra doctor</span>
+                                <span className="font-medium">
+                                    {Number(plan.extra_doctor_price) < 0 ? 'Not offered (upgrade)' : `$${plan.extra_doctor_price} / month · $${plan.extra_doctor_yearly_price} / year`}
+                                </span>
+                            </div>
+                            <div className="flex justify-between border-b pb-1">
+                                <span>Staff (reception, …)</span>
+                                <span className="font-medium">Free, unlimited</span>
                             </div>
                         </div>
 
@@ -242,17 +262,62 @@ export default function PlansPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700">Max Users</label>
+                                    <label className="block text-sm font-medium text-slate-700">Doctors included</label>
                                     <input
                                         type="number"
+                                        name="included_doctors"
                                         required
+                                        min={-1}
                                         className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
-                                        value={formData.max_users}
-                                        onChange={(e) => setFormData({ ...formData, max_users: e.target.value })}
-                                        placeholder="-1 for infinite"
+                                        value={formData.included_doctors}
+                                        onChange={(e) => setFormData({ ...formData, included_doctors: e.target.value })}
+                                        placeholder="-1 for unlimited"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700">Extra doctor / month ($)</label>
+                                    <input
+                                        type="number"
+                                        name="extra_doctor_price"
+                                        required
+                                        min={-1}
+                                        step="0.01"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        value={formData.extra_doctor_price}
+                                        onChange={(e) => setFormData({ ...formData, extra_doctor_price: e.target.value })}
+                                        placeholder="-1 = not offered"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700">Extra doctor / year ($)</label>
+                                    <input
+                                        type="number"
+                                        name="extra_doctor_yearly_price"
+                                        required
+                                        min={-1}
+                                        step="0.01"
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        value={formData.extra_doctor_yearly_price}
+                                        onChange={(e) => setFormData({ ...formData, extra_doctor_yearly_price: e.target.value })}
+                                        placeholder="-1 = not offered"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700">Order (1 = cheapest)</label>
+                                    <input
+                                        type="number"
+                                        name="sort_order"
+                                        min={0}
+                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        value={formData.sort_order}
+                                        onChange={(e) => setFormData({ ...formData, sort_order: e.target.value })}
                                     />
                                 </div>
                             </div>
+                            <p className="text-xs text-slate-500">
+                                -1 = unlimited doctors / no extra doctors on this plan (the clinic must upgrade). Extra doctors are added to the renewal price automatically.
+                                Clinics that were already paying keep their locked price until they change plan.
+                            </p>
 
                             <div className="mt-6 flex justify-end gap-3">
                                 <button

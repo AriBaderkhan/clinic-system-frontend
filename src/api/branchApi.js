@@ -9,3 +9,9 @@ export const updateBranch = async (id, data) => {
     const res = await api.put(`/api/branches/${id}`, data);
     return res.data;
 };
+
+// overview of the branch the user is working in now
+export const getBranchDashboard = async () => {
+    const res = await api.get('/api/branches/dashboard');
+    return res.data;
+};

@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }) => {
       const stored = JSON.parse(localStorage.getItem("user") || "null");
       const changed =
         permsKey(stored?.permissions) !== permsKey(fresh.permissions) ||
+        JSON.stringify(stored?.scopes || {}) !== JSON.stringify(fresh.scopes || {}) ||
         stored?.role !== fresh.role;
 
       localStorage.setItem("user", JSON.stringify(fresh));

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import usePatients from "../../hooks/usePatients";
 import { useAuth } from "../../context/AuthContext";
+import useCan from "../../utils/can";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -20,14 +21,13 @@ function getPageNumbers(currentPage, totalPages) {
 export default function PatientsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const can = useCan();
   const [searchTerm, setSearchTerm] = useState("");
   const { patients, isLoading, error, refresh, deletePatient, page, setPage, pagination } = usePatients({
     search: searchTerm,
   });
 
   const navigate = useNavigate();
-  const role = localStorage.getItem("role") || "reception";
-  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -36,7 +36,7 @@ export default function PatientsPage() {
   };
 
   const handleEdit = (id) => {
-    navigate(`${prefix}/patients/${id}/edit`);
+    navigate(`/patients/${id}/edit`);
   };
 
   const handleDelete = async (id) => {
@@ -49,7 +49,7 @@ export default function PatientsPage() {
   };
 
   const handleRowClick = (id) => {
-    navigate(`${prefix}/patients/${id}`);
+    navigate(`/patients/${id}`);
   };
 
   const pageNumbers = getPageNumbers(page, pagination.totalPages);
@@ -67,13 +67,15 @@ export default function PatientsPage() {
             {t("patients.subtitle", { clinic: user?.clinic_name || "" })}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate(`${prefix}/patients/add`)}
-          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
-        >
-          {t("patients.add_patient")}
-        </button>
+        {can("create_patient") && (
+          <button
+            type="button"
+            onClick={() => navigate(`/patients/add`)}
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
+          >
+            {t("patients.add_patient")}
+          </button>
+        )}
       </div>
 
       {/* Card */}
@@ -170,20 +172,24 @@ export default function PatientsPage() {
                       <td className="px-3 py-2 text-slate-700">{p.address || "-"}</td>
                       <td className="px-3 py-2">
                         <div className="flex items-center justify-end gap-2 text-xs">
-                          <button
-                            type="button"
-                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
-                            onClick={(e) => { e.stopPropagation(); handleEdit(p.id); }}
-                          >
-                            {t("common.edit")}
-                          </button>
-                          <button
-                            type="button"
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
-                            onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}
-                          >
-                            {t("common.delete")}
-                          </button>
+                          {can("update_patient") && (
+                            <button
+                              type="button"
+                              className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
+                              onClick={(e) => { e.stopPropagation(); handleEdit(p.id); }}
+                            >
+                              {t("common.edit")}
+                            </button>
+                          )}
+                          {can("delete_patient") && (
+                            <button
+                              type="button"
+                              className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
+                              onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}
+                            >
+                              {t("common.delete")}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

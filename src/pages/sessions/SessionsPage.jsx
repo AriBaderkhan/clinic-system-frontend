@@ -8,6 +8,7 @@ import TreatmentPlanPage from "../treatment_plan/TreatmentPlanPage";
 import { deleteSession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import useCan from "../../utils/can";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -23,6 +24,7 @@ function getPageNumbers(currentPage, totalPages) {
 
 export default function Sessions() {
   const { t } = useTranslation();
+  const can = useCan();
   const { formatDateTime, formatMoney } = useSettings();
   const [tab, setTab] = useState("sessions");
   const [selectedId, setSelectedId] = useState(null);
@@ -268,20 +270,24 @@ export default function Sessions() {
                           >
                             {t("common.view")}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => openEdit(s.session_id)}
-                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
-                          >
-                            {t("common.edit")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(s.session_id)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
-                          >
-                            {t("common.delete")}
-                          </button>
+                          {can("edit_session") && (
+                            <button
+                              type="button"
+                              onClick={() => openEdit(s.session_id)}
+                              className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
+                            >
+                              {t("common.edit")}
+                            </button>
+                          )}
+                          {can("delete_session") && (
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(s.session_id)}
+                              className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
+                            >
+                              {t("common.delete")}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

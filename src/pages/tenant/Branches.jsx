@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getBranches, switchBranch } from '../../api/tenantApi';
-import { useNavigate } from 'react-router-dom';
+import { getBranches } from '../../api/tenantApi';
+import openBranch from '../../utils/openBranch';
 import toast from 'react-hot-toast';
 
 export default function TenantBranches() {
     const { t } = useTranslation();
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
 
     useEffect(() => {
         loadBranches();
@@ -26,27 +25,16 @@ export default function TenantBranches() {
         }
     };
 
-    const handleManage = async (branch) => {
+    // open the branch (same switch as the menu's branch picker), then go to its page
+    const openAt = async (branch, to) => {
         try {
-            const data = await switchBranch(branch.id);
-            localStorage.setItem('tenant_token', localStorage.getItem('token'));
-            localStorage.setItem('token', data.token);
-            navigate('/branch');
+            await openBranch(branch.id, to);
         } catch (error) {
             toast.error(error.userMessage || t('branches.failed_switch'));
         }
     };
-
-    const handleWorks = async (branch) => {
-        try {
-            const data = await switchBranch(branch.id);
-            localStorage.setItem('tenant_token', localStorage.getItem('token'));
-            localStorage.setItem('token', data.token);
-            navigate('/branch/works');
-        } catch (error) {
-            toast.error(error.userMessage || t('branches.failed_switch'));
-        }
-    };
+    const handleManage = (branch) => openAt(branch, '/home');
+    const handleWorks = (branch) => openAt(branch, '/works');
 
     return (
         <div className="p-4">

@@ -12,6 +12,7 @@ import CompleteAppointmentModal from "../../components/appointments/CompleteAppo
 import { useSettings } from "../../context/SettingContext";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import { useAuth } from "../../context/AuthContext";
+import useCan from "../../utils/can";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -29,9 +30,8 @@ export default function AppointmentPage() {
   const { t } = useTranslation();
   const { formatDateTime } = useSettings();
   const { user } = useAuth();
+  const can = useCan();
   const navigate = useNavigate();
-  const role = localStorage.getItem("role") || "reception";
-  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
 
   const [dayFilter, setDayFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -74,7 +74,7 @@ export default function AppointmentPage() {
   };
 
   const handleEdit = (id) => {
-    navigate(`${prefix}/appointments/${id}/edit`);
+    navigate(`/appointments/${id}/edit`);
   };
 
   const pageNumbers = getPageNumbers(page, pagination.totalPages);
@@ -128,13 +128,15 @@ export default function AppointmentPage() {
             {t("appt.subtitle", { clinic: user?.clinic_name || "" })}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate(`${prefix}/appointments/add`)}
-          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
-        >
-          {t("appt.add")}
-        </button>
+        {can("create_appointment") && (
+          <button
+            type="button"
+            onClick={() => navigate(`/appointments/add`)}
+            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
+          >
+            {t("appt.add")}
+          </button>
+        )}
       </div>
 
       {/* Card */}
@@ -291,20 +293,24 @@ export default function AppointmentPage() {
                           >
                             {t("common.view")}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(id)}
-                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
-                          >
-                            {t("common.edit")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(id)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
-                          >
-                            {t("common.delete")}
-                          </button>
+                          {can("update_appointment") && (
+                            <button
+                              type="button"
+                              onClick={() => handleEdit(id)}
+                              className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
+                            >
+                              {t("common.edit")}
+                            </button>
+                          )}
+                          {can("delete_appointment") && (
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(id)}
+                              className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
+                            >
+                              {t("common.delete")}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

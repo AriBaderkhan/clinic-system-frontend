@@ -9,8 +9,6 @@ import AppointmentForm from "../../components/appointments/AppointmentForm";
 export default function AddAppointment() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const role = localStorage.getItem("role") || "reception";
-  const prefix = (role === "branch_manager" || role === "tenant_manager") ? "/branch" : "/reception";
 
   // date prefill from calendar day click (?date=YYYY-MM-DD)
   const [searchParams] = useSearchParams();
@@ -24,7 +22,7 @@ export default function AddAppointment() {
     try {
       setIsSubmitting(true);
       await createAppointment(payload);
-      navigate(`${prefix}/appointments`);
+      navigate(`/appointments`);
     } catch (err) {
       toast.error(err.userMessage || t("appt.create_failed"));
     } finally {

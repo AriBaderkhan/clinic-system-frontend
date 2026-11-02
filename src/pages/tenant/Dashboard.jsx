@@ -17,7 +17,7 @@ const STATUS_STYLE = {
     no_show: 'bg-slate-100 text-slate-600 border-slate-200',
 };
 
-function StatusBadge({ status }) {
+export function StatusBadge({ status }) {
     const { t } = useTranslation();
     const cls = STATUS_STYLE[status] || 'bg-slate-100 text-slate-600 border-slate-200';
     const label = t(`appt.st_${status}`, status);
@@ -41,7 +41,7 @@ const BAR_COLORS = [
 ];
 
 // Dependency-free horizontal bar chart for the top treatments this month.
-function TreatmentsChart({ data }) {
+export function TreatmentsChart({ data }) {
     const { t } = useTranslation();
     const rows = data || [];
     const max = rows.reduce((m, r) => Math.max(m, Number(r.value || 0)), 0) || 1;
@@ -77,7 +77,7 @@ function TreatmentsChart({ data }) {
     );
 }
 
-function KpiCard({ icon: Icon, label, value, accent, children }) {
+export function KpiCard({ icon: Icon, label, value, accent, children }) {
     return (
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
             <div className="flex items-center justify-between">

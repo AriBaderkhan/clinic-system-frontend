@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getFeatures, createFeature, getPlanFeatures, assignFeatureToPlan, removeFeatureFromPlan } from '../../api/featureApi';
 import { getPlans } from '../../api/planApi';
+import ClinicExtras from '../../components/admin/ClinicExtras';
 
 export default function FeaturesPage() {
     const [features, setFeatures] = useState([]);
@@ -179,6 +180,7 @@ export default function FeaturesPage() {
                     </div>
                 </div>
             </div>
+            <ClinicExtras features={features} />
         </div>
     );
 }

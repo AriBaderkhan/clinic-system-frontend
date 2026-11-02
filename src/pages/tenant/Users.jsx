@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast'
 import { getBranches } from '../../api/tenantApi';
+import { useSubscription } from '../../context/SubscriptionContext';
 
 export default function TenantUsers() {
     const { t } = useTranslation();
+    const { status: subStatus } = useSubscription();
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -400,7 +402,16 @@ export default function TenantUsers() {
                                     {t('users.edit_hint')}
                                 </p>
                             )}
-                            {roles.find(r => Number(r.id) === Number(formData.role_id))?.name?.toLowerCase() === 'doctor' && (
+                            {/* a new doctor beyond the plan's included doctors: extra price, or the plan is full */}
+                            {!isEditing && roles.find(r => Number(r.id) === Number(formData.role_id))?.is_doctor && subStatus
+                                && Number(subStatus.included_doctors) !== -1 && subStatus.doctors_used >= Number(subStatus.included_doctors) && (
+                                <p data-doctor-seat className={`rounded-md px-3 py-2 text-xs ${Number(subStatus.extra_doctor_price) < 0 ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-800'}`}>
+                                    {Number(subStatus.extra_doctor_price) < 0
+                                        ? t('users.doctor_plan_full', { count: subStatus.included_doctors })
+                                        : t(`users.doctor_extra_${subStatus.billing_period === 'yearly' ? 'yearly' : 'monthly'}`, { count: subStatus.included_doctors, price: subStatus.extra_doctor_price })}
+                                </p>
+                            )}
+                            {roles.find(r => Number(r.id) === Number(formData.role_id))?.is_doctor && (
                                 <div className="space-y-1 pt-2"><label className="text-sm font-medium text-gray-700">{t('users.room_number')}</label><input type="number" name="room" value={formData.room} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" placeholder={t('users.room_placeholder')} /></div>
                             )}
                             <div className="flex justify-end gap-3 pt-6">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { getMySubscription, createSubscriptionRequest } from "../../api/subscriptionApi";
+import { getMySubscription, createSubscriptionRequest, getSubscriptionQuote } from "../../api/subscriptionApi";
 import { getPlans } from "../../api/planApi";
 import { useSubscription } from "../../context/SubscriptionContext";
 import BillingPeriodToggle from "./BillingPeriodToggle";
@@ -32,6 +32,7 @@ export default function SubscriptionSection() {
     const [billingPeriod, setBillingPeriod] = useState("monthly");
     const [file, setFile] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [quote, setQuote] = useState(null); // exact amount for the chosen plan + period (from the server)
 
     const load = async () => {
         try {
@@ -48,6 +49,18 @@ export default function SubscriptionSection() {
     };
 
     useEffect(() => { load(); }, []);
+
+    // the server works out the amount (plan or locked price + extra doctors) — the same number the request will carry
+    useEffect(() => {
+        if (!selectedPlanId) return setQuote(null);
+        let alive = true;
+        getSubscriptionQuote(selectedPlanId, billingPeriod)
+            .then((res) => alive && setQuote(res.data))
+            .catch(() => alive && setQuote(null));
+        return () => { alive = false; };
+    }, [selectedPlanId, billingPeriod]);
+
+    const doctorsText = (n) => (Number(n) === -1 ? t('subscription.unlimited') : n);
 
     const handleBuy = async () => {
         if (!selectedPlanId) return toast.error(t('subscription.choose_plan'));
@@ -85,6 +98,15 @@ export default function SubscriptionSection() {
                                     ? t('subscription.price_yearly', { price: status.yearly_price })
                                     : t('subscription.price_monthly', { price: status.price })}
                             </p>
+                        )}
+                        {status?.included_doctors != null && (
+                            <p className="mt-1 text-sm text-gray-600" data-doctors-usage>
+                                {t('subscription.doctors_usage', { used: status.doctors_used, included: doctorsText(status.included_doctors) })}
+                                {status.next_period_total != null && <> · {t('subscription.next_period', { price: status.next_period_total })}</>}
+                            </p>
+                        )}
+                        {status?.price_locked && (
+                            <p className="mt-1 text-xs text-[#0E6E75]" data-price-locked>🔒 {t('subscription.price_locked')}</p>
                         )}
                     </div>
                     <div className="text-end">
@@ -133,11 +155,18 @@ export default function SubscriptionSection() {
                                             </span>
                                         </div>
                                         <p className="mt-2 text-xs text-slate-500">
-                                            {t('subscription.plan_limits', {
+                                            {t('subscription.plan_terms', {
                                                 branches: plan.max_branches === -1 ? t('subscription.unlimited') : plan.max_branches,
-                                                users: plan.max_users === -1 ? t('subscription.unlimited') : plan.max_users,
+                                                doctors: doctorsText(plan.included_doctors),
                                             })}
                                         </p>
+                                        {Number(plan.included_doctors) !== -1 && (
+                                            <p className="text-xs text-slate-500">
+                                                {Number(plan.extra_doctor_price) < 0
+                                                    ? t('subscription.no_extra_doctor')
+                                                    : t(`subscription.extra_doctor_${billingPeriod}`, { price: billingPeriod === "yearly" ? plan.extra_doctor_yearly_price : plan.extra_doctor_price })}
+                                            </p>
+                                        )}
                                     </button>
                                 );
                             })}
@@ -146,6 +175,22 @@ export default function SubscriptionSection() {
                         {/* Pay + evidence (after a plan is picked) */}
                         {selectedPlanId && (
                             <div className="mt-5 space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                {quote && (
+                                    <div className="rounded-lg border border-[#0E6E75]/20 bg-white px-3 py-2" data-quote>
+                                        <p className="text-sm font-semibold text-slate-800">
+                                            {t('subscription.to_pay', { price: quote.total })}
+                                            {quote.price_locked && <span className="ms-2 text-xs font-normal text-[#0E6E75]">🔒 {t('subscription.price_locked_short')}</span>}
+                                        </p>
+                                        {quote.extra_doctors > 0 && quote.extra_doctor_price >= 0 && (
+                                            <p className="text-xs text-slate-500">
+                                                {t('subscription.to_pay_breakdown', { base: quote.base, count: quote.extra_doctors, each: quote.extra_doctor_price })}
+                                            </p>
+                                        )}
+                                        {quote.extra_doctors > 0 && quote.extra_doctor_price < 0 && (
+                                            <p className="text-xs text-red-600">{t('subscription.too_many_doctors', { count: quote.doctors, included: quote.included_doctors })}</p>
+                                        )}
+                                    </div>
+                                )}
                                 <div>
                                     <p className="text-sm font-semibold text-slate-800">{t('subscription.step1')}</p>
                                     <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">

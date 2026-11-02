@@ -41,7 +41,7 @@ export default function EditAppointment() {
         doctor_id: formValues.doctor_id,
         scheduled_start: formValues.scheduled_start,
       });
-      navigate("/reception/appointments");
+      navigate("/appointments");
     } catch (err) {
       toast.error(err.userMessage || t("appt.update_failed"));
     } finally {

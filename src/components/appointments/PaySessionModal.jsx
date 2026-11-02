@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { paySession } from "../../api/sessionApi";
 import { getDiscounts } from "../../api/discountApi";
+import { getWorkflow } from "../../api/settingApi";
 import { useSettings } from "../../context/SettingContext";
 
 export default function PaySessionModal({ session, onClose, onPaid }) {
@@ -14,11 +15,13 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const [settleNormal, setSettleNormal] = useState(false);
   const [discounts, setDiscounts] = useState([]);
   const [discountId, setDiscountId] = useState("");
+  const [workflow, setWorkflow] = useState(null); // branch rules: settle / discounts (null = not loaded, the server still checks)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let alive = true;
     getDiscounts().then((res) => alive && setDiscounts(res?.data || [])).catch(() => {});
+    getWorkflow().then((res) => alive && setWorkflow(res?.data || null)).catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -30,6 +33,15 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const totalPaid = Number(session?.totals?.total_paid || 0);
   const remaining = Number(session?.totals?.remaining ?? (total - totalPaid));
   const normalSettled = !!session?.totals?.is_paid; // normal already paid/settled → hide the normal section
+
+  // the branch rules: settle on/off, discounts on/off, and only discounts within the biggest allowed %
+  const canSettle = workflow?.allow_settle_unpaid !== false;
+  const maxDiscount = workflow ? Math.round((total * Number(workflow.max_discount_percent)) / 100) : Infinity;
+  const discountAmountOf = (d) => Math.min(
+    d.type === "percent" ? Math.round((total * Number(d.value)) / 100) : Number(d.value),
+    Math.max(0, total - totalPaid)
+  );
+  const usableDiscounts = workflow?.allow_discounts === false ? [] : discounts.filter((d) => discountAmountOf(d) <= maxDiscount);
 
   // A discount already applied to this session (from an earlier payment).
   const appliedAmount = Number(session?.totals?.discount_amount || 0);
@@ -293,7 +305,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                 <span className="font-semibold">−{formatMoney(appliedAmount, curr)}</span>
               </div>
             </div>
-          ) : remaining > 0 && discounts.length > 0 ? (
+          ) : remaining > 0 && usableDiscounts.length > 0 ? (
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">{t("appt.pay_discount")}</label>
               <select
@@ -302,7 +314,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#0E6E75]"
               >
                 <option value="">{t("appt.pay_no_discount")}</option>
-                {discounts.map((d) => (
+                {usableDiscounts.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name} ({d.type === "percent" ? `${d.value}%` : formatMoney(d.value, curr)})
                   </option>
@@ -311,7 +323,7 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
             </div>
           ) : null}
 
-          {remaining > 0 && (
+          {remaining > 0 && canSettle && (
             <label className="flex items-center gap-2 text-xs text-slate-700">
               <input
                 type="checkbox"

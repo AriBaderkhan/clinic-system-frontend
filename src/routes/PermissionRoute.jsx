@@ -1,34 +1,17 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { hasTick } from "../utils/can";
 
 /**
- * Validates if the user has the required permission.
- * If yes, renders children.
- * If no, redirects (default /dashboard) or renders null (if used for hiding buttons).
+ * Renders children only when the user has the tick (or ANY of several ticks).
+ * Otherwise redirects to /home (pages) or renders nothing (hideOnly, for buttons).
+ * The backend checks every request again — this only keeps the screen honest.
  */
-export default function PermissionRoute({ children, requiredPermission, redirectPath = "/dashboard", hideOnly = false }) {
-    const userString = localStorage.getItem("user");
-    let userPermissions = [];
+export default function PermissionRoute({ children, requiredPermission, redirectPath = "/home", hideOnly = false }) {
+    const { user } = useAuth();
+    const keys = Array.isArray(requiredPermission) ? requiredPermission : [requiredPermission];
 
-    if (userString) {
-        try {
-            const user = JSON.parse(userString);
-            userPermissions = user.permissions || [];
-        } catch (e) {
-            console.error("Failed to parse user from localStorage", e);
-        }
-    }
-
-    // Check if user has the specific permission
-    const hasPermission = userPermissions.includes(requiredPermission);
-
-    if (hasPermission) {
-        return children;
-    }
-
-    // Check if we just want to hide component (return null) or redirect (for routes)
-    if (hideOnly) {
-        return null;
-    }
-
+    if (hasTick(user, ...keys)) return children;
+    if (hideOnly) return null;
     return <Navigate to={redirectPath} replace />;
 }

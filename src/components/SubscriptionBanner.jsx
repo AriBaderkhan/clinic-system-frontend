@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { useSubscription } from "../context/SubscriptionContext";
+import { useAuth } from "../context/AuthContext";
+import { hasTick } from "../utils/can";
 
-// Shows in the last 7 days (expiring) or after expiry. Tenant managers get a
-// button to the subscription page; branch managers just see the heads-up.
+// Shows in the last 7 days (expiring) or after expiry. People who can renew get a
+// button to the subscription page; the others just see the heads-up.
 export default function SubscriptionBanner() {
     const { status } = useSubscription();
+    const { user } = useAuth();
     if (!status || !status.in_warning) return null;
 
-    const role = localStorage.getItem("role");
-    const isTenantManager = role === "tenant_manager";
+    const canRenew = hasTick(user, "manage_subscription");
     const pending = status.pending_request;
     const expired = status.status === "expired";
 
@@ -35,9 +37,9 @@ export default function SubscriptionBanner() {
                 <span className="mr-1">{pending ? "⏳" : "⚠"}</span>
                 {message}
             </p>
-            {isTenantManager && !pending && (
+            {canRenew && !pending && (
                 <Link
-                    to="/tenant/settings"
+                    to="/clinic/settings"
                     className="shrink-0 rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0A565C]"
                 >
                     Go to Subscription
