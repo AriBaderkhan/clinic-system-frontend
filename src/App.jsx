@@ -53,6 +53,7 @@ import TenantBranches from "./pages/tenant/Branches";
 import TenantUsers from "./pages/tenant/Users";
 import AuditLogPage from "./pages/audit/AuditLogPage";
 import AppearanceSettingsPage from "./pages/settings/AppearanceSettingsPage";
+import DesignPage from "./pages/settings/DesignPage";
 
 // Admin Platform pages
 import AdminLayout from "./layouts/AdminLayout";
@@ -139,6 +140,7 @@ export default function App() {
           <Route path="/works" element={need("manage_works", <WorksPage />)} />
           <Route path="/lab" element={need("manage_lab", <LabsPage />)} />
           <Route path="/settings" element={<AppearanceSettingsPage />} />
+          <Route path="/design" element={<DesignPage />} />
 
           {/* clinic pages (owner) */}
           <Route path="/clinic/branches" element={need("manage_branches", <TenantBranches />)} />
@@ -165,6 +167,7 @@ export default function App() {
           <Route path="subscriptions" element={<SubscriptionRequestsPage />} />
           <Route path="registrations" element={<RegistrationsPage />} />
           <Route path="announcements" element={<AnnouncementsPage />} />
+          <Route path="design" element={<DesignPage />} />
         </Route>
 
         {/* ===================== FALLBACK ===================== */}

@@ -12,7 +12,8 @@ import { PageBandContext, usePageBandSlot } from "../components/common/PageHeade
 import SubscriptionGate from "../components/subscription/SubscriptionGate";
 import { useSubscription } from "../context/SubscriptionContext";
 import { useAuth } from "../context/AuthContext";
-import { clearStorageKeepingTheme } from "../utils/theme";
+import { clearStorageOnLogout } from "../utils/theme";
+import useDesignSync from "../hooks/useDesignSync";
 import { hasTick } from "../utils/can";
 import { buildNav, isOwnerMenu } from "../config/navItems";
 
@@ -24,6 +25,7 @@ export default function AppLayout() {
   const owner = isOwnerMenu(user);
   const [branchName, setBranchName] = useState("");
   const band = usePageBandSlot();
+  useDesignSync(); // the user's own design from their account
 
   const items = buildNav(user, hasFeature, { branchName }).map((it) => ({
     key: it.key, to: it.to, end: it.end, indent: it.indent, label: t(it.labelKey, it.labelArgs),
@@ -31,7 +33,7 @@ export default function AppLayout() {
 
   const handleLogout = () => {
     if (window.confirm(t("layout.logout_confirm"))) {
-      clearStorageKeepingTheme(); // keeps dark/light preference
+      clearStorageOnLogout(); // also resets the look (shared PCs)
       disconnectSocket();
       window.location.href = "/";
     }

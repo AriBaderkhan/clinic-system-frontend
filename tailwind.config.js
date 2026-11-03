@@ -26,10 +26,12 @@ export default {
         ocean: { DEFAULT: v("ocean"), deep: v("ocean-deep") },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', '"Vazirmatn"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+        sans: ['var(--font-latin)', 'var(--font-rtl)', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
       },
+      // corners follow the user's design (sharp / soft / round)
+      borderRadius: { md: 'var(--r-md)', lg: 'var(--r-lg)', xl: 'var(--r-xl)', '2xl': 'var(--r-2xl)', '3xl': 'var(--r-3xl)' },
       boxShadow: {
-        card: '0 1px 2px rgb(var(--shadow) / 0.06), 0 12px 28px -20px rgb(var(--shadow) / 0.45)',
+        card: 'var(--shadow-card)', // soft / flat / raised from the user's design
         pop: '0 18px 40px -16px rgb(var(--shadow) / 0.55)',
       },
     },

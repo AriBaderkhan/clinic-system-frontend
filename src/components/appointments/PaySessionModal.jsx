@@ -106,7 +106,9 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
   const hasPlanErrors = Object.keys(planErrors).length > 0;
 
   // the server refuses more than what is still owed — say it before sending
-  const normalTooMuch = payNormal && normalNumeric > remaining;
+  // paying more than owed: blocked only when the branch switched it off; otherwise just a note
+  const normalTooMuch = payNormal && workflow?.allow_overpay === false && normalNumeric > remaining;
+  const normalOver = payNormal && !normalTooMuch && remaining >= 0 && normalNumeric > remaining ? normalNumeric - Math.max(0, remaining) : 0;
 
   const disableSubmit =
     isSubmitting || hasPlanErrors || normalTooMuch;
@@ -291,6 +293,9 @@ export default function PaySessionModal({ session, onClose, onPaid }) {
             />
             {normalTooMuch && (
               <p className="mt-1 text-xs text-red-600">{t("appt.pay_exceed", { amount: formatMoney(remaining, curr) })}</p>
+            )}
+            {normalOver > 0 && (
+              <p className="mt-1 text-xs font-medium text-amber-700" data-pay-over>{t("appt.pay_over", { amount: formatMoney(normalOver, curr) })}</p>
             )}
             
             

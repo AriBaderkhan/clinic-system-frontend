@@ -12,6 +12,7 @@ import LanguageSwitcher from "../../components/LanguageSwitcher";
 import DiscountsSettings from "../../components/settings/DiscountsSettings";
 import FloorsSettings from "../../components/settings/FloorsSettings";
 import WorkflowSettings from "../../components/settings/WorkflowSettings";
+import DesignBox from "../../components/settings/DesignBox";
 import { hasTick } from "../../utils/can";
 import toast from "react-hot-toast";
 import PageHeader from "../../components/common/PageHeader";
@@ -321,6 +322,9 @@ export default function BranchSettingsPage() {
                     </button>
                 </div>
             </section>
+
+            {/* ===== Section: Design (this user's own look) ===== */}
+            <DesignBox />
 
             {/* ===== Section: Roles & permissions ===== */}
             {hasTick(effectiveUser, "manage_permissions") && (

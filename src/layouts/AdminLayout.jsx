@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
 import TopNav from "../components/TopNav";
 import { PageBandContext, usePageBandSlot } from "../components/common/PageHeader";
-import { clearStorageKeepingTheme } from "../utils/theme";
+import { clearStorageOnLogout } from "../utils/theme";
+import useDesignSync from "../hooks/useDesignSync";
 
 const navItems = [
     { key: "home", to: "", end: true, label: "Dashboard" },
@@ -11,12 +12,14 @@ const navItems = [
     { key: "registrations", to: "registrations", label: "Registrations" },
     { key: "announcements", to: "announcements", label: "Announcements" },
 ];
+// the platform admin opens Design from the profile menu (/admin/design)
 
 export default function AdminLayout() {
     const band = usePageBandSlot();
+    useDesignSync(); // the user's own design from their account
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
-            clearStorageKeepingTheme(); // keeps dark/light preference
+            clearStorageOnLogout(); // also resets the look (shared PCs)
             window.location.href = "/";
         }
     };

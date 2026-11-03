@@ -30,3 +30,14 @@ export const changeMyEmail = async (email, code) => {
     const res = await api.put('/api/profile/me/email', { email, code });
     return res.data;
 };
+
+// the user's own design (theme, font, corners, cards, size, light/dark); {} = default
+export const getMyDesign = async () => {
+    const res = await api.get('/api/profile/me/design');
+    return res.data;
+};
+
+export const saveMyDesign = async (design) => {
+    const res = await api.put('/api/profile/me/design', design);
+    return res.data;
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useResolvedPath } from "react-router-dom";
 import { getTheme, toggleTheme } from "../utils/theme";
 import ProfileMenu from "./ProfileMenu";
@@ -106,6 +106,11 @@ function NavDropdown({ group }) {
 /* Compact icon theme toggle for the right cluster. */
 function ThemeIconToggle() {
   const [theme, setTheme] = useState(getTheme());
+  useEffect(() => {
+    const follow = (e) => setTheme(e.detail.mode);
+    window.addEventListener("design-change", follow);
+    return () => window.removeEventListener("design-change", follow);
+  }, []);
   const isDark = theme === "dark";
   return (
     <button

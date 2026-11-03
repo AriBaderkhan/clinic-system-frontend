@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import AppearanceCard from "../../components/AppearanceCard";
 import PageHeader from "../../components/common/PageHeader";
+import DesignBox from "../../components/settings/DesignBox";
 
 // Minimal settings page for roles that only need theme + language (reception, doctor).
 export default function AppearanceSettingsPage() {
@@ -8,6 +9,7 @@ export default function AppearanceSettingsPage() {
     return (
         <div className="w-full space-y-5">
             <PageHeader title={t('settings.title')} />
+            <DesignBox />
             <AppearanceCard />
         </div>
     );

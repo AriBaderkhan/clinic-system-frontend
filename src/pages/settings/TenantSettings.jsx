@@ -7,6 +7,7 @@ import ThemeToggle from "../../components/ThemeToggle";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import toast from "react-hot-toast";
 import PageHeader from "../../components/common/PageHeader";
+import DesignBox from "../../components/settings/DesignBox";
 
 export default function TenantSettingsPage() {
     const { refreshSettings } = useSettings();
@@ -200,6 +201,9 @@ export default function TenantSettingsPage() {
     return (
         <div className="w-full space-y-5">
             <PageHeader title={t('tenant_settings.title')} />
+
+            {/* this user's own look */}
+            <DesignBox />
 
             {/* ================= APPEARANCE (theme + language) ================= */}
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">

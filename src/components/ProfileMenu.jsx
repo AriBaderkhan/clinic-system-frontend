@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
-import { clearStorageKeepingTheme } from "../utils/theme";
+import { clearStorageOnLogout } from "../utils/theme";
 
 function initialsOf(name) {
     if (!name) return "U";
@@ -17,6 +17,7 @@ export default function ProfileMenu() {
     const { profile, user } = useAuth();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
 
@@ -30,9 +31,11 @@ export default function ProfileMenu() {
     }, []);
 
     const goProfile = () => { setOpen(false); navigate("/profile"); };
+    // the platform admin has its own pages under /admin
+    const goDesign = () => { setOpen(false); navigate(location.pathname.startsWith("/admin") ? "/admin/design" : "/design"); };
     const logout = () => {
         if (window.confirm(t("layout.logout_confirm"))) {
-            clearStorageKeepingTheme();
+            clearStorageOnLogout();
             window.location.href = "/";
         }
     };
@@ -55,6 +58,9 @@ export default function ProfileMenu() {
                     </div>
                     <button onClick={goProfile} className="block w-full px-3 py-2 text-start text-sm text-slate-700 hover:bg-slate-50">
                         {t("layout.profile")}
+                    </button>
+                    <button onClick={goDesign} data-open-design className="block w-full px-3 py-2 text-start text-sm text-slate-700 hover:bg-slate-50">
+                        {t("design.title")}
                     </button>
                     <button onClick={logout} className="block w-full px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50">
                         {t("nav.logout")}

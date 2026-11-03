@@ -32,6 +32,11 @@
   --ocean-deep: 11 30 58;
   --shadow: 11 30 58;
   --band: linear-gradient(125deg, #0B1E3A 0%, #123B66 58%, #1B5A8A 100%);
+  /* the default design; src/theme/designs.js overrides these per user */
+  --font-latin: "Plus Jakarta Sans";
+  --font-rtl: "Vazirmatn";
+  --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-2xl: 16px; --r-3xl: 24px;
+  --shadow-card: 0 1px 2px rgb(var(--shadow) / 0.06), 0 12px 28px -20px rgb(var(--shadow) / 0.45);
 }
 
 .dark {
@@ -84,14 +89,14 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   background-color: rgb(var(--n-50));
   color: rgb(var(--n-900));
-  font-family: "Plus Jakarta Sans", "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-latin), var(--font-rtl), system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /* RIGHT-TO-LEFT (Arabic / Kurdish Sorani): the layout mirrors via dir="rtl"; swap to an Arabic-script font. */
 html[dir="rtl"] body,
 html[dir="rtl"] input, html[dir="rtl"] select, html[dir="rtl"] textarea, html[dir="rtl"] button {
-  font-family: "Vazirmatn", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-rtl), system-ui, -apple-system, sans-serif;
 }
 
 /* text-white = readable text on brand / coloured buttons (white in light, deep navy on the light-blue dark brand) */

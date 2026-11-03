@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getWorkflow, updateWorkflow } from "../../api/settingApi";
 
-const SWITCHES = ["allow_settle_unpaid", "allow_discounts", "block_booking_if_owes"];
+const SWITCHES = ["allow_settle_unpaid", "allow_overpay", "allow_discounts", "block_booking_if_owes"];
 
 function Switch({ name, checked, onChange }) {
   return (
@@ -45,6 +45,7 @@ export default function WorkflowSettings() {
     try {
       const res = await updateWorkflow({
         allow_settle_unpaid: form.allow_settle_unpaid,
+        allow_overpay: form.allow_overpay,
         allow_discounts: form.allow_discounts,
         max_discount_percent: pct,
         block_booking_if_owes: form.block_booking_if_owes,
