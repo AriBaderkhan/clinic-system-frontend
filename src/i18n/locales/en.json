@@ -253,7 +253,9 @@
     "switch_light": "Switch to light mode",
     "switch_dark": "Switch to dark mode",
     "org_title": "Organization Settings",
-    "org_subtitle": "Manage global settings for your organization."
+    "org_subtitle": "Manage global settings for your organization.",
+    "group_you": "Your account",
+    "menu_display": "Light / dark & language"
   },
   "branches": {
     "title": "Active Branches",
@@ -449,7 +451,9 @@
     "failed_save_branch": "Failed to save branch",
     "delete_confirm": "Are you sure you want to delete this branch?",
     "branch_deleted": "Branch deleted successfully",
-    "failed_delete_branch": "Failed to delete branch"
+    "failed_delete_branch": "Failed to delete branch",
+    "group_clinic": "Clinic",
+    "menu_details": "Clinic details"
   },
   "unpaid": {
     "remaining": "Remaining",
@@ -928,7 +932,8 @@
     "no_doctors": "No doctors in this branch.",
     "extra_works": "Extra treatments",
     "extra_works_hint": "Treatments from other specialties that only THIS doctor may use.",
-    "no_extra_choices": "No treatments from other specialties yet."
+    "no_extra_choices": "No treatments from other specialties yet.",
+    "menu": "Specialties & doctors"
   },
   "floor": {
     "floor": "Floor",
@@ -1366,7 +1371,11 @@
     "saving_short": "Saving…",
     "save_template": "Save template",
     "roles_hint": "Choose what each role can do in this branch.",
-    "open_roles": "Open roles & permissions"
+    "open_roles": "Open roles & permissions",
+    "group_branch": "Branch",
+    "group_money": "Visits & payments",
+    "group_patients": "Patients",
+    "menu_details": "Branch details"
   },
   "exp": {
     "title": "Monthly Expenses",

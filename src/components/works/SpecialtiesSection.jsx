@@ -157,7 +157,7 @@ function DoctorSettingsModal({ doctor, specialties, works, onClose, onSaved }) {
   );
 }
 
-// Settings → Works: the specialty list and each doctor's specialty / extras
+// Branch Settings → Specialties & doctors: the specialty list and each doctor's specialty / extras
 export default function SpecialtiesSection({ specialties, works, onSpecialtiesChanged }) {
   const { t } = useTranslation();
   const [doctors, setDoctors] = useState([]);

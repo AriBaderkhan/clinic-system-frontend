@@ -1,27 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { getBranch, updateBranch } from "../../api/branchApi";
 import { getReminderTemplate, updateReminderTemplate } from "../../api/reminderApi";
 import { getFeedbackQrLink } from "../../api/feedbackApi";
 import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingContext";
-import { getTheme, toggleTheme } from "../../utils/theme";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "../../components/LanguageSwitcher";
+import AppearanceCard from "../../components/AppearanceCard";
 import DiscountsSettings from "../../components/settings/DiscountsSettings";
 import FloorsSettings from "../../components/settings/FloorsSettings";
 import WorkflowSettings from "../../components/settings/WorkflowSettings";
-import DesignBox from "../../components/settings/DesignBox";
+import DesignPage from "./DesignPage";
+import RolesPermissionsPage from "./RolesPermissionsPage";
+import WorksPage from "../works/WorksPage";
+import SpecialtiesSettings from "../../components/works/SpecialtiesSettings";
+import SettingsShell from "../../components/settings/SettingsShell";
 import { hasTick } from "../../utils/can";
 import toast from "react-hot-toast";
+import { FiHome, FiLayers, FiTool, FiAward, FiShield, FiSliders, FiPercent, FiMessageSquare, FiGrid, FiFeather, FiMonitor } from "react-icons/fi";
 import PageHeader from "../../components/common/PageHeader";
 
 export default function BranchSettingsPage() {
     const { t } = useTranslation();
     const { user } = useAuth();
     const { refreshSettings } = useSettings();
-    const navigate = useNavigate();
 
     const [branchDetails, setBranchDetails] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -36,9 +38,6 @@ export default function BranchSettingsPage() {
         timezone: "",
         currency_code: ""
     });
-
-    // Appearance (theme)
-    const [theme, setTheme] = useState(getTheme());
 
     // Reminder template
     const [tpl, setTpl] = useState(null);
@@ -149,8 +148,6 @@ export default function BranchSettingsPage() {
         }
     };
 
-    const handleToggleTheme = () => setTheme(toggleTheme());
-
     const saveTemplate = async () => {
         try {
             setTplSaving(true);
@@ -187,7 +184,197 @@ export default function BranchSettingsPage() {
         );
     }
 
-    const isDark = theme === "dark";
+    const can = (tick) => hasTick(effectiveUser, tick);
+
+    // ---- each section of the menu ----
+    const detailsSection = (
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            {loading ? (
+                <div className="p-4 text-center text-sm text-slate-500">{t("bs.loading_details")}</div>
+            ) : branchDetails ? (
+                <>
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <h2 className="min-w-0 break-words text-lg font-bold text-slate-900">{branchDetails.name}</h2>
+                        {!isEditing && (
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+                            >
+                                {t("bs.edit_branch")}
+                            </button>
+                        )}
+                    </div>
+
+                    {isEditing ? (
+                        <form onSubmit={handleSave} className="space-y-4">
+                            <div>
+                                <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.branch_name")}</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.location")}</label>
+                                <input
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.timezone")}</label>
+                                    <select
+                                        value={formData.timezone}
+                                        onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+                                        required
+                                    >
+                                        <option value="">{t("bs.select_timezone")}</option>
+                                        {timezones.map(tz => <option key={tz} value={tz}>{tz}</option>)}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.currency")}</label>
+                                    <select
+                                        value={formData.currency_code}
+                                        onChange={(e) => setFormData({ ...formData, currency_code: e.target.value })}
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+                                        required
+                                    >
+                                        <option value="">{t("bs.select_currency")}</option>
+                                        {currencies.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                                    disabled={saving}
+                                >
+                                    {t("common.cancel")}
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={saving}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+                                >
+                                    {saving ? t("bs.saving") : t("bs.save_changes")}
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <div className="space-y-4">
+                            <div>
+                                <span className="block text-xs font-medium text-slate-500">{t("bs.location")}</span>
+                                <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.location}</span>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <span className="block text-xs font-medium text-slate-500">{t("bs.timezone")}</span>
+                                    <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.timezone}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-xs font-medium text-slate-500">{t("bs.currency")}</span>
+                                    <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.currency_code}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            ) : null}
+        </section>
+    );
+
+    const reminderSection = (
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                    <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.reminder_template")}</h2>
+                    <p className="mt-0.5 text-sm text-slate-500">
+                        {t("bs.reminder_hint")}
+                    </p>
+                </div>
+                <button
+                    onClick={() => setShowTpl(true)}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+                >
+                    {t("bs.edit_template")}
+                </button>
+            </div>
+        </section>
+    );
+
+    const qrSection = (
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.feedback_qr_title")}</h2>
+            <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("bs.feedback_qr_hint")}</p>
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
+                <div ref={qrRef} className="rounded-xl border border-slate-200 bg-white p-3">
+                    <QRCodeCanvas value={qrUrl} size={200} level="M" marginSize={3} />
+                </div>
+                <div className="w-full min-w-0 flex-1 space-y-3">
+                    <button
+                        onClick={downloadQr}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+                    >
+                        {t("bs.feedback_qr_download")}
+                    </button>
+                    <div className="break-all rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+                        {qrUrl}
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+
+    const groups = [
+        {
+            label: t("bs.group_branch"),
+            items: [
+                { key: "details", label: t("bs.menu_details"), icon: FiHome, content: detailsSection },
+                { key: "floors", label: t("floor.title"), icon: FiLayers, content: <FloorsSettings /> },
+                ...(can("manage_works") ? [
+                    { key: "works", label: t("nav.works"), icon: FiTool, content: <WorksPage /> },
+                    { key: "specialties", label: t("spec.menu"), icon: FiAward, content: <SpecialtiesSettings /> },
+                ] : []),
+                ...(can("manage_permissions")
+                    ? [{ key: "roles", label: t("nav.roles_permissions"), icon: FiShield, content: <RolesPermissionsPage />, data: { "data-open-roles": "" } }]
+                    : []),
+            ],
+        },
+        {
+            label: t("bs.group_money"),
+            items: [
+                ...(can("manage_branch_settings") ? [{ key: "workflow", label: t("workflow.title"), icon: FiSliders, content: <WorkflowSettings /> }] : []),
+                { key: "discounts", label: t("discount.title"), icon: FiPercent, content: <DiscountsSettings /> },
+            ],
+        },
+        {
+            label: t("bs.group_patients"),
+            items: [
+                ...(tpl ? [{ key: "reminder", label: t("bs.reminder_template"), icon: FiMessageSquare, content: reminderSection }] : []),
+                ...(qrUrl ? [{ key: "qr", label: t("bs.feedback_qr_title"), icon: FiGrid, content: qrSection }] : []),
+            ],
+        },
+        {
+            label: t("settings.group_you"),
+            items: [
+                { key: "design", label: t("design.title"), icon: FiFeather, content: <DesignPage /> },
+                { key: "display", label: t("settings.menu_display"), icon: FiMonitor, content: <AppearanceCard /> },
+            ],
+        },
+    ];
 
     return (
         <div className="w-full space-y-5">
@@ -199,241 +386,8 @@ export default function BranchSettingsPage() {
                 </div>
             )}
 
-            {/* ===== Section: Branch details ===== */}
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                {loading ? (
-                    <div className="p-4 text-center text-sm text-slate-500">{t("bs.loading_details")}</div>
-                ) : branchDetails ? (
-                    <>
-                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                            <h2 className="min-w-0 break-words text-lg font-bold text-slate-900">{branchDetails.name}</h2>
-                            {!isEditing && (
-                                <button
-                                    onClick={() => setIsEditing(true)}
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                                >
-                                    {t("bs.edit_branch")}
-                                </button>
-                            )}
-                        </div>
+            <SettingsShell groups={groups} />
 
-                        {isEditing ? (
-                            <form onSubmit={handleSave} className="space-y-4">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.branch_name")}</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.location")}</label>
-                                    <input
-                                        type="text"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.timezone")}</label>
-                                        <select
-                                            value={formData.timezone}
-                                            onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
-                                            required
-                                        >
-                                            <option value="">{t("bs.select_timezone")}</option>
-                                            {timezones.map(tz => <option key={tz} value={tz}>{tz}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.currency")}</label>
-                                        <select
-                                            value={formData.currency_code}
-                                            onChange={(e) => setFormData({ ...formData, currency_code: e.target.value })}
-                                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
-                                            required
-                                        >
-                                            <option value="">{t("bs.select_currency")}</option>
-                                            {currencies.map(c => <option key={c} value={c}>{c}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={handleCancel}
-                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                                        disabled={saving}
-                                    >
-                                        {t("common.cancel")}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={saving}
-                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                                    >
-                                        {saving ? t("bs.saving") : t("bs.save_changes")}
-                                    </button>
-                                </div>
-                            </form>
-                        ) : (
-                            <div className="space-y-4">
-                                <div>
-                                    <span className="block text-xs font-medium text-slate-500">{t("bs.location")}</span>
-                                    <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.location}</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <span className="block text-xs font-medium text-slate-500">{t("bs.timezone")}</span>
-                                        <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.timezone}</span>
-                                    </div>
-                                    <div>
-                                        <span className="block text-xs font-medium text-slate-500">{t("bs.currency")}</span>
-                                        <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.currency_code}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </>
-                ) : null}
-            </section>
-
-            {/* ===== Section: Works (treatment catalog) ===== */}
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="min-w-0">
-                        <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.works_title")}</h2>
-                        <p className="mt-0.5 text-sm text-slate-500">{t("bs.works_hint")}</p>
-                    </div>
-                    <button
-                        onClick={() => navigate("/works")}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                    >
-                        {t("bs.open_works")}
-                    </button>
-                </div>
-            </section>
-
-            {/* ===== Section: Design (this user's own look) ===== */}
-            <DesignBox />
-
-            {/* ===== Section: Roles & permissions ===== */}
-            {hasTick(effectiveUser, "manage_permissions") && (
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="min-w-0">
-                            <h2 className="text-[15px] font-semibold text-slate-900">{t("nav.roles_permissions")}</h2>
-                            <p className="mt-0.5 text-sm text-slate-500">{t("bs.roles_hint")}</p>
-                        </div>
-                        <button
-                            data-open-roles
-                            onClick={() => navigate("/settings/roles")}
-                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                        >
-                            {t("bs.open_roles")}
-                        </button>
-                    </div>
-                </section>
-            )}
-
-            {/* ===== Section: Appearance ===== */}
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.appearance")}</h2>
-                <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("bs.appearance_hint")}</p>
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        onClick={() => { if (isDark) handleToggleTheme(); }}
-                        className={[
-                            "rounded-xl border bg-white p-4 text-start transition hover:bg-slate-50",
-                            !isDark ? "border-brand ring-2 ring-brand/20" : "border-slate-200",
-                        ].join(" ")}
-                    >
-                        <div className="text-2xl">☀️</div>
-                        <div className="mt-1 text-sm font-semibold text-slate-900">{t("bs.light")}</div>
-                    </button>
-                    <button
-                        onClick={() => { if (!isDark) handleToggleTheme(); }}
-                        className={[
-                            "rounded-xl border bg-white p-4 text-start transition hover:bg-slate-50",
-                            isDark ? "border-brand ring-2 ring-brand/20" : "border-slate-200",
-                        ].join(" ")}
-                    >
-                        <div className="text-2xl">🌙</div>
-                        <div className="mt-1 text-sm font-semibold text-slate-900">{t("bs.dark")}</div>
-                    </button>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                    <span className="text-sm font-medium text-slate-700">{t('settings.language')}</span>
-                    <LanguageSwitcher />
-                </div>
-            </section>
-
-            {/* ===== Section: Reminder template ===== */}
-            {tpl && (
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="min-w-0">
-                            <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.reminder_template")}</h2>
-                            <p className="mt-0.5 text-sm text-slate-500">
-                                {t("bs.reminder_hint")}
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => setShowTpl(true)}
-                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                        >
-                            {t("bs.edit_template")}
-                        </button>
-                    </div>
-                </section>
-            )}
-
-            {/* ===== Section: Feedback QR ===== */}
-            {qrUrl && (
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
-                    <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.feedback_qr_title")}</h2>
-                    <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("bs.feedback_qr_hint")}</p>
-                    <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
-                        <div ref={qrRef} className="rounded-xl border border-slate-200 bg-white p-3">
-                            <QRCodeCanvas value={qrUrl} size={200} level="M" marginSize={3} />
-                        </div>
-                        <div className="w-full min-w-0 flex-1 space-y-3">
-                            <button
-                                onClick={downloadQr}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
-                            >
-                                {t("bs.feedback_qr_download")}
-                            </button>
-                            <div className="break-all rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-500">
-                                {qrUrl}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            )}
-
-            {/* ===== Section: Workflow rules ===== */}
-            {hasTick(effectiveUser, "manage_branch_settings") && <WorkflowSettings />}
-
-            {/* ===== Section: Discounts ===== */}
-            <section>
-                <DiscountsSettings />
-            </section>
-
-            {/* ===== Section: Floors ===== */}
-            <section>
-                <FloorsSettings />
-            </section>
 
             {/* ===== Edit template modal ===== */}
             {showTpl && tpl && (

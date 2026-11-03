@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import useWorks from "../../hooks/useWorks";
 import { useSettings } from "../../context/SettingContext";
 import { getSpecialties } from "../../api/specialtyApi";
-import SpecialtiesSection from "../../components/works/SpecialtiesSection";
 import PageHeader from "../../components/common/PageHeader";
 
 const emptyForm = {
@@ -274,15 +273,6 @@ export default function WorksPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [specialties, setSpecialties] = useState([]);
 
-  const loadSpecialties = useCallback(async () => {
-    try {
-      const res = await getSpecialties();
-      setSpecialties(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      toast.error(err.userMessage);
-    }
-  }, []);
-
   useEffect(() => {
     let alive = true;
     getSpecialties()
@@ -428,8 +418,6 @@ export default function WorksPage() {
           </div>
         )}
       </div>
-
-      <SpecialtiesSection specialties={specialties} works={works} onSpecialtiesChanged={loadSpecialties} />
 
       {viewWork && (
         <ViewModal work={viewWork} onClose={() => setViewWork(null)} />
