@@ -12,6 +12,7 @@ import LabOrderFormModal from "../../components/labs/LabOrderFormModal";
 import LabOrderStatusModal from "../../components/labs/LabOrderStatusModal";
 import LabOrderDetailsModal from "../../components/labs/LabOrderDetailsModal";
 import { useSettings } from "../../context/SettingContext";
+import PageHeader, { BandTabs, bandTabClass, BAND_TABS } from "../../components/common/PageHeader";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -53,22 +54,22 @@ function Pagination({ page, pagination, onPageChange }) {
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page === 1}
-          className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {t("appt.prev")}
         </button>
 
         {pageNumbers.map((p, i) =>
           p === "..." ? (
-            <span key={`ellipsis-${i}`} className="px-1 text-[11px] text-slate-400">…</span>
+            <span key={`ellipsis-${i}`} className="px-1 text-xs text-slate-400">…</span>
           ) : (
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
+              className={`min-w-[2rem] rounded-lg border px-3 py-1.5 text-xs font-medium tabular-nums transition ${
                 p === page
-                  ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-                  : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                  ? "border-brand bg-brand text-white"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
               {p}
@@ -79,12 +80,12 @@ function Pagination({ page, pagination, onPageChange }) {
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page === pagination.totalPages}
-          className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {t("appt.next")}
         </button>
       </div>
-      <span className="text-[11px] text-slate-400">
+      <span className="text-xs text-slate-500">
         {t("lab.showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
       </span>
     </div>
@@ -214,18 +215,14 @@ export default function LabsPage() {
     <button
       type="button"
       onClick={() => setActiveTab(key)}
-      className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
-        activeTab === key
-          ? "bg-[#0E6E75] text-white"
-          : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
-      }`}
+      className={bandTabClass(activeTab === key)}
     >
       {label}
     </button>
   );
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-5">
       {/* Modals */}
       {openOrderForm && (
         <LabOrderFormModal
@@ -263,60 +260,59 @@ export default function LabsPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("lab.title")}</h1>
-          <p className="text-xs text-slate-500">
-            {t("lab.subtitle")}
-          </p>
-        </div>
+      <PageHeader
+        title={t("lab.title")}
+        subtitle={t("lab.subtitle")}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={onClickAddLab}
+              className="rounded-xl border border-slate-200 bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/20"
+            >
+              {t("lab.add_lab")}
+            </button>
+            <button
+              type="button"
+              onClick={onClickMakeOrder}
+              className="rounded-xl bg-aqua px-4 py-2.5 text-sm font-bold text-ocean-deep transition hover:brightness-110"
+            >
+              {t("lab.make_order")}
+            </button>
+          </>
+        }
+      />
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onClickAddLab}
-            className="rounded-lg border border-[#0E6E75]/30 bg-white px-4 py-2 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
-          >
-            {t("lab.add_lab")}
-          </button>
-          <button
-            type="button"
-            onClick={onClickMakeOrder}
-            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C]"
-          >
-            {t("lab.make_order")}
-          </button>
+      {/* Tabs (in the band, under the title) */}
+      <BandTabs>
+        <div className={BAND_TABS}>
+          {tabButton("orders", t("lab.tab_orders"))}
+          {tabButton("labs", t("lab.tab_labs"))}
         </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex w-fit rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-1">
-        {tabButton("orders", t("lab.tab_orders"))}
-        {tabButton("labs", t("lab.tab_labs"))}
-      </div>
+      </BandTabs>
 
       {/* ===================== ORDERS TAB ===================== */}
       {activeTab === "orders" && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
           {/* Filters */}
-          <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
-            <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.search")}</label>
+          <div className="mb-4 flex flex-wrap items-end gap-3">
+            <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-72">
+              <label className="text-sm font-medium text-slate-700">{t("lab.search")}</label>
               <input
                 type="text"
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
                 placeholder={t("lab.order_search_ph")}
-                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.status")}</label>
+              <label className="text-sm font-medium text-slate-700">{t("lab.status")}</label>
               <select
                 value={orderStatus}
                 onChange={(e) => setOrderStatus(e.target.value)}
-                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               >
                 <option value="">{t("lab.all")}</option>
                 <option value="ordered">{t("lab.ordered")}</option>
@@ -326,105 +322,105 @@ export default function LabsPage() {
               </select>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={ordersState.refresh}
-                className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
               >
                 {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => { setOrderSearch(""); setOrderStatus(""); }}
-                className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
                 {t("lab.clear")}
               </button>
             </div>
           </div>
 
-          <p className="mb-3 text-xs text-slate-400">
+          <p className="mb-3 text-xs text-slate-500">
             {ordersState.isLoading ? t("lab.loading_orders") : t("lab.total", { count: ordersState.pagination.total })}
           </p>
 
           {ordersState.error && (
-            <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+            <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
               {ordersState.error}
             </div>
           )}
 
           {!ordersState.isLoading && !ordersState.error && ordersState.orders.length === 0 && (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-10 text-center text-sm text-slate-500">
               {t("lab.orders_empty")}
             </div>
           )}
 
           {ordersState.orders.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-xs text-slate-500">
-                    <th className="px-3 py-2 font-medium">#</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_order_date")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_lab")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_patient")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_doctor")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_treatments")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_total")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_status")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_ready")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_delivered")}</th>
-                    <th className="px-3 py-2 font-medium text-end">{t("lab.col_actions")}</th>
+            <div className="-mx-4 overflow-x-auto sm:-mx-5">
+              <table className="w-full text-start text-sm">
+                <thead className="bg-slate-50">
+                  <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="px-4 py-3 text-start">#</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_order_date")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_lab")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_patient")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_doctor")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_treatments")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_total")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_status")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_ready")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_delivered")}</th>
+                    <th className="px-4 py-3 text-end">{t("lab.col_actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {ordersState.orders.map((o, idx) => (
-                    <tr key={o.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                      <td className="px-3 py-2 text-slate-800">
+                    <tr key={o.id} className="border-t border-slate-100 hover:bg-slate-50">
+                      <td className="px-4 py-3 tabular-nums text-slate-500">
                         {(ordersState.page - 1) * ordersState.pagination.limit + idx + 1}
                       </td>
-                      <td className="px-3 py-2 text-slate-700 whitespace-nowrap">{formatDateTime(o.order_date)}</td>
-                      <td className="px-3 py-2 font-medium text-slate-800">{o.lab_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{o.patient_name}</td>
-                      <td className="px-3 py-2 text-slate-700 capitalize">{o.doctor_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{o.items_summary || "-"}</td>
-                      <td className="px-3 py-2 font-medium text-slate-800">{formatMoney(o.total_cost, o.currency_code)}</td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{formatDateTime(o.order_date)}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{o.lab_name}</td>
+                      <td className="px-4 py-3 text-slate-700">{o.patient_name}</td>
+                      <td className="px-4 py-3 text-slate-700 capitalize">{o.doctor_name}</td>
+                      <td className="px-4 py-3 text-slate-700">{o.items_summary || "-"}</td>
+                      <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(o.total_cost, o.currency_code)}</td>
+                      <td className="px-4 py-3">
                         <button
                           type="button"
                           onClick={() => setOrderForStatus(o)}
                           title={t("lab.change_status_title")}
                           className={
-                            "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize hover:opacity-80 " +
+                            "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold capitalize transition hover:opacity-80 " +
                             statusBadgeClasses(o.status)
                           }
                         >
                           {o.status}
                         </button>
                       </td>
-                      <td className="px-3 py-2 text-slate-700 whitespace-nowrap">{formatDateTime(o.ready_date)}</td>
-                      <td className="px-3 py-2 text-slate-700 whitespace-nowrap">{formatDateTime(o.delivered_date)}</td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{formatDateTime(o.ready_date)}</td>
+                      <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{formatDateTime(o.delivered_date)}</td>
+                      <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2 text-xs">
                           <button
                             type="button"
                             onClick={() => setOrderDetailsId(o.id)}
-                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
+                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                           >
                             {t("common.view")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onClickEditOrder(o)}
-                            className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
+                            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                           >
                             {t("common.edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteOrder(o)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
+                            className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                           >
                             {t("common.delete")}
                           </button>
@@ -447,90 +443,90 @@ export default function LabsPage() {
 
       {/* ===================== LABS TAB ===================== */}
       {activeTab === "labs" && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
           {/* Filters */}
-          <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
-            <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-semibold text-[#0E6E75]">{t("lab.search")}</label>
+          <div className="mb-4 flex flex-wrap items-end gap-3">
+            <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-72">
+              <label className="text-sm font-medium text-slate-700">{t("lab.search")}</label>
               <input
                 type="text"
                 value={labSearch}
                 onChange={(e) => setLabSearch(e.target.value)}
                 placeholder={t("lab.lab_search_ph")}
-                className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={labsState.refresh}
-                className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
               >
                 {t("lab.refresh")}
               </button>
               <button
                 type="button"
                 onClick={() => setLabSearch("")}
-                className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
                 {t("lab.clear")}
               </button>
             </div>
           </div>
 
-          <p className="mb-3 text-xs text-slate-400">
+          <p className="mb-3 text-xs text-slate-500">
             {labsState.isLoading ? t("lab.loading_labs") : t("lab.total", { count: labsState.pagination.total })}
           </p>
 
           {labsState.error && (
-            <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+            <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
               {labsState.error}
             </div>
           )}
 
           {!labsState.isLoading && !labsState.error && labsState.labs.length === 0 && (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-10 text-center text-sm text-slate-500">
               {t("lab.labs_empty")}
             </div>
           )}
 
           {labsState.labs.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-xs text-slate-500">
-                    <th className="px-3 py-2 font-medium">#</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_lab_name")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_phone")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_treatments")}</th>
-                    <th className="px-3 py-2 font-medium">{t("lab.col_added")}</th>
-                    <th className="px-3 py-2 font-medium text-end">{t("lab.col_actions")}</th>
+            <div className="-mx-4 overflow-x-auto sm:-mx-5">
+              <table className="w-full text-start text-sm">
+                <thead className="bg-slate-50">
+                  <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="px-4 py-3 text-start">#</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_lab_name")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_phone")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_treatments")}</th>
+                    <th className="px-4 py-3 text-start">{t("lab.col_added")}</th>
+                    <th className="px-4 py-3 text-end">{t("lab.col_actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {labsState.labs.map((lab, idx) => (
-                    <tr key={lab.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                      <td className="px-3 py-2 text-slate-800">
+                    <tr key={lab.id} className="border-t border-slate-100 hover:bg-slate-50">
+                      <td className="px-4 py-3 tabular-nums text-slate-500">
                         {(labsState.page - 1) * labsState.pagination.limit + idx + 1}
                       </td>
-                      <td className="px-3 py-2 font-medium text-slate-800">{lab.name}</td>
-                      <td className="px-3 py-2 text-slate-700">{lab.phone || "-"}</td>
-                      <td className="px-3 py-2 text-slate-700">{lab.treatments_count}</td>
-                      <td className="px-3 py-2 text-slate-700">{formatDate(lab.created_at)}</td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3 font-medium text-slate-900">{lab.name}</td>
+                      <td className="px-4 py-3 text-slate-700">{lab.phone || "-"}</td>
+                      <td className="px-4 py-3 text-slate-700">{lab.treatments_count}</td>
+                      <td className="px-4 py-3 text-slate-700">{formatDate(lab.created_at)}</td>
+                      <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2 text-xs">
                           <button
                             type="button"
                             onClick={() => onClickEditLab(lab)}
-                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
+                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                           >
                             {t("lab.view_edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => onDeleteLab(lab)}
-                            className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
+                            className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                           >
                             {t("common.delete")}
                           </button>

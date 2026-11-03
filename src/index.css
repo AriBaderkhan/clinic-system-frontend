@@ -3,135 +3,135 @@
 @tailwind utilities;
 
 /* =========================================================
-   RIGHT-TO-LEFT (Arabic / Kurdish Sorani)
-   When the language switcher sets <html dir="rtl">, the whole layout
-   mirrors automatically and we swap to an Arabic-script font.
+   DEEP OCEAN THEME — every colour of the app lives here.
+   Values are "R G B" so Tailwind can add opacity (bg-brand/10).
+   tailwind.config.js maps slate/gray/white/brand/aqua/ocean to these.
+   Light = :root, Dark = .dark (the whole neutral scale flips, so
+   text-slate-900 is dark text in light mode and light text in dark mode).
    ========================================================= */
-html[dir="rtl"] body {
-  font-family: 'Noto Kufi Arabic', system-ui, -apple-system, sans-serif;
+:root {
+  /* neutrals: ground (50) → ink (900) */
+  --n-50: 232 238 243;   /* page background, steel blue */
+  --n-100: 220 228 236;
+  --n-200: 208 218 229;  /* borders */
+  --n-300: 181 194 209;
+  --n-400: 118 133 154;
+  --n-500: 102 118 139;
+  --n-600: 78 93 114;
+  --n-700: 58 72 92;
+  --n-800: 36 50 69;
+  --n-900: 14 27 44;     /* main text */
+  --n-950: 8 17 29;
+  --surface: 248 250 252; /* cards, panels, inputs (bg-white) */
+  --brand: 29 95 191;     /* buttons, links, active */
+  --brand-dark: 23 78 158;
+  --brand-soft: 220 231 247;
+  --on-brand: 255 255 255; /* text on brand / coloured buttons (text-white) */
+  --aqua: 24 169 176;
+  --ocean: 18 59 102;
+  --ocean-deep: 11 30 58;
+  --shadow: 11 30 58;
+  --band: linear-gradient(125deg, #0B1E3A 0%, #123B66 58%, #1B5A8A 100%);
 }
-
-/* =========================================================
-   DARK MODE  —  Petrol teal palette
-   The app is styled with light utilities (bg-white, text-slate-900...).
-   When <html> has the .dark class, the overrides below re-map those
-   utilities to a deep teal-charcoal palette. Pure CSS -> instant switch.
-   ========================================================= */
 
 .dark {
   color-scheme: dark; /* native date/time pickers, scrollbars */
+  --n-50: 7 13 23;
+  --n-100: 20 32 53;
+  --n-200: 30 43 66;
+  --n-300: 43 58 85;
+  --n-400: 94 111 136;
+  --n-500: 132 149 173;
+  --n-600: 158 174 196;
+  --n-700: 186 200 218;
+  --n-800: 210 220 233;
+  --n-900: 228 236 246;
+  --n-950: 241 246 252;
+  --surface: 14 23 38;
+  --brand: 111 168 255;
+  --brand-dark: 141 187 255;
+  --brand-soft: 22 41 74;
+  --on-brand: 7 20 42;
+  --aqua: 63 208 212;
+  --ocean: 21 54 94;
+  --ocean-deep: 8 20 42;
+  --shadow: 0 0 0;
+  --band: linear-gradient(125deg, #08142A 0%, #0F2A4D 58%, #15406B 100%);
 }
 
-/* ---------- backgrounds ---------- */
-.dark .bg-white { background-color: #121A1D; }        /* surface */
-.dark .bg-slate-50 { background-color: #0B0F11; }      /* ground  */
-.dark .bg-slate-50\/70 { background-color: rgba(11, 15, 17, 0.7); }
-.dark .bg-slate-100 { background-color: #182326; }
-.dark .bg-slate-200 { background-color: #223033; }
-.dark .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.1); }
-
-.dark .hover\:bg-slate-50:hover { background-color: #172227; }
-.dark .hover\:bg-slate-100:hover { background-color: #1E2C30; }
-.dark .hover\:bg-slate-200:hover { background-color: #26383C; }
-.dark .hover\:bg-white:hover { background-color: #172227; }
-.dark .focus\:bg-white:focus { background-color: #172227; }
-
-/* Chrome autofill paints a light background — keep inputs dark and text readable */
-.dark input:-webkit-autofill,
-.dark input:-webkit-autofill:hover,
-.dark input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #172227 inset;
-  -webkit-text-fill-color: #E9F0F0;
-  caret-color: #E9F0F0;
+/* Everything hanging from the navy band (menu links, bell, profile, branch picker
+   and their drop-downs) uses the dark palette in both themes, so it reads on navy. */
+.band-dark {
+  --n-50: 11 30 58;
+  --n-100: 25 55 92;
+  --n-200: 38 70 110;
+  --n-300: 60 92 132;
+  --n-400: 120 145 178;
+  --n-500: 169 189 214;
+  --n-600: 190 206 226;
+  --n-700: 210 222 236;
+  --n-800: 226 234 244;
+  --n-900: 241 246 252;
+  --n-950: 255 255 255;
+  --surface: 19 48 82;
+  --brand: 120 172 245;
+  --brand-dark: 160 198 250;
+  --brand-soft: 31 70 115;
+  --on-brand: 255 255 255;
 }
 
-/* ---------- text ---------- */
-.dark .text-slate-900 { color: #E9F0F0; }
-.dark .text-slate-800 { color: #D6E0E1; }
-.dark .text-slate-700 { color: #BFCDCE; }
-.dark .text-slate-600 { color: #9DB0B2; }
-.dark .text-slate-500 { color: #869A9C; }
-.dark .text-slate-400 { color: #6E8386; }
-.dark .text-slate-300 { color: #5A6E71; }
-.dark ::placeholder { color: #67797C; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background-color: rgb(var(--n-50));
+  color: rgb(var(--n-900));
+  font-family: "Plus Jakarta Sans", "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* ---------- borders ---------- */
-.dark .border-slate-200 { border-color: #223033; }
-.dark .border-slate-100 { border-color: #1B282B; }
-.dark .border-slate-300 { border-color: #2C3D41; }
+/* RIGHT-TO-LEFT (Arabic / Kurdish Sorani): the layout mirrors via dir="rtl"; swap to an Arabic-script font. */
+html[dir="rtl"] body,
+html[dir="rtl"] input, html[dir="rtl"] select, html[dir="rtl"] textarea, html[dir="rtl"] button {
+  font-family: "Vazirmatn", system-ui, -apple-system, sans-serif;
+}
 
-/* ---------- gray palette (settings/tenant pages use gray instead of slate) ---------- */
-.dark .bg-gray-50 { background-color: #0B0F11; }
-.dark .bg-gray-100 { background-color: #182326; }
-.dark .bg-gray-300 { background-color: #223033; }
-.dark .hover\:bg-gray-50:hover { background-color: #172227; }
-.dark .hover\:bg-gray-100:hover { background-color: #1E2C30; }
+/* text-white = readable text on brand / coloured buttons (white in light, deep navy on the light-blue dark brand) */
+.text-white, .hover\:text-white:hover, .group:hover .group-hover\:text-white { color: rgb(var(--on-brand) / var(--tw-text-opacity, 1)); }
 
-.dark .text-gray-900 { color: #E9F0F0; }
-.dark .text-gray-800 { color: #D6E0E1; }
-.dark .text-gray-700 { color: #BFCDCE; }
-.dark .text-gray-600 { color: #9DB0B2; }
-.dark .text-gray-500 { color: #869A9C; }
-.dark .text-gray-400 { color: #6E8386; }
-.dark .text-gray-300 { color: #5A6E71; }
-.dark .hover\:text-gray-600:hover { color: #9DB0B2; }
-.dark .hover\:text-gray-700:hover { color: #BFCDCE; }
-.dark .hover\:text-slate-600:hover { color: #9DB0B2; }
-.dark .hover\:text-slate-700:hover { color: #BFCDCE; }
-.dark .hover\:text-slate-900:hover { color: #E9F0F0; }
+/* white text on photos / black overlays — stays white in both themes */
+.text-onphoto { color: #ffffff; }
 
-.dark .border-gray-300 { border-color: #2C3D41; }
-.dark .border-gray-200 { border-color: #223033; }
-.dark .border-gray-100 { border-color: #1B282B; }
+/* the navy band at the top of every page */
+.ocean-band { background: var(--band); color: rgb(241 246 252); }
 
-/* ---------- brand teal on dark ---------- */
-.dark .text-\[\#0E6E75\] { color: #4FC3CB; }
-.dark .bg-\[\#0E6E75\]\/5 { background-color: rgba(47, 176, 184, 0.08); }
-.dark .bg-\[\#0E6E75\]\/10 { background-color: rgba(47, 176, 184, 0.14); }
-.dark .border-\[\#0E6E75\]\/10 { border-color: rgba(47, 176, 184, 0.18); }
-.dark .border-\[\#0E6E75\]\/20 { border-color: rgba(47, 176, 184, 0.28); }
-.dark .border-\[\#0E6E75\]\/30 { border-color: rgba(47, 176, 184, 0.38); }
-.dark .hover\:bg-\[\#0E6E75\]\/5:hover { background-color: rgba(47, 176, 184, 0.10); }
-.dark .hover\:bg-\[\#0E6E75\]\/10:hover { background-color: rgba(47, 176, 184, 0.16); }
+/* a column of cards in a multi-column row: the last card stretches so the row ends level */
+.col-fill { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+.col-fill > :last-child { flex: 1 1 auto; }
 
-/* ---------- status badges / alerts ---------- */
-.dark .bg-sky-50 { background-color: rgba(14, 165, 233, 0.14); }
-.dark .text-sky-700 { color: #7dd3fc; }
-.dark .border-sky-100 { border-color: rgba(14, 165, 233, 0.3); }
+/* numbers line up in tables and cards */
+table, .tabular-nums { font-variant-numeric: tabular-nums; }
 
-.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.14); }
-.dark .text-amber-700 { color: #fcd34d; }
-.dark .border-amber-100 { border-color: rgba(245, 158, 11, 0.3); }
+/* Chrome autofill paints a light background — keep inputs on the theme surface */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--surface)) inset;
+  -webkit-text-fill-color: rgb(var(--n-900));
+  caret-color: rgb(var(--n-900));
+}
+::placeholder { color: rgb(var(--n-400)); opacity: 1; }
 
-.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.14); }
-.dark .text-purple-700 { color: #d8b4fe; }
-.dark .border-purple-100 { border-color: rgba(168, 85, 247, 0.3); }
+/* thin, theme-coloured scrollbars */
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--n-300)) transparent; }
 
-.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.14); }
-.dark .text-red-700 { color: #fca5a5; }
-.dark .text-red-600 { color: #f87171; }
-.dark .border-red-100 { border-color: rgba(239, 68, 68, 0.25); }
-.dark .border-red-200 { border-color: rgba(239, 68, 68, 0.35); }
+/* focus ring for keyboard users */
+:focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
 
-.dark .bg-green-50 { background-color: rgba(34, 197, 94, 0.14); }
-.dark .text-green-700 { color: #86efac; }
-.dark .border-green-100 { border-color: rgba(34, 197, 94, 0.3); }
+/* status colours on dark: see styles/dark-tints.css (generated for every tint class the app uses) */
 
-/* ---------- components hand-styled with dark: slate variants (navy-era) → teal ----------
-   Tailwind emits these as `.dark\:bg-slate-800:is(.dark *)`; we override with an
-   `html.dark` prefix so specificity always wins and the whole app shares one dark palette. */
-html.dark .dark\:bg-slate-800 { background-color: #121A1D; }
-html.dark .dark\:bg-slate-900 { background-color: #0B0F11; }
-html.dark .dark\:bg-slate-700 { background-color: #182326; }
-html.dark .dark\:hover\:bg-slate-700:hover { background-color: #1E2C30; }
-html.dark .dark\:border-slate-700 { border-color: #223033; }
-html.dark .dark\:border-slate-600 { border-color: #2C3D41; }
-html.dark .dark\:text-slate-100 { color: #E9F0F0; }
-html.dark .dark\:text-slate-200 { color: #D6E0E1; }
-html.dark .dark\:text-slate-300 { color: #BFCDCE; }
-html.dark .dark\:text-slate-400 { color: #869A9C; }
-
-/* smooth color change when toggling */
+/* smooth colour change when toggling the theme */
 body, .bg-white, .bg-slate-50, .bg-slate-100 {
   transition: background-color 0.15s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body, .bg-white, .bg-slate-50, .bg-slate-100 { transition: none; }
 }

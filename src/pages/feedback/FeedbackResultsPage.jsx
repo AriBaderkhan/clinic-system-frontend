@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { getFeedbackResults } from "../../api/feedbackApi";
+import PageHeader from "../../components/common/PageHeader";
 
 // Summary cards show all 5 averages. `key` matches the DB column prefix.
 const CATEGORIES = [
@@ -68,30 +69,25 @@ export default function FeedbackResultsPage() {
   const avgFor = (key) => summary?.[`avg_${key}`];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          {t("feedback.results_title")}
-        </h1>
-        <p className="text-xs text-slate-500">{t("feedback.results_subtitle")}</p>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader title={t("feedback.results_title")} subtitle={t("feedback.results_subtitle")} />
 
-      {loading && <div className="py-10 text-center text-slate-500">{t("feedback.loading")}</div>}
+      {loading && <div className="rounded-2xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500 shadow-card">{t("feedback.loading")}</div>}
       {error && !loading && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-card">{error}</div>
       )}
 
       {!loading && !error && (
         <>
           {/* Branch tabs — switch the whole view between all branches and one */}
           {branches.length > 1 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-card">
               <button
                 onClick={() => setBranch("all")}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                   branch === "all"
-                    ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                    ? "bg-brand text-white"
+                    : "text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {t("tdash.all_branches")}
@@ -100,10 +96,10 @@ export default function FeedbackResultsPage() {
                 <button
                   key={b.branch_id}
                   onClick={() => setBranch(String(b.branch_id))}
-                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                  className={`max-w-full truncate rounded-lg px-4 py-2 text-sm font-semibold transition ${
                     String(branch) === String(b.branch_id)
-                      ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      ? "bg-brand text-white"
+                      : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {b.branch_name}
@@ -113,11 +109,11 @@ export default function FeedbackResultsPage() {
           )}
 
           {/* Summary cards */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
             {CATEGORIES.map((c) => (
-              <div key={c.key} className="rounded-xl border border-slate-200 bg-white p-4 dark:bg-slate-800">
-                <p className="text-[11px] font-medium uppercase text-slate-500">{t(c.labelKey)}</p>
-                <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              <div key={c.key} className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                <p className="truncate text-xs font-medium text-slate-500">{t(c.labelKey)}</p>
+                <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900 tabular-nums sm:text-[28px]">
                   {avgFor(c.key) ?? "—"}
                 </p>
                 <div className="mt-1 text-sm"><Stars value={avgFor(c.key)} /></div>
@@ -125,52 +121,52 @@ export default function FeedbackResultsPage() {
             ))}
           </div>
 
-          <div className="flex gap-6 text-xs text-slate-500">
-            <span>{t("feedback.invites_sent")}: <b className="text-slate-800 dark:text-slate-200">{summary?.invites_sent ?? 0}</b></span>
-            <span>{t("feedback.responses")}: <b className="text-slate-800 dark:text-slate-200">{summary?.responses ?? 0}</b></span>
+          <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium">{t("feedback.invites_sent")}: <b className="text-slate-900 tabular-nums">{summary?.invites_sent ?? 0}</b></span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium">{t("feedback.responses")}: <b className="text-slate-900 tabular-nums">{summary?.responses ?? 0}</b></span>
           </div>
 
           {/* Individual responses */}
           {rows.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-300 py-12 text-center text-slate-500">
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-sm text-slate-500">
               {t("feedback.no_responses")}
             </div>
           ) : (
             <div className="space-y-3">
               {rows.map((r) => (
-                <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-4 dark:bg-slate-800">
-                  <div className="mb-3 flex items-center justify-between">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-800 dark:text-slate-100">
+                <div key={r.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <span className="font-semibold text-slate-900">
                         {r.patient_name || t("feedback.anonymous")}
                       </span>
                       {branch === "all" && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-500 dark:bg-slate-700">
+                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
                           {r.branch_name}
                         </span>
                       )}
-                      <span className="text-[11px] text-slate-400">{t("feedback.cat_overall")}:</span>
+                      <span className="text-[11px] text-slate-500">{t("feedback.cat_overall")}:</span>
                       <Stars value={r.overall_rating} />
                     </div>
-                    <span className="text-[11px] text-slate-400">{fmtDate(r.submitted_at)}</span>
+                    <span className="text-[11px] text-slate-500 tabular-nums">{fmtDate(r.submitted_at)}</span>
                   </div>
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {RATED_CATEGORIES.map((c) => (
-                      <div key={c.key} className="flex flex-col gap-0.5 rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-700/30">
-                        <div className="flex items-center justify-between">
+                      <div key={c.key} className="flex min-w-0 flex-col gap-0.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
+                        <div className="flex items-center justify-between gap-2">
                           <span className="text-xs text-slate-500">{t(c.labelKey)}</span>
                           <Stars value={r[`${c.key}_rating`]} />
                         </div>
                         {r[`${c.key}_comment`] && (
-                          <p className="text-xs text-slate-600 dark:text-slate-300">{r[`${c.key}_comment`]}</p>
+                          <p className="break-words text-xs text-slate-600">{r[`${c.key}_comment`]}</p>
                         )}
                       </div>
                     ))}
                   </div>
                   {r.note && (
-                    <div className="mt-2 rounded-lg bg-amber-50 px-3 py-2 dark:bg-amber-900/20">
+                    <div className="mt-2 rounded-xl bg-amber-50 px-3 py-2">
                       <span className="text-[11px] font-medium text-slate-500">{t("feedback.note_result")}</span>
-                      <p className="text-xs text-slate-700 dark:text-slate-300">{r.note}</p>
+                      <p className="break-words text-xs text-slate-700">{r.note}</p>
                     </div>
                   )}
                 </div>

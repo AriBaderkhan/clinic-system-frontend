@@ -144,7 +144,7 @@ export default function InsightsAssistant() {
             <button
                 onClick={() => setOpen((o) => !o)}
                 aria-label={t("insights.title")}
-                className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#0E6E75] text-white shadow-lg transition hover:scale-105 hover:bg-[#013f5a]"
+                className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-pop ring-4 ring-brand/15 transition hover:scale-105 hover:bg-brand-dark"
             >
                 {open ? (
                     <span className="text-xl">✕</span>
@@ -157,21 +157,21 @@ export default function InsightsAssistant() {
 
             {/* Panel */}
             {open && (
-                <div className="fixed bottom-24 end-5 z-50 flex h-[70vh] max-h-[560px] w-[92vw] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                <div className="fixed bottom-24 end-4 z-50 flex h-[70vh] max-h-[560px] w-[calc(100vw-2rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop sm:end-5">
                     {/* Header */}
-                    <div className="flex items-center gap-2 border-b border-slate-100 bg-[#0E6E75] px-4 py-3 text-white">
+                    <div className="ocean-band band-dark flex items-center gap-2 px-4 py-3.5">
                         {view !== "categories" && (
                             <button
                                 onClick={() => (view === "result" ? setView("questions") : goCategories())}
-                                className="rounded-md px-1.5 py-0.5 text-white/90 hover:bg-white/10 rtl:rotate-180"
+                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-700 transition hover:bg-white/10 hover:text-slate-900 rtl:rotate-180"
                                 aria-label="Back"
                             >
                                 ←
                             </button>
                         )}
-                        <div className="flex flex-col">
-                            <span className="text-sm font-semibold">{t("insights.title")}</span>
-                            <span className="text-[11px] text-white/70">
+                        <div className="flex min-w-0 flex-col">
+                            <span className="text-sm font-semibold text-slate-900">{t("insights.title")}</span>
+                            <span className="truncate text-xs text-slate-500">
                                 {view === "categories" && t("insights.pick_topic")}
                                 {view === "questions" && activeCategory && t(`insights.cat.${activeCategory.code}`)}
                                 {view === "result" && activeMetric && t(`insights.q.${activeMetric.id}`, { defaultValue: activeMetric.label })}
@@ -180,13 +180,13 @@ export default function InsightsAssistant() {
                     </div>
 
                     {/* Body */}
-                    <div className="flex-1 overflow-y-auto p-3">
+                    <div className="flex-1 overflow-y-auto p-4">
                         {/* CATEGORIES */}
                         {view === "categories" && (
                             <>
                                 {/* Excel export — one month, bounded to [join month .. this month] */}
-                                <div className="mb-3 rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-3">
-                                    <p className="mb-2 text-xs font-semibold text-slate-700">{t("insights.export_title")}</p>
+                                <div className="mb-4 rounded-xl border border-brand/20 bg-brand/5 p-3">
+                                    <p className="mb-2 text-xs font-semibold text-slate-900">{t("insights.export_title")}</p>
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="month"
@@ -194,13 +194,13 @@ export default function InsightsAssistant() {
                                             min={meta?.earliest_month || undefined}
                                             max={meta?.latest_month || undefined}
                                             onChange={(e) => setExportMonth(e.target.value)}
-                                            className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs"
+                                            className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         />
                                         <button
                                             type="button"
                                             onClick={handleExport}
                                             disabled={exporting || !exportMonth}
-                                            className="shrink-0 rounded-md bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#013f5a] disabled:opacity-50"
+                                            className="shrink-0 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                         >
                                             {exporting ? t("insights.exporting") : t("insights.export_excel")}
                                         </button>
@@ -208,18 +208,18 @@ export default function InsightsAssistant() {
                                     {exportError && <p className="mt-1 text-[11px] text-red-600">{exportError}</p>}
                                 </div>
 
-                                {loadingCatalog && <p className="p-4 text-sm text-slate-500">{t("insights.loading")}</p>}
-                                {catalogError && <p className="p-4 text-sm text-red-600">{catalogError}</p>}
+                                {loadingCatalog && <p className="animate-pulse py-8 text-center text-sm text-slate-500">{t("insights.loading")}</p>}
+                                {catalogError && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{catalogError}</p>}
                                 {!loadingCatalog && !catalogError && (
                                     <div className="grid grid-cols-2 gap-2">
                                         {categories.map((c) => (
                                             <button
                                                 key={c.code}
                                                 onClick={() => openCategory(c)}
-                                                className="flex flex-col items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-5 text-center transition hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
+                                                className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-5 text-center transition hover:border-brand hover:bg-brand/5"
                                             >
                                                 <span className="text-2xl">{c.icon}</span>
-                                                <span className="text-sm font-medium text-slate-700">{t(`insights.cat.${c.code}`)}</span>
+                                                <span className="text-sm font-semibold text-slate-700">{t(`insights.cat.${c.code}`)}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -242,10 +242,10 @@ export default function InsightsAssistant() {
                                         <button
                                             key={q.id}
                                             onClick={() => runMetric(q)}
-                                            className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5 text-start text-sm text-slate-700 transition hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
+                                            className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-start text-sm font-medium text-slate-700 transition hover:border-brand hover:bg-brand/5"
                                         >
                                             <span>{t(`insights.q.${q.id}`, { defaultValue: q.label })}</span>
-                                            <span className="text-slate-300 rtl:rotate-180">›</span>
+                                            <span className="shrink-0 text-slate-400 rtl:rotate-180">›</span>
                                         </button>
                                     ))}
                                 </div>
@@ -255,17 +255,17 @@ export default function InsightsAssistant() {
                         {/* RESULT */}
                         {view === "result" && (
                             <>
-                                <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-[11px] uppercase tracking-wide text-slate-400">{periodLabel}</span>
+                                <div className="mb-3 flex items-center justify-between gap-2">
+                                    <span className="min-w-0 truncate text-xs font-semibold uppercase tracking-wide text-slate-500">{periodLabel}</span>
                                     <button
                                         onClick={() => runMetric(activeMetric)}
-                                        className="text-[11px] font-medium text-[#0E6E75] hover:underline"
+                                        className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-brand transition hover:bg-brand/10"
                                     >
                                         ↻ {t("insights.update")}
                                     </button>
                                 </div>
-                                {loadingResult && <p className="p-4 text-sm text-slate-500">{t("insights.loading")}</p>}
-                                {resultError && <p className="p-4 text-sm text-red-600">{resultError}</p>}
+                                {loadingResult && <p className="animate-pulse py-8 text-center text-sm text-slate-500">{t("insights.loading")}</p>}
+                                {resultError && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{resultError}</p>}
                                 {!loadingResult && !resultError && result && <ResultView data={result} t={t} />}
                             </>
                         )}
@@ -278,17 +278,17 @@ export default function InsightsAssistant() {
 
 function PeriodControls({ t, periodType, setPeriodType, month, setMonth, from, setFrom, to, setTo, compare, setCompare }) {
     return (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-sm">
-            <div className="mb-2 flex gap-1">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+            <div className="mb-2.5 flex gap-1 rounded-lg border border-slate-200 bg-white p-1">
                 <button
                     onClick={() => setPeriodType("month")}
-                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "month" ? "bg-[#0E6E75] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
+                    className={`flex-1 rounded-md px-2 py-1.5 text-xs font-semibold transition ${periodType === "month" ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"}`}
                 >
                     {t("insights.by_month")}
                 </button>
                 <button
                     onClick={() => setPeriodType("range")}
-                    className={`flex-1 rounded-md px-2 py-1 text-xs ${periodType === "range" ? "bg-[#0E6E75] text-white" : "bg-white text-slate-600 border border-slate-200"}`}
+                    className={`flex-1 rounded-md px-2 py-1.5 text-xs font-semibold transition ${periodType === "range" ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"}`}
                 >
                     {t("insights.custom_range")}
                 </button>
@@ -299,18 +299,18 @@ function PeriodControls({ t, periodType, setPeriodType, month, setMonth, from, s
                     type="month"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                    className="w-full rounded-md border border-slate-200 px-2 py-1 text-xs"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                 />
             ) : (
-                <div className="flex items-center gap-1">
-                    <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full rounded-md border border-slate-200 px-2 py-1 text-xs" />
-                    <span className="text-xs text-slate-400">→</span>
-                    <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full rounded-md border border-slate-200 px-2 py-1 text-xs" />
+                <div className="flex items-center gap-1.5">
+                    <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
+                    <span className="shrink-0 text-xs text-slate-400 rtl:rotate-180">→</span>
+                    <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                 </div>
             )}
 
-            <label className="mt-2 flex items-center gap-2 text-xs text-slate-600">
-                <input type="checkbox" checked={compare} onChange={(e) => setCompare(e.target.checked)} />
+            <label className="mt-2.5 flex cursor-pointer items-center gap-2 text-xs text-slate-600">
+                <input type="checkbox" className="h-3.5 w-3.5 accent-brand" checked={compare} onChange={(e) => setCompare(e.target.checked)} />
                 {t("insights.compare_prev")}
             </label>
         </div>
@@ -335,7 +335,7 @@ function ResultView({ data, t }) {
             <div className="flex flex-col gap-3">
                 <BreakdownList items={result.breakdown} t={t} />
                 {result.compare && (
-                    <div className="rounded-lg bg-slate-50 p-2 text-xs text-slate-600">
+                    <div className="space-y-0.5 rounded-xl bg-slate-50 p-3 text-xs text-slate-600">
                         <p>{t("insights.new")}: {growthText(result.compare.new, t)}</p>
                         <p>{t("insights.returning")}: {growthText(result.compare.returning, t)}</p>
                     </div>
@@ -356,11 +356,11 @@ function ResultView({ data, t }) {
 
 function BigValue({ value, unit, compare, t }) {
     return (
-        <div className="rounded-xl border border-slate-200 p-4 text-center">
-            <div className="text-3xl font-bold text-[#0E6E75]">{fmt(value)}</div>
-            <div className="text-[11px] uppercase tracking-wide text-slate-400">{unit === "money" ? t("insights.total") : t("insights.count")}</div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+            <div className="text-3xl font-bold tracking-tight text-brand tabular-nums">{fmt(value)}</div>
+            <div className="mt-0.5 text-xs font-medium uppercase tracking-wide text-slate-500">{unit === "money" ? t("insights.total") : t("insights.count")}</div>
             {compare && (
-                <div className="mt-2 text-xs">
+                <div className="mt-2 text-xs font-medium">
                     {compare.rate === null ? (
                         <span className="text-slate-400">{t("insights.no_prior")}</span>
                     ) : (
@@ -376,12 +376,12 @@ function BigValue({ value, unit, compare, t }) {
 
 function BranchValueList({ branches, t }) {
     return (
-        <div className="rounded-lg border border-slate-200">
-            <p className="border-b border-slate-100 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">{t("insights.by_branch")}</p>
+        <div className="overflow-hidden rounded-xl border border-slate-200">
+            <p className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("insights.by_branch")}</p>
             {branches.map((b) => (
-                <div key={b.branch_name} className="flex items-center justify-between px-3 py-2 text-sm">
-                    <span className="text-slate-600">{b.branch_name}</span>
-                    <span className="font-semibold text-slate-800">{fmt(b.value)}</span>
+                <div key={b.branch_name} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 text-sm first-of-type:border-t-0">
+                    <span className="min-w-0 truncate text-slate-600">{b.branch_name}</span>
+                    <span className="font-semibold text-slate-900 tabular-nums">{fmt(b.value)}</span>
                 </div>
             ))}
         </div>
@@ -389,20 +389,20 @@ function BranchValueList({ branches, t }) {
 }
 
 function BreakdownList({ items, t }) {
-    if (!items || items.length === 0) return <p className="p-3 text-sm text-slate-500">{t("insights.no_data")}</p>;
+    if (!items || items.length === 0) return <p className="py-6 text-center text-sm text-slate-500">{t("insights.no_data")}</p>;
     const max = Math.max(...items.map((i) => i.value), 1);
     return (
         <div className="flex flex-col gap-2">
             {items.map((it) => (
                 <div key={it.label}>
-                    <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-700">{it.label}</span>
-                        <span className="text-slate-500">
-                            {fmt(it.value)} <span className="text-[11px] text-slate-400">({it.rate}%)</span>
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="min-w-0 break-words text-slate-700">{it.label}</span>
+                        <span className="shrink-0 text-slate-500 tabular-nums">
+                            {fmt(it.value)} <span className="text-xs text-slate-400">({it.rate}%)</span>
                         </span>
                     </div>
-                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                        <div className="h-full rounded-full bg-[#0E6E75]" style={{ width: `${(it.value / max) * 100}%` }} />
+                    <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div className="h-full rounded-full bg-brand" style={{ width: `${(it.value / max) * 100}%` }} />
                     </div>
                 </div>
             ))}
@@ -414,8 +414,8 @@ function BranchBreakdownSections({ branches, t }) {
     return (
         <div className="flex flex-col gap-3">
             {branches.map((b) => (
-                <div key={b.branch_name} className="rounded-lg border border-slate-200 p-2.5">
-                    <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-slate-400">{b.branch_name}</p>
+                <div key={b.branch_name} className="rounded-xl border border-slate-200 p-3">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{b.branch_name}</p>
                     <BreakdownList items={b.breakdown} t={t} />
                 </div>
             ))}

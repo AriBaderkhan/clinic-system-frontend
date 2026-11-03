@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { createAppointment } from "../../api/appointmentApi";
 import useDoctors from "../../hooks/useDoctors";
 import AppointmentForm from "../../components/appointments/AppointmentForm";
+import PageHeader from "../../components/common/PageHeader";
 
 export default function AddAppointment() {
   const { t } = useTranslation();
@@ -31,19 +32,12 @@ export default function AddAppointment() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("appt.add_title")}</h1>
-          <p className="text-xs text-slate-500">
-            {t("appt.add_subtitle")}
-          </p>
-        </div>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader title={t("appt.add_title")} subtitle={t("appt.add_subtitle")} />
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
         {isLoading ? (
-          <div className="text-xs text-slate-500">{t("appt.loading_short")}</div>
+          <div className="py-10 text-center text-sm text-slate-500">{t("appt.loading_short")}</div>
         ) : (
           <AppointmentForm
             mode="add"

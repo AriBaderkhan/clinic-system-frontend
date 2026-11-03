@@ -17,10 +17,10 @@ export default function SubscriptionGate({ children }) {
     const canRenew = (user?.permissions || []).includes("manage_subscription");
 
     return (
-        <div className="mx-auto max-w-3xl space-y-5">
-            <div className="rounded-lg border border-red-100 bg-red-50 p-5 text-center">
+        <div className="mx-auto w-full max-w-3xl space-y-5">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center shadow-card sm:p-6">
                 <h2 className="text-lg font-bold text-red-700">{t("subscription.expired_title")}</h2>
-                <p className="mt-1 text-sm text-red-600">
+                <p className="mt-1 text-sm text-red-700">
                     {canRenew ? t("subscription.expired_manager") : t("subscription.expired_staff")}
                 </p>
             </div>

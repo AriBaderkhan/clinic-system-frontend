@@ -55,21 +55,21 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-30 bg-ocean-deep/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div className="fixed inset-0 z-[35] flex items-center justify-center p-4">
-        <div className="relative flex h-[90vh] w-full max-w-2xl flex-col rounded-3xl bg-white shadow-2xl">
+        <div className="relative flex h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
 
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-            <div>
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+            <div className="min-w-0">
               <h2 className="text-base font-semibold text-slate-900">
                 {t("aus.title")}
               </h2>
-              <p className="text-[11px] text-slate-500">
+              <p className="mt-0.5 text-xs text-slate-500">
                 {isLoading ? t("aus.loading") : t("aus.waiting", { count: total })}
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -88,9 +88,9 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
           </div>
 
           {/* Search */}
-          <div className="border-b border-slate-100 px-6 py-3">
-            <div className="flex items-center gap-2 rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 px-3.5 py-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#0E6E75]/50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="border-b border-slate-100 px-5 py-3">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 transition focus-within:border-brand focus-within:ring-4 focus-within:ring-brand/15">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
               <input
@@ -98,32 +98,32 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("aus.search_ph")}
-                className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 autoFocus
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                 >
                   ×
                 </button>
               )}
             </div>
             {search && (
-              <p className="mt-1.5 text-[11px] text-slate-400">
+              <p className="mt-1.5 text-xs text-slate-500">
                 {t("aus.showing", { shown: filtered.length, total })}
               </p>
             )}
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="flex-1 overflow-y-auto px-5 py-4">
 
             {/* Error */}
             {error && (
-              <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                 {error}
               </div>
             )}
@@ -147,7 +147,7 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="mt-2 text-xs text-[#0E6E75] underline"
+                    className="mt-2 text-sm font-semibold text-brand hover:underline"
                   >
                     {t("aus.clear_search")}
                   </button>
@@ -169,32 +169,32 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
                   return (
                     <div
                       key={s.session_id}
-                      className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 transition hover:bg-slate-50 sm:flex-nowrap"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-800">
+                        <p className="truncate text-sm font-semibold text-slate-900">
                           {s.patient?.full_name}
                         </p>
-                        <p className="mt-0.5 text-[11px] text-slate-500">
+                        <p className="mt-0.5 break-words text-xs text-slate-500">
                           {s.doctor?.full_name} · {formatTime(s.appointment?.start_time)} · {works}
                         </p>
                         <UnpaidMoneyLines breakdown={b} className="mt-0.5" />
                         {b.normal.show && (
-                          <p className="mt-0.5 text-[11px] text-slate-500">
+                          <p className="mt-0.5 text-xs text-slate-500">
                             {t("aus.min_label")} {formatMoney(s.totals?.min_total, s.currency_code)}
                           </p>
                         )}
                       </div>
 
                       <div className="shrink-0 text-end">
-                        <p className="text-[10px] text-slate-400">{t("unpaid.remaining")}</p>
-                        <p className="text-sm font-semibold text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
+                        <p className="text-xs font-medium text-slate-500">{t("unpaid.remaining")}</p>
+                        <p className="text-base font-bold tabular-nums text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => setSelectedForPayment(s)}
-                        className="flex-shrink-0 rounded-full bg-[#0E6E75] px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-[#0A565C]"
+                        className="inline-flex flex-shrink-0 items-center justify-center rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark"
                       >
                         {t("aus.pay")}
                       </button>
@@ -206,11 +206,11 @@ export default function AllUnpaidSessionsModal({ onClose, floor }) {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-slate-100 px-6 py-3">
+          <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               {t("common.close")}
             </button>

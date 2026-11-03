@@ -87,18 +87,18 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
 
         {/* Header */}
-        <div className="mb-3 flex items-start justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">
+        <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-slate-900">
               {t("appt.status_title")}
             </h2>
-            <p className="mt-1 text-[11px] text-slate-500">
+            <p className="mt-1 break-words text-xs text-slate-500">
               {appointment.patient_name} · {appointment.patient_phone}
               <br />
               {appointment.doctor_name} ·{" "}
@@ -107,33 +107,35 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
           </div>
           <button
             type="button"
-            className="text-xs text-slate-400 hover:text-slate-600"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             onClick={onClose}
           >
             ✕
           </button>
         </div>
 
+        <div className="px-5 py-4">
+
         {error && (
-          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {error}
           </div>
         )}
 
         {allowedStatuses.length === 0 ? (
-          <p className="text-xs text-slate-500">
+          <p className="rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-3 text-sm text-slate-600">
             {t("appt.status_locked", { status: t(LABEL_KEYS[appointment.status] || appointment.status) })}
           </p>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             
             {/* Status selector */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-700">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
                 {t("appt.new_status")}
               </label>
               <select
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
@@ -148,14 +150,14 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
 
             {/* Reason textarea */}
             {needsReason && (
-              <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">
                   {selectedStatus === "cancelled"
                     ? t("appt.cancel_reason")
                     : t("appt.noshow_reason")}
                 </label>
                 <textarea
-                  className="h-20 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                  className="h-24 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={t("appt.reason_ph")}
@@ -164,24 +166,25 @@ export default function AppointmentStatusModal({ appointment, onClose, onUpdated
             )}
 
             {/* Buttons */}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="-mx-5 -mb-4 flex justify-end gap-2 border-t border-slate-100 px-5 py-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-[#0E6E75] px-4 py-1.5 text-xs font-semibold text-white shadow-sm disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
               >
                 {isSubmitting ? t("appt.saving_short") : t("appt.confirm")}
               </button>
             </div>
           </form>
         )}
+        </div>
       </div>
     </div>
   );

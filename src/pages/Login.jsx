@@ -5,11 +5,13 @@ import { FiMinimize2, FiMonitor, FiUser, FiArrowRight } from "react-icons/fi";
 import Footer from "../components/Footer";
 import LoginForm from "../components/LoginForm";
 import api from "../api/api"; // axios instance
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   /* New: Capture where they came from */
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const from = location.state?.from?.pathname || "/dashboard";
 
   const [isLoading, setIsLoading] = useState(false);
@@ -67,6 +69,9 @@ export default function Login() {
     }
     // END FIX
 
+    // the app's logged-in user (not only localStorage) — else /home sees nobody and bounces back here
+    login(token, userRole ? String(userRole).toLowerCase() : "", user);
+
     // Go to where they wanted to go, or dashboard default
     navigate(from, { replace: true });
   }
@@ -115,8 +120,11 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <main className="flex flex-1 items-center justify-center px-4 py-10 relative">
+    <div className="flex min-h-screen flex-col bg-ground">
+      {/* navy band behind the card */}
+      <div className="ocean-band band-dark h-56 shrink-0 sm:h-64" aria-hidden="true" />
+
+      <main className="relative -mt-40 flex flex-1 items-start justify-center px-4 pb-12 sm:-mt-44">
         <LoginForm
           onSubmit={handleLogin}
           isLoading={isLoading}
@@ -126,51 +134,51 @@ export default function Login() {
         {/* Branch Selection Modal */}
         {showBranchModal && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={(e) => e.target === e.currentTarget && setShowBranchModal(false)}
           >
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-              <div className="bg-gradient-to-r from-[#0E6E75] to-[#0A565C] px-6 py-6 text-white text-center">
-                <div className="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-3 backdrop-blur-sm">
-                  <FiMinimize2 size={32} />
+            <div className="w-full max-w-md max-h-[90vh] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
+              <div className="ocean-band band-dark px-6 py-6 text-center">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-aqua/20 text-aqua">
+                  <FiMinimize2 size={26} />
                 </div>
-                <h2 className="text-2xl font-bold">Select Branch</h2>
-                <p className="text-white text-sm mt-1">Please choose which branch to access</p>
+                <h2 className="text-xl font-bold tracking-tight text-slate-900">Select Branch</h2>
+                <p className="mt-1 text-sm text-slate-600">Please choose which branch to access</p>
               </div>
 
-              <div className="p-6">
-                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+              <div className="px-5 py-5">
+                <div className="max-h-[50vh] space-y-2.5 overflow-y-auto pe-1 custom-scrollbar">
                   {availableBranches.map((branch) => (
                     <button
                       key={branch.branch_id}
                       onClick={() => handleBranchSelect(branch.branch_id)}
-                      className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#0E6E75] hover:bg-[#0E6E75]/10 hover:shadow-md transition-all group group-hover:scale-[1.01]"
+                      className="group flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-brand hover:bg-brand/5"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-[#0E6E75]/20 text-[#0E6E75] flex items-center justify-center group-hover:bg-[#0E6E75] group-hover:text-white transition-colors">
-                          <FiMonitor size={20} />
+                      <div className="flex min-w-0 items-center gap-3.5">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+                          <FiMonitor size={18} />
                         </div>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-[#0E6E75]">Branch {branch.branch_name}</h3>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <FiUser size={12} className="text-gray-400 group-hover:text-[#0E6E75]" />
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide group-hover:text-[#0E6E75]">{branch.role_name}</p>
+                        <div className="min-w-0 text-start">
+                          <h3 className="truncate font-semibold text-slate-900 group-hover:text-brand">Branch {branch.branch_name}</h3>
+                          <div className="mt-0.5 flex items-center gap-1.5">
+                            <FiUser size={12} className="shrink-0 text-slate-400" />
+                            <p className="truncate text-xs font-medium uppercase tracking-wide text-slate-500">{branch.role_name}</p>
                           </div>
                         </div>
                       </div>
-                      <FiArrowRight className="text-gray-300 group-hover:text-[#0E6E75] transform group-hover:translate-x-1 transition-all" size={20} />
+                      <FiArrowRight className="shrink-0 text-slate-300 transition-all group-hover:text-brand rtl:rotate-180" size={20} />
                     </button>
                   ))}
                 </div>
+              </div>
 
-                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-center">
-                  <button
-                    onClick={() => setShowBranchModal(false)}
-                    className="text-sm text-gray-500 hover:text-gray-700 font-medium hover:underline"
-                  >
-                    Cancel Login
-                  </button>
-                </div>
+              <div className="flex justify-center border-t border-slate-100 px-5 py-4">
+                <button
+                  onClick={() => setShowBranchModal(false)}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                >
+                  Cancel Login
+                </button>
               </div>
             </div>
           </div>

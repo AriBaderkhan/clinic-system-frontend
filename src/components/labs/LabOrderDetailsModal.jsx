@@ -20,8 +20,8 @@ function statusBadgeClasses(status) {
 
 function Field({ label, children }) {
   return (
-    <div className="space-y-1">
-      <p className="text-[11px] font-medium uppercase text-slate-500">{label}</p>
+    <div className="space-y-1.5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="text-xs text-slate-700">{children}</p>
     </div>
   );
@@ -55,23 +55,23 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop sm:p-6">
         {/* Header */}
-        <div className="mb-3 flex items-start justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">{t("labm.order_details")}</h2>
+        <div className="mb-5 flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-slate-900">{t("labm.order_details")}</h2>
             {order && (
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-xs text-slate-500">
                 {order.lab_name} · {order.patient_name}
               </p>
             )}
           </div>
           <button
             type="button"
-            className="text-xs text-slate-400 hover:text-slate-600"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             onClick={onClose}
           >
             ✕
@@ -81,7 +81,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
         {isLoading && <p className="text-xs text-slate-500">{t("labm.loading_order")}</p>}
 
         {error && !isLoading && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -92,7 +92,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={
-                  "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
+                  "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold capitalize " +
                   statusBadgeClasses(order.status)
                 }
               >
@@ -101,7 +101,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             </div>
 
             {/* Who / where */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Field label={t("labm.f_lab")}>
                 {order.lab_name}
                 {order.lab_phone ? ` · ${order.lab_phone}` : ""}
@@ -118,7 +118,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             {/* Appointment link */}
             {order.appointment_id && (
               <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-                <p className="text-[11px] font-medium uppercase text-slate-500">{t("labm.from_appointment")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("labm.from_appointment")}</p>
                 <p className="mt-0.5 text-xs text-slate-700">
                   #{order.appointment_id} · {formatDateTime(order.appointment_date)}
                 </p>
@@ -126,30 +126,30 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             )}
 
             {/* Treatments (line items) */}
-            <div className="rounded-xl border border-slate-100 bg-white">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 text-[11px] text-slate-500">
-                    <th className="px-3 py-2 font-medium">{t("labm.col_treatment")}</th>
-                    <th className="px-3 py-2 font-medium">{t("labm.col_qty")}</th>
-                    <th className="px-3 py-2 font-medium">{t("labm.col_unit")}</th>
-                    <th className="px-3 py-2 font-medium text-end">{t("labm.col_total")}</th>
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+              <table className="w-full text-start text-sm">
+                <thead className="bg-slate-50">
+                  <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="px-4 py-3 text-start">{t("labm.col_treatment")}</th>
+                    <th className="px-4 py-3 text-start">{t("labm.col_qty")}</th>
+                    <th className="px-4 py-3 text-start">{t("labm.col_unit")}</th>
+                    <th className="px-4 py-3 text-end">{t("labm.col_total")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(order.items || []).map((it) => (
-                    <tr key={it.id} className="border-b border-slate-50 last:border-0">
-                      <td className="px-3 py-2 text-slate-800">{it.work_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{it.quantity}</td>
-                      <td className="px-3 py-2 text-slate-700">{formatMoney(it.unit_cost, order.currency_code)}</td>
-                      <td className="px-3 py-2 text-right text-slate-800">{formatMoney(it.total_cost, order.currency_code)}</td>
+                    <tr key={it.id} className="border-t border-slate-100">
+                      <td className="px-4 py-3 text-slate-900">{it.work_name}</td>
+                      <td className="px-4 py-3 text-slate-700">{it.quantity}</td>
+                      <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">{formatMoney(it.unit_cost, order.currency_code)}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-end font-semibold tabular-nums text-slate-900">{formatMoney(it.total_cost, order.currency_code)}</td>
                     </tr>
                   ))}
-                  <tr className="bg-[#0E6E75]/5">
-                    <td className="px-3 py-2 text-xs font-semibold text-slate-600" colSpan={3}>
+                  <tr className="bg-brand/5">
+                    <td className="px-4 py-3 text-xs font-semibold text-slate-600" colSpan={3}>
                       {t("labm.order_total")}
                     </td>
-                    <td className="px-3 py-2 text-right text-sm font-semibold text-[#0E6E75]">
+                    <td className="whitespace-nowrap px-4 py-3 text-end text-sm font-semibold tabular-nums text-brand">
                       {formatMoney(order.total_cost, order.currency_code)}
                     </td>
                   </tr>
@@ -158,7 +158,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             </div>
 
             {/* Timeline */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Field label={t("labm.order_date")}>{formatDateTime(order.order_date)}</Field>
               <Field label={t("labm.ready_date")}>{formatDateTime(order.ready_date)}</Field>
               <Field label={t("labm.delivered_date")}>{formatDateTime(order.delivered_date)}</Field>
@@ -166,8 +166,8 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
 
             {/* Notes */}
             {order.notes && (
-              <div className="space-y-1">
-                <p className="text-[11px] font-medium uppercase text-slate-500">{t("labm.notes")}</p>
+              <div className="space-y-1.5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("labm.notes")}</p>
                 <p className="whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700">
                   {order.notes}
                 </p>
@@ -175,7 +175,7 @@ export default function LabOrderDetailsModal({ orderId, onClose }) {
             )}
 
             {/* Created by */}
-            <p className="text-[11px] text-slate-400">
+            <p className="text-xs text-slate-500">
               {t("labm.created_by", { name: order.created_by_name || "-", date: formatDateTime(order.created_at) })}
             </p>
           </div>

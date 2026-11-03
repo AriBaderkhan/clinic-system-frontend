@@ -5,6 +5,7 @@ import AppointmentsCalendar from "../../components/appointments/AppointmentsCale
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import useFloorFilter from "../../hooks/useFloorFilter";
 import FloorFilter from "../../components/floors/FloorFilter";
+import PageHeader from "../../components/common/PageHeader";
 import { useAuth } from "../../context/AuthContext";
 import { hasTick, isOwnOnly } from "../../utils/can";
 
@@ -28,7 +29,7 @@ export default function AppointmentsCalendarPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-5">
       {selectedAppointment && (
         <CalendarAppointmentModal
           appointment={selectedAppointment}
@@ -37,17 +38,11 @@ export default function AppointmentsCalendarPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("appt.cal_title")}</h1>
-          <p className="text-xs text-slate-500">
-            {ownOnly
-              ? t("appt.cal_subtitle_doctor")
-              : t("appt.cal_subtitle_other")}
-          </p>
-        </div>
-        <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} />
-      </div>
+      <PageHeader
+        title={t("appt.cal_title")}
+        subtitle={ownOnly ? t("appt.cal_subtitle_doctor") : t("appt.cal_subtitle_other")}
+        actions={floor.show ? <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} /> : null}
+      />
 
       <AppointmentsCalendar
         onSelectAppointment={setSelectedAppointment}

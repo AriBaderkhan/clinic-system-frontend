@@ -13,7 +13,7 @@ function Switch({ name, checked, onChange }) {
       aria-checked={checked}
       data-switch={name}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${checked ? "bg-[#0E6E75]" : "bg-slate-300"}`}
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${checked ? "bg-brand" : "bg-slate-300"}`}
     >
       <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition ${checked ? "translate-x-5 rtl:-translate-x-5" : "translate-x-0.5 rtl:-translate-x-0.5"}`} />
     </button>
@@ -60,29 +60,29 @@ export default function WorkflowSettings() {
   };
 
   return (
-    <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6" data-workflow>
-      <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("workflow.title")}</h2>
-      <p className="text-sm text-gray-500 mb-4">{t("workflow.hint")}</p>
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5" data-workflow>
+      <h2 className="text-[15px] font-semibold text-slate-900">{t("workflow.title")}</h2>
+      <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("workflow.hint")}</p>
 
-      <div className="divide-y divide-slate-100 dark:divide-slate-700">
+      <div className="divide-y divide-slate-100">
         {SWITCHES.map((key) => (
           <div key={key} className="py-3">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{t(`workflow.${key}`)}</p>
-                <p className="text-xs text-slate-500">{t(`workflow.${key}_hint`)}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-slate-800">{t(`workflow.${key}`)}</p>
+                <p className="mt-0.5 text-xs text-slate-500">{t(`workflow.${key}_hint`)}</p>
               </div>
               <Switch name={key} checked={!!form[key]} onChange={(v) => setForm({ ...form, [key]: v })} />
             </div>
             {key === "allow_discounts" && form.allow_discounts && (
-              <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+              <label className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
                 {t("workflow.max_discount_percent")}
                 <input
                   type="number" min="0" max="100" step="1"
                   data-max-percent
                   value={form.max_discount_percent}
                   onChange={(e) => setForm({ ...form, max_discount_percent: e.target.value })}
-                  className={`w-20 rounded border px-2 py-1 text-sm dark:bg-slate-900 ${pctOk ? "border-slate-300" : "border-red-400"}`}
+                  className={`w-20 rounded-lg border bg-white px-2.5 py-1.5 text-sm text-slate-900 transition focus:outline-none focus:ring-4 focus:ring-brand/15 ${pctOk ? "border-slate-200 focus:border-brand" : "border-red-400"}`}
                 />
                 %
               </label>
@@ -91,12 +91,12 @@ export default function WorkflowSettings() {
         ))}
       </div>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-end border-t border-slate-100 pt-4">
         <button
           onClick={save}
           disabled={!changed || saving}
           data-save-workflow
-          className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
         >
           {saving ? t("workflow.saving") : t("workflow.save")}
         </button>

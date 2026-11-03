@@ -53,24 +53,24 @@ export default function MonthlyExpenseFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-          <button onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50">{t("common.close")}</button>
+          <button onClick={onClose} className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">{t("common.close")}</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("exp.expense_type")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("exp.expense_type")}</label>
             <input
               required
               list="expense-types"
               value={form.type}
               onChange={e => setForm({ ...form, type: e.target.value })}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               placeholder={t("exp.type_ph")}
             />
             <datalist id="expense-types">
@@ -85,7 +85,7 @@ export default function MonthlyExpenseFormModal({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("exp.amount")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("exp.amount")}</label>
             <input
               required
               type="number"
@@ -93,34 +93,34 @@ export default function MonthlyExpenseFormModal({
               step="0.01"
               value={form.amount}
               onChange={e => setForm({ ...form, amount: e.target.value })}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("exp.date")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("exp.date")}</label>
             <input
               required
               type="date"
               value={form.expense_date}
               onChange={e => setForm({ ...form, expense_date: e.target.value })}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("exp.note")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("exp.note")}</label>
             <textarea
               value={form.note}
               onChange={e => setForm({ ...form, note: e.target.value })}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               rows={3}
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">{t("common.cancel")}</button>
-            <button type="submit" disabled={saving} className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C] disabled:opacity-50">
+          <div className="-mx-5 flex justify-end gap-2 border-t border-slate-100 px-5 pt-4">
+            <button type="button" onClick={onClose} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">{t("common.cancel")}</button>
+            <button type="submit" disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
               {saving ? t("exp.saving") : t("exp.save")}
             </button>
           </div>

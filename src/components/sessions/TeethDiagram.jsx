@@ -125,7 +125,7 @@ function Tooth({ n, upper, primary, small, selectedSet, markedSet, doneSet, labe
 
   const num = <span className={`text-[10px] sm:text-[11px] font-semibold ${selected ? "text-[#0E7FC0]" : done ? "text-[#16a34a]" : "text-slate-400"}`}>{n}</span>;
   const tag = (
-    <span className={`h-3.5 leading-none text-[8px] sm:text-[9px] font-bold ${label ? "text-[#0E6E75] dark:text-sky-300" : "text-transparent"}`}>
+    <span className={`h-3.5 leading-none text-[8px] sm:text-[9px] font-bold ${label ? "text-brand dark:text-sky-300" : "text-transparent"}`}>
       {label || "·"}
     </span>
   );
@@ -151,13 +151,13 @@ function Arch({ left, right, upper, primary, small, common }) {
   return (
     <div className={`flex w-full ${upper ? "items-end" : "items-start"} gap-px`}>
       {left.map((n, i) => <Tooth key={`l${i}`} n={n} upper={upper} primary={primary} small={small} {...common} />)}
-      <div className="mx-0.5 sm:mx-1 h-10 sm:h-14 w-px shrink-0 self-center bg-[#0E6E75]/30" />
+      <div className="mx-0.5 sm:mx-1 h-10 sm:h-14 w-px shrink-0 self-center bg-brand/30" />
       {right.map((n, i) => <Tooth key={`r${i}`} n={n} upper={upper} primary={primary} small={small} {...common} />)}
     </div>
   );
 }
 
-const Divider = () => <div className="h-px w-full bg-[#0E6E75]/20" />;
+const Divider = () => <div className="h-px w-full bg-brand/20" />;
 
 // Derive the highlighted teeth + per-tooth plan labels from a works_summary list.
 const PLAN_ABBR = { rct: "RCT", re_rct: "RE-RCT", implant: "IMP", ortho: "ORT" };
@@ -202,17 +202,19 @@ export default function TeethDiagram({
   return (
     <div className="w-full space-y-2 sm:space-y-3">
       {editable && (
-        <div className="flex justify-center gap-1">
+        <div className="flex justify-center">
+          <div className="inline-flex gap-1 rounded-xl border border-slate-200 bg-white p-1">
           {MODES.map((m) => (
             <button
               key={m}
               type="button"
               onClick={() => setMode(m)}
-              className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition ${mode === m ? "bg-[#0E6E75] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${mode === m ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"}`}
             >
               {t(`teeth.${m}`)}
             </button>
           ))}
+          </div>
         </div>
       )}
 

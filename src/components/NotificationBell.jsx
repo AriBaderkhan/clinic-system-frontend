@@ -87,14 +87,14 @@ export default function NotificationBell() {
 
             {open && (
                 // phone: full-width panel under the top bar; sm+: dropdown aligned to the bell
-                <div className="fixed inset-x-3 top-16 z-50 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg sm:absolute sm:inset-x-auto sm:end-0 sm:top-11 sm:w-80">
+                <div className="fixed inset-x-3 top-16 z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-pop sm:absolute sm:inset-x-auto sm:end-0 sm:top-11 sm:w-80">
                     <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
                         <span className="text-xs font-semibold text-slate-700">{t("notif.title")}</span>
                         {unreadNotifications > 0 && (
                             <button
                                 type="button"
                                 onClick={markAllRead}
-                                className="text-[11px] font-medium text-[#0E6E75] transition hover:underline"
+                                className="text-[11px] font-medium text-brand transition hover:underline"
                             >
                                 {t("notif.markAllRead")}
                             </button>
@@ -108,10 +108,10 @@ export default function NotificationBell() {
                                 <button
                                     key={i.key}
                                     onClick={i.onClick}
-                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${i.read ? "" : "bg-[#0E6E75]/5"}`}
+                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${i.read ? "" : "bg-brand/5"}`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        {!i.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#0E6E75]" />}
+                                        {!i.read && <span className="h-2 w-2 shrink-0 rounded-full bg-brand" />}
                                         <span className="text-sm font-medium text-slate-800">{i.text}</span>
                                     </div>
                                     <p className="ms-4 mt-0.5 text-[11px] text-slate-500">{formatDateTime(i.at)}</p>

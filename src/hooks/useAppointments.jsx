@@ -12,7 +12,7 @@ export default function useAppointments(filters = {}) {
     day: filters.day || "",
     type: filters.type || "",
     search: filters.search || "",
-    floor: filters.floor_id ?? "",
+    floor: filters.floor_id, // null (still loading) and "" (all floors) must differ, or the list never loads
   });
 
   useEffect(() => {

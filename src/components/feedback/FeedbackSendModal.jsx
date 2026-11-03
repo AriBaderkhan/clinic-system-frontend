@@ -81,28 +81,28 @@ export default function FeedbackSendModal({ item, source, onDone, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && !busy && onClose()}
     >
-      <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-800">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop">
+        <div className="-mx-5 -mt-5 mb-4 flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <h2 className="min-w-0 text-base font-semibold text-slate-900">
             {t("feedback.modal_title", { name: item.patient_name })}
           </h2>
-          <button onClick={onClose} disabled={busy} className="text-slate-400 hover:text-slate-600">✕</button>
+          <button onClick={onClose} disabled={busy} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50">✕</button>
         </div>
 
         {/* language tabs (message language) */}
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 inline-flex flex-wrap rounded-xl border border-slate-200 bg-white p-1">
           {LANGS.map((l) => (
             <button
               key={l.key}
               onClick={() => switchLang(l.key)}
               className={[
-                "rounded-lg px-3 py-1.5 text-sm transition",
+                "rounded-lg px-3.5 py-1.5 text-sm font-semibold transition",
                 lang === l.key
-                  ? "bg-[#0E6E75] text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200",
+                  ? "bg-brand text-white"
+                  : "text-slate-600 hover:bg-slate-50",
               ].join(" ")}
             >
               {l.label}
@@ -110,21 +110,21 @@ export default function FeedbackSendModal({ item, source, onDone, onClose }) {
           ))}
         </div>
 
-        <p className="mb-2 text-[11px] text-slate-400">{t("feedback.link_note")}</p>
+        <p className="mb-2 text-xs text-slate-500">{t("feedback.link_note")}</p>
 
         <textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           dir={rtl ? "rtl" : "ltr"}
           rows={9}
-          className="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed focus:border-[#0E6E75] focus:outline-none dark:bg-slate-900 dark:text-slate-100"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm leading-relaxed text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
         />
 
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <span className="text-xs text-slate-500">
+        <div className="-mx-5 -mb-5 mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-5 py-4">
+          <span className="min-w-0 text-xs tabular-nums text-slate-500">
             → {item.phone}
             {!item.phone_valid && (
-              <span className="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+              <span className="ms-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
                 {t("feedback.check_number")}
               </span>
             )}
@@ -133,14 +133,14 @@ export default function FeedbackSendModal({ item, source, onDone, onClose }) {
             <button
               onClick={handleSkip}
               disabled={busy}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
             >
               {t("feedback.skip")}
             </button>
             <button
               onClick={handleSend}
               disabled={busy}
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-50"
             >
               {t("feedback.send")}
             </button>

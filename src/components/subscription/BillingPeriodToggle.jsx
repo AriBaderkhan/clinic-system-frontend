@@ -9,13 +9,13 @@ export default function BillingPeriodToggle({ value, onChange }) {
     ];
 
     return (
-        <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1">
+        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1">
             {options.map((o) => (
                 <button
                     key={o.key}
                     type="button"
                     onClick={() => onChange(o.key)}
-                    className={`rounded-md px-4 py-1.5 text-sm font-medium transition ${value === o.key ? "bg-white text-[#0E6E75] shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+                    className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${value === o.key ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"}`}
                 >
                     {o.label}
                 </button>

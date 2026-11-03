@@ -17,7 +17,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={handleToggle}
       title={isDark ? t('settings.switch_light') : t('settings.switch_dark')}
-      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-900 transition hover:bg-black/10 hover:text-black"
+      className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
     >
       <span>{isDark ? "☀️" : "🌙"}</span>
       <span>{isDark ? t('settings.light_mode') : t('settings.dark_mode')}</span>

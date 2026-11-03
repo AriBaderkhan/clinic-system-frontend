@@ -35,7 +35,7 @@ function StarInput({ value, onChange }) {
           onClick={() => onChange(n)}
           onMouseEnter={() => setHover(n)}
           onMouseLeave={() => setHover(0)}
-          className={`text-2xl transition ${(hover || value) >= n ? "text-amber-500" : "text-slate-300"}`}
+          className={`text-2xl leading-none transition hover:scale-110 ${(hover || value) >= n ? "text-amber-500" : "text-slate-300"}`}
           aria-label={`${n}`}
         >
           ★
@@ -47,26 +47,32 @@ function StarInput({ value, onChange }) {
 
 function Shell({ rtl, children }) {
   return (
-    <div dir={rtl ? "rtl" : "ltr"} className="min-h-screen bg-gradient-to-b from-[#0E6E75] to-slate-100 px-4 py-8">
-      <div className="mx-auto w-full max-w-xl">{children}</div>
+    <div dir={rtl ? "rtl" : "ltr"} className="min-h-screen bg-ground">
+      {/* navy band behind the card */}
+      <div className="ocean-band band-dark h-56 sm:h-64" aria-hidden="true" />
+      <div className="relative -mt-48 px-4 pb-10 sm:-mt-56">
+        <div className="mx-auto w-full max-w-xl">{children}</div>
+      </div>
     </div>
   );
 }
 
 function LangBar({ current, onPick }) {
   return (
-    <div className="mb-4 flex justify-center gap-2">
+    <div className="band-dark mb-5 flex justify-center">
+      <div className="inline-flex flex-wrap justify-center gap-1 rounded-xl border border-slate-200 bg-white/5 p-1">
       {LANGS.map((l) => (
         <button
           key={l.api}
           onClick={() => onPick(l)}
-          className={`rounded-lg px-3 py-1.5 text-sm transition ${
-            current === l.api ? "bg-white text-[#0E6E75] shadow" : "bg-white/20 text-white hover:bg-white/30"
+          className={`rounded-lg px-3.5 py-1.5 text-sm transition ${
+            current === l.api ? "bg-aqua font-semibold text-ocean-deep" : "text-slate-700 hover:bg-white/10"
           }`}
         >
           {l.label}
         </button>
       ))}
+      </div>
     </div>
   );
 }
@@ -146,7 +152,7 @@ export default function PublicFeedbackForm() {
     return (
       <Shell rtl={lang.rtl}>
         <LangBar current={lang.api} onPick={pickLang} />
-        <div className="rounded-2xl bg-white p-8 text-center text-slate-500">…</div>
+        <div className="animate-pulse rounded-2xl border border-slate-200 bg-white shadow-pop p-8 text-center text-slate-500">…</div>
       </Shell>
     );
   }
@@ -155,8 +161,8 @@ export default function PublicFeedbackForm() {
     return (
       <Shell rtl={lang.rtl}>
         <LangBar current={lang.api} onPick={pickLang} />
-        <div className="rounded-2xl bg-white p-8 text-center shadow-xl">
-          <p className="text-slate-700">{fatal}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-pop p-8 text-center">
+          <p className="break-words text-slate-700">{fatal}</p>
         </div>
       </Shell>
     );
@@ -166,9 +172,9 @@ export default function PublicFeedbackForm() {
     return (
       <Shell rtl={lang.rtl}>
         <LangBar current={lang.api} onPick={pickLang} />
-        <div className="rounded-2xl bg-white p-10 text-center shadow-xl">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-pop p-8 text-center sm:p-10">
           <div className="mb-3 text-4xl">🌿</div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("feedback.thanks_title")}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">{t("feedback.thanks_title")}</h1>
           <p className="mt-2 text-sm text-slate-500">{t("feedback.thanks_body")}</p>
         </div>
       </Shell>
@@ -178,21 +184,21 @@ export default function PublicFeedbackForm() {
   return (
     <Shell rtl={lang.rtl}>
       <LangBar current={lang.api} onPick={pickLang} />
-      <div className="rounded-2xl bg-white p-6 shadow-xl">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-pop p-5 sm:p-6">
         {/* Clinic-branded header — the clinic name follows the selected language
             (falls back to the base name when a language isn't set). */}
-        <div className="mb-5 text-center">
-          <h1 className="text-xl font-bold text-[#0E6E75]">
+        <div className="mb-5 border-b border-slate-100 pb-5 text-center">
+          <h1 className="break-words text-2xl font-extrabold tracking-tight text-slate-900">
             {info?.clinic_names?.[lang.api] || info?.clinic_names?.en}
           </h1>
-          <p className="mt-3 text-sm text-slate-600">{t("feedback.form_intro")}</p>
+          <p className="mt-2 text-sm text-slate-500">{t("feedback.form_intro")}</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {CATEGORIES.map((c) => (
-            <div key={c.key} className="rounded-xl border border-slate-200 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-800">{t(c.labelKey)}</span>
+            <div key={c.key} className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="min-w-0 text-sm font-semibold text-slate-900">{t(c.labelKey)}</span>
                 <StarInput value={ratings[c.key] || 0} onChange={(n) => setRating(c.key, n)} />
               </div>
               <input
@@ -200,7 +206,7 @@ export default function PublicFeedbackForm() {
                 value={comments[c.key] || ""}
                 onChange={(e) => setComment(c.key, e.target.value)}
                 placeholder={t("feedback.comment_ph")}
-                className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none"
+                className="mt-2.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
             </div>
           ))}
@@ -208,29 +214,29 @@ export default function PublicFeedbackForm() {
 
         {/* Optional general note — anything else the patient wants to add. */}
         <div className="mt-4">
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t("feedback.extra_note")}</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("feedback.extra_note")}</label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder={t("feedback.extra_note_ph")}
             rows={3}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
           />
         </div>
 
         {!qrMode && (
-          <label className="mt-4 flex items-center gap-2 text-sm text-slate-600">
-            <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+          <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" className="h-4 w-4 accent-brand" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
             {t("feedback.anonymous_opt")}
           </label>
         )}
 
-        {!allRated && <p className="mt-3 text-xs text-amber-600">{t("feedback.rate_all_hint")}</p>}
+        {!allRated && <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{t("feedback.rate_all_hint")}</p>}
 
         <button
           onClick={handleSubmit}
           disabled={!allRated || submitting}
-          className="mt-4 w-full rounded-xl bg-[#0E6E75] py-3 text-sm font-semibold text-white transition hover:bg-[#0A565C] disabled:opacity-50"
+          className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
         >
           {submitting ? "…" : t("feedback.submit")}
         </button>

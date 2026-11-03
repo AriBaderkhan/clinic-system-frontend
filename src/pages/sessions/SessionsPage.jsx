@@ -9,6 +9,7 @@ import { deleteSession } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import useCan from "../../utils/can";
+import PageHeader, { BandTabs, bandTabClass, BAND_TABS } from "../../components/common/PageHeader";
 
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -83,72 +84,51 @@ export default function Sessions() {
   const rowEnd = Math.min(page * pagination.limit, pagination.total);
 
   return (
-    <div className="space-y-6">
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200">
-        <button
-          type="button"
-          onClick={() => setTab("sessions")}
-          className={`-mb-px rounded-t-lg px-4 py-2 text-sm font-semibold transition-colors ${
-            tab === "sessions"
-              ? "border-b-2 border-[#0E6E75] text-[#0E6E75]"
-              : "text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          {t("clin.sess_tab_sessions")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("plans")}
-          className={`-mb-px rounded-t-lg px-4 py-2 text-sm font-semibold transition-colors ${
-            tab === "plans"
-              ? "border-b-2 border-[#0E6E75] text-[#0E6E75]"
-              : "text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          {t("clin.sess_tab_plans")}
-        </button>
-      </div>
+    <div className="w-full space-y-5">
+      {/* Tabs (in the band, under the title) */}
+      <BandTabs>
+        <div className={BAND_TABS}>
+          <button type="button" onClick={() => setTab("sessions")} className={bandTabClass(tab === "sessions")}>
+            {t("clin.sess_tab_sessions")}
+          </button>
+          <button type="button" onClick={() => setTab("plans")} className={bandTabClass(tab === "plans")}>
+            {t("clin.sess_tab_plans")}
+          </button>
+        </div>
+      </BandTabs>
 
       {tab === "plans" ? (
         <TreatmentPlanPage />
       ) : (
         <>
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("clin.sess_title")}</h1>
-          <p className="text-xs text-slate-500">
-            {t("clin.sess_subtitle")}
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t("clin.sess_title")} subtitle={t("clin.sess_subtitle")} />
 
       {/* Card */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
 
         {/* Filter bar */}
-        <div className="mb-5 rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+        <div className="mb-4 flex flex-wrap items-end gap-3">
 
           {/* Search */}
-          <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-            <label className="text-xs font-semibold text-[#0E6E75]">{t("clin.sess_search")}</label>
+          <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-72">
+            <label className="text-sm font-medium text-slate-700">{t("clin.sess_search")}</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t("clin.sess_search_ph")}
-              className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </div>
 
           {/* Day */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#0E6E75]">{t("clin.sess_day")}</label>
+            <label className="text-sm font-medium text-slate-700">{t("clin.sess_day")}</label>
             <select
               value={dayFilter}
               onChange={(e) => setDayFilter(e.target.value)}
-              className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             >
               <option value="">{t("appt.all")}</option>
               <option value="today">{t("appt.today")}</option>
@@ -159,18 +139,18 @@ export default function Sessions() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={refresh}
-              className="rounded-xl bg-[#0E6E75] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
             >
               {t("appt.refresh")}
             </button>
             <button
               type="button"
               onClick={() => { setDayFilter(""); setSearchTerm(""); }}
-              className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               {t("appt.clear")}
             </button>
@@ -178,7 +158,7 @@ export default function Sessions() {
         </div>
 
         {/* Count info */}
-        <p className="mb-3 text-xs text-slate-400">
+        <p className="mb-3 text-xs text-slate-500">
           {isLoading
             ? t("clin.sess_loading")
             : t("appt.count_info", { total: pagination.total, start: pagination.total === 0 ? 0 : rowStart, end: rowEnd })}
@@ -186,73 +166,73 @@ export default function Sessions() {
 
         {/* Error */}
         {error && (
-          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {error}
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && !error && sessions.length === 0 && (
-          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-10 text-center text-sm text-slate-500">
             {t("clin.sess_empty")}
           </div>
         )}
 
         {/* Table */}
         {sessions.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-xs text-slate-500">
-                  <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_patient")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_doctor")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_finished")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_total")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_paid")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_status")}</th>
-                  <th className="px-3 py-2 font-medium">{t("clin.sess_col_notes")}</th>
-                  <th className="px-3 py-2 font-medium text-end">{t("clin.sess_col_actions")}</th>
+          <div className="-mx-4 overflow-x-auto sm:-mx-5">
+            <table className="w-full text-start text-sm">
+              <thead className="bg-slate-50">
+                <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-4 py-3 text-start">#</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_patient")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_doctor")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_finished")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_total")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_paid")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_status")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.sess_col_notes")}</th>
+                  <th className="px-4 py-3 text-end">{t("clin.sess_col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {sessions.map((s, idx) => {
                   const rowNumber = (page - 1) * pagination.limit + idx + 1;
                   return (
-                    <tr key={s.session_id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                      <td className="px-3 py-2 text-slate-800">{rowNumber}</td>
-                      <td className="px-3 py-2 font-medium text-slate-800">{s.patient_name}</td>
-                      <td className="px-3 py-2 text-slate-700">{s.doctor_name}</td>
-                      <td className="px-3 py-2 text-slate-700">
+                    <tr key={s.session_id} className="border-t border-slate-100 hover:bg-slate-50">
+                      <td className="px-4 py-3 tabular-nums text-slate-500">{rowNumber}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{s.patient_name}</td>
+                      <td className="px-4 py-3 text-slate-700">{s.doctor_name}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-700">
                         {formatDateTime(s.appointment_end_time)}
                       </td>
-                      <td className="px-3 py-2 text-slate-800">
+                      <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">
                         {s.has_normal_works === false ? (
                           s.has_plan_works ? (
-                            <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 text-[11px] font-medium text-purple-700">{t("clin.sess_treatment_plan_badge")}</span>
+                            <span className="inline-flex items-center whitespace-nowrap rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-700">{t("clin.sess_treatment_plan_badge")}</span>
                           ) : (
-                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-medium text-slate-500">{t("clin.sess_no_works_badge")}</span>
+                            <span className="inline-flex items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-500">{t("clin.sess_no_works_badge")}</span>
                           )
                         ) : (
                           formatMoney(s.total, s.currency_code)
                         )}
                       </td>
-                      <td className="px-3 py-2 text-slate-800">
+                      <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">
                         {s.has_normal_works === false ? <span className="text-slate-400">—</span> : formatMoney(s.total_paid, s.currency_code)}
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3">
                         {s.has_normal_works === false ? (
                           <span className="text-slate-400">—</span>
                         ) : (
                           <span className={[
-                            "rounded-full px-3 py-1 text-xs",
-                            s.is_paid ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-amber-50 text-amber-700",
+                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold",
+                            s.is_paid ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-800",
                           ].join(" ")}>
                             {s.is_paid ? t("clin.sess_paid") : t("clin.sess_unpaid")}
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2 text-slate-600 max-w-[220px]">
+                      <td className="px-4 py-3 text-slate-600 max-w-[220px]">
                         {s.payment_note ? (
                           <span className="block truncate" title={s.payment_note}>
                             {s.payment_note}
@@ -261,12 +241,12 @@ export default function Sessions() {
                           <span className="text-slate-300">—</span>
                         )}
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2 text-xs">
                           <button
                             type="button"
                             onClick={() => openView(s.session_id)}
-                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-slate-100 hover:bg-[#0A565C]"
+                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                           >
                             {t("common.view")}
                           </button>
@@ -274,7 +254,7 @@ export default function Sessions() {
                             <button
                               type="button"
                               onClick={() => openEdit(s.session_id)}
-                              className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-amber-700"
+                              className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                             >
                               {t("common.edit")}
                             </button>
@@ -283,7 +263,7 @@ export default function Sessions() {
                             <button
                               type="button"
                               onClick={() => handleDelete(s.session_id)}
-                              className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-slate-100 hover:bg-red-700"
+                              className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                             >
                               {t("common.delete")}
                             </button>
@@ -305,22 +285,22 @@ export default function Sessions() {
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1}
-                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {t("appt.prev")}
               </button>
 
               {pageNumbers.map((p, i) =>
                 p === "..." ? (
-                  <span key={`ellipsis-${i}`} className="px-1 text-[11px] text-slate-400">…</span>
+                  <span key={`ellipsis-${i}`} className="px-1 text-xs text-slate-400">…</span>
                 ) : (
                   <button
                     key={p}
                     onClick={() => handlePageChange(p)}
-                    className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
+                    className={`min-w-[2rem] rounded-lg border px-3 py-1.5 text-xs font-medium tabular-nums transition ${
                       p === page
-                        ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-                        : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                        ? "border-brand bg-brand text-white"
+                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                     }`}
                   >
                     {p}
@@ -331,12 +311,12 @@ export default function Sessions() {
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === pagination.totalPages}
-                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {t("appt.next")}
               </button>
             </div>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-xs text-slate-500">
               {t("clin.sess_showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
             </span>
           </div>

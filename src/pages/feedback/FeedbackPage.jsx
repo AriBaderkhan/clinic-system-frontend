@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { getFeedbackAppointments } from "../../api/feedbackApi";
 import FeedbackSendModal from "../../components/feedback/FeedbackSendModal";
+import PageHeader from "../../components/common/PageHeader";
 
 const LIMIT = 20;
 
@@ -69,53 +70,49 @@ export default function FeedbackPage() {
   const showPagination = pagination.totalPages > 1;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          {t("feedback.page_title")}
-        </h1>
-        <p className="text-xs text-slate-500">{t("feedback.page_subtitle")}</p>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader title={t("feedback.page_title")} subtitle={t("feedback.page_subtitle")} />
 
-      {loading && <div className="py-10 text-center text-slate-500">{t("feedback.loading")}</div>}
+      {loading && <div className="rounded-2xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-500 shadow-card">{t("feedback.loading")}</div>}
       {error && !loading && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-card">{error}</div>
       )}
 
       {!loading && !error && list.length === 0 && (
-        <div className="rounded-xl border border-dashed border-slate-300 py-12 text-center text-slate-500">
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-sm text-slate-500 shadow-card">
           {t("feedback.empty")}
         </div>
       )}
 
       {!loading && !error && list.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:bg-slate-800">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-700/40">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3">{t("feedback.col_patient")}</th>
-                <th className="px-4 py-3">{t("feedback.col_phone")}</th>
-                <th className="px-4 py-3">{t("feedback.col_last_visit")}</th>
-                <th className="px-4 py-3 text-end">{t("feedback.col_action")}</th>
+                <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t("feedback.col_patient")}</th>
+                <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t("feedback.col_phone")}</th>
+                <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t("feedback.col_last_visit")}</th>
+                <th className="whitespace-nowrap px-4 py-3 text-end text-xs font-semibold uppercase tracking-wide text-slate-500">{t("feedback.col_action")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-slate-100">
               {list.map((r) => (
-                <tr key={r.patient_id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">{r.patient_name}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                <tr key={r.patient_id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-medium text-slate-900">{r.patient_name}</td>
+                  <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">
                     {r.phone_raw}
                     {!r.phone_valid && (
-                      <span className="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+                      <span className="ms-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
                         {t("feedback.check_number")}
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{fmtWhen(r.latest_start)}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">{fmtWhen(r.latest_start)}</td>
+                  <td className="px-4 py-3 text-end">
                     <button
                       onClick={() => setActive(r)}
-                      className="rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#0A565C]"
+                      className="inline-flex items-center justify-center rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-brand-dark"
                     >
                       {t("feedback.prepare")}
                     </button>
@@ -124,29 +121,30 @@ export default function FeedbackPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
       {/* Pagination */}
       {showPagination && (
-        <div className="mt-2 flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap items-center justify-center gap-1">
             <button
               onClick={() => handlePageChange(page - 1)}
               disabled={page === 1}
-              className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t("patients.prev")}
             </button>
             {pageNumbers.map((p, i) =>
               p === "..." ? (
-                <span key={`e-${i}`} className="px-1 text-[11px] text-slate-400">…</span>
+                <span key={`e-${i}`} className="px-1 text-xs text-slate-400">…</span>
               ) : (
                 <button
                   key={p}
                   onClick={() => handlePageChange(p)}
-                  className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
-                    p === page ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                  className={`inline-flex min-w-[2rem] items-center justify-center rounded-lg border px-3 py-1.5 text-xs font-semibold tabular-nums transition ${
+                    p === page ? "border-brand bg-brand text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   {p}
@@ -156,7 +154,7 @@ export default function FeedbackPage() {
             <button
               onClick={() => handlePageChange(page + 1)}
               disabled={page === pagination.totalPages}
-              className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t("patients.next")}
             </button>

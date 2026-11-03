@@ -78,33 +78,33 @@ export default function DiscountsSettings() {
   const label = (d) => (d.type === "percent" ? `${d.value}%` : d.value);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-slate-900">{t("discount.title")}</h3>
-      <p className="mt-0.5 text-xs text-slate-500">{t("discount.hint")}</p>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+      <h3 className="text-[15px] font-semibold text-slate-900">{t("discount.title")}</h3>
+      <p className="mt-0.5 text-sm text-slate-500">{t("discount.hint")}</p>
 
       {/* Add row */}
-      <div className="mt-3 flex flex-wrap items-end gap-2">
+      <div className="mt-4 flex flex-wrap items-end gap-3">
         <div className="min-w-[140px] flex-1">
-          <label className="mb-1 block text-[11px] font-medium text-slate-600">{t("discount.name")}</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("discount.name")}</label>
           <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder={t("discount.name_ph")}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none" />
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
         </div>
         <div>
-          <label className="mb-1 block text-[11px] font-medium text-slate-600">{t("discount.type")}</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("discount.type")}</label>
           <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none">
+            className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15">
             <option value="percent">{t("discount.percent")}</option>
             <option value="fixed">{t("discount.fixed")}</option>
           </select>
         </div>
         <div className="w-24">
-          <label className="mb-1 block text-[11px] font-medium text-slate-600">{t("discount.value")}</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("discount.value")}</label>
           <input type="number" min="0" value={form.value} onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none" />
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
         </div>
         <button type="button" onClick={add} disabled={saving}
-          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
           {t("discount.add")}
         </button>
       </div>
@@ -112,36 +112,36 @@ export default function DiscountsSettings() {
       {/* List */}
       <div className="mt-4 space-y-2">
         {loading ? (
-          <p className="text-xs text-slate-500">{t("common.loading")}</p>
+          <p className="py-6 text-center text-sm text-slate-500">{t("common.loading")}</p>
         ) : rows.length === 0 ? (
-          <p className="text-xs text-slate-500">{t("discount.empty")}</p>
+          <p className="py-6 text-center text-sm text-slate-500">{t("discount.empty")}</p>
         ) : (
           rows.map((d) => (
-            <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+            <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2.5">
               {editId === d.id ? (
                 <>
                   <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
-                    className="min-w-[120px] flex-1 rounded-md border border-slate-200 px-2 py-1 text-sm" />
+                    className="min-w-[120px] flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                   <select value={editForm.type} onChange={(e) => setEditForm((f) => ({ ...f, type: e.target.value }))}
-                    className="rounded-md border border-slate-200 px-2 py-1 text-sm">
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15">
                     <option value="percent">{t("discount.percent")}</option>
                     <option value="fixed">{t("discount.fixed")}</option>
                   </select>
                   <input type="number" min="0" value={editForm.value} onChange={(e) => setEditForm((f) => ({ ...f, value: e.target.value }))}
-                    className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm" />
+                    className="w-20 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                   <button type="button" onClick={() => saveEdit(d.id)} disabled={saving}
-                    className="rounded-md bg-[#0E6E75] px-3 py-1 text-xs font-semibold text-white hover:bg-[#0A565C]">{t("discount.save")}</button>
+                    className="rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">{t("discount.save")}</button>
                   <button type="button" onClick={cancelEdit}
-                    className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 hover:bg-slate-50">{t("discount.cancel")}</button>
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">{t("discount.cancel")}</button>
                 </>
               ) : (
                 <>
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">{d.name}</span>
-                  <span className="rounded bg-white px-2 py-0.5 text-xs font-semibold text-[#0E6E75]">{label(d)}</span>
+                  <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand tabular-nums">{label(d)}</span>
                   <button type="button" onClick={() => startEdit(d)}
-                    className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50">{t("discount.edit")}</button>
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">{t("discount.edit")}</button>
                   <button type="button" onClick={() => remove(d.id)}
-                    className="rounded-md border border-red-200 bg-white px-3 py-1 text-xs text-red-600 hover:bg-red-50">{t("discount.delete")}</button>
+                    className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50">{t("discount.delete")}</button>
                 </>
               )}
             </div>

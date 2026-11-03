@@ -5,6 +5,7 @@ import useWorks from "../../hooks/useWorks";
 import { useSettings } from "../../context/SettingContext";
 import { getSpecialties } from "../../api/specialtyApi";
 import SpecialtiesSection from "../../components/works/SpecialtiesSection";
+import PageHeader from "../../components/common/PageHeader";
 
 const emptyForm = {
   code: "",
@@ -24,13 +25,13 @@ function ViewModal({ work, onClose }) {
   const { formatMoney } = useSettings();
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">{t("clin.work_details")}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
+          <h2 className="text-base font-semibold text-slate-900">{t("clin.work_details")}</h2>
+          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-lg leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">✕</button>
         </div>
         <div className="space-y-3 text-sm">
           <DetailRow label={t("clin.code")} value={<span className="font-mono">{work.code}</span>} />
@@ -39,7 +40,7 @@ function ViewModal({ work, onClose }) {
           <DetailRow
             label={t("clin.allow_installments")}
             value={
-              <span className={`rounded-full px-3 py-1 text-xs ${work.allow_installments ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-slate-100 text-slate-500"}`}>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${work.allow_installments ? "bg-brand/10 text-brand" : "bg-slate-100 text-slate-500"}`}>
                 {work.allow_installments ? t("clin.yes") : t("clin.no")}
               </span>
             }
@@ -50,16 +51,16 @@ function ViewModal({ work, onClose }) {
           <DetailRow
             label={t("clin.status")}
             value={
-              <span className={`rounded-full px-3 py-1 text-xs ${work.is_active ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-red-100 text-red-700"}`}>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${work.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                 {work.is_active ? t("clin.active") : t("clin.inactive")}
               </span>
             }
           />
         </div>
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
             {t("common.close")}
           </button>
@@ -71,9 +72,9 @@ function ViewModal({ work, onClose }) {
 
 function DetailRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
       <span className="text-slate-500">{label}</span>
-      <span className="font-medium text-slate-800">{value}</span>
+      <span className="min-w-0 break-words text-end font-medium text-slate-900">{value}</span>
     </div>
   );
 }
@@ -114,15 +115,15 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-base font-semibold text-slate-900">
             {mode === "edit" ? t("clin.edit_work") : t("clin.create_work")}
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
+          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-lg leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,7 +133,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               value={form.code}
               onChange={(e) => set("code", e.target.value)}
               placeholder={t("clin.code_ph")}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </FormField>
 
@@ -142,7 +143,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
               placeholder={t("clin.name_ph")}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </FormField>
 
@@ -150,7 +151,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
             <select
               value={form.specialty_id ?? ""}
               onChange={(e) => set("specialty_id", e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             >
               <option value="">{t("spec.any_specialty")}</option>
               {specialties.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -165,7 +166,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               step="0.01"
               value={form.min_price}
               onChange={(e) => set("min_price", e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </FormField>
 
@@ -178,7 +179,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
                 set("allow_installments", e.target.checked);
                 if (!e.target.checked) set("min_installment_amount", "");
               }}
-              className="h-4 w-4 accent-[#0E6E75]"
+              className="h-4 w-4 accent-brand"
             />
             <label htmlFor="allow_installments" className="text-sm text-slate-700">
               {t("clin.allow_installments")}
@@ -194,7 +195,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
                 step="0.01"
                 value={form.min_installment_amount}
                 onChange={(e) => set("min_installment_amount", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
             </FormField>
           )}
@@ -205,7 +206,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               id="is_active"
               checked={form.is_active}
               onChange={(e) => set("is_active", e.target.checked)}
-              className="h-4 w-4 accent-[#0E6E75]"
+              className="h-4 w-4 accent-brand"
             />
             <label htmlFor="is_active" className="text-sm text-slate-700">{t("clin.active")}</label>
           </div>
@@ -216,7 +217,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               id="is_plan"
               checked={form.is_plan}
               onChange={(e) => set("is_plan", e.target.checked)}
-              className="h-4 w-4 accent-[#0E6E75]"
+              className="h-4 w-4 accent-brand"
             />
             <label htmlFor="is_plan" className="text-sm text-slate-700">{t("clin.is_plan")}</label>
           </div>
@@ -227,23 +228,23 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
               id="is_whole_mouth"
               checked={form.is_whole_mouth}
               onChange={(e) => set("is_whole_mouth", e.target.checked)}
-              className="h-4 w-4 accent-[#0E6E75]"
+              className="h-4 w-4 accent-brand"
             />
             <label htmlFor="is_whole_mouth" className="text-sm text-slate-700">{t("clin.is_whole_mouth")}</label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C] disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
             >
               {isSubmitting ? t("clin.saving") : mode === "edit" ? t("clin.save_changes") : t("clin.create")}
             </button>
@@ -256,8 +257,8 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
 
 function FormField({ label, children }) {
   return (
-    <div className="space-y-1">
-      <label className="text-xs font-medium text-slate-600">{label}</label>
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-slate-700">{label}</label>
       {children}
     </div>
   );
@@ -319,103 +320,105 @@ export default function WorksPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("clin.catalog_title")}</h1>
-          <p className="text-sm text-slate-500">{t("clin.catalog_subtitle")}</p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={refresh}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-          >
-            {t("clin.refresh")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsCreateOpen(true)}
-            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]"
-          >
-            {t("clin.create_work_btn")}
-          </button>
-        </div>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader
+        title={t("clin.catalog_title")}
+        subtitle={t("clin.catalog_subtitle")}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={refresh}
+              className="rounded-xl border border-slate-200 bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/20"
+            >
+              {t("clin.refresh")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              className="rounded-xl bg-aqua px-4 py-2.5 text-sm font-bold text-ocean-deep transition hover:brightness-110"
+            >
+              {t("clin.create_work_btn")}
+            </button>
+          </>
+        }
+      />
 
-      <div className="rounded-2xl border bg-white p-4 shadow-sm">
-        {isLoading && <p className="text-sm text-slate-600">{t("clin.loading")}</p>}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+        {isLoading && <p className="py-10 text-center text-sm text-slate-500">{t("clin.loading")}</p>}
         {!!error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {error}
           </div>
         )}
 
         {!isLoading && !error && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b text-left text-xs font-semibold text-slate-500">
-                  <th className="px-3 py-3">#</th>
-                  <th className="px-3 py-3">{t("clin.col_code")}</th>
-                  <th className="px-3 py-3">{t("clin.col_name")}</th>
-                  <th className="px-3 py-3">{t("spec.specialty")}</th>
-                  <th className="px-3 py-3">{t("clin.col_min_price")}</th>
-                  <th className="px-3 py-3">{t("clin.col_installments")}</th>
-                  <th className="px-3 py-3">{t("clin.col_min_installment")}</th>
-                  <th className="px-3 py-3">{t("clin.col_status")}</th>
-                  <th className="px-3 py-3 text-end">{t("clin.col_actions")}</th>
+          <div className="-mx-4 overflow-x-auto sm:-mx-5">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50">
+                <tr className="text-start text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-4 py-3 text-start">#</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_code")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_name")}</th>
+                  <th className="px-4 py-3 text-start">{t("spec.specialty")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_min_price")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_installments")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_min_installment")}</th>
+                  <th className="px-4 py-3 text-start">{t("clin.col_status")}</th>
+                  <th className="px-4 py-3 text-end">{t("clin.col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {works.map((w, idx) => (
-                  <tr key={w.id} className="border-b last:border-b-0">
-                    <td className="px-3 py-3 text-slate-500">{idx + 1}</td>
-                    <td className="px-3 py-3 font-mono font-medium text-slate-800">{w.code}</td>
-                    <td className="px-3 py-3 text-slate-700">{w.name}</td>
-                    <td className="px-3 py-3 text-slate-600">{specialtyName(w.specialty_id)}</td>
-                    <td className="px-3 py-3 text-slate-800">{formatMoney(w.min_price)}</td>
-                    <td className="px-3 py-3">
-                      <span className={`rounded-full px-3 py-1 text-xs ${w.allow_installments ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-slate-100 text-slate-500"}`}>
+                  <tr key={w.id} className="border-t border-slate-100 hover:bg-slate-50">
+                    <td className="px-4 py-3 text-slate-500">{idx + 1}</td>
+                    <td className="px-4 py-3 font-mono font-medium text-slate-900">{w.code}</td>
+                    <td className="px-4 py-3 text-slate-700">{w.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{specialtyName(w.specialty_id)}</td>
+                    <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(w.min_price)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${w.allow_installments ? "bg-brand/10 text-brand" : "bg-slate-100 text-slate-500"}`}>
                         {w.allow_installments ? t("clin.yes") : t("clin.no")}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-slate-700">
+                    <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">
                       {w.allow_installments ? formatMoney(w.min_installment_amount) : "—"}
                     </td>
-                    <td className="px-3 py-3">
-                      <span className={`rounded-full px-3 py-1 text-xs ${w.is_active ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-red-100 text-red-700"}`}>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${w.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                         {w.is_active ? t("clin.active") : t("clin.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-right space-x-2">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => setViewWork(w)}
-                        className="rounded-lg border border-slate-200 bg-[#0E6E75] px-3 py-2 text-xs text-slate-100 hover:bg-[#0A565C]"
+                        className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                       >
                         {t("common.view")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditWork(w)}
-                        className="rounded-lg border border-slate-200 bg-amber-600 px-3 py-2 text-xs text-slate-100 hover:bg-amber-700"
+                        className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                       >
                         {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(w.id)}
-                        className="rounded-lg border border-slate-200 bg-red-600 px-3 py-2 text-xs text-slate-100 hover:bg-red-700"
+                        className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                       >
                         {t("common.delete")}
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {works.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-3 py-10 text-center text-slate-500">
+                    <td colSpan={9} className="px-4 py-10 text-center text-sm text-slate-500">
                       {t("clin.no_works")}
                     </td>
                   </tr>

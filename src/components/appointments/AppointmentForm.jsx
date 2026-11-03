@@ -190,17 +190,17 @@ export default function AppointmentForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
       {(error || patientError) && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 md:col-span-2">
           {error || patientError}
         </div>
       )}
 
       {/* PATIENT FIELD */}
       {mode === "add" || mode === "edit" ? (
-        <div className="relative space-y-1">
-          <label className="block text-xs font-medium text-slate-700">
+        <div className="relative min-w-0">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             {t("appt.form_patient")}
           </label>
           <input
@@ -211,19 +211,19 @@ export default function AppointmentForm({
               setSelectedPatient(null);
             }}
             placeholder={t("appt.form_patient_ph")}
-            className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
           />
           {isPatientSearching && (
-            <p className="mt-1 text-[11px] text-slate-500">{t("appt.searching")}</p>
+            <p className="mt-1.5 text-xs text-slate-500">{t("appt.searching")}</p>
           )}
 
           {patientResults.length > 0 && (
-            <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-slate-200 bg-white text-sm shadow-lg">
+            <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-pop">
               {patientResults.map((p) => (
                 <li
                   key={p.id}
                   onClick={() => handlePatientSelect(p)}
-                  className="cursor-pointer px-3 py-2 text-slate-800 hover:bg-slate-100"
+                  className="cursor-pointer px-3.5 py-2 text-slate-900 hover:bg-slate-50"
                 >
                   <div className="font-medium">{p.name}</div>
                   <div className="text-xs text-slate-500">{p.phone}</div>
@@ -235,15 +235,15 @@ export default function AppointmentForm({
       ) : null}
 
       {/* DOCTOR SELECT */}
-      <div className="space-y-1">
-        <label className="block text-xs font-medium text-slate-700">
+      <div className="min-w-0">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           {t("appt.form_doctor")}
         </label>
         <select
           name="doctor_id"
           value={form.doctor_id}
           onChange={handleChange}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
         >
           <option value="">{t("appt.select_doctor")}</option>
           {doctors.map((d) => (
@@ -256,8 +256,8 @@ export default function AppointmentForm({
       </div>
 
       {/* DATE / TIME */}
-      <div className="space-y-1">
-        <label className="block text-xs font-medium text-slate-700">
+      <div className="min-w-0">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           {t("appt.datetime_label")}
         </label>
         <div className="flex flex-wrap items-center gap-2">
@@ -266,7 +266,7 @@ export default function AppointmentForm({
             name="date"
             value={form.date}
             onChange={handleChange}
-            className="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+            className="min-w-0 flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 sm:flex-none"
           />
 
           <div className="flex items-center gap-1.5">
@@ -278,7 +278,7 @@ export default function AppointmentForm({
               placeholder="3"
               value={form.hour}
               onChange={handleChange}
-              className="w-16 rounded-md border border-slate-200 px-2 py-2 text-center text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-16 px-2 py-2.5 text-center tabular-nums rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
             <span className="text-sm font-semibold text-slate-400">:</span>
             <input
@@ -289,27 +289,27 @@ export default function AppointmentForm({
               placeholder="30"
               value={form.minute}
               onChange={handleChange}
-              className="w-16 rounded-md border border-slate-200 px-2 py-2 text-center text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-16 px-2 py-2.5 text-center tabular-nums rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
             <select
               name="period"
               value={form.period}
               onChange={handleChange}
-              className="rounded-md border border-slate-200 px-2 py-2 text-sm font-semibold text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="px-2.5 py-2.5 font-semibold rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             >
               <option value="AM">AM</option>
               <option value="PM">PM</option>
             </select>
           </div>
         </div>
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {t("appt.datetime_hint")}
         </p>
       </div>
 
       {/* TYPE */}
-      <div className="space-y-1">
-        <label className="block text-xs font-medium text-slate-700">
+      <div className="min-w-0">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           {t("appt.type_label")}
         </label>
         <select
@@ -317,7 +317,7 @@ export default function AppointmentForm({
           value={form.appointment_type}
           onChange={handleChange}
           disabled={mode === "edit"}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
         >
           <option value="normal">{t("appt.type_normal")}</option>
           <option value="urgent">{t("appt.type_urgent")}</option>
@@ -326,8 +326,8 @@ export default function AppointmentForm({
       </div>
 
       {/* COMPLAINT */}
-      <div className="space-y-1">
-        <label className="block text-xs font-medium text-slate-700">
+      <div className="min-w-0 md:col-span-2">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           {t("appt.complaint_label")} <span className="text-slate-400">{t("appt.optional")}</span>
         </label>
         <textarea
@@ -336,16 +336,16 @@ export default function AppointmentForm({
           onChange={handleChange}
           rows={2}
           placeholder={t("appt.complaint_ph")}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
         />
       </div>
 
       {/* SUBMIT */}
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end border-t border-slate-100 pt-4 md:col-span-2">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0E6E75] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting
             ? mode === "add"

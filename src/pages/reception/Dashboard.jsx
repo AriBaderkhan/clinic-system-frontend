@@ -13,13 +13,14 @@ import { useSettings } from "../../context/SettingContext";
 import UnpaidMoneyLines from "../../components/sessions/UnpaidMoneyLines";
 import { unpaidBreakdown } from "../../utils/unpaid";
 import useCan from "../../utils/can";
+import PageHeader from "../../components/common/PageHeader";
 
 // Status pill colors (labels come from the shared appt.st_* keys)
 const STATUS_CHIP = {
   completed: "text-green-700 bg-green-50 border-green-100",
   scheduled: "text-slate-600 bg-slate-100 border-slate-200",
   checked_in: "text-amber-700 bg-amber-50 border-amber-100",
-  in_progress: "text-[#0E6E75] bg-[#0E6E75]/10 border-[#0E6E75]/20",
+  in_progress: "text-brand bg-brand/10 border-brand/20",
   cancelled: "text-red-600 bg-red-50 border-red-100",
   no_show: "text-slate-500 bg-slate-100 border-slate-200",
 };
@@ -71,7 +72,9 @@ export default function Dashboard() {
     STATUS_CHIP[status] || "text-slate-600 bg-slate-100 border-slate-200";
 
   return (
-    <div className="space-y-5">
+    <div className="w-full space-y-5">
+      <PageHeader title={t('nav.front_desk')} subtitle={dateStr} />
+
       {/* Modals */}
       {selectedForStatusDashboard && (
         <AppointmentStatusModal
@@ -101,24 +104,19 @@ export default function Dashboard() {
         <AllUnpaidSessionsModal floor={payFloor} onClose={() => { setShowAllUnpaid(false); refreshUnpaid(); }} />
       )}
 
-      {/* Date line */}
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-        {dateStr}
-      </p>
-
       {/* Main grid: LEFT = quick actions + today's active · RIGHT = in-progress + unpaid */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
         {/* ============ LEFT COLUMN ============ */}
-        <div className="space-y-4">
+        <div className="col-fill">
           {/* Quick actions (above today's active appointments) */}
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-4 sm:flex-row">
             {can("create_patient") && (
             <button
               type="button"
               onClick={() => navigate("/patients/add")}
-              className="group flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#0E6E75]/40 hover:shadow-md"
+              className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-start shadow-card transition hover:-translate-y-0.5 hover:border-brand/40"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0E6E75] text-white">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" />
                 </svg>
@@ -135,9 +133,9 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/appointments/add")}
-              className="group flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#0E6E75]/40 hover:shadow-md"
+              className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-start shadow-card transition hover:-translate-y-0.5 hover:border-brand/40"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0E6E75] text-white">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4" />
                 </svg>
@@ -152,18 +150,18 @@ export default function Dashboard() {
           </div>
 
           {/* Today's active appointments */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">{t('dash.today_active')}</h2>
-                <p className="text-[11px] text-slate-500">{t('dash.today_active_hint')}</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t('dash.today_active')}</h2>
+                <p className="mt-0.5 text-sm text-slate-500">{t('dash.today_active_hint')}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <FloorFilter floors={floor.floors} value={floor.floorId} onChange={floor.setFloorId} show={floor.show} withLabel={false} />
                 <button
                   type="button"
                   onClick={refreshToday}
-                  className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-100"
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
                 >
                   {t('dash.refresh')}
                 </button>
@@ -171,48 +169,48 @@ export default function Dashboard() {
             </div>
 
             {todayError && (
-              <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                 {todayError}
               </div>
             )}
 
             {isTodayLoading && !todayError && (
-              <p className="text-xs text-slate-500">{t('dash.loading_today')}</p>
+              <p className="py-10 text-center text-sm text-slate-500">{t('dash.loading_today')}</p>
             )}
 
             {!isTodayLoading && !todayError && todayAppointments.length === 0 && (
-              <p className="text-xs text-slate-500">{t('dash.no_active_today')}</p>
+              <p className="py-10 text-center text-sm text-slate-500">{t('dash.no_active_today')}</p>
             )}
 
             {todayAppointments.length > 0 && (
-              <div className="mt-2 overflow-x-auto">
-                <table className="min-w-full text-start text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-xs text-slate-500">
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_patient')}</th>
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_phone')}</th>
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_doctor')}</th>
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_time')}</th>
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_type')}</th>
-                      <th className="px-3 py-2 text-start font-medium text-[#0E6E75]">{t('dash.col_status')}</th>
+              <div className="overflow-x-auto rounded-xl border border-slate-100">
+                <table className="w-full text-start text-sm">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_patient')}</th>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_phone')}</th>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_doctor')}</th>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_time')}</th>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_type')}</th>
+                      <th className="whitespace-nowrap px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('dash.col_status')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {todayAppointments.map((a) => {
                       const id = a.id ?? a.appointment_id;
                       return (
-                        <tr key={id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                          <td className="px-3 py-2 text-slate-800">{a.patient_name}</td>
-                          <td className="px-3 py-2 text-slate-700">{a.patient_phone}</td>
-                          <td className="px-3 py-2 text-slate-700">{a.doctor_name}</td>
-                          <td className="px-3 py-2 text-slate-700">{formatTime(a.scheduled_start)}</td>
-                          <td className="px-3 py-2 text-slate-700">{a.appointment_type}</td>
-                          <td className="px-3 py-2">
+                        <tr key={id} className="border-t border-slate-100 hover:bg-slate-50">
+                          <td className="px-4 py-3 font-medium text-slate-900">{a.patient_name}</td>
+                          <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">{a.patient_phone}</td>
+                          <td className="px-4 py-3 text-slate-700">{a.doctor_name}</td>
+                          <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">{formatTime(a.scheduled_start)}</td>
+                          <td className="px-4 py-3 text-slate-700">{a.appointment_type}</td>
+                          <td className="px-4 py-3">
                             <button
                               type="button"
                               onClick={() => can("update_appointment_status") && setSelectedForStatusDashboard(a)}
                               disabled={!can("update_appointment_status")}
-                              className={`rounded-full border px-3 py-1 text-[11px] font-medium transition hover:opacity-80 ${chipClass(a.status)}`}
+                              className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold transition hover:opacity-80 ${chipClass(a.status)}`}
                             >
                               {t(`appt.st_${a.status}`, a.status)}
                             </button>
@@ -228,22 +226,22 @@ export default function Dashboard() {
         </div>
 
         {/* ============ RIGHT COLUMN ============ */}
-        <div className="space-y-4">
+        <div className="col-fill">
           {/* In-progress appointments */}
-          <div className="rounded-2xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">{t('dash.in_progress_title')}</h2>
-                <p className="text-[11px] text-slate-600">{t('dash.in_progress_hint')}</p>
+          <div className="rounded-2xl border border-brand/25 border-s-4 border-s-brand bg-white p-4 shadow-card sm:p-5">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t('dash.in_progress_title')}</h2>
+                <p className="mt-0.5 text-sm text-slate-600">{t('dash.in_progress_hint')}</p>
               </div>
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium text-amber-800">
+              <span className="inline-flex shrink-0 items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
                 {t('dash.in_progress_count', { count: inProgressAppointments.length })}
               </span>
             </div>
 
-            <div className="max-h-64 space-y-2.5 overflow-y-auto pr-1 text-sm">
+            <div className="max-h-72 space-y-2 overflow-y-auto pe-1 text-sm">
               {inProgressAppointments.length === 0 && (
-                <p className="text-xs text-slate-600">{t('dash.no_in_progress')}</p>
+                <p className="py-8 text-center text-sm text-slate-500">{t('dash.no_in_progress')}</p>
               )}
 
               {inProgressAppointments.map((a) => {
@@ -254,15 +252,15 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => can("finalize_session") && setSelectedForComplete(a)}
                     disabled={!can("finalize_session")}
-                    className="flex w-full items-center justify-between rounded-xl border border-[#0E6E75]/20 bg-white px-4 py-3 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-brand/20 bg-white px-4 py-3 text-start transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-card"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-800">{a.patient_name}</p>
-                      <p className="mt-1 text-[12px] text-slate-500">
+                      <p className="truncate font-semibold text-slate-900">{a.patient_name}</p>
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
                         {a.doctor_name} · {formatTime(a.scheduled_start)} · {a.appointment_type}
                       </p>
                     </div>
-                    <span className="ms-2 shrink-0 rounded-full border border-[#0E6E75]/30 bg-[#0E6E75]/10 px-3 py-1 text-[11px] font-medium text-[#0E6E75]">
+                    <span className="inline-flex shrink-0 items-center rounded-full border border-brand/30 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">
                       {t(`appt.st_${a.status}`, a.status)}
                     </span>
                   </button>
@@ -272,28 +270,28 @@ export default function Dashboard() {
           </div>
 
           {/* Unpaid sessions */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">{t('dash.waiting_payment')}</h2>
-                <p className="text-[11px] text-slate-500">{t('dash.waiting_payment_hint')}</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t('dash.waiting_payment')}</h2>
+                <p className="mt-0.5 text-sm text-slate-500">{t('dash.waiting_payment_hint')}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <FloorFilter floors={payFloor.floors} value={payFloor.floorId} onChange={payFloor.setFloorId} show={payFloor.show} withLabel={false} />
-                <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700">
+                <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
                   {isUnpaidLoading ? t('dash.unpaid_count', { count: "…" }) : t('dash.unpaid_count', { count: unpaidTotal })}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllUnpaid(true)}
-                  className="rounded-md border border-[#0E6E75]/30 bg-white px-3 py-1.5 text-[11px] font-medium text-[#0E6E75] transition hover:bg-[#0E6E75]/10"
+                  className="inline-flex items-center justify-center rounded-lg border border-brand/30 bg-white px-3 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10"
                 >
                   {t('dash.view_all')}
                 </button>
                 <button
                   type="button"
                   onClick={refreshUnpaid}
-                  className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-50"
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
                 >
                   {t('dash.refresh')}
                 </button>
@@ -301,21 +299,21 @@ export default function Dashboard() {
             </div>
 
             {unpaidError && (
-              <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                 {unpaidError}
               </div>
             )}
 
             {isUnpaidLoading && !unpaidError && (
-              <p className="text-xs text-slate-500">{t('dash.loading_unpaid')}</p>
+              <p className="py-8 text-center text-sm text-slate-500">{t('dash.loading_unpaid')}</p>
             )}
 
             {!isUnpaidLoading && !unpaidError && unpaidSessions.length === 0 && (
-              <p className="text-xs text-slate-500">{t('dash.no_unpaid')}</p>
+              <p className="py-8 text-center text-sm text-slate-500">{t('dash.no_unpaid')}</p>
             )}
 
             {unpaidSessions.length > 0 && (
-              <div className="mt-2 space-y-1.5 text-sm">
+              <div className="space-y-2 text-sm">
                 {unpaidSessions.map((s) => {
                   const b = unpaidBreakdown(s);
                   const works = [
@@ -325,24 +323,24 @@ export default function Dashboard() {
                   return (
                     <div
                       key={s.session_id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 transition hover:bg-slate-50"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-800">{s.patient.full_name}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="truncate text-sm font-semibold text-slate-900">{s.patient.full_name}</p>
+                        <p className="truncate text-xs text-slate-500">
                           {s.doctor.full_name} · {formatTime(s.appointment.start_time)} · {works}
                         </p>
                         <UnpaidMoneyLines breakdown={b} className="mt-0.5" />
                       </div>
                       <div className="shrink-0 text-end">
-                        <p className="text-[10px] text-slate-400">{t('unpaid.remaining')}</p>
-                        <p className="text-sm font-semibold text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
+                        <p className="text-[11px] text-slate-500">{t('unpaid.remaining')}</p>
+                        <p className="text-sm font-bold tabular-nums text-amber-700">{formatMoney(b.remaining, b.currency)}</p>
                       </div>
                       {can("collect_payment") && (
                       <button
                         type="button"
                         onClick={() => setSelectedForPayment(s)}
-                        className="shrink-0 rounded-full bg-[#0E6E75] px-3.5 py-1 text-[10px] font-semibold text-white transition hover:bg-[#0A565C]"
+                        className="inline-flex shrink-0 items-center justify-center rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-brand-dark"
                       >
                         {t('dash.pay')}
                       </button>

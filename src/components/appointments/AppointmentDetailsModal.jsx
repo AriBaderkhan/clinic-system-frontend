@@ -15,7 +15,7 @@ function statusBadgeClasses(status) {
     case "in_progress":
       return "bg-purple-50 text-purple-700 border-purple-100";
     case "completed":
-      return "bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20";
+      return "bg-brand/10 text-brand border-brand/20";
     case "cancelled":
       return "bg-red-50 text-red-700 border-red-100";
     case "no_show":
@@ -47,19 +47,19 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
       )}
 
       <div
-        className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
           {/* Header */}
-          <div className="mb-3 flex items-start justify-between">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-900">
+          <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-slate-900">
                 {t("appt.details_title")}
               </h2>
 
               {appointment && (
-                <p className="mt-1 text-[11px] text-slate-500">
+                <p className="mt-1 break-words text-xs text-slate-500">
                   {appointment.patient_name} ·{" "}
                   {appointment.patient_phone || t("appt.no_phone")}
                   <br />
@@ -71,20 +71,22 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
 
             <button
               type="button"
-              className="text-xs text-slate-400 hover:text-slate-600"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               onClick={onClose}
             >
               ✕
             </button>
           </div>
 
+          <div className="px-5 py-4">
+
           {/* Loading / error */}
           {isLoading && (
-            <p className="text-xs text-slate-500">{t("appt.loading_appt")}</p>
+            <p className="py-8 text-center text-sm text-slate-500">{t("appt.loading_appt")}</p>
           )}
 
           {error && !isLoading && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -93,14 +95,14 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
           {!isLoading && !error && appointment && (
             <div className="space-y-4 text-sm text-slate-800">
               {/* Top row: Status + type + created_at */}
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-100 bg-slate-50 p-3 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.status")}
                   </p>
                   <span
                     className={
-                      "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
+                      "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold capitalize " +
                       statusBadgeClasses(appointment.status)
                     }
                   >
@@ -109,48 +111,48 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.appt_type")}
                   </p>
-                  <p className="text-xs text-slate-700 capitalize">
+                  <p className="text-sm font-medium capitalize text-slate-900">
                     {appointment.appointment_type || "-"}
                     {appointment.is_walk_in && ` · ${t("appt.walk_in_badge")}`}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.created_at")}
                   </p>
-                  <p className="text-xs text-slate-700">
+                  <p className="text-sm font-medium tabular-nums text-slate-900">
                     {formatDateTime(appointment.created_at)}
                   </p>
                 </div>
               </div>
 
               {/* Timeline */}
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-100 bg-slate-50 p-3 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.checkin_time")}
                   </p>
-                  <p className="text-xs text-slate-700">
+                  <p className="text-sm font-medium tabular-nums text-slate-900">
                     {formatDateTime(appointment.check_in_time)}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.started_at")}
                   </p>
-                  <p className="text-xs text-slate-700">
+                  <p className="text-sm font-medium tabular-nums text-slate-900">
                     {formatDateTime(appointment.started_at)}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.finished_at")}
                   </p>
-                  <p className="text-xs text-slate-700">
+                  <p className="text-sm font-medium tabular-nums text-slate-900">
                     {formatDateTime(appointment.finished_at)}
                   </p>
                 </div>
@@ -159,10 +161,10 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
               {/* Complaint */}
               {appointment.complaint && (
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t("appt.complaint")}
                   </p>
-                  <p className="whitespace-pre-wrap text-xs text-slate-700">
+                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">
                     {appointment.complaint}
                   </p>
                 </div>
@@ -210,22 +212,22 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
               {(appointment.status === "cancelled" ||
                 appointment.status === "no_show") && (
                 <div className="space-y-1">
-                  <p className="text-[11px] font-medium uppercase text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {appointment.status === "cancelled"
                       ? t("appt.cancel_reason")
                       : t("appt.noshow_reason")}
                   </p>
-                  <p className="whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                  <p className="whitespace-pre-wrap break-words rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">
                     {appointment.cancel_reason || "-"}
                   </p>
                 </div>
               )}
 
               {/* Session link */}
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-medium uppercase text-slate-500">
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                       {t("appt.session")}
                     </p>
 
@@ -258,10 +260,10 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
                       type="button"
                       disabled={!sessionId}
                       onClick={() => setOpenSessionModal(true)}
-                      className={`rounded-md px-3 py-1.5 text-[11px] font-medium ${
+                      className={`inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
                         sessionId
-                          ? "bg-[#0E6E75] text-white hover:bg-[#0E6E75]"
-                          : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                          ? "bg-brand text-white hover:bg-brand-dark"
+                          : "cursor-not-allowed bg-slate-100 text-slate-400"
                       }`}
                     >
                       {t("appt.view_session")}
@@ -273,10 +275,11 @@ export default function AppointmentDetailsModal({ appointmentId, onClose }) {
           )}
 
           {!isLoading && !error && !appointment && (
-            <p className="text-xs text-slate-500">
+            <p className="py-8 text-center text-sm text-slate-500">
               {t("appt.appt_not_found")}
             </p>
           )}
+          </div>
         </div>
       </div>
     </>

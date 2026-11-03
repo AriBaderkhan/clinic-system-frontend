@@ -194,23 +194,23 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-xl rounded-2xl bg-white p-4 sm:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop sm:p-6">
         {/* Header */}
-        <div className="mb-4 flex items-start justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">
+        <div className="mb-5 flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-slate-900">
               {mode === "add" ? t("labm.make_order") : t("labm.edit_order")}
             </h2>
-            <p className="mt-0.5 text-[11px] text-slate-500">
+            <p className="mt-0.5 text-xs text-slate-500">
               {t("labm.order_subtitle")}
             </p>
           </div>
           <button
             type="button"
-            className="text-xs text-slate-400 hover:text-slate-600"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             onClick={onClose}
           >
             ✕
@@ -219,15 +219,15 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
               {error}
             </div>
           )}
 
           {/* APPOINTMENT FIELD */}
           {mode === "add" ? (
-            <div className="relative space-y-1">
-              <label className="block text-xs font-medium text-slate-700">
+            <div className="relative space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700">
                 {t("labm.appt_label")}
               </label>
               <input
@@ -238,17 +238,17 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                   setSelectedAppt(null);
                 }}
                 placeholder={t("labm.start_typing_ari")}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
-              {isApptSearching && <p className="mt-1 text-[11px] text-slate-500">{t("labm.searching")}</p>}
+              {isApptSearching && <p className="mt-1 text-xs text-slate-500">{t("labm.searching")}</p>}
 
               {apptResults.length > 0 && (
-                <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-md border border-slate-200 bg-white text-sm shadow-lg">
+                <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-pop">
                   {apptResults.map((a) => (
                     <li
                       key={a.id}
                       onClick={() => handleApptSelect(a)}
-                      className="cursor-pointer px-3 py-2 text-slate-800 hover:bg-slate-100"
+                      className="cursor-pointer px-3.5 py-2 text-slate-900 hover:bg-slate-50"
                     >
                       <div className="font-medium">
                         {a.patient_name}
@@ -265,7 +265,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
               )}
 
               {selectedAppt && (
-                <div className="mt-1 rounded-xl border border-[#0E6E75]/10 bg-[#0E6E75]/5 px-3 py-2 text-xs text-slate-700">
+                <div className="mt-1 rounded-xl border border-brand/10 bg-brand/5 px-3 py-2 text-xs text-slate-700">
                   <span className="font-medium">{selectedAppt.patient_name}</span> ·{" "}
                   {selectedAppt.patient_phone || t("labm.no_phone")} · Dr.{" "}
                   <span className="capitalize">{selectedAppt.doctor_name}</span>
@@ -282,8 +282,8 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
           )}
 
           {/* LAB FIELD */}
-          <div className="relative space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
+          <div className="relative space-y-1.5">
+            <label className="block text-sm font-medium text-slate-700">
               {t("labm.lab_label")}
             </label>
             <input
@@ -295,17 +295,17 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                 setSelectedLab(null);
               }}
               placeholder={t("labm.start_typing_far")}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75] disabled:bg-slate-100 disabled:text-slate-500"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:bg-slate-100 disabled:text-slate-500"
             />
-            {isLabSearching && <p className="mt-1 text-[11px] text-slate-500">{t("labm.searching")}</p>}
+            {isLabSearching && <p className="mt-1 text-xs text-slate-500">{t("labm.searching")}</p>}
 
             {labResults.length > 0 && (
-              <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-slate-200 bg-white text-sm shadow-lg">
+              <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-pop">
                 {labResults.map((lab) => (
                   <li
                     key={lab.id}
                     onClick={() => handleLabSelect(lab)}
-                    className="cursor-pointer px-3 py-2 text-slate-800 hover:bg-slate-100"
+                    className="cursor-pointer px-3.5 py-2 text-slate-900 hover:bg-slate-50"
                   >
                     <div className="font-medium">{lab.name}</div>
                     {lab.phone && <div className="text-xs text-slate-500">{lab.phone}</div>}
@@ -316,14 +316,14 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
           </div>
 
           {/* TREATMENTS (repeatable rows, only this lab's price list) */}
-          <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-[11px] font-medium uppercase text-slate-500">{t("labm.treatments")}</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("labm.treatments")}</label>
               <button
                 type="button"
                 onClick={addRow}
                 disabled={!selectedLab || labTreatments.length === 0}
-                className="rounded-md bg-[#0E6E75] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#0A565C] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("labm.add_treatment")}
               </button>
@@ -342,7 +342,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                     <select
                       value={row.work_id}
                       onChange={(e) => updateRow(idx, "work_id", e.target.value)}
-                      className="flex-1 min-w-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                      className="min-w-[160px] flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                     >
                       <option value="">{t("labm.select_treatment")}</option>
                       {labTreatments.map((tr) => (
@@ -362,10 +362,10 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                       value={row.quantity}
                       onChange={(e) => updateRow(idx, "quantity", e.target.value)}
                       placeholder={t("labm.qty_ph")}
-                      className="w-20 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                      className="w-20 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                     />
 
-                    <span className="w-24 text-right text-xs text-slate-600">
+                    <span className="w-24 text-end text-xs text-slate-600">
                       {formatMoney(costOf(row.work_id) * (Number(row.quantity) || 0))}
                     </span>
 
@@ -373,7 +373,7 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
                       type="button"
                       onClick={() => removeRow(idx)}
                       disabled={rows.length === 1}
-                      className="rounded-md border border-red-200 bg-red-600 px-2.5 py-2 text-[11px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 bg-white text-sm text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       ✕
                     </button>
@@ -384,40 +384,40 @@ export default function LabOrderFormModal({ mode = "add", initialData, onClose, 
           </div>
 
           {/* LIVE TOTAL */}
-          <div className="rounded-xl border border-[#0E6E75]/10 bg-[#0E6E75]/5 px-4 py-3">
+          <div className="rounded-xl border border-brand/10 bg-brand/5 px-4 py-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-xs text-slate-600">{t("labm.order_total")}</span>
-              <span className="text-base font-semibold text-[#0E6E75]">
+              <span className="text-lg font-bold tabular-nums text-brand">
                 {formatMoney(total)}
               </span>
             </div>
           </div>
 
           {/* NOTES */}
-          <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">{t("labm.notes_optional")}</label>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-slate-700">{t("labm.notes_optional")}</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder={t("labm.notes_ph")}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </div>
 
           {/* SUBMIT */}
-          <div className="flex justify-end gap-2 pt-1">
+          <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0A565C] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (mode === "add" ? t("labm.ordering") : t("labm.saving")) : mode === "add" ? t("labm.make_order") : t("labm.save_changes")}
             </button>

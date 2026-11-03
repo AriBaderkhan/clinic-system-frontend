@@ -26,12 +26,12 @@ export default function MonthlyExpenseDetailsModal({ open, loading, data, onClos
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <div>
+      <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
+        <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div className="min-w-0">
             <h2 className="text-base font-semibold text-slate-900">
               {t("exp.details_title", { month: formatMonth(row.month) })}
             </h2>
@@ -51,21 +51,21 @@ export default function MonthlyExpenseDetailsModal({ open, loading, data, onClos
 
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-50"
+            className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
           >
             {t("common.close")}
           </button>
         </div>
 
-        <div className="p-5">
+        <div className="px-5 py-4">
           {loading ? (
             <div className="text-sm text-slate-500">{t("exp.loading_details")}</div>
           ) : (
             <>
-              <div className="rounded-xl border border-slate-200 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">{t("exp.total_expenses")}</span>
-                  <span className="text-lg font-semibold">{formatMoney(total)}</span>
+              <div className="rounded-xl border border-brand/20 bg-brand/10 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-slate-700">{t("exp.total_expenses")}</span>
+                  <span className="text-xl font-bold tracking-tight text-slate-900 tabular-nums">{formatMoney(total)}</span>
                 </div>
               </div>
 
@@ -73,18 +73,18 @@ export default function MonthlyExpenseDetailsModal({ open, loading, data, onClos
                 {items.map(([label, value]) => (
                   <div
                     key={label}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3.5 py-2.5"
                   >
                     <span className="text-sm text-slate-700">{label}</span>
-                    <span className="text-sm font-medium">{formatMoney(value)}</span>
+                    <span className="text-end text-sm font-semibold text-slate-900 tabular-nums">{formatMoney(value)}</span>
                   </div>
                 ))}
               </div>
 
               {row.notes ? (
-                <div className="mt-4 rounded-xl border border-slate-200 p-4">
-                  <div className="text-xs text-slate-600">{t("exp.notes")}</div>
-                  <div className="mt-1 text-sm text-slate-800">{row.notes}</div>
+                <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs font-medium text-slate-500">{t("exp.notes")}</div>
+                  <div className="mt-1 break-words text-sm text-slate-800">{row.notes}</div>
                 </div>
               ) : null}
             </>

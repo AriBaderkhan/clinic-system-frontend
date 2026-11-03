@@ -7,6 +7,7 @@ import {
 import { getBranchDashboard } from '../../api/branchApi';
 import { useSettings } from '../../context/SettingContext';
 import { KpiCard, StatusBadge, TreatmentsChart } from '../tenant/Dashboard';
+import PageHeader from '../../components/common/PageHeader';
 
 const CARD = 'overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm';
 
@@ -18,7 +19,7 @@ function CardHead({ title, hint, icon: Icon }) {
                 {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
             </div>
             {Icon ? (
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0E6E75]/10 text-[#0E6E75]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand/10 text-brand">
                     <Icon size={16} />
                 </span>
             ) : null}
@@ -60,7 +61,7 @@ function Bars({ rows, empty }) {
                     <span className="w-20 shrink-0 text-xs font-medium text-slate-600">{r.label}</span>
                     <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                         <div
-                            className={`h-full rounded-full ${r.value === max ? 'bg-[#0E6E75]' : 'bg-[#0E6E75]/50'}`}
+                            className={`h-full rounded-full ${r.value === max ? 'bg-brand' : 'bg-brand/50'}`}
                             style={{ width: `${Math.round((r.value / max) * 100)}%` }}
                         />
                     </div>
@@ -108,23 +109,23 @@ export default function BranchDashboard() {
     const hourRows = (stats?.busy.hours || []).map((h) => ({ label: `${String(h.hour).padStart(2, '0')}:00`, value: h.total }));
 
     return (
-        <div className="w-full space-y-6 p-4 md:p-6" data-branch-overview>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">{t('bdash.title')}</h1>
-                    <p className="text-sm text-slate-500">{t('bdash.subtitle')}</p>
-                </div>
-                <button
-                    onClick={load}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
-                >
-                    <FiRefreshCw size={13} /> {t('exp.refresh')}
-                </button>
-            </div>
+        <div className="w-full space-y-5" data-branch-overview>
+            <PageHeader
+                title={t('bdash.title')}
+                subtitle={t('bdash.subtitle')}
+                actions={
+                    <button
+                        onClick={load}
+                        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/20"
+                    >
+                        <FiRefreshCw size={14} /> {t('exp.refresh')}
+                    </button>
+                }
+            />
 
             {/* today + money */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <KpiCard icon={FiUserPlus} label={t('tdash.new_patients')} value={dash(stats?.new_patients)} accent="bg-[#0E6E75]/10 text-[#0E6E75]" />
+                <KpiCard icon={FiUserPlus} label={t('tdash.new_patients')} value={dash(stats?.new_patients)} accent="bg-brand/10 text-brand" />
                 <KpiCard icon={FiUsers} label={t('tdash.returning_patients')} value={dash(stats?.returning_patients)} accent="bg-violet-100 text-violet-700" />
                 <KpiCard icon={FiCalendar} label={t('tdash.todays_appointments')} value={dash(appts.total)} accent="bg-sky-100 text-sky-700">
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import PatientForm from "../../components/patients/PatientForm";
 import usePatients from "../../hooks/usePatients";
 import { getPatientById } from "../../api/patientApi";
+import PageHeader from "../../components/common/PageHeader";
 
 export default function EditPatient() {
   const { t } = useTranslation();
@@ -57,19 +58,29 @@ export default function EditPatient() {
   };
 
   if (isLoadingPatient) {
-    return <p className="p-4 text-sm text-slate-500">{t("patient_form.loading_patient")}</p>;
+    return (
+      <div className="w-full space-y-5">
+        <PageHeader title={t("patient_form.edit_title")} subtitle={t("patient_form.edit_subtitle")} />
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+          <p className="py-10 text-center text-sm text-slate-500">{t("patient_form.loading_patient")}</p>
+        </div>
+      </div>
+    );
   }
 
   if (loadError || !patient) {
     return (
-      <div className="p-4">
-        <p className="mb-3 text-sm text-red-600">{loadError || t("patient_form.not_found")}</p>
-        <button
-          onClick={() => navigate(returnTo)}
-          className="rounded-md bg-slate-800 px-4 py-2 text-xs font-semibold text-white"
-        >
-          {t("patient_form.back_to_patients")}
-        </button>
+      <div className="w-full space-y-5">
+        <PageHeader title={t("patient_form.edit_title")} subtitle={t("patient_form.edit_subtitle")} />
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+          <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{loadError || t("patient_form.not_found")}</p>
+          <button
+            onClick={() => navigate(returnTo)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            {t("patient_form.back_to_patients")}
+          </button>
+        </div>
       </div>
     );
   }

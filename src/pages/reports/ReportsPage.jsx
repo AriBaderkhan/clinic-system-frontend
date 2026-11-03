@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import useMonthlyReportPdf from "../../hooks/useMonthlyReportPdf";
 import { useSubscription } from "../../context/SubscriptionContext";
+import PageHeader from "../../components/common/PageHeader";
 
 function toMonthParam(value) {
   // value is "2025-12" from <input type="month" />
@@ -59,33 +60,27 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900">{t('report.title')}</h1>
-        <p className="text-xs text-slate-500">
-          {t('report.subtitle')}
-        </p>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader title={t('report.title')} subtitle={t('report.subtitle')} />
 
       {/* Tabs like Patient Folder */}
-      <div className="rounded-2xl border border-slate-200 bg-white">
-        <div className="border-b border-slate-200 px-4 py-3">
-          <div className="inline-flex rounded-xl bg-slate-100 p-1">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-card">
+        <div className="border-b border-slate-100 px-4 py-3 sm:px-5">
+          <div className="inline-flex max-w-full flex-wrap rounded-xl border border-slate-200 bg-white p-1">
             <button
               onClick={() => setTab("reports")}
-              className={`px-4 py-2 text-sm rounded-lg ${tab === "reports"
-                ? "bg-[#0E6E75] text-white"
-                : "text-slate-700 hover:bg-white"
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === "reports"
+                ? "bg-brand text-white"
+                : "text-slate-600 hover:bg-slate-50"
                 }`}
             >
               {t('report.tab_reports')}
             </button>
             <button
               onClick={() => setTab("expenses")}
-              className={`px-4 py-2 text-sm rounded-lg ${tab === "expenses"
-                ? "bg-[#0E6E75] text-white"
-                : "text-slate-700 hover:bg-white"
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === "expenses"
+                ? "bg-brand text-white"
+                : "text-slate-600 hover:bg-slate-50"
                 }`}
             >
               {t('report.tab_expenses')}
@@ -94,21 +89,21 @@ export default function ReportsPage() {
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 sm:p-5">
           {tab === "reports" ? (
             <div className="space-y-4">
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-slate-900">{t('report.monthly_pdf')}</div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-[15px] font-semibold text-slate-900">{t('report.monthly_pdf')}</div>
+                  <div className="mt-0.5 text-sm text-slate-500">
                     {t('report.select_then_download')}
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 mb-4">
-                <div className="flex gap-4 mb-3">
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
                     <input
                       type="radio"
                       name="reportType"
@@ -118,7 +113,7 @@ export default function ReportsPage() {
                     {t('report.monthly_report')}
                   </label>
                   {canCustomRange && (
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
                       <input
                         type="radio"
                         name="reportType"
@@ -132,33 +127,33 @@ export default function ReportsPage() {
 
                 <div className="flex flex-wrap items-end gap-3">
                   {reportType === 'monthly' ? (
-                    <div className="space-y-1">
-                      <label className="block text-xs text-slate-600">{t('report.select_month')}</label>
+                    <div className="w-full sm:w-auto">
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700">{t('report.select_month')}</label>
                       <input
                         type="month"
                         value={monthValue}
                         onChange={(e) => setMonthValue(e.target.value)}
-                        className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   ) : (
                     <>
-                      <div className="space-y-1">
-                        <label className="block text-xs text-slate-600">{t('report.from_date')}</label>
+                      <div className="w-full sm:w-auto">
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t('report.from_date')}</label>
                         <input
                           type="date"
                           value={dateRange.from}
                           onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                          className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="block text-xs text-slate-600">{t('report.to_date')}</label>
+                      <div className="w-full sm:w-auto">
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t('report.to_date')}</label>
                         <input
                           type="date"
                           value={dateRange.to}
                           onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                          className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                         />
                       </div>
                     </>
@@ -167,7 +162,7 @@ export default function ReportsPage() {
                   <button
                     onClick={onDownload}
                     disabled={isLoading || (reportType === 'monthly' ? !monthParam : (!dateRange.from || !dateRange.to))}
-                    className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-60 mb-[1px]"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                   >
                     {isLoading ? t('report.downloading') : t('report.download_pdf')}
                   </button>
@@ -182,7 +177,7 @@ export default function ReportsPage() {
               </div>
 
               {error ? (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                   {error}
                 </div>
               ) : null}

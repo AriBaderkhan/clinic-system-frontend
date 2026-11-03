@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getPlans, createPlan, updatePlan } from '../../api/planApi';
 import { getFeatures, getPlanFeatures, assignFeatureToPlan, removeFeatureFromPlan } from '../../api/featureApi';
+import PageHeader from '../../components/common/PageHeader';
 // import Modal from '../../components/Modal'; // Assuming Modal exists, checking later. If not, simple overlay.
 // Reverting to simpler implementation without custom Modal component for now to be safe, or inline it.
 
@@ -137,62 +138,68 @@ export default function PlansPage() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    const createPlanBtn = (
+        <button
+            onClick={() => handleOpenModal()}
+            className="rounded-xl bg-aqua px-4 py-2.5 text-sm font-bold text-ocean-deep transition hover:brightness-110"
+        >
+            Create Plan
+        </button>
+    );
+
+    if (loading) return (
+        <div className="w-full space-y-5">
+            <PageHeader title="Subscription Plans" />
+            <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5 py-10 text-center text-sm text-slate-500">Loading...</div>
+        </div>
+    );
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-lg font-medium text-slate-800">Subscription Plans</h2>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
-                >
-                    Create Plan
-                </button>
-            </div>
+        <div className="w-full space-y-5">
+            <PageHeader title="Subscription Plans" actions={createPlanBtn} />
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {plans.map((plan) => (
-                    <div key={plan.id} className="flex flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
+                    <div key={plan.id} className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                            <h3 className="min-w-0 break-words text-lg font-bold tracking-tight text-slate-900">{plan.name}</h3>
                             <div className="text-end">
-                                <div className="text-xl font-bold text-[#0E6E75]">${plan.price} <span className="text-xs font-medium text-slate-500">/ month</span></div>
-                                <div className="text-sm font-semibold text-slate-700">${plan.yearly_price} <span className="text-xs font-medium text-slate-500">/ year</span></div>
+                                <div className="text-2xl font-bold tracking-tight text-brand tabular-nums">${plan.price} <span className="text-xs font-medium text-slate-500">/ month</span></div>
+                                <div className="text-sm font-semibold text-slate-700 tabular-nums">${plan.yearly_price} <span className="text-xs font-medium text-slate-500">/ year</span></div>
                             </div>
                         </div>
 
-                        <div className="mb-6 flex-1 space-y-2 text-sm text-slate-600">
-                            <div className="flex justify-between border-b pb-1">
+                        <div className="mb-5 flex-1 divide-y divide-slate-100 rounded-xl border border-slate-100 bg-slate-50 px-3 text-sm text-slate-600">
+                            <div className="flex justify-between gap-3 py-2">
                                 <span>Max Branches</span>
-                                <span className="font-medium">{plan.max_branches === -1 ? 'Unlimited' : plan.max_branches}</span>
+                                <span className="text-end font-medium text-slate-900">{plan.max_branches === -1 ? 'Unlimited' : plan.max_branches}</span>
                             </div>
-                            <div className="flex justify-between border-b pb-1">
+                            <div className="flex justify-between gap-3 py-2">
                                 <span>Doctors included</span>
-                                <span className="font-medium">{Number(plan.included_doctors) === -1 ? 'Unlimited' : plan.included_doctors}</span>
+                                <span className="text-end font-medium text-slate-900">{Number(plan.included_doctors) === -1 ? 'Unlimited' : plan.included_doctors}</span>
                             </div>
-                            <div className="flex justify-between border-b pb-1">
+                            <div className="flex justify-between gap-3 py-2">
                                 <span>Extra doctor</span>
-                                <span className="font-medium">
+                                <span className="text-end font-medium text-slate-900">
                                     {Number(plan.extra_doctor_price) < 0 ? 'Not offered (upgrade)' : `$${plan.extra_doctor_price} / month · $${plan.extra_doctor_yearly_price} / year`}
                                 </span>
                             </div>
-                            <div className="flex justify-between border-b pb-1">
+                            <div className="flex justify-between gap-3 py-2">
                                 <span>Staff (reception, …)</span>
-                                <span className="font-medium">Free, unlimited</span>
+                                <span className="text-end font-medium text-slate-900">Free, unlimited</span>
                             </div>
                         </div>
 
-                        <div className="mt-auto flex gap-2">
+                        <div className="mt-auto flex flex-wrap gap-2 sm:flex-nowrap">
                             <button
                                 onClick={() => handleOpenModal(plan)}
-                                className="w-full rounded-md border border-slate-300 bg-white py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                             >
                                 Edit
                             </button>
                             <button
                                 onClick={() => openFeaturesModal(plan)}
-                                className="w-full rounded-md bg-[#0E6E75] py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
+                                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                             >
                                 Features
                             </button>
@@ -204,20 +211,22 @@ export default function PlansPage() {
             {/* Simple Modal */}
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
                     onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
                 >
-                    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-                        <h3 className="mb-4 text-lg font-medium text-slate-900">
-                            {editingPlan ? 'Edit Plan' : 'Create New Plan'}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
+                        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                            <h3 className="text-base font-semibold text-slate-900">
+                                {editingPlan ? 'Edit Plan' : 'Create New Plan'}
+                            </h3>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Name</label>
                                 <input
                                     type="text"
                                     required
-                                    className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                    className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -230,7 +239,7 @@ export default function PlansPage() {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.price}
                                         onChange={(e) => handleMonthlyChange(e.target.value)}
                                     />
@@ -242,11 +251,11 @@ export default function PlansPage() {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.yearly_price}
                                         onChange={(e) => { setYearlyEdited(true); setFormData({ ...formData, yearly_price: e.target.value }); }}
                                     />
-                                    <p className="mt-1 text-xs text-slate-400">Starts as monthly × 12. You can change it.</p>
+                                    <p className="mt-1 text-xs text-slate-500">Starts as monthly × 12. You can change it.</p>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -255,7 +264,7 @@ export default function PlansPage() {
                                     <input
                                         type="number"
                                         required
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.max_branches}
                                         onChange={(e) => setFormData({ ...formData, max_branches: e.target.value })}
                                         placeholder="-1 for infinite"
@@ -268,7 +277,7 @@ export default function PlansPage() {
                                         name="included_doctors"
                                         required
                                         min={-1}
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.included_doctors}
                                         onChange={(e) => setFormData({ ...formData, included_doctors: e.target.value })}
                                         placeholder="-1 for unlimited"
@@ -282,7 +291,7 @@ export default function PlansPage() {
                                         required
                                         min={-1}
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.extra_doctor_price}
                                         onChange={(e) => setFormData({ ...formData, extra_doctor_price: e.target.value })}
                                         placeholder="-1 = not offered"
@@ -296,7 +305,7 @@ export default function PlansPage() {
                                         required
                                         min={-1}
                                         step="0.01"
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.extra_doctor_yearly_price}
                                         onChange={(e) => setFormData({ ...formData, extra_doctor_yearly_price: e.target.value })}
                                         placeholder="-1 = not offered"
@@ -308,28 +317,28 @@ export default function PlansPage() {
                                         type="number"
                                         name="sort_order"
                                         min={0}
-                                        className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                        className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         value={formData.sort_order}
                                         onChange={(e) => setFormData({ ...formData, sort_order: e.target.value })}
                                     />
                                 </div>
                             </div>
-                            <p className="text-xs text-slate-500">
+                            <p className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs text-slate-500">
                                 -1 = unlimited doctors / no extra doctors on this plan (the clinic must upgrade). Extra doctors are added to the renewal price automatically.
                                 Clinics that were already paying keep their locked price until they change plan.
                             </p>
 
-                            <div className="mt-6 flex justify-end gap-3">
+                            <div className="-mx-5 flex justify-end gap-2 border-t border-slate-100 px-5 pt-4">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm text-white hover:bg-[#0A565C]"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                 >
                                     Save
                                 </button>
@@ -342,48 +351,50 @@ export default function PlansPage() {
             {/* Manage-features modal */}
             {featuresPlan && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
                     onClick={(e) => e.target === e.currentTarget && setFeaturesPlan(null)}
                 >
-                    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-lg font-medium text-slate-900">
-                                Features — <span className="text-[#0E6E75]">{featuresPlan.name}</span>
+                    <div className="flex w-full max-w-md max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
+                        <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                            <h3 className="min-w-0 truncate text-base font-semibold text-slate-900">
+                                Features — <span className="text-brand">{featuresPlan.name}</span>
                             </h3>
-                            <button onClick={() => setFeaturesPlan(null)} className="text-xl font-bold text-slate-400 hover:text-slate-600">&times;</button>
+                            <button onClick={() => setFeaturesPlan(null)} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900">&times;</button>
                         </div>
 
+                        <div className="flex-1 overflow-y-auto px-5 py-4">
                         {featuresLoading ? (
-                            <p className="text-sm text-slate-500">Loading features…</p>
+                            <p className="animate-pulse py-10 text-center text-sm text-slate-500">Loading features…</p>
                         ) : allFeatures.length === 0 ? (
-                            <p className="text-sm text-slate-500">No features defined yet. Create some on the Features page.</p>
+                            <p className="py-10 text-center text-sm text-slate-500">No features defined yet. Create some on the Features page.</p>
                         ) : (
                             <div className="space-y-2">
                                 {allFeatures.map((f) => {
                                     const checked = assignedIds.has(f.id);
                                     return (
-                                        <label key={f.id} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50">
+                                        <label key={f.id} className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 transition hover:bg-slate-50">
                                             <span className="min-w-0">
-                                                <span className="block text-sm font-medium text-slate-800">{f.name}</span>
-                                                <span className="block text-xs text-slate-400">{f.code}</span>
+                                                <span className="block break-words text-sm font-medium text-slate-900">{f.name}</span>
+                                                <span className="block break-all font-mono text-xs text-slate-500">{f.code}</span>
                                             </span>
                                             <input
                                                 type="checkbox"
                                                 checked={checked}
                                                 disabled={togglingId === f.id}
                                                 onChange={(e) => toggleFeature(f.id, e.target.checked)}
-                                                className="h-4 w-4 rounded border-slate-300 text-[#0E6E75] focus:ring-[#0E6E75]"
+                                                className="h-4 w-4 shrink-0 rounded border-slate-300 accent-brand"
                                             />
                                         </label>
                                     );
                                 })}
                             </div>
                         )}
+                        </div>
 
-                        <div className="mt-5 flex justify-end">
+                        <div className="flex justify-end border-t border-slate-100 px-5 py-4">
                             <button
                                 onClick={() => setFeaturesPlan(null)}
-                                className="rounded-md bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C]"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                             >
                                 Done
                             </button>

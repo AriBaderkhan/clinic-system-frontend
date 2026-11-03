@@ -120,37 +120,49 @@ export default function ProfilePage() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-slate-500">{t("prof.loading_profile")}</div>;
+    if (loading) return (
+        <div className="min-h-screen bg-ground">
+            <div className="ocean-band band-dark h-40" aria-hidden="true" />
+            <div className="relative mx-auto -mt-24 max-w-3xl px-4 pb-10 md:px-6">
+                <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6 py-10 text-center text-sm text-slate-500">{t("prof.loading_profile")}</div>
+            </div>
+        </div>
+    );
 
     const avatar = preview || data?.image_url;
 
     return (
-        <div className="mx-auto max-w-3xl p-4 md:p-6">
-            <button onClick={() => navigate(-1)} className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
-                <FiArrowLeft size={16} className="rtl:rotate-180" /> {t("prof.back")}
-            </button>
+        <div className="min-h-screen bg-ground">
+            <div className="ocean-band band-dark">
+                <div className="mx-auto max-w-3xl px-4 pb-24 pt-5 md:px-6">
+                    <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white/10 px-3.5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white/20">
+                        <FiArrowLeft size={16} className="rtl:rotate-180" /> {t("prof.back")}
+                    </button>
+                </div>
+            </div>
 
+            <div className="relative mx-auto -mt-16 max-w-3xl px-4 pb-10 md:px-6">
             {/* Header card: avatar + identity */}
-            <div className="rounded-2xl bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
                     <div className="relative">
-                        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#0E6E75] text-2xl font-bold text-white">
+                        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-brand text-2xl font-bold text-white ring-4 ring-brand/15">
                             {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initialsOf(form.full_name)}
                         </div>
                         <button
                             type="button"
                             onClick={() => fileRef.current?.click()}
-                            className="absolute bottom-0 end-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#0E6E75] text-white hover:bg-[#0A565C]"
+                            className="absolute bottom-0 end-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-brand text-white transition hover:bg-brand-dark"
                             title={t("prof.change_photo")}
                         >
                             <FiCamera size={15} />
                         </button>
                         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onPickFile} className="hidden" />
                     </div>
-                    <div className="text-center sm:text-start">
-                        <h1 className="text-xl font-bold text-slate-900">{data?.full_name || t("prof.your_profile")}</h1>
-                        <p className="text-sm text-slate-500">{data?.email}</p>
-                        <span className="mt-1 inline-flex items-center rounded-full bg-[#0E6E75]/10 px-2.5 py-0.5 text-xs font-medium capitalize text-[#0E6E75] border border-[#0E6E75]/20">
+                    <div className="min-w-0 text-center sm:text-start">
+                        <h1 className="break-words text-2xl font-extrabold tracking-tight text-slate-900">{data?.full_name || t("prof.your_profile")}</h1>
+                        <p className="mt-0.5 break-all text-sm text-slate-500">{data?.email}</p>
+                        <span className="mt-2 inline-flex items-center rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold capitalize text-brand">
                             {data?.role}
                         </span>
                     </div>
@@ -158,43 +170,43 @@ export default function ProfilePage() {
             </div>
 
             {/* Details */}
-            <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-base font-bold text-slate-800">{t("prof.personal_details")}</h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+                <h2 className="mb-4 text-[15px] font-semibold text-slate-900">{t("prof.personal_details")}</h2>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <Field label={t("prof.full_name")} required value={form.full_name} onChange={(v) => setForm((p) => ({ ...p, full_name: v }))} />
                     <Field label={t("prof.phone")} value={form.phone} onChange={(v) => setForm((p) => ({ ...p, phone: v }))} />
-                    <div className="sm:col-span-2">
+                    <div className="md:col-span-2">
                         <Field label={t("prof.address")} value={form.address} onChange={(v) => setForm((p) => ({ ...p, address: v }))} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700">{t("prof.role")}</label>
-                        <input value={data?.role || ""} disabled className="mt-1 block w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm capitalize text-slate-500" />
+                        <input value={data?.role || ""} disabled className="mt-1.5 block w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm capitalize text-slate-500" />
                     </div>
                 </div>
-                <div className="mt-5 flex justify-end">
+                <div className="mt-5 flex justify-end border-t border-slate-100 pt-4">
                     <button onClick={saveDetails} disabled={savingDetails}
-                        className="rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                         {savingDetails ? t("prof.saving") : t("prof.save_changes")}
                     </button>
                 </div>
             </div>
 
             {/* Email */}
-            <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
-                <h2 className="mb-1 text-base font-bold text-slate-800">{t("prof.email")}</h2>
-                <p className="mb-4 text-sm text-slate-500">{t("prof.current_label")} <b>{data?.email}</b></p>
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t("prof.email")}</h2>
+                <p className="mb-4 mt-0.5 break-all text-sm text-slate-500">{t("prof.current_label")} <b>{data?.email}</b></p>
                 {!emailMode ? (
-                    <button onClick={() => setEmailMode(true)} className="rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10">
+                    <button onClick={() => setEmailMode(true)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand/40 bg-white px-4 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-60">
                         {t("prof.change_email")}
                     </button>
                 ) : (
-                    <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <input type="email" value={newEmail} onChange={(e) => { setNewEmail(e.target.value); setCodeSent(false); }}
                                 placeholder={t("prof.new_email")} disabled={codeSent}
-                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none disabled:opacity-60" />
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60" />
                             <button onClick={sendCode} disabled={emailBusy}
-                                className="whitespace-nowrap rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10 disabled:opacity-50">
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand/40 bg-white px-4 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-60">
                                 {emailBusy ? "…" : codeSent ? t("prof.resend") : t("prof.send_code")}
                             </button>
                         </div>
@@ -203,34 +215,35 @@ export default function ProfilePage() {
                                 <input type="text" inputMode="numeric" maxLength={6} value={emailCode}
                                     onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, ""))}
                                     placeholder={t("prof.code_ph")}
-                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none" />
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 tracking-widest tabular-nums" />
                                 <button onClick={confirmEmail} disabled={emailBusy}
-                                    className="whitespace-nowrap rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
+                                    className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                                     {emailBusy ? "…" : t("prof.save_email")}
                                 </button>
                             </div>
                         )}
                         <button onClick={() => { setEmailMode(false); setCodeSent(false); setNewEmail(""); setEmailCode(""); }}
-                            className="text-xs text-slate-500 hover:underline">{t("prof.cancel")}</button>
+                            className="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">{t("prof.cancel")}</button>
                     </div>
                 )}
             </div>
 
             {/* Password */}
-            <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-base font-bold text-slate-800">{t("prof.change_password")}</h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+                <h2 className="mb-4 text-[15px] font-semibold text-slate-900">{t("prof.change_password")}</h2>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <Field label={t("prof.current_pwd")} type="password" value={pwd.currentPassword} onChange={(v) => setPwd((p) => ({ ...p, currentPassword: v }))} />
                     <Field label={t("prof.new_pwd")} type="password" value={pwd.newPassword} onChange={(v) => setPwd((p) => ({ ...p, newPassword: v }))} hint={t("prof.min_6")} />
                     <Field label={t("prof.confirm_new")} type="password" value={pwd.confirm} onChange={(v) => setPwd((p) => ({ ...p, confirm: v }))}
                         error={pwd.confirm && pwd.newPassword !== pwd.confirm ? t("prof.not_match") : ""} />
                 </div>
-                <div className="mt-5 flex justify-end">
+                <div className="mt-5 flex justify-end border-t border-slate-100 pt-4">
                     <button onClick={savePassword} disabled={savingPwd || !pwd.currentPassword || !pwd.newPassword}
-                        className="rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                         {savingPwd ? t("prof.saving") : t("prof.change_password")}
                     </button>
                 </div>
+            </div>
             </div>
         </div>
     );
@@ -246,9 +259,9 @@ function Field({ label, value, onChange, type = "text", required, hint, error })
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#0E6E75]"}`}
+                className={`mt-1.5 block w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 ${error ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200 focus:border-brand focus:ring-brand/15"}`}
             />
-            {error ? <p className="mt-1 text-xs text-red-500">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
+            {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
         </div>
     );
 }

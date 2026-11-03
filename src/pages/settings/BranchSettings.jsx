@@ -14,6 +14,7 @@ import FloorsSettings from "../../components/settings/FloorsSettings";
 import WorkflowSettings from "../../components/settings/WorkflowSettings";
 import { hasTick } from "../../utils/can";
 import toast from "react-hot-toast";
+import PageHeader from "../../components/common/PageHeader";
 
 export default function BranchSettingsPage() {
     const { t } = useTranslation();
@@ -163,15 +164,20 @@ export default function BranchSettingsPage() {
     };
 
     if (!effectiveUser) {
-        return <div>{t("bs.loading_user")}</div>;
+        return (
+            <div className="w-full space-y-5">
+                <PageHeader title={t("bs.title")} />
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5 text-sm text-slate-500">{t("bs.loading_user")}</div>
+            </div>
+        );
     }
 
     if (!effectiveUser.branch_id) {
         return (
-            <div className="p-6 max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">{t("bs.title")}</h1>
-                <div className="p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                    <p className="text-gray-500">
+            <div className="w-full space-y-5">
+                <PageHeader title={t("bs.title")} />
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-card">
+                    <p className="text-sm text-slate-500">
                         {t("bs.no_branch")} <br />
                         <span className="text-xs">{t("bs.user_id", { id: effectiveUser.id })}</span>
                     </p>
@@ -183,27 +189,27 @@ export default function BranchSettingsPage() {
     const isDark = theme === "dark";
 
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">{t("bs.title")}</h1>
+        <div className="w-full space-y-5">
+            <PageHeader title={t("bs.title")} />
 
             {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                     {error}
                 </div>
             )}
 
             {/* ===== Section: Branch details ===== */}
-            <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
                 {loading ? (
-                    <div className="text-center p-4">{t("bs.loading_details")}</div>
+                    <div className="p-4 text-center text-sm text-slate-500">{t("bs.loading_details")}</div>
                 ) : branchDetails ? (
                     <>
-                        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 border-b pb-4 dark:border-slate-700">
-                            <h2 className="text-xl font-semibold dark:text-slate-100">{branchDetails.name}</h2>
+                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <h2 className="min-w-0 break-words text-lg font-bold text-slate-900">{branchDetails.name}</h2>
                             {!isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                 >
                                     {t("bs.edit_branch")}
                                 </button>
@@ -213,33 +219,33 @@ export default function BranchSettingsPage() {
                         {isEditing ? (
                             <form onSubmit={handleSave} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.branch_name")}</label>
+                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.branch_name")}</label>
                                     <input
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.location")}</label>
+                                    <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.location")}</label>
                                     <input
                                         type="text"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.timezone")}</label>
+                                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.timezone")}</label>
                                         <select
                                             value={formData.timezone}
                                             onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                                            className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
+                                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                             required
                                         >
                                             <option value="">{t("bs.select_timezone")}</option>
@@ -248,11 +254,11 @@ export default function BranchSettingsPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">{t("bs.currency")}</label>
+                                        <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("bs.currency")}</label>
                                         <select
                                             value={formData.currency_code}
                                             onChange={(e) => setFormData({ ...formData, currency_code: e.target.value })}
-                                            className="mt-1 block w-full border p-2 rounded dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
+                                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                             required
                                         >
                                             <option value="">{t("bs.select_currency")}</option>
@@ -260,11 +266,11 @@ export default function BranchSettingsPage() {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="flex justify-end space-x-3 pt-4 border-t mt-4 dark:border-slate-700">
+                                <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
                                     <button
                                         type="button"
                                         onClick={handleCancel}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 dark:text-slate-300 dark:border-slate-600"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                                         disabled={saving}
                                     >
                                         {t("common.cancel")}
@@ -272,7 +278,7 @@ export default function BranchSettingsPage() {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#0E6E75] text-white rounded-md hover:bg-[#0A565C] disabled:opacity-50"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                     >
                                         {saving ? t("bs.saving") : t("bs.save_changes")}
                                     </button>
@@ -281,17 +287,17 @@ export default function BranchSettingsPage() {
                         ) : (
                             <div className="space-y-4">
                                 <div>
-                                    <span className="block text-sm font-medium text-gray-500">{t("bs.location")}</span>
-                                    <span className="text-gray-900 dark:text-slate-200">{branchDetails.location}</span>
+                                    <span className="block text-xs font-medium text-slate-500">{t("bs.location")}</span>
+                                    <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.location}</span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-500">{t("bs.timezone")}</span>
-                                        <span className="text-gray-900 dark:text-slate-200">{branchDetails.timezone}</span>
+                                        <span className="block text-xs font-medium text-slate-500">{t("bs.timezone")}</span>
+                                        <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.timezone}</span>
                                     </div>
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-500">{t("bs.currency")}</span>
-                                        <span className="text-gray-900 dark:text-slate-200">{branchDetails.currency_code}</span>
+                                        <span className="block text-xs font-medium text-slate-500">{t("bs.currency")}</span>
+                                        <span className="mt-0.5 block break-words text-sm font-semibold text-slate-900">{branchDetails.currency_code}</span>
                                     </div>
                                 </div>
                             </div>
@@ -301,15 +307,15 @@ export default function BranchSettingsPage() {
             </section>
 
             {/* ===== Section: Works (treatment catalog) ===== */}
-            <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.works_title")}</h2>
-                        <p className="text-sm text-gray-500">{t("bs.works_hint")}</p>
+                    <div className="min-w-0">
+                        <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.works_title")}</h2>
+                        <p className="mt-0.5 text-sm text-slate-500">{t("bs.works_hint")}</p>
                     </div>
                     <button
                         onClick={() => navigate("/works")}
-                        className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                     >
                         {t("bs.open_works")}
                     </button>
@@ -318,16 +324,16 @@ export default function BranchSettingsPage() {
 
             {/* ===== Section: Roles & permissions ===== */}
             {hasTick(effectiveUser, "manage_permissions") && (
-                <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                            <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("nav.roles_permissions")}</h2>
-                            <p className="text-sm text-gray-500">{t("bs.roles_hint")}</p>
+                        <div className="min-w-0">
+                            <h2 className="text-[15px] font-semibold text-slate-900">{t("nav.roles_permissions")}</h2>
+                            <p className="mt-0.5 text-sm text-slate-500">{t("bs.roles_hint")}</p>
                         </div>
                         <button
                             data-open-roles
                             onClick={() => navigate("/settings/roles")}
-                            className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                         >
                             {t("bs.open_roles")}
                         </button>
@@ -336,51 +342,51 @@ export default function BranchSettingsPage() {
             )}
 
             {/* ===== Section: Appearance ===== */}
-            <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.appearance")}</h2>
-                <p className="text-sm text-gray-500 mb-4">{t("bs.appearance_hint")}</p>
-                <div className="flex gap-3">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.appearance")}</h2>
+                <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("bs.appearance_hint")}</p>
+                <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={() => { if (isDark) handleToggleTheme(); }}
                         className={[
-                            "flex-1 rounded-xl border p-4 text-left transition",
-                            !isDark ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/20" : "border-slate-200 dark:border-slate-700",
+                            "rounded-xl border bg-white p-4 text-start transition hover:bg-slate-50",
+                            !isDark ? "border-brand ring-2 ring-brand/20" : "border-slate-200",
                         ].join(" ")}
                     >
                         <div className="text-2xl">☀️</div>
-                        <div className="mt-1 font-medium dark:text-slate-100">{t("bs.light")}</div>
+                        <div className="mt-1 text-sm font-semibold text-slate-900">{t("bs.light")}</div>
                     </button>
                     <button
                         onClick={() => { if (!isDark) handleToggleTheme(); }}
                         className={[
-                            "flex-1 rounded-xl border p-4 text-left transition",
-                            isDark ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/20" : "border-slate-200 dark:border-slate-700",
+                            "rounded-xl border bg-white p-4 text-start transition hover:bg-slate-50",
+                            isDark ? "border-brand ring-2 ring-brand/20" : "border-slate-200",
                         ].join(" ")}
                     >
                         <div className="text-2xl">🌙</div>
-                        <div className="mt-1 font-medium dark:text-slate-100">{t("bs.dark")}</div>
+                        <div className="mt-1 text-sm font-semibold text-slate-900">{t("bs.dark")}</div>
                     </button>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t pt-4 dark:border-slate-700">
-                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">{t('settings.language')}</span>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                    <span className="text-sm font-medium text-slate-700">{t('settings.language')}</span>
                     <LanguageSwitcher />
                 </div>
             </section>
 
             {/* ===== Section: Reminder template ===== */}
             {tpl && (
-                <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                            <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.reminder_template")}</h2>
-                            <p className="text-sm text-gray-500">
+                        <div className="min-w-0">
+                            <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.reminder_template")}</h2>
+                            <p className="mt-0.5 text-sm text-slate-500">
                                 {t("bs.reminder_hint")}
                             </p>
                         </div>
                         <button
                             onClick={() => setShowTpl(true)}
-                            className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                         >
                             {t("bs.edit_template")}
                         </button>
@@ -390,21 +396,21 @@ export default function BranchSettingsPage() {
 
             {/* ===== Section: Feedback QR ===== */}
             {qrUrl && (
-                <section className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <h2 className="text-lg font-semibold mb-1 dark:text-slate-100">{t("bs.feedback_qr_title")}</h2>
-                    <p className="text-sm text-gray-500 mb-4">{t("bs.feedback_qr_hint")}</p>
+                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                    <h2 className="text-[15px] font-semibold text-slate-900">{t("bs.feedback_qr_title")}</h2>
+                    <p className="mb-4 mt-0.5 text-sm text-slate-500">{t("bs.feedback_qr_hint")}</p>
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
-                        <div ref={qrRef} className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700">
+                        <div ref={qrRef} className="rounded-xl border border-slate-200 bg-white p-3">
                             <QRCodeCanvas value={qrUrl} size={200} level="M" marginSize={3} />
                         </div>
-                        <div className="flex-1 space-y-3">
+                        <div className="w-full min-w-0 flex-1 space-y-3">
                             <button
                                 onClick={downloadQr}
-                                className="px-4 py-2 bg-[#0E6E75] text-white rounded hover:bg-[#0A565C] transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                             >
                                 {t("bs.feedback_qr_download")}
                             </button>
-                            <div className="break-all rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                            <div className="break-all rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-500">
                                 {qrUrl}
                             </div>
                         </div>
@@ -416,57 +422,57 @@ export default function BranchSettingsPage() {
             {hasTick(effectiveUser, "manage_branch_settings") && <WorkflowSettings />}
 
             {/* ===== Section: Discounts ===== */}
-            <section className="mt-6">
+            <section>
                 <DiscountsSettings />
             </section>
 
             {/* ===== Section: Floors ===== */}
-            <section className="mt-6">
+            <section>
                 <FloorsSettings />
             </section>
 
             {/* ===== Edit template modal ===== */}
             {showTpl && tpl && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
                     onClick={(e) => e.target === e.currentTarget && setShowTpl(false)}
                 >
-                    <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-800">
-                        <div className="mb-1 flex items-center justify-between">
-                            <h2 className="text-lg font-semibold dark:text-slate-100">{t("bs.edit_template_title")}</h2>
-                            <button onClick={() => setShowTpl(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+                    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop">
+                        <div className="mb-1 flex items-center justify-between gap-3">
+                            <h2 className="text-base font-semibold text-slate-900">{t("bs.edit_template_title")}</h2>
+                            <button onClick={() => setShowTpl(false)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">✕</button>
                         </div>
-                        <p className="mb-4 text-xs text-gray-500">
+                        <p className="mb-4 text-xs text-slate-500">
                             {t("bs.placeholders_hint")}
                         </p>
 
-                        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                        <div className="max-h-[60vh] space-y-4 overflow-y-auto pe-1">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">کوردی</label>
+                                <label className="mb-1.5 block text-sm font-medium text-slate-700">کوردی</label>
                                 <textarea dir="rtl" rows={5} value={tpl.kur_msg}
                                     onChange={(e) => setTpl({ ...tpl, kur_msg: e.target.value })}
-                                    className="w-full rounded-lg border border-slate-300 p-3 text-sm dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100" />
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">عربي</label>
+                                <label className="mb-1.5 block text-sm font-medium text-slate-700">عربي</label>
                                 <textarea dir="rtl" rows={5} value={tpl.arb_msg}
                                     onChange={(e) => setTpl({ ...tpl, arb_msg: e.target.value })}
-                                    className="w-full rounded-lg border border-slate-300 p-3 text-sm dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100" />
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">English</label>
+                                <label className="mb-1.5 block text-sm font-medium text-slate-700">English</label>
                                 <textarea rows={5} value={tpl.eng_msg}
                                     onChange={(e) => setTpl({ ...tpl, eng_msg: e.target.value })}
-                                    className="w-full rounded-lg border border-slate-300 p-3 text-sm dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100" />
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                             </div>
                         </div>
 
-                        <div className="mt-4 flex justify-end gap-2">
-                            <button onClick={() => setShowTpl(false)} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">
+                        <div className="-mx-5 mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 pt-4">
+                            <button onClick={() => setShowTpl(false)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                                 {t("common.cancel")}
                             </button>
                             <button onClick={saveTemplate} disabled={tplSaving}
-                                className="px-4 py-2 bg-[#0E6E75] text-white rounded-md hover:bg-[#0A565C] disabled:opacity-50">
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                                 {tplSaving ? t("bs.saving_short") : t("bs.save_template")}
                             </button>
                         </div>

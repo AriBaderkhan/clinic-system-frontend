@@ -7,14 +7,14 @@ import LanguageSwitcher from "./LanguageSwitcher";
 export default function AppearanceCard() {
     const { t } = useTranslation();
     return (
-        <div className="bg-white rounded-lg border shadow-sm p-5 max-w-2xl">
-            <h3 className="font-semibold text-gray-700 mb-3">{t('settings.appearance')}</h3>
-            <div className="flex items-center justify-between py-2 border-b">
-                <span className="text-sm text-gray-600">{t('settings.theme')}</span>
+        <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <h3 className="text-[15px] font-semibold text-slate-900">{t('settings.appearance')}</h3>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 py-3">
+                <span className="text-sm font-medium text-slate-700">{t('settings.theme')}</span>
                 <div className="w-44"><ThemeToggle /></div>
             </div>
-            <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">{t('settings.language')}</span>
+            <div className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <span className="text-sm font-medium text-slate-700">{t('settings.language')}</span>
                 <LanguageSwitcher />
             </div>
         </div>

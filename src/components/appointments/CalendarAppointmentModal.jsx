@@ -15,7 +15,7 @@ function statusBadgeClasses(status) {
     case "in_progress":
       return "bg-purple-50 text-purple-700 border-purple-100";
     case "completed":
-      return "bg-[#0E6E75]/10 text-[#0E6E75] border-[#0E6E75]/20";
+      return "bg-brand/10 text-brand border-brand/20";
     case "cancelled":
       return "bg-red-50 text-red-700 border-red-100";
     case "no_show":
@@ -46,29 +46,29 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
       )}
 
       <div
-        className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
           {/* Header strip with doctor color */}
           <div
             className="rounded-t-2xl px-5 py-4 text-white"
             style={{ backgroundColor: color.bg }}
           >
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-semibold">{appointment.patient_name}</h2>
-                <p className="mt-0.5 text-[11px] text-white/80">
+              <div className="min-w-0">
+                <h2 className="truncate text-base font-semibold">{appointment.patient_name}</h2>
+                <p className="mt-0.5 text-xs text-white/80">
                   {appointment.patient_phone || t("appt.no_phone")} · Dr.{" "}
                   <span className="capitalize">{appointment.doctor_name}</span>
                 </p>
-                <p className="mt-0.5 text-[11px] text-white/80">
+                <p className="mt-0.5 text-xs tabular-nums text-white/80">
                   {formatDateTime(appointment.scheduled_start)}
                 </p>
               </div>
               <button
                 type="button"
-                className="rounded-full bg-white/15 px-2.5 py-1 text-xs text-white hover:bg-white/25"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/15 text-sm text-white transition hover:bg-white/25"
                 onClick={onClose}
               >
                 ✕
@@ -76,18 +76,18 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
             </div>
           </div>
 
-          <div className="space-y-4 p-4 sm:p-5">
+          <div className="space-y-4 px-5 py-4">
             {/* Status + type */}
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={
-                  "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium capitalize " +
+                  "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold capitalize " +
                   statusBadgeClasses(appointment.status)
                 }
               >
                 {appointment.status?.replace("_", " ")}
               </span>
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] capitalize text-slate-600">
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold capitalize text-slate-600">
                 {appointment.appointment_type || "-"}
               </span>
             </div>
@@ -126,22 +126,22 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
 
             {/* Last 5 sessions */}
             <div>
-              <p className="mb-2 text-[11px] font-medium uppercase text-slate-500">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t("appt.last_5_sessions", { name: appointment.patient_name })}
               </p>
 
               {isLoading && (
-                <p className="text-xs text-slate-500">{t("appt.loading_sessions")}</p>
+                <p className="py-6 text-center text-sm text-slate-500">{t("appt.loading_sessions")}</p>
               )}
 
               {error && !isLoading && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                   {error}
                 </div>
               )}
 
               {!isLoading && !error && sessions.length === 0 && (
-                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-xs text-slate-500">
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
                   {t("appt.no_sessions_patient")}
                 </div>
               )}
@@ -151,13 +151,13 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                   {sessions.map((s) => (
                     <div
                       key={s.session_id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-medium text-slate-800">
+                        <p className="text-sm font-semibold tabular-nums text-slate-900">
                           {formatDateTime(s.created_at)}
                         </p>
-                        <p className="mt-0.5 truncate text-[11px] text-slate-500 capitalize">
+                        <p className="mt-0.5 truncate text-xs capitalize text-slate-500">
                           Dr. {s.doctor_name} · {t("appt.total")}: {formatMoney(s.total, s.currency_code)} · {t("appt.paid")}:{" "}
                           {formatMoney(s.total_paid, s.currency_code)}
                         </p>
@@ -165,7 +165,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
 
                       <div className="flex shrink-0 items-center gap-2">
                         <span
-                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-medium ${
+                          className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${
                             s.is_paid
                               ? "border-green-100 bg-green-50 text-green-700"
                               : "border-amber-100 bg-amber-50 text-amber-700"
@@ -176,7 +176,7 @@ export default function CalendarAppointmentModal({ appointment, onClose }) {
                         <button
                           type="button"
                           onClick={() => setSelectedSessionId(s.session_id)}
-                          className="rounded-md bg-[#0E6E75] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#0A565C]"
+                          className="inline-flex items-center justify-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                         >
                           {t("common.view")}
                         </button>

@@ -131,7 +131,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
           onSelectAppointment?.({ ...a, doctor_color: color });
         }}
         title={`${formatTime(a.scheduled_start)} · ${a.patient_name} · ${a.doctor_name} (${a.status})`}
-        className={`flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-medium text-white shadow-sm transition hover:brightness-110 ${
+        className={`flex w-full min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-start text-[11px] font-semibold text-white shadow-sm transition hover:brightness-110 ${
           isInactive ? "opacity-40 line-through" : ""
         }`}
         style={{ backgroundColor: color.bg }}
@@ -143,14 +143,14 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
   };
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={goPrev}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-base text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 rtl:rotate-180"
             aria-label="Previous"
           >
             ‹
@@ -158,7 +158,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
           <button
             type="button"
             onClick={goNext}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-base text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 rtl:rotate-180"
             aria-label="Next"
           >
             ›
@@ -166,28 +166,28 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
           <button
             type="button"
             onClick={goToday}
-            className="rounded-lg border border-[#0E6E75]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-brand/30 bg-white px-3.5 text-sm font-semibold text-brand transition hover:bg-brand/10"
           >
             {t("appt.cal_today")}
           </button>
         </div>
 
-        <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        <h2 className="order-first w-full text-lg font-bold tracking-tight text-slate-900 sm:order-none sm:w-auto">{title}</h2>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={refresh}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
           >
             {t("appt.refresh")}
           </button>
-          <div className="flex rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-0.5 text-xs font-semibold">
+          <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 text-sm font-semibold">
             <button
               type="button"
               onClick={() => setView("week")}
-              className={`rounded-full px-3.5 py-1.5 transition-colors ${
-                view === "week" ? "bg-[#0E6E75] text-white" : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
+              className={`rounded-lg px-3.5 py-1.5 transition-colors ${
+                view === "week" ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               {t("appt.cal_week")}
@@ -195,8 +195,8 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
             <button
               type="button"
               onClick={() => setView("month")}
-              className={`rounded-full px-3.5 py-1.5 transition-colors ${
-                view === "month" ? "bg-[#0E6E75] text-white" : "text-[#0E6E75] hover:bg-[#0E6E75]/10"
+              className={`rounded-lg px-3.5 py-1.5 transition-colors ${
+                view === "month" ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               {t("appt.cal_month")}
@@ -207,11 +207,11 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
 
       {/* Doctors legend */}
       {doctorsLegend.length > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           {doctorsLegend.map((doc) => {
             const color = colorFor(doc.id);
             return (
-              <span key={doc.id} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+              <span key={doc.id} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700">
                 <span
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: color.bg }}
@@ -225,18 +225,19 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
 
       {/* Error */}
       {error && (
-        <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
           {error}
         </div>
       )}
 
       {/* Loading */}
       {isLoading && (
-        <p className="mb-2 text-xs text-slate-400">{t("appt.loading")}</p>
+        <p className="mb-2 text-xs font-medium text-slate-500">{t("appt.loading")}</p>
       )}
 
+      <div className="overflow-hidden rounded-xl border border-slate-200">
       {/* Weekday header */}
-      <div className="grid grid-cols-7 border-b border-slate-200 pb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+      <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {WEEK_DAY_KEYS.map((k) => (
           <div key={k}>{t(k)}</div>
         ))}
@@ -258,17 +259,17 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
               key={key}
               onClick={() => onSelectDay?.(day)}
               title={onSelectDay ? t("appt.cal_add_hint") : undefined}
-              className={`group border-b border-r border-slate-100 p-1.5 first:border-l ${
+              className={`group min-w-0 border-b border-e border-slate-100 p-1.5 transition-colors [&:nth-child(7n)]:border-e-0 ${
                 view === "week" ? "min-h-[340px]" : "min-h-[110px]"
-              } ${isToday ? "bg-yellow-50" : isOtherMonth ? "bg-slate-50/70" : "bg-white"} ${
-                onSelectDay ? "cursor-pointer hover:bg-[#0E6E75]/5" : ""
+              } ${isToday ? "bg-brand/10" : isOtherMonth ? "bg-slate-50" : "bg-white"} ${
+                onSelectDay ? "cursor-pointer hover:bg-brand/5" : ""
               }`}
             >
               <div className="mb-1 flex items-center justify-between px-0.5">
                 <span
                   className={`text-xs font-semibold ${
                     isToday
-                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[#0E6E75] text-[10px] text-white"
+                      ? "flex h-6 w-6 items-center justify-center rounded-full bg-brand text-[11px] text-white"
                       : isOtherMonth
                       ? "text-slate-300"
                       : "text-slate-700"
@@ -277,9 +278,9 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
                   {day.getDate()}
                 </span>
                 {dayAppts.length > 0 ? (
-                  <span className="text-[10px] text-slate-400">{dayAppts.length}</span>
+                  <span className="rounded-full bg-slate-100 px-1.5 text-[10px] font-semibold tabular-nums text-slate-500">{dayAppts.length}</span>
                 ) : onSelectDay ? (
-                  <span className="hidden text-[10px] font-semibold text-[#0E6E75] group-hover:inline">+</span>
+                  <span className="hidden text-[10px] font-semibold text-brand group-hover:inline">+</span>
                 ) : null}
               </div>
 
@@ -293,7 +294,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
                       e.stopPropagation();
                       setExpandedDay(key);
                     }}
-                    className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5"
+                    className="w-full rounded-md px-2 py-0.5 text-start text-[11px] font-semibold text-brand hover:bg-brand/10"
                   >
                     {t("appt.cal_more", { count: hiddenCount })}
                   </button>
@@ -306,7 +307,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
                       e.stopPropagation();
                       setExpandedDay(null);
                     }}
-                    className="w-full rounded-md px-2 py-0.5 text-left text-[10px] font-semibold text-slate-400 hover:bg-slate-50"
+                    className="w-full rounded-md px-2 py-0.5 text-start text-[11px] font-semibold text-slate-500 hover:bg-slate-100"
                   >
                     {t("appt.cal_show_less")}
                   </button>
@@ -315,6 +316,7 @@ export default function AppointmentsCalendar({ onSelectAppointment, onSelectDay,
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

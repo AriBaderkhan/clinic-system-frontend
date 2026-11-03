@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { getAppointmentById, editAppointment } from "../../api/appointmentApi";
 import useDoctors from "../../hooks/useDoctors";
 import AppointmentForm from "../../components/appointments/AppointmentForm";
+import PageHeader from "../../components/common/PageHeader";
 
 export default function EditAppointment() {
   const { t } = useTranslation();
@@ -50,27 +51,20 @@ export default function EditAppointment() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900">{t("appt.edit_title")}</h1>
-          <p className="text-xs text-slate-500">
-            {t("appt.edit_subtitle")}
-          </p>
-        </div>
-      </div>
+    <div className="w-full space-y-5">
+      <PageHeader title={t("appt.edit_title")} subtitle={t("appt.edit_subtitle")} />
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-        {isLoading && <p className="text-xs text-slate-500">{t("appt.loading_appt")}</p>}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+        {isLoading && <p className="py-10 text-center text-sm text-slate-500">{t("appt.loading_appt")}</p>}
 
         {loadError && (
-          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+          <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {loadError}
           </div>
         )}
 
         {!isLoading && !appointment && !loadError && (
-          <p className="text-xs text-slate-500">{t("appt.not_found_edit")}</p>
+          <p className="py-10 text-center text-sm text-slate-500">{t("appt.not_found_edit")}</p>
         )}
 
         {!isLoading && appointment && (

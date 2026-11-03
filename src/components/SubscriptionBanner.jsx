@@ -16,10 +16,10 @@ export default function SubscriptionBanner() {
 
     // pending review = neutral; expired = red; expiring = amber
     const tone = pending
-        ? "border-sky-100 bg-sky-50 text-sky-700"
+        ? "border-sky-200 bg-sky-50 text-sky-800"
         : expired
-            ? "border-red-100 bg-red-50 text-red-700"
-            : "border-amber-100 bg-amber-50 text-amber-700";
+            ? "border-red-200 bg-red-50 text-red-700"
+            : "border-amber-200 bg-amber-50 text-amber-800";
 
     let message;
     if (pending) {
@@ -32,15 +32,15 @@ export default function SubscriptionBanner() {
     }
 
     return (
-        <div className={`mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 ${tone}`}>
-            <p className="text-[13px] font-medium">
-                <span className="mr-1">{pending ? "⏳" : "⚠"}</span>
+        <div className={`mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-card ${tone}`}>
+            <p className="min-w-0 text-[13px] font-semibold">
+                <span className="me-1">{pending ? "⏳" : "⚠"}</span>
                 {message}
             </p>
             {canRenew && !pending && (
                 <Link
                     to="/clinic/settings"
-                    className="shrink-0 rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0A565C]"
+                    className="inline-flex shrink-0 items-center justify-center rounded-xl bg-brand px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-brand-dark"
                 >
                     Go to Subscription
                 </Link>

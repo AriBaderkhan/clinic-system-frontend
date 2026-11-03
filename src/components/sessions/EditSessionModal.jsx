@@ -115,12 +115,12 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
     const back = () => { setStep(null); setAmount(""); };
 
     return (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
             onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="w-full max-w-2xl rounded-2xl bg-white p-4 shadow-xl max-h-[85vh] overflow-y-auto">
+            <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop">
                 <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-slate-900">{t("appt.tw_title", { tooth })}</h3>
-                    <button type="button" onClick={onClose} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-200">✕</button>
+                    <h3 className="text-base font-semibold text-slate-900">{t("appt.tw_title", { tooth })}</h3>
+                    <button type="button" onClick={onClose} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">✕</button>
                 </div>
 
                 {!step ? (
@@ -131,7 +131,7 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
                                 const hasPlan = w.is_plan && !!planFor(tooth, w.code);
                                 return (
                                     <button key={w.id} type="button" onClick={() => clickWork(w)}
-                                        className="flex w-full items-center justify-between gap-1 rounded-lg border border-slate-200 px-3 py-2 text-left text-sm hover:border-[#0E6E75] hover:bg-[#0E6E75]/5">
+                                        className="flex w-full items-center justify-between gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-start text-sm text-slate-700 transition hover:border-brand hover:bg-brand/5">
                                         <span className="min-w-0 truncate font-medium text-slate-800" title={w.name}>{w.name}</span>
                                         <span className="flex shrink-0 items-center gap-1.5 text-[11px]">
                                             {w.is_plan && <span className="rounded bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-700">{t("appt.tw_plan")}</span>}
@@ -146,7 +146,7 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
                     <>
                         <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                             <span className="text-sm font-semibold text-slate-800">{step.work.name}</span>
-                            <button type="button" onClick={back} className="text-[11px] text-[#0E6E75] hover:underline">{t("appt.tw_change")}</button>
+                            <button type="button" onClick={back} className="text-[11px] text-brand hover:underline">{t("appt.tw_change")}</button>
                         </div>
 
                         {step.existing ? (
@@ -157,18 +157,18 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
                                 <p className="text-xs font-medium text-slate-700">{t("appt.tw_done_q")}</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: true, amount: 0 })}
-                                        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
                                     <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: false, amount: 0 })}
-                                        className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_done_no")}</button>
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">{t("appt.tw_done_no")}</button>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-2">
                                 <label className="text-[11px] font-medium text-slate-600">{t("appt.tw_agreed")}</label>
                                 <input type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus
-                                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none" />
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                                 <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: null, amount: Number(amount) || 0 })}
-                                    className="mt-2 w-full rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_add")}</button>
+                                    className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">{t("appt.tw_add")}</button>
                             </div>
                         )}
                     </>
@@ -641,28 +641,28 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const liveRemaining = Math.max(0, liveTotal - livePaid - Number(totals.discount_amount || 0));
 
     const existingForType = dPlan ? plans[dCode]?.list || [] : [];
-    const inputCls = "w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]";
+    const inputCls = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15";
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4" onClick={(e) => e.target === e.currentTarget && closeModal()}>
-            <div className="flex max-h-[96vh] w-full max-w-7xl flex-col rounded-2xl bg-white shadow-xl">
-                <div className="flex items-start justify-between border-b border-slate-100 px-4 sm:px-5 py-3 shrink-0">
-                    <div>
-                        <h2 className="text-sm font-semibold text-slate-900">{t("es.title")}</h2>
-                        <p className="mt-0.5 text-[11px] text-slate-500">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-ocean-deep/60 p-2 backdrop-blur-sm sm:p-4" onClick={(e) => e.target === e.currentTarget && closeModal()}>
+            <div className="flex max-h-[96vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
+                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
+                    <div className="min-w-0">
+                        <h2 className="text-base font-semibold text-slate-900">{t("es.title")}</h2>
+                        <p className="mt-0.5 break-words text-xs text-slate-500">
                             {header.patientName} · {header.patientPhone} · {header.doctorName}
                             {header.apptTime ? ` · ${formatDate(header.apptTime)} ${formatTime(header.apptTime)}` : ""}
                         </p>
                     </div>
-                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="text-slate-400 hover:text-slate-600 disabled:opacity-40">✕</button>
+                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40">✕</button>
                 </div>
 
-                {error && <div className="mx-4 sm:mx-5 mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 shrink-0">{error}</div>}
+                {error && <div className="mx-4 mt-3 shrink-0 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 sm:mx-5">{error}</div>}
 
                 {isLoading ? (
-                    <div className="p-6 text-sm text-slate-500">{t("appt.loading_short")}</div>
+                    <div className="py-10 text-center text-sm text-slate-500">{t("appt.loading_short")}</div>
                 ) : (
-                    <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+                    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4 sm:p-5">
                       <div className={`grid gap-3 lg:items-start ${usesTeeth ? "lg:grid-cols-[minmax(300px,0.85fr),2fr]" : ""}`}>
                         {/* LEFT */}
                         <div className="flex flex-col gap-3">
@@ -672,8 +672,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             </div>
 
                             {/* Choose treatment */}
-                            <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
-                                <p className="mb-1.5 text-[11px] font-semibold text-[#0E6E75]">{t("appt.comp_step1")}</p>
+                            <div className="rounded-xl border border-brand/30 bg-brand/5 p-3">
+                                <p className="mb-1.5 text-[11px] font-semibold text-brand">{t("appt.comp_step1")}</p>
                                 <div className="flex items-end gap-2">
                                     <div className="flex-1">
                                         <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} className={inputCls}>
@@ -684,7 +684,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                     {dMeta && !dWhole && !dPerToothPlan && (
                                         <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
                                     )}
-                                    <button type="button" onClick={addTreatment} disabled={!canAdd} className="rounded-md bg-[#0E6E75] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-40">{t("appt.comp_add")}</button>
+                                    <button type="button" onClick={addTreatment} disabled={!canAdd} className="inline-flex items-center justify-center rounded-lg bg-brand px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-40">{t("appt.comp_add")}</button>
                                 </div>
                                 {dWhole && !dPlan && <p className="mt-1.5 text-[11px] text-slate-500">{t("appt.comp_whole_overlay", { name: dMeta?.name })}</p>}
 
@@ -731,10 +731,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                             {t("es.price")}
                                                             <input type="number" min={c.min_price || 0} step="any" value={c.unit_price} disabled={isSaving}
                                                                 onChange={(e) => setLinePrice(c.uid, e.target.value)}
-                                                                className={`w-24 rounded-md border px-1.5 py-0.5 text-xs focus:outline-none ${lowPrice ? "border-red-400 bg-red-50 text-red-700" : "border-slate-200 focus:border-[#0E6E75]"}`} />
+                                                                className={`w-24 rounded-md border px-1.5 py-0.5 text-xs focus:outline-none ${lowPrice ? "border-red-400 bg-red-50 text-red-700" : "border-slate-200 focus:border-brand"}`} />
                                                         </label>
                                                     )}
-                                                    <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
+                                                    <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-brand">✎</button>
                                                     <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                                                 </span>
                                             );
@@ -805,11 +805,11 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                                     <div className="flex flex-wrap items-center gap-1.5">
                                                                         <input type="number" min="1" step="any" value={editingPay.amount} autoFocus disabled={busy}
                                                                             onChange={(e) => setEditingPay((x) => ({ ...x, amount: e.target.value }))}
-                                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-[#0E6E75] focus:outline-none" />
+                                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-brand focus:outline-none" />
                                                                         <input type="text" value={editingPay.note} placeholder={t("es.payment_note_ph")} disabled={busy}
                                                                             onChange={(e) => setEditingPay((x) => ({ ...x, note: e.target.value }))}
-                                                                            className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-[#0E6E75] focus:outline-none" />
-                                                                        <button type="button" onClick={savePayment} disabled={busy} className="rounded-md bg-[#0E6E75] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">{t("common.save")}</button>
+                                                                            className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs focus:border-brand focus:outline-none" />
+                                                                        <button type="button" onClick={savePayment} disabled={busy} className="inline-flex items-center rounded-lg bg-brand px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50">{t("common.save")}</button>
                                                                         <button type="button" onClick={() => setEditingPay(null)} disabled={busy} className="rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-white">{t("common.cancel")}</button>
                                                                     </div>
                                                                 ) : (
@@ -825,7 +825,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                                             <>
                                                                                 <button type="button" title={t("common.edit")} disabled={busy}
                                                                                     onClick={() => setEditingPay({ kind: g.kind, id: p.id, amount: String(p.amount), note: p.note || "" })}
-                                                                                    className="rounded p-1 text-slate-400 hover:bg-white hover:text-[#0E6E75] disabled:opacity-40">✎</button>
+                                                                                    className="rounded p-1 text-slate-400 hover:bg-white hover:text-brand disabled:opacity-40">✎</button>
                                                                                 <button type="button" title={t("common.delete")} disabled={busy}
                                                                                     onClick={() => askDeletePayment(g.kind, p)}
                                                                                     className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40">✕</button>
@@ -861,7 +861,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                     {wholeMouthPlan ? (
                                                         <span className="text-[11px] text-slate-500">{t("es.whole_no_tooth")}</span>
                                                     ) : (
-                                                        <input type="number" min={11} max={85} value={p.tooth_number} onChange={(e) => setPlanTooth(p.session_work_id, e.target.value)} disabled={isSaving} placeholder={t("es.tooth_ph")} className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]" />
+                                                        <input type="number" min={11} max={85} value={p.tooth_number} onChange={(e) => setPlanTooth(p.session_work_id, e.target.value)} disabled={isSaving} placeholder={t("es.tooth_ph")} className="w-20 rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand" />
                                                     )}
                                                     {p.is_completed ? (
                                                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">{t("es.plan_completed")}</span>
@@ -873,7 +873,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                     ) : null}
                                                     {moveTargets.length > 0 && (
                                                         <select value="" disabled={isSaving || busy} onChange={(e) => movePlanWork(p, e.target.value)}
-                                                            className="rounded-md border border-slate-200 bg-white px-1.5 py-1 text-[11px] text-slate-600 focus:border-[#0E6E75] focus:outline-none">
+                                                            className="rounded-md border border-slate-200 bg-white px-1.5 py-1 text-[11px] text-slate-600 focus:border-brand focus:outline-none">
                                                             <option value="">{t("es.move_to_plan")}</option>
                                                             {moveTargets.map((pl) => (
                                                                 <option key={pl.id} value={pl.id}>
@@ -899,9 +899,9 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
 
                         {/* RIGHT: tooth chart — only for specialties that use teeth */}
                         {usesTeeth && (
-                        <div className="flex flex-col rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-3 sm:p-4 lg:min-h-[420px]">
+                        <div className="flex flex-col rounded-xl border border-brand/20 bg-brand/5 p-3 sm:p-4 lg:min-h-[420px]">
                             <div className="mb-2 flex items-center justify-between">
-                                <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
+                                <p className="text-sm font-semibold text-brand">{t("appt.comp_step2")}</p>
                                 {dMeta && !dWhole && (<span className="text-xs text-slate-500">{draft.teeth.length ? t("appt.comp_tooth_label", { teeth: draft.teeth.join(", ") }) : t("appt.comp_tooth_optional")}</span>)}
                             </div>
                             <div className="relative flex flex-1 items-center justify-center">
@@ -910,11 +910,11 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                 </div>
                                 {dWhole && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                                        <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm">{t("appt.comp_whole_overlay", { name: dMeta?.name })}</span>
+                                        <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-card">{t("appt.comp_whole_overlay", { name: dMeta?.name })}</span>
                                         <div className="flex gap-2">
                                             {[{ v: null, l: t("appt.arch_whole") }, { v: "upper", l: t("appt.arch_upper") }, { v: "lower", l: t("appt.arch_lower") }].map((o) => (
                                                 <button key={String(o.v)} type="button" onClick={() => setDraft((d) => ({ ...d, arch: o.v }))}
-                                                    className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-300 bg-white text-slate-600 hover:border-[#0E6E75]"}`}>{o.l}</button>
+                                                    className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-brand bg-brand text-white" : "border-slate-300 bg-white text-slate-600 hover:border-brand"}`}>{o.l}</button>
                                             ))}
                                         </div>
                                     </div>
@@ -926,10 +926,10 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                       </div>
 
                       {/* Case images — full width at the bottom, responsive grid (like the add flow) */}
-                      <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
+                      <div className="rounded-xl border border-brand/30 bg-brand/5 p-3">
                         <div className="mb-2 flex items-center justify-between">
-                          <p className="text-[11px] font-semibold text-[#0E6E75]">{t("es.case_images")}</p>
-                          <label className="cursor-pointer rounded-md border border-[#0E6E75]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10">
+                          <p className="text-[11px] font-semibold text-brand">{t("es.case_images")}</p>
+                          <label className="cursor-pointer rounded-md border border-brand/40 bg-white px-2.5 py-1 text-[11px] font-medium text-brand hover:bg-brand/10">
                             {t("appt.comp_add_images")}
                             <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={onPickImages} disabled={isSaving} />
                           </label>
@@ -941,17 +941,17 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                             {existingImages.map((img) => {
                               const marked = imagesToDelete.includes(img.id);
                               return (
-                                <div key={img.id} className={`relative aspect-square overflow-hidden rounded-md border ${marked ? "border-red-300 opacity-40" : "border-slate-200"}`}>
+                                <div key={img.id} className={`relative aspect-square overflow-hidden rounded-lg border ${marked ? "border-red-300 opacity-40" : "border-slate-200"}`}>
                                   <img src={img.url} alt="" className="h-full w-full object-cover" />
-                                  <button type="button" onClick={() => toggleDeleteExisting(img.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">{marked ? "↺" : "✕"}</button>
+                                  <button type="button" onClick={() => toggleDeleteExisting(img.id)} disabled={isSaving} className="absolute end-0 top-0 rounded-es-md bg-black/55 px-1 text-[11px] leading-tight text-onphoto hover:bg-red-600">{marked ? "↺" : "✕"}</button>
                                 </div>
                               );
                             })}
                             {newImages.map((im) => (
-                              <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-emerald-300">
+                              <div key={im.id} className="relative aspect-square overflow-hidden rounded-lg border border-emerald-300">
                                 <img src={im.preview} alt="" className="h-full w-full object-cover" />
-                                <span className="absolute left-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">{t("es.new_badge")}</span>
-                                <button type="button" onClick={() => removeNewImage(im.id)} disabled={isSaving} className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
+                                <span className="absolute start-0 bottom-0 bg-emerald-600 px-1 text-[9px] leading-tight text-white">{t("es.new_badge")}</span>
+                                <button type="button" onClick={() => removeNewImage(im.id)} disabled={isSaving} className="absolute end-0 top-0 rounded-es-md bg-black/55 px-1 text-[11px] leading-tight text-onphoto hover:bg-red-600">✕</button>
                               </div>
                             ))}
                           </div>
@@ -960,13 +960,13 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                     </div>
                 )}
 
-                <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-4 sm:px-5 py-3">
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-slate-100 px-4 py-4 sm:px-5">
                     {canDeleteVisit && !isLoading && (
                         <button type="button" onClick={askDeleteVisit} disabled={isSaving || busy}
-                            className="me-auto rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50">{t("es.delete_visit")}</button>
+                            className="me-auto inline-flex items-center justify-center rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50">{t("es.delete_visit")}</button>
                     )}
-                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50">{t("common.cancel")}</button>
-                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading || busy} className="rounded-md bg-[#0E6E75] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">{isSaving ? t("es.saving") : t("es.save_changes")}</button>
+                    <button type="button" onClick={closeModal} disabled={isSaving || busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50">{t("common.cancel")}</button>
+                    <button type="button" onClick={handleSave} disabled={isSaving || isLoading || busy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50">{isSaving ? t("es.saving") : t("es.save_changes")}</button>
                 </div>
             </div>
 

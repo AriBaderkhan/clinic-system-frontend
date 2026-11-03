@@ -4,7 +4,12 @@ import useApptsPerDoc from "../../hooks/useApptsPerDoctor";
 import CalendarAppointmentModal from "../../components/appointments/CalendarAppointmentModal";
 import { useSettings } from "../../context/SettingContext";
 import { useAuth } from "../../context/AuthContext";
+import PageHeader from "../../components/common/PageHeader";
 
+const SELECT =
+    "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15";
+const BTN_SECONDARY =
+    "inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50";
 
 export default function ApptsPerDoctor() {
     const { t } = useTranslation();
@@ -52,7 +57,7 @@ export default function ApptsPerDoctor() {
 
     let x = 1
     return (
-        <div className="space-y-6">
+        <div className="w-full space-y-5">
             {/* Modals */}
 
 
@@ -64,38 +69,24 @@ export default function ApptsPerDoctor() {
             )}
 
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-lg font-semibold text-slate-900">
-                        {t("appt.title")}
-                    </h1>
-                    <p className="text-xs text-slate-500">
-                        {t("appt.subtitle", { clinic: user?.clinic_name || "" })}
-                    </p>
-                </div>
-
-
-            </div>
+            <PageHeader
+                title={t("appt.title")}
+                subtitle={t("appt.subtitle", { clinic: user?.clinic_name || "" })}
+            />
 
             {/* Card */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-card">
                 {/* Top bar: filters + refresh */}
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-100 p-4 sm:p-5">
                     {/* Left: info + filters + search */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                        <span>
-                            {isLoading
-                                ? t("appt.loading")
-                                : t("clin.apd_total", { count: filteredAppointments.length })}
-                        </span>
-
+                    <div className="flex min-w-0 flex-wrap items-end gap-3">
                         {/* Day filter */}
-                        <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">{t("clin.apd_day")}</span>
+                        <label className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-slate-500">{t("clin.apd_day")}</span>
                             <select
                                 value={dayFilter}
                                 onChange={(e) => setDayFilter(e.target.value)}
-                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                className={SELECT}
                             >
                                 <option value="">{t("appt.all")}</option>
                                 <option value="today">{t("appt.today")}</option>
@@ -103,42 +94,47 @@ export default function ApptsPerDoctor() {
                                 <option value="last_week">{t("appt.last_week")}</option>
                                 <option value="last_month">{t("appt.last_month")}</option>
                             </select>
-                        </div>
+                        </label>
 
                         {/* Type filter */}
-                        <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">{t("clin.apd_type")}</span>
+                        <label className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-slate-500">{t("clin.apd_type")}</span>
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
-                                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                className={SELECT}
                             >
                                 <option value="">{t("appt.all")}</option>
                                 <option value="normal">{t("appt.type_normal")}</option>
                                 <option value="urgent">{t("appt.type_urgent")}</option>
                                 <option value="walk_in">{t("appt.type_walk_in")}</option>
                             </select>
-                        </div>
+                        </label>
 
                         {/* 🔍 Search */}
-                        <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-500">{t("clin.apd_search")}</span>
+                        <label className="flex w-full flex-col gap-1 sm:w-72">
+                            <span className="text-xs font-medium text-slate-500">{t("clin.apd_search")}</span>
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder={t("clin.apd_search_ph")}
-                                className="w-48 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                className={`w-full ${SELECT} placeholder:text-slate-400`}
                             />
-                        </div>
+                        </label>
                     </div>
 
                     {/* Right: buttons */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="me-1 text-xs font-medium text-slate-500">
+                            {isLoading
+                                ? t("appt.loading")
+                                : t("clin.apd_total", { count: filteredAppointments.length })}
+                        </span>
                         <button
                             type="button"
                             onClick={refresh}
-                            className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
+                            className={BTN_SECONDARY}
                         >
                             {t("appt.refresh")}
                         </button>
@@ -149,7 +145,7 @@ export default function ApptsPerDoctor() {
                                 setTypeFilter("");
                                 setSearchTerm("");
                             }}
-                            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-50"
+                            className={BTN_SECONDARY}
                         >
                             {t("appt.clear")}
                         </button>
@@ -159,7 +155,7 @@ export default function ApptsPerDoctor() {
 
                 {/* Errors */}
                 {error && (
-                    <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                    <div className="mx-4 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mx-5">
                         {error}
                     </div>
                 )}
@@ -168,7 +164,7 @@ export default function ApptsPerDoctor() {
 
                 {/* Empty state */}
                 {!isLoading && !error && filteredAppointments.length === 0 && (
-                    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+                    <div className="px-4 py-10 text-center text-sm text-slate-500">
                         {t("appt.empty")}
                     </div>
                 )}
@@ -176,19 +172,19 @@ export default function ApptsPerDoctor() {
                 {/* Table */}
                 {filteredAppointments.length > 0 && (
                     <div className="overflow-x-auto">
-                        <table className="min-w-full text-left text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-200 text-xs text-slate-500">
-                                    <th className="px-3 py-2 font-medium">#</th>
-                                    <th className="px-3 py-2 font-medium">{t("appt.col_patient_name")}</th>
-                                    <th className="px-3 py-2 font-medium">{t("appt.col_patient_phone")}</th>
-                                    <th className="px-3 py-2 font-medium">{t("appt.col_doctor")}</th>
-                                    <th className="px-3 py-2 font-medium">
+                        <table className="w-full text-start text-sm">
+                            <thead className="bg-slate-50">
+                                <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <th className="px-4 py-3 text-start">#</th>
+                                    <th className="px-4 py-3 text-start">{t("appt.col_patient_name")}</th>
+                                    <th className="px-4 py-3 text-start">{t("appt.col_patient_phone")}</th>
+                                    <th className="px-4 py-3 text-start">{t("appt.col_doctor")}</th>
+                                    <th className="px-4 py-3 text-start">
                                         {t("appt.col_datetime")}
                                     </th>
-                                    <th className="px-3 py-2 font-medium">{t("appt.col_type")}</th>
-                                    <th className="px-3 py-2 font-medium">{t("appt.col_status")}</th>
-                                    <th className="px-3 py-2 font-medium text-end">
+                                    <th className="px-4 py-3 text-start">{t("appt.col_type")}</th>
+                                    <th className="px-4 py-3 text-start">{t("appt.col_status")}</th>
+                                    <th className="px-4 py-3 text-end">
                                         {t("appt.col_actions")}
                                     </th>
                                 </tr>
@@ -201,46 +197,46 @@ export default function ApptsPerDoctor() {
                                     return (
                                         <tr
                                             key={id}
-                                            className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                                            className="border-t border-slate-100 hover:bg-slate-50"
                                         >
-                                            <td className="px-3 py-2 text-slate-800">
+                                            <td className="px-4 py-3 text-slate-500 tabular-nums">
                                                 {x++}
                                             </td>
-                                            <td className="px-3 py-2 text-slate-800">
+                                            <td className="px-4 py-3 font-medium text-slate-900">
                                                 {a.patient_name}
                                             </td>
 
-                                            <td className="px-3 py-2 text-slate-700">
+                                            <td className="whitespace-nowrap px-4 py-3 text-slate-700 tabular-nums">
                                                 {a.patient_phone}
                                             </td>
 
-                                            <td className="px-3 py-2 text-slate-700 capitalize">
+                                            <td className="px-4 py-3 text-slate-700 capitalize">
                                                 {a.doctor_name}
                                             </td>
 
-                                            <td className="px-3 py-2 text-slate-700">
+                                            <td className="whitespace-nowrap px-4 py-3 text-slate-700">
                                                 {formatDateTime(a.scheduled_start)}
                                             </td>
 
-                                            <td className="px-3 py-2 text-slate-700">
+                                            <td className="px-4 py-3 text-slate-700">
                                                 {a.appointment_type}
                                                 {a.is_walk_in && (
-                                                    <span className="ms-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                                                    <span className="ms-1.5 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
                                                         {t("appt.walk_in_badge")}
                                                     </span>
                                                 )}
                                             </td>
 
-                                            <td className="px-3 py-2 text-slate-700">
+                                            <td className="px-4 py-3 text-slate-700">
                                                 {a.status}
                                             </td>
 
-                                            <td className="px-3 py-2">
-                                                <div className="flex items-center justify-end gap-2 text-xs">
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center justify-end gap-2">
                                                     <button
                                                         type="button"
                                                         onClick={() => setSelectedAppointment(a)}
-                                                        className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
+                                                        className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                                                     >
                                                         {t("common.view")}
                                                     </button>

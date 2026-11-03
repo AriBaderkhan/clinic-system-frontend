@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getReferralSources } from "../../api/patientApi";
+import PageHeader from "../common/PageHeader";
 
 const REFERRAL_DEFAULTS = ["Social Media", "Relative & friends", "Location", "Old Patient"];
 
@@ -136,15 +137,12 @@ export default function PatientForm({
     const submitLabel = mode === "edit" ? t("patient_form.save_changes") : t("patient_form.save_patient");
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
-                <p className="text-xs text-slate-500">{subtitle}</p>
-            </div>
+        <div className="w-full space-y-5">
+            <PageHeader title={title} subtitle={subtitle} />
 
-            <div className="w-full rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+            <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
                 {(clientError || errorMessage) && (
-                    <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
                         {clientError || errorMessage}
                     </div>
                 )}
@@ -155,13 +153,13 @@ export default function PatientForm({
                         {/* ===== Personal details ===== */}
                         <section className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t("patient_form.personal_details")}</span>
+                                <span className="text-[15px] font-semibold text-slate-900">{t("patient_form.personal_details")}</span>
                                 <div className="h-px flex-1 bg-slate-100" />
                             </div>
 
                             {/* Name */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">
                                     {t("patient_form.full_name")}<span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -169,14 +167,14 @@ export default function PatientForm({
                                     name="name"
                                     value={form.name}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     placeholder={t("patient_form.name_ph")}
                                 />
                             </div>
 
                             {/* Phone */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">
                                     {t("patient_form.phone")}<span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -184,7 +182,7 @@ export default function PatientForm({
                                     name="phone"
                                     value={form.phone}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     placeholder={t("patient_form.phone_ph")}
                                 />
                                 {form.extra_phones.map((p, index) => (
@@ -193,7 +191,7 @@ export default function PatientForm({
                                         type="text"
                                         value={p}
                                         onChange={(e) => handleExtraPhoneChange(index, e.target.value)}
-                                        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         placeholder={t("patient_form.phone_ph")}
                                     />
                                 ))}
@@ -201,7 +199,7 @@ export default function PatientForm({
                                     <button
                                         type="button"
                                         onClick={addExtraPhone}
-                                        className="mt-1 text-xs font-semibold text-[#0E6E75] hover:underline"
+                                        className="mt-1 text-sm font-semibold text-brand hover:underline"
                                     >
                                         + {t("patient_form.add_phone")}
                                     </button>
@@ -210,8 +208,8 @@ export default function PatientForm({
 
                             {/* Age + Gender */}
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-medium text-slate-700">
+                                <div className="space-y-1.5">
+                                    <label className="block text-sm font-medium text-slate-700">
                                         {t("patient_form.age")}<span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -221,25 +219,25 @@ export default function PatientForm({
                                         onChange={handleChange}
                                         onBlur={normalizeAge}
                                         min={0}
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                         placeholder={t("patient_form.age_ph")}
                                     />
                                     {ageYearHint !== null && (
-                                        <p className="text-[11px] font-medium text-[#0E6E75]">
+                                        <p className="text-xs font-medium text-brand">
                                             {t("patient_form.year_hint", { year: form.age, age: ageYearHint })}
                                         </p>
                                     )}
                                 </div>
 
-                                <div className="space-y-1">
-                                    <label className="text-xs font-medium text-slate-700">
+                                <div className="space-y-1.5">
+                                    <label className="block text-sm font-medium text-slate-700">
                                         {t("patient_form.gender")}<span className="text-red-500">*</span>
                                     </label>
                                     <select
                                         name="gender"
                                         value={form.gender}
                                         onChange={handleChange}
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     >
                                         <option value="">{t("patient_form.select_gender")}</option>
                                         <option value="male">{t("patient_form.male")}</option>
@@ -249,8 +247,8 @@ export default function PatientForm({
                             </div>
 
                             {/* Address */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">
                                     {t("patient_form.address")}
                                 </label>
                                 <textarea
@@ -258,19 +256,19 @@ export default function PatientForm({
                                     value={form.address}
                                     onChange={handleChange}
                                     rows={3}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     placeholder={t("patient_form.address_ph")}
                                 />
                             </div>
 
                             {/* Referral source */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">{t("patient_form.referral_q")}</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">{t("patient_form.referral_q")}</label>
                                 <select
                                     name="referral_source"
                                     value={showOther ? "__other__" : form.referral_source}
                                     onChange={handleReferralChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                 >
                                     <option value="">{t("patient_form.select_source")}</option>
                                     {referralOptions.map((s) => (
@@ -287,7 +285,7 @@ export default function PatientForm({
                                             setForm((prev) => ({ ...prev, referral_source: e.target.value }));
                                         }}
                                         placeholder={t("patient_form.other_ph")}
-                                        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     />
                                 )}
                             </div>
@@ -296,19 +294,19 @@ export default function PatientForm({
                         {/* ===== Medical info (optional) ===== */}
                         <section className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t("patient_form.medical_info")}</span>
-                                <span className="text-[10px] text-slate-400">{t("patient_form.optional")}</span>
+                                <span className="text-[15px] font-semibold text-slate-900">{t("patient_form.medical_info")}</span>
+                                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">{t("patient_form.optional")}</span>
                                 <div className="h-px flex-1 bg-slate-100" />
                             </div>
 
                             {/* Blood type */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">{t("patient_form.blood_type")}</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">{t("patient_form.blood_type")}</label>
                                 <select
                                     name="blood_type"
                                     value={form.blood_type}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75] sm:max-w-[12rem]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 sm:max-w-[12rem]"
                                 >
                                     <option value="">{t("patient_form.select")}</option>
                                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((b) => (
@@ -318,27 +316,27 @@ export default function PatientForm({
                             </div>
 
                             {/* Allergies */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">{t("patient_form.allergies")}</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">{t("patient_form.allergies")}</label>
                                 <textarea
                                     name="allergies"
                                     value={form.allergies}
                                     onChange={handleChange}
                                     rows={2}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     placeholder={t("patient_form.allergies_ph")}
                                 />
                             </div>
 
                             {/* Chronic diseases */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-700">{t("patient_form.chronic")}</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-700">{t("patient_form.chronic")}</label>
                                 <textarea
                                     name="chronic_diseases"
                                     value={form.chronic_diseases}
                                     onChange={handleChange}
                                     rows={2}
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0E6E75] focus:bg-white focus:ring-1 focus:ring-[#0E6E75]"
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                     placeholder={t("patient_form.chronic_ph")}
                                 />
                             </div>
@@ -349,7 +347,7 @@ export default function PatientForm({
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="rounded-lg bg-[#0E6E75] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#0E6E75] disabled:cursor-not-allowed disabled:opacity-70"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {isSubmitting ? t("patient_form.saving") : submitLabel}
                         </button>

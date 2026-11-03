@@ -313,7 +313,10 @@
     "failed_load_data": "Failed to load users data",
     "doctor_extra_monthly": "Your plan includes {{count}} doctors. This one is an extra doctor: +${{price}} / month on your next renewal.",
     "doctor_extra_yearly": "Your plan includes {{count}} doctors. This one is an extra doctor: +${{price}} / year on your next renewal.",
-    "doctor_plan_full": "Your plan includes {{count}} doctors and they are all used. Upgrade your plan to add another doctor."
+    "doctor_plan_full": "Your plan includes {{count}} doctors and they are all used. Upgrade your plan to add another doctor.",
+    "role_in_branch": "Role in {{branch}}",
+    "edit_role_hint": "Changing the role keeps all of this person's appointments, visits and patients. To add another branch, use the link icon.",
+    "assign_hint": "If this person already works in the chosen branch, their role there is changed (no second role)."
   },
   "insights": {
     "title": "Insights Assistant",
@@ -1472,7 +1475,8 @@
     "SETTLE_NOT_ALLOWED": "Closing a visit without the full payment is turned off in this branch.",
     "DISCOUNTS_NOT_ALLOWED": "Discounts are turned off in this branch.",
     "DISCOUNT_OVER_MAX": "This discount is bigger than this branch allows.",
-    "PATIENT_HAS_UNPAID": "This patient has an unpaid visit. It must be paid before a new booking."
+    "PATIENT_HAS_UNPAID": "This patient has an unpaid visit. It must be paid before a new booking.",
+    "USER_NOT_FOUND": "User not found."
   },
   "roles": {
     "title": "Roles & permissions",

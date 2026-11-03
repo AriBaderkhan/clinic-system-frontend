@@ -43,22 +43,22 @@ export default function EditTreatmentPlanModal({ plan, onClose, onUpdated }) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-semibold text-slate-900">{t("patient_folder.edit_plan")}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
+          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">✕</button>
         </div>
 
-        <div className="space-y-4 p-5">
+        <div className="space-y-4 px-5 py-4">
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("patient_folder.col_type")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("patient_folder.col_type")}</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             >
               {TYPES.map((ty) => (
                 <option key={ty} value={ty}>{ty}</option>
@@ -67,30 +67,30 @@ export default function EditTreatmentPlanModal({ plan, onClose, onUpdated }) {
           </div>
 
           <div>
-            <label className="block text-xs text-slate-600 mb-1">{t("patient_folder.col_agreed")}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("patient_folder.col_agreed")}</label>
             <input
               type="number"
               min="0"
               value={agreedTotal}
               onChange={(e) => setAgreedTotal(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-300"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
             />
           </div>
 
           <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-            <input type="checkbox" checked={isCompleted} onChange={(e) => setIsCompleted(e.target.checked)} />
+            <input type="checkbox" checked={isCompleted} onChange={(e) => setIsCompleted(e.target.checked)} className="h-4 w-4 accent-brand" />
             {t("patient_folder.mark_completed")}
           </label>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-200 px-5 py-4">
-          <button onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">
+        <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-4">
+          <button onClick={onClose} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
             {t("common.cancel")}
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
           >
             {saving ? t("common.saving") : t("common.save")}
           </button>

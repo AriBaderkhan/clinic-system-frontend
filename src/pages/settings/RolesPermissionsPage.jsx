@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { getBranchRoles, getRolePermissions, saveRolePermissions, renameRole, deleteRole } from "../../api/rolePermissionApi";
 import { useSubscription } from "../../context/SubscriptionContext";
 import NewRoleForm from "../../components/settings/NewRoleForm";
+import PageHeader from "../../components/common/PageHeader";
 
 // screen order of the groups
 const GROUPS = ["dashboards", "patients", "appointments", "visits", "payments", "reports", "settings"];
@@ -145,19 +146,17 @@ export default function RolesPermissionsPage() {
   const grouped = GROUPS.map((g) => ({ g, items: perms.filter((p) => p.group_key === g) })).filter((x) => x.items.length);
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("roles.title")}</h1>
-          <p className="max-w-2xl text-xs text-slate-500">{t("roles.subtitle", { branch: t("roles.this_branch") })}</p>
-        </div>
-        {canEdit && (
-          <div className="flex items-center gap-2">
+    <div className="w-full space-y-5">
+      <PageHeader
+        title={t("roles.title")}
+        subtitle={t("roles.subtitle", { branch: t("roles.this_branch") })}
+        actions={canEdit && (
+          <>
             <button
               type="button"
               onClick={resetToDefault}
               disabled={saving || loading}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="rounded-xl border border-slate-200 bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/20 disabled:opacity-50"
             >
               {t("roles.reset")}
             </button>
@@ -165,18 +164,18 @@ export default function RolesPermissionsPage() {
               type="button"
               onClick={save}
               disabled={!dirty || saving || loading}
-              className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
+              className="rounded-xl bg-aqua px-4 py-2.5 text-sm font-bold text-ocean-deep transition hover:brightness-110 disabled:opacity-50"
             >
               {saving ? t("common.saving") : t("roles.save")}
             </button>
-          </div>
+          </>
         )}
-      </div>
+      />
 
       {showNew && <NewRoleForm roles={roles} roleLabel={roleLabel} onCreated={onCreated} onCancel={() => setShowNew(false)} />}
 
       {/* role tabs */}
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label={t("roles.role")}>
+      <div className="flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-card" role="tablist" aria-label={t("roles.role")}>
         {roles.map((r) => (
           <button
             key={r.id}
@@ -184,9 +183,9 @@ export default function RolesPermissionsPage() {
             role="tab"
             aria-selected={Number(r.id) === Number(roleId)}
             onClick={() => chooseRole(r.id)}
-            className={`rounded-full border px-4 py-1.5 text-sm transition ${Number(r.id) === Number(roleId)
-              ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${Number(r.id) === Number(roleId)
+              ? "bg-brand text-white"
+              : "text-slate-600 hover:bg-slate-50"}`}
           >
             {roleLabel(r.name)}
           </button>
@@ -197,42 +196,42 @@ export default function RolesPermissionsPage() {
           onClick={() => canCustom && setShowNew(true)}
           disabled={!canCustom || showNew}
           title={canCustom ? "" : t("roles.locked_plan")}
-          className="rounded-full border border-dashed border-[#0E6E75]/40 px-4 py-1.5 text-sm text-[#0E6E75] hover:bg-[#0E6E75]/5 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg border border-dashed border-brand/40 px-4 py-2 text-sm font-semibold text-brand transition hover:bg-brand/5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {canCustom ? t("roles.new_role") : `🔒 ${t("roles.new_role")} · Pro`}
         </button>
       </div>
 
       {data?.role?.is_custom && canEdit && (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <span>{data.role.is_doctor ? t("roles.custom_doctor") : t("roles.custom")}</span>
-          <button type="button" onClick={doRename} className="rounded-md border border-slate-200 px-2 py-1 text-slate-700 hover:bg-slate-50">{t("roles.rename")}</button>
-          <button type="button" onClick={doDelete} className="rounded-md border border-red-200 px-2 py-1 text-red-600 hover:bg-red-50">{t("roles.delete")}</button>
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-card">
+          <span className="me-auto">{data.role.is_doctor ? t("roles.custom_doctor") : t("roles.custom")}</span>
+          <button type="button" onClick={doRename} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">{t("roles.rename")}</button>
+          <button type="button" onClick={doDelete} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50">{t("roles.delete")}</button>
         </div>
       )}
 
-      {error && <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
-      {data && !canEdit && <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">{t("roles.own_role")}</div>}
-      {dirty && <p className="text-xs font-medium text-amber-700">{t("roles.unsaved")}</p>}
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{error}</div>}
+      {data && !canEdit && <div className="rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2.5 text-sm text-sky-800">{t("roles.own_role")}</div>}
+      {dirty && <p className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">{t("roles.unsaved")}</p>}
 
       {loading ? (
         <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-100" />)}</div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
           {grouped.map(({ g, items }) => (
-            <section key={g} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-slate-800">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t(`roles.groups.${g}`, g)}</h2>
-                <span className="text-[11px] text-slate-400">
+            <section key={g} className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+              <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <h2 className="text-[15px] font-semibold text-slate-900">{t(`roles.groups.${g}`, g)}</h2>
+                <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 tabular-nums">
                   {t("roles.count", { on: items.filter((p) => draft[p.key]?.granted).length, total: items.length })}
                 </span>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-1">
                 {items.map((p) => {
                   const d = draft[p.key] || {};
                   const disabled = !canEdit || !!p.locked;
                   return (
-                    <li key={p.key} className="rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    <li key={p.key} className="rounded-xl px-2.5 py-2 transition hover:bg-slate-50">
                       <label className={`flex items-start gap-3 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}>
                         <input
                           type="checkbox"
@@ -240,28 +239,28 @@ export default function RolesPermissionsPage() {
                           checked={!!d.granted}
                           disabled={disabled}
                           onChange={() => toggle(p)}
-                          className="mt-0.5 h-4 w-4 accent-[#0E6E75]"
+                          className="mt-0.5 h-4 w-4 accent-brand"
                         />
                         <span className="min-w-0 flex-1">
                           <span className={`block text-sm ${disabled ? "text-slate-400" : "text-slate-800"}`}>
                             {t(`roles.perm.${p.key}`, p.description || p.key)}
                           </span>
                           <span className="mt-0.5 flex flex-wrap gap-1.5">
-                            {p.is_default && <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">{t("roles.default")}</span>}
-                            {p.locked === "not_yours" && <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">🔒 {t("roles.locked_not_yours")}</span>}
-                            {p.locked === "plan" && <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">🔒 {t("roles.locked_plan")}</span>}
+                            {p.is_default && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">{t("roles.default")}</span>}
+                            {p.locked === "not_yours" && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">🔒 {t("roles.locked_not_yours")}</span>}
+                            {p.locked === "plan" && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">🔒 {t("roles.locked_plan")}</span>}
                           </span>
                         </span>
                       </label>
                       {p.has_scope && d.granted && (
-                        <div className="ms-7 mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+                        <div className="ms-7 mt-1.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                           <span>{t("roles.scope_hint")}:</span>
                           <select
                             data-scope={p.key}
                             value={d.scope || "all"}
                             disabled={disabled}
                             onChange={(e) => setScope(p, e.target.value)}
-                            className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-700 disabled:opacity-60"
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60"
                           >
                             <option value="own">{t("roles.own")}</option>
                             {/* nobody gives a wider view than they have */}

@@ -20,7 +20,7 @@ const topLinkClass = ({ isActive }) =>
   [
     "relative px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap",
     isActive
-      ? "text-slate-900 after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-[#0E6E75]"
+      ? "text-slate-900 after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-aqua"
       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
   ].join(" ");
 
@@ -29,7 +29,7 @@ const menuLinkClass = ({ isActive }) =>
   [
     "block px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap",
     isActive
-      ? "text-[#0E6E75] bg-[#0E6E75]/10"
+      ? "text-brand bg-brand/10"
       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
   ].join(" ");
 
@@ -79,7 +79,7 @@ function NavDropdown({ group }) {
         className={[
           "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap",
           sectionActive
-            ? "text-slate-900 after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-[#0E6E75]"
+            ? "text-slate-900 after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-aqua"
             : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
         ].join(" ")}
       >
@@ -90,7 +90,7 @@ function NavDropdown({ group }) {
       {open && (
         /* top-full + pt-2 keeps the hover area continuous across the visual gap */
         <div className="absolute start-1/2 top-full z-50 -translate-x-1/2 pt-2">
-          <div className="w-52 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+          <div className="w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-pop">
             {group.children.map((c) => (
               <NavLink key={c.key} to={c.to} end={c.end} onClick={() => setOpen(false)} className={menuLinkClass}>
                 {c.label}
@@ -153,7 +153,7 @@ export default function TopNav({
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="z-40 shrink-0 border-b border-slate-200 bg-white">
+    <header className="ocean-band band-dark z-40 shrink-0">
       <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-3 px-4 md:px-6">
         {/* LEFT — avatar + brand */}
         <div className="flex min-w-0 items-center gap-3">
@@ -167,7 +167,7 @@ export default function TopNav({
         </div>
 
         {/* CENTER — page links (desktop) */}
-        <nav className="mx-auto hidden items-center gap-0.5 lg:flex">
+        <nav className="mx-auto hidden items-center gap-0.5 xl:flex">
           {groups.map((g) =>
             g.children.length ? (
               <NavDropdown key={g.key} group={g} />
@@ -179,15 +179,15 @@ export default function TopNav({
 
         {/* RIGHT — extras + theme + logout */}
         <div className="ms-auto flex items-center gap-1.5">
-          {switcher && <div className="hidden lg:block">{switcher}</div>}
+          {switcher && <div className="hidden xl:block">{switcher}</div>}
           {rightExtras}
           <ThemeIconToggle />
-          {beforeLogout && <div className="hidden lg:block">{beforeLogout}</div>}
+          {beforeLogout && <div className="hidden xl:block">{beforeLogout}</div>}
           {onLogout && (
             <button
               type="button"
               onClick={onLogout}
-              className="hidden items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-red-300 hover:text-red-600 sm:inline-flex"
+              className="hidden items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-red-300 hover:bg-red-500/10 hover:text-red-300 sm:inline-flex"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
@@ -201,7 +201,7 @@ export default function TopNav({
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Menu"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 transition hover:bg-slate-100 xl:hidden"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -212,8 +212,8 @@ export default function TopNav({
 
       {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="border-t border-slate-200 bg-white px-3 py-3 lg:hidden">
-          <nav className="flex flex-col gap-0.5">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-slate-200 bg-white px-3 py-3 xl:hidden">
+          <nav className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
             {groups.map((g) => (
               <div key={g.key}>
                 <NavItem item={g} onNavigate={closeMenu} className={menuLinkClass} />

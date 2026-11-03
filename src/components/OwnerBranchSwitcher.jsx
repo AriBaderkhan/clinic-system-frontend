@@ -58,13 +58,13 @@ export default function OwnerBranchSwitcher({ currentId, onBranches }) {
         <span aria-hidden="true">▾</span>
       </button>
       {open && (
-        <div className="absolute end-0 top-full z-50 mt-1 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+        <div className="absolute end-0 top-full z-50 mt-1 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-pop">
           {branches.map((b) => (
             <button
               key={b.id}
               type="button"
               onClick={() => choose(b.id)}
-              className={`block w-full rounded-lg px-3 py-2 text-start text-sm transition hover:bg-slate-100 ${Number(b.id) === Number(currentId) ? "font-semibold text-[#0E6E75]" : "text-slate-700"}`}
+              className={`block w-full rounded-lg px-3 py-2 text-start text-sm transition hover:bg-slate-100 ${Number(b.id) === Number(currentId) ? "font-semibold text-brand" : "text-slate-700"}`}
             >
               {b.name}
             </button>

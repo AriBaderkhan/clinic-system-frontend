@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fi';
 import { getTenantDashboard } from '../../api/tenantApi';
 import { useSettings } from '../../context/SettingContext';
+import PageHeader from '../../components/common/PageHeader';
 
 // Status → tailwind badge colors. Labels come from the shared appt.st_* keys.
 const STATUS_STYLE = {
@@ -22,7 +23,7 @@ export function StatusBadge({ status }) {
     const cls = STATUS_STYLE[status] || 'bg-slate-100 text-slate-600 border-slate-200';
     const label = t(`appt.st_${status}`, status);
     return (
-        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${cls}`}>
+        <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold ${cls}`}>
             {label}
         </span>
     );
@@ -30,7 +31,7 @@ export function StatusBadge({ status }) {
 
 // Rotating palette for the treatment bars.
 const BAR_COLORS = [
-    'from-[#0E6E75] to-[#0a7ab0]',
+    'from-brand to-ocean',
     'from-violet-500 to-violet-400',
     'from-emerald-500 to-emerald-400',
     'from-sky-500 to-sky-400',
@@ -48,7 +49,7 @@ export function TreatmentsChart({ data }) {
 
     if (rows.length === 0) {
         return (
-            <div className="flex h-full min-h-[220px] items-center justify-center px-5 py-10 text-center text-sm text-slate-400">
+            <div className="flex h-full min-h-[220px] items-center justify-center px-5 py-10 text-center text-sm text-slate-500">
                 {t('tdash.no_treatments')}
             </div>
         );
@@ -79,14 +80,14 @@ export function TreatmentsChart({ data }) {
 
 export function KpiCard({ icon: Icon, label, value, accent, children }) {
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500">{label}</p>
-                <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${accent}`}>
+        <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card transition hover:shadow-pop sm:p-5">
+            <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 text-xs font-medium text-slate-500">{label}</p>
+                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent}`}>
                     <Icon size={18} />
                 </span>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
+            <p className="mt-3 break-words text-2xl font-bold tracking-tight text-slate-900 tabular-nums sm:text-[28px]">{value}</p>
             {children ? <div className="mt-2">{children}</div> : null}
         </div>
     );
@@ -154,30 +155,29 @@ export default function TenantDashboard() {
     };
 
     return (
-        <div className="w-full space-y-6 p-4 md:p-6">
-            {/* Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">{t('tdash.title')}</h1>
-                    <p className="text-sm text-slate-500">{t('tdash.subtitle')}</p>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-medium text-emerald-600">
-                    <span className="relative flex h-2.5 w-2.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                    </span>
-                    {t('tdash.live')}
-                </div>
-            </div>
+        <div className="w-full space-y-5">
+            <PageHeader
+                title={t('tdash.title')}
+                subtitle={t('tdash.subtitle')}
+                actions={
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/10 px-3 py-2 text-xs font-semibold text-aqua">
+                        <span className="relative flex h-2.5 w-2.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                        </span>
+                        {t('tdash.live')}
+                    </div>
+                }
+            />
 
             {/* Branch selector — switch the whole dashboard between all branches and one */}
             {branchList.length > 1 && (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-card">
                     <button
                         onClick={() => setBranch('all')}
-                        className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${branch === 'all'
-                            ? 'border-[#0E6E75] bg-[#0E6E75] text-white'
-                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${branch === 'all'
+                            ? 'bg-brand text-white'
+                            : 'text-slate-600 hover:bg-slate-50'}`}
                     >
                         {t('tdash.all_branches')}
                     </button>
@@ -185,9 +185,9 @@ export default function TenantDashboard() {
                         <button
                             key={b.id}
                             onClick={() => setBranch(String(b.id))}
-                            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${String(branch) === String(b.id)
-                                ? 'border-[#0E6E75] bg-[#0E6E75] text-white'
-                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                            className={`max-w-full truncate rounded-lg px-4 py-2 text-sm font-semibold transition ${String(branch) === String(b.id)
+                                ? 'bg-brand text-white'
+                                : 'text-slate-600 hover:bg-slate-50'}`}
                         >
                             {b.name}
                         </button>
@@ -201,7 +201,7 @@ export default function TenantDashboard() {
                     icon={FiUserPlus}
                     label={t('tdash.new_patients')}
                     value={dash(view.newPatients)}
-                    accent="bg-[#0E6E75]/10 text-[#0E6E75]"
+                    accent="bg-brand/10 text-brand"
                 />
                 <KpiCard
                     icon={FiUsers}
@@ -235,42 +235,42 @@ export default function TenantDashboard() {
             </div>
 
             {/* Main grid: today's appointments (wide) + treatments chart */}
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 xl:grid-cols-3">
             {/* Today's appointments */}
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:col-span-2">
-                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h2 className="text-base font-semibold text-slate-900">{t('tdash.appointments_list')}</h2>
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card xl:col-span-2">
+                <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                    <h2 className="text-[15px] font-semibold text-slate-900">{t('tdash.appointments_list')}</h2>
                     <button
                         onClick={load}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
                         <FiRefreshCw size={13} /> {t('exp.refresh')}
                     </button>
                 </div>
 
                 {loading && !stats ? (
-                    <div className="px-5 py-10 text-center text-sm text-slate-400">{t('tdash.loading')}</div>
+                    <div className="px-5 py-10 text-center text-sm text-slate-500">{t('tdash.loading')}</div>
                 ) : list.length === 0 ? (
-                    <div className="px-5 py-10 text-center text-sm text-slate-400">{t('tdash.no_appointments')}</div>
+                    <div className="flex flex-col items-center gap-2 px-5 py-10 text-center text-sm text-slate-500"><FiCalendar size={22} className="text-slate-300" />{t('tdash.no_appointments')}</div>
                 ) : (
                     <>
                         {/* Desktop / tablet table */}
                         <div className="hidden overflow-x-auto md:block">
                             <table className="min-w-full text-start text-sm">
-                                <thead className="border-b border-slate-100 text-xs text-slate-500">
+                                <thead className="bg-slate-50">
                                     <tr>
-                                        <th className="px-5 py-3 text-start font-medium">{t('tdash.col_time')}</th>
-                                        <th className="px-5 py-3 text-start font-medium">{t('tdash.col_patient')}</th>
-                                        <th className="px-5 py-3 text-start font-medium">{t('tdash.col_doctor')}</th>
-                                        <th className="px-5 py-3 text-start font-medium">{t('tdash.col_branch')}</th>
-                                        <th className="px-5 py-3 text-start font-medium">{t('tdash.col_status')}</th>
+                                        <th className="whitespace-nowrap px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('tdash.col_time')}</th>
+                                        <th className="whitespace-nowrap px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('tdash.col_patient')}</th>
+                                        <th className="whitespace-nowrap px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('tdash.col_doctor')}</th>
+                                        <th className="whitespace-nowrap px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('tdash.col_branch')}</th>
+                                        <th className="whitespace-nowrap px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500">{t('tdash.col_status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {list.map((a) => (
-                                        <tr key={a.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
+                                        <tr key={a.id} className="border-t border-slate-100 hover:bg-slate-50">
                                             <td className="whitespace-nowrap px-5 py-3 font-medium text-slate-700">{formatTime(a.scheduled_start)}</td>
-                                            <td className="px-5 py-3 text-slate-900">{a.patient_name}</td>
+                                            <td className="px-5 py-3 font-medium text-slate-900">{a.patient_name}</td>
                                             <td className="px-5 py-3 text-slate-600">{a.doctor_name || '—'}</td>
                                             <td className="px-5 py-3 text-slate-600">{a.branch_name}</td>
                                             <td className="px-5 py-3"><StatusBadge status={a.status} /></td>
@@ -300,13 +300,13 @@ export default function TenantDashboard() {
             </div>
 
             {/* Treatments chart */}
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <div>
-                        <h2 className="text-base font-semibold text-slate-900">{t('tdash.treatments_title')}</h2>
-                        <p className="text-xs text-slate-500">{t('tdash.treatments_hint')}</p>
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+                <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                    <div className="min-w-0">
+                        <h2 className="text-[15px] font-semibold text-slate-900">{t('tdash.treatments_title')}</h2>
+                        <p className="mt-0.5 text-sm text-slate-500">{t('tdash.treatments_hint')}</p>
                     </div>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0E6E75]/10 text-[#0E6E75]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                         <FiActivity size={16} />
                     </span>
                 </div>
@@ -315,22 +315,22 @@ export default function TenantDashboard() {
             </div>
 
             {/* Secondary stats */}
-            <div className="grid grid-cols-2 gap-4 sm:max-w-md">
-                <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <div className="grid grid-cols-1 gap-4 sm:max-w-lg sm:grid-cols-2 sm:gap-5">
+                <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                         <FiGitBranch size={16} />
                     </span>
                     <div>
-                        <p className="text-lg font-bold text-slate-900">{dash(stats?.active_branches ?? 0)}</p>
+                        <p className="text-xl font-bold tracking-tight text-slate-900 tabular-nums">{dash(stats?.active_branches ?? 0)}</p>
                         <p className="text-xs text-slate-500">{t('tdash.active_branches')}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                         <FiUsers size={16} />
                     </span>
                     <div>
-                        <p className="text-lg font-bold text-slate-900">{dash(stats?.total_users ?? 0)}</p>
+                        <p className="text-xl font-bold tracking-tight text-slate-900 tabular-nums">{dash(stats?.total_users ?? 0)}</p>
                         <p className="text-xs text-slate-500">{t('tdash.total_users')}</p>
                     </div>
                 </div>

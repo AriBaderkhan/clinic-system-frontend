@@ -53,35 +53,35 @@ export default function AnnouncementsBell() {
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className="relative flex h-9 w-9 items-center justify-center rounded-full text-white transition hover:bg-white/10"
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-800 transition hover:bg-white/10 hover:text-slate-950"
                 title={t("layout.announcements")}
             >
                 <FiBell size={18} />
                 {unread > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    <span className="absolute -end-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-ocean">
                         {unread > 9 ? "9+" : unread}
                     </span>
                 )}
             </button>
 
             {open && (
-                <div className="absolute start-0 top-11 z-50 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-                    <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">{t("layout.announcements")}</div>
+                <div className="fixed inset-x-3 top-16 z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-pop sm:absolute sm:inset-x-auto sm:start-0 sm:top-11 sm:w-80">
+                    <div className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-900">{t("layout.announcements")}</div>
                     <div className="max-h-80 overflow-y-auto">
                         {items.length === 0 ? (
-                            <p className="px-3 py-4 text-center text-xs text-slate-400">{t("layout.no_announcements")}</p>
+                            <p className="px-4 py-8 text-center text-sm text-slate-500">{t("layout.no_announcements")}</p>
                         ) : (
                             items.map((a) => (
                                 <button
                                     key={a.id}
                                     onClick={() => openItem(a)}
-                                    className={`block w-full border-b border-slate-50 px-3 py-2 text-start transition hover:bg-slate-50 ${a.read ? "" : "bg-[#0E6E75]/5"}`}
+                                    className={`block w-full border-b border-slate-100 px-4 py-2.5 text-start transition last:border-0 hover:bg-slate-100 ${a.read ? "" : "bg-brand/10"}`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        {!a.read && <span className="h-2 w-2 shrink-0 rounded-full bg-[#0E6E75]" />}
-                                        <span className="truncate text-sm font-medium text-slate-800">{a.title}</span>
+                                        {!a.read && <span className="h-2 w-2 shrink-0 rounded-full bg-brand" />}
+                                        <span className="min-w-0 truncate text-sm font-medium text-slate-900">{a.title}</span>
                                     </div>
-                                    <p className="ms-4 truncate text-xs text-slate-500">{a.body || t("layout.view_details")}</p>
+                                    <p className="ms-4 mt-0.5 truncate text-xs text-slate-500">{a.body || t("layout.view_details")}</p>
                                 </button>
                             ))
                         )}

@@ -82,21 +82,21 @@ export default function FeaturesPage() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5 py-10 text-center text-sm text-slate-500">Loading...</div>;
 
     return (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
             {/* Left Column: Create Feature & List */}
-            <div className="space-y-6 lg:col-span-1">
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="mb-4 text-lg font-medium text-slate-800">Create New Feature</h3>
+            <div className="col-fill lg:col-span-1">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                    <h3 className="mb-4 text-[15px] font-semibold text-slate-900">Create New Feature</h3>
                     <form onSubmit={handleCreateFeature} className="space-y-4">
                         <div>
                             <input
                                 type="text"
                                 placeholder="Feature Name (e.g. Reports)"
                                 required
-                                className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                className="block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                 value={newFeature.name}
                                 onChange={(e) => setNewFeature({ ...newFeature, name: e.target.value })}
                             />
@@ -106,7 +106,7 @@ export default function FeaturesPage() {
                                 type="text"
                                 placeholder="Code (e.g. reports_module)"
                                 required
-                                className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                className="block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                 value={newFeature.code}
                                 onChange={(e) => setNewFeature({ ...newFeature, code: e.target.value })}
                             />
@@ -114,24 +114,24 @@ export default function FeaturesPage() {
                         <div>
                             <textarea
                                 placeholder="Description"
-                                className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                                className="block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                                 value={newFeature.description}
                                 onChange={(e) => setNewFeature({ ...newFeature, description: e.target.value })}
                             />
                         </div>
-                        <button type="submit" className="w-full rounded-md bg-[#0E6E75] py-2 text-sm font-medium text-white hover:bg-[#0A565C]">
+                        <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
                             Create Feature
                         </button>
                     </form>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="mb-4 text-lg font-medium text-slate-800">All Features</h3>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                    <h3 className="mb-4 text-[15px] font-semibold text-slate-900">All Features</h3>
                     <ul className="space-y-3">
                         {features.map(f => (
-                            <li key={f.id} className="flex flex-col border-b border-slate-100 pb-2 text-sm last:border-0 last:pb-0">
-                                <span className="font-medium text-slate-700">{f.name}</span>
-                                <span className="font-mono text-xs text-slate-400">{f.code}</span>
+                            <li key={f.id} className="flex min-w-0 flex-col border-b border-slate-100 pb-3 text-sm last:border-0 last:pb-0">
+                                <span className="break-words font-medium text-slate-900">{f.name}</span>
+                                <span className="break-all font-mono text-xs text-slate-500">{f.code}</span>
                             </li>
                         ))}
                     </ul>
@@ -139,12 +139,12 @@ export default function FeaturesPage() {
             </div>
 
             {/* Right Column: Matrix */}
-            <div className="lg:col-span-2">
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-lg font-medium text-slate-800">Assign Features to Plan</h3>
+            <div className="col-fill lg:col-span-2">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="text-[15px] font-semibold text-slate-900">Assign Features to Plan</h3>
                         <select
-                            className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 sm:w-56"
                             value={selectedPlanId || ''}
                             onChange={(e) => setSelectedPlanId(Number(e.target.value))}
                         >
@@ -154,21 +154,21 @@ export default function FeaturesPage() {
                         </select>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         {features.map((feature) => {
                             const isAssigned = planFeatures.some(pf => pf.id === feature.id || pf.feature_id === feature.id || pf.code === feature.code);
                             // Adjust check based on what getPlanFeatures returns (likely list of feature objects)
 
                             return (
-                                <div key={feature.id} className={`flex items-center justify-between rounded-md border p-4 transition ${isAssigned ? 'border-[#0E6E75]/30 bg-[#0E6E75]/10' : 'border-slate-200 bg-white'}`}>
-                                    <div>
-                                        <p className="font-medium text-slate-800">{feature.name}</p>
-                                        <p className="text-xs text-slate-500">{feature.code}</p>
+                                <div key={feature.id} className={`flex items-center justify-between gap-3 rounded-xl border p-4 transition ${isAssigned ? 'border-brand/30 bg-brand/10' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
+                                    <div className="min-w-0">
+                                        <p className="break-words font-medium text-slate-900">{feature.name}</p>
+                                        <p className="break-all font-mono text-xs text-slate-500">{feature.code}</p>
                                     </div>
                                     <button
                                         onClick={() => handleToggleFeature(feature.id, isAssigned)}
-                                        className={`rounded-full px-3 py-1 text-xs font-semibold transition ${isAssigned
-                                                ? 'bg-[#0E6E75]/30 text-[#0E6E75] hover:bg-red-200 hover:text-red-800 hover:content-["Remove"]'
+                                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition ${isAssigned
+                                                ? 'bg-brand text-white hover:bg-red-600'
                                                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                             }`}
                                     >

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import useTreatmentPlansSection from "../../hooks/useTreatmentPlansSection";
 import { useSettings } from "../../context/SettingContext";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import PageHeader from "../../components/common/PageHeader";
 
 export default function TreatmentPlanPage() {
     const { t } = useTranslation();
@@ -71,37 +72,34 @@ export default function TreatmentPlanPage() {
     const typeButtons = useMemo(() => ["All", "ortho", "implant", "rct", "re_rct"], []);
 
     return (
-        <div className="space-y-5">
+        <div className="w-full space-y-5">
             {/* Header */}
-            <div>
-                <h1 className="text-lg font-semibold text-slate-900">{t("tp.title")}</h1>
-                <p className="text-xs text-slate-500">{t("tp.subtitle")}</p>
-            </div>
+            <PageHeader title={t("tp.title")} subtitle={t("tp.subtitle")} />
 
             {/* Filter bar */}
-            <div className="rounded-2xl bg-[#0E6E75]/5 border border-[#0E6E75]/10 px-4 py-4 flex flex-wrap items-end gap-4">
+            <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
 
                 {/* Search */}
-                <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.search")}</label>
+                <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-72">
+                    <label className="text-sm font-medium text-slate-700">{t("tp.search")}</label>
                     <input
                         placeholder={t("tp.search_ph")}
                         value={filters.q}
                         onChange={(e) => setFilters((prev) => ({ ...prev, q: e.target.value }))}
-                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                     />
                 </div>
 
                 {/* Pay status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.pay_status")}</label>
+                    <label className="text-sm font-medium text-slate-700">{t("tp.pay_status")}</label>
                     <select
                         value={filters.isPaid === undefined ? "" : filters.isPaid ? "true" : "false"}
                         onChange={(e) => {
                             const v = e.target.value;
                             setFilters((prev) => ({ ...prev, isPaid: v === "" ? undefined : v === "true" }));
                         }}
-                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                        className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                     >
                         <option value="">{t("tp.all")}</option>
                         <option value="true">{t("tp.paid")}</option>
@@ -111,14 +109,14 @@ export default function TreatmentPlanPage() {
 
                 {/* Complete status */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#0E6E75]">{t("tp.complete_status")}</label>
+                    <label className="text-sm font-medium text-slate-700">{t("tp.complete_status")}</label>
                     <select
                         value={filters.isCompleted === undefined ? "" : filters.isCompleted ? "true" : "false"}
                         onChange={(e) => {
                             const v = e.target.value;
                             setFilters((prev) => ({ ...prev, isCompleted: v === "" ? undefined : v === "true" }));
                         }}
-                        className="rounded-xl border border-[#0E6E75]/20 bg-white px-3.5 py-2.5 text-sm text-slate-700 focus:border-[#0E6E75] focus:outline-none focus:ring-2 focus:ring-[#0E6E75]/20"
+                        className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
                     >
                         <option value="">{t("tp.all")}</option>
                         <option value="true">{t("tp.completed")}</option>
@@ -127,11 +125,11 @@ export default function TreatmentPlanPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <button
                         type="button"
                         onClick={() => setFilters({ isPaid: undefined, isCompleted: undefined, q: "" })}
-                        className="rounded-xl border border-[#0E6E75]/30 bg-white px-4 py-2.5 text-sm font-semibold text-[#0E6E75] hover:bg-[#0E6E75]/5 transition-colors"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
                         {t("tp.clear")}
                     </button>
@@ -139,30 +137,30 @@ export default function TreatmentPlanPage() {
             </div>
 
             {/* Count info */}
-            <p className="text-xs text-slate-400">
+            <p className="-mt-2 text-xs text-slate-500">
                 {loading
                     ? t("tp.loading_plans")
                     : t("appt.count_info", { total: pagination.total, start: pagination.total === 0 ? 0 : rowStart, end: rowEnd })}
             </p>
 
             {/* Table */}
-            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
                 {loading ? (
-                    <p className="p-4 text-xs text-slate-500">{t("tp.loading")}</p>
+                    <p className="py-10 text-center text-sm text-slate-500">{t("tp.loading")}</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="min-w-full text-left text-xs">
-                            <thead>
-                                <tr className="border-b border-slate-200 text-[11px] text-slate-500">
-                                    <th className="px-3 py-3">{t("tp.col_patient")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_type")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_agreed")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_paid")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_remaining")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_pay_status")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_complete_status")}</th>
-                                    <th className="px-3 py-3">{t("tp.col_created")}</th>
-                                    <th className="px-3 py-3 text-end">{t("tp.col_actions")}</th>
+                        <table className="w-full text-start text-sm">
+                            <thead className="bg-slate-50">
+                                <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <th className="px-4 py-3 text-start">{t("tp.col_patient")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_type")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_agreed")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_paid")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_remaining")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_pay_status")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_complete_status")}</th>
+                                    <th className="px-4 py-3 text-start">{t("tp.col_created")}</th>
+                                    <th className="px-4 py-3 text-end">{t("tp.col_actions")}</th>
                                 </tr>
                             </thead>
 
@@ -177,18 +175,18 @@ export default function TreatmentPlanPage() {
                                         <>
                                             <tr
                                                 key={tp.id}
-                                                className={`border-b border-slate-100 ${isEditing ? "bg-[#0E6E75]/10" : "hover:bg-slate-50"}`}
+                                                className={`border-t border-slate-100 ${isEditing ? "bg-brand/10" : "hover:bg-slate-50"}`}
                                             >
-                                                <td className="px-3 py-2 font-medium text-slate-800">{tp.patient_name}</td>
+                                                <td className="px-4 py-3 font-medium text-slate-900">{tp.patient_name}</td>
 
                                                 {/* TYPE */}
-                                                <td className="px-3 py-2">
+                                                <td className="px-4 py-3">
                                                     {isEditing ? (
                                                         <select
                                                             value={tpDraft.type}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, type: e.target.value }))}
                                                             disabled={savingTp}
-                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                                            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15"
                                                         >
                                                             <option value="">{t("tp.select_dots")}</option>
                                                             {typeButtons.filter((x) => x !== "All").map((ty) => (
@@ -201,56 +199,56 @@ export default function TreatmentPlanPage() {
                                                 </td>
 
                                                 {/* AGREED */}
-                                                <td className="px-3 py-2">
+                                                <td className="px-4 py-3">
                                                     {isEditing ? (
                                                         <input
                                                             value={tpDraft.agreed_total}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, agreed_total: e.target.value }))}
                                                             disabled={savingTp}
-                                                            className="w-28 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                                            className="w-28 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15"
                                                         />
                                                     ) : (
-                                                        <span className="text-slate-700">{formatMoney(tp.agreed_total, tp.currency_code)}</span>
+                                                        <span className="whitespace-nowrap font-semibold tabular-nums text-slate-900">{formatMoney(tp.agreed_total, tp.currency_code)}</span>
                                                     )}
                                                 </td>
 
-                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.total_paid, tp.currency_code)}</td>
-                                                <td className="px-3 py-2 text-slate-700">{formatMoney(tp.remaining, tp.currency_code)}</td>
+                                                <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(tp.total_paid, tp.currency_code)}</td>
+                                                <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(tp.remaining, tp.currency_code)}</td>
 
-                                                <td className="px-3 py-2">
-                                                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${isPaid ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-amber-50 text-amber-700"}`}>
+                                                <td className="px-4 py-3">
+                                                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${isPaid ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-800"}`}>
                                                         {isPaid ? t("tp.paid") : t("tp.due")}
                                                     </span>
                                                 </td>
 
                                                 {/* COMPLETE STATUS */}
-                                                <td className="px-3 py-2">
+                                                <td className="px-4 py-3">
                                                     {isEditing ? (
                                                         <select
                                                             value={tpDraft.is_completed ? "done" : "undone"}
                                                             onChange={(e) => setTpDraft((prev) => ({ ...prev, is_completed: e.target.value === "done" }))}
                                                             disabled={savingTp}
-                                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                                            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15"
                                                         >
                                                             <option value="done">{t("tp.done")}</option>
                                                             <option value="undone">{t("tp.undone")}</option>
                                                         </select>
                                                     ) : (
-                                                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tp.is_completed ? "bg-[#0E6E75]/10 text-[#0E6E75]" : "bg-amber-50 text-amber-700"}`}>
+                                                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${tp.is_completed ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-800"}`}>
                                                             {tp.is_completed ? t("tp.done") : t("tp.undone")}
                                                         </span>
                                                     )}
                                                 </td>
 
-                                                <td className="px-3 py-2 text-slate-700">{formatDateTime(tp.created_at)}</td>
+                                                <td className="whitespace-nowrap px-4 py-3 text-slate-700">{formatDateTime(tp.created_at)}</td>
 
                                                 {/* ACTIONS */}
-                                                <td className="px-3 py-2">
+                                                <td className="px-4 py-3">
                                                     <div className="flex items-center justify-end gap-2">
                                                         <button
                                                             type="button"
                                                             onClick={() => toggleExpand(tp.id)}
-                                                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C]"
+                                                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark"
                                                         >
                                                             {isExpanded ? t("tp.hide") : t("tp.sessions_btn")}
                                                         </button>
@@ -261,7 +259,7 @@ export default function TreatmentPlanPage() {
                                                                     type="button"
                                                                     onClick={() => saveEditTp(tp)}
                                                                     disabled={savingTp}
-                                                                    className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C] disabled:opacity-60"
+                                                                    className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                                                 >
                                                                     {savingTp ? t("tp.saving") : t("tp.save")}
                                                                 </button>
@@ -269,7 +267,7 @@ export default function TreatmentPlanPage() {
                                                                     type="button"
                                                                     onClick={cancelEditTp}
                                                                     disabled={savingTp}
-                                                                    className="rounded-md border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                                                    className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                                                                 >
                                                                     {t("common.cancel")}
                                                                 </button>
@@ -279,14 +277,14 @@ export default function TreatmentPlanPage() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => startEditTp(tp)}
-                                                                    className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
+                                                                    className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                                                                 >
                                                                     {t("common.edit")}
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleDeleteTp(tp)}
-                                                                    className="rounded-md border border-red-200 bg-red-600 px-3 py-1 text-[11px] text-white hover:bg-red-700"
+                                                                    className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                                                                 >
                                                                     {t("common.delete")}
                                                                 </button>
@@ -300,22 +298,22 @@ export default function TreatmentPlanPage() {
                                             {isExpanded && (
                                                 <tr key={`${tp.id}-sessions`}>
                                                     <td colSpan={9} className="bg-slate-50 px-4 py-3">
-                                                        <div className="rounded-xl border border-slate-200 bg-white p-3">
-                                                            <p className="mb-3 text-[11px] font-semibold text-slate-600">{t("tp.sessions_for_plan")}</p>
+                                                        <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
+                                                            <p className="mb-3 text-sm font-semibold text-slate-900">{t("tp.sessions_for_plan")}</p>
 
                                                             {sessionsLoading && !tpSessions[tp.id] ? (
-                                                                <p className="text-xs text-slate-500">{t("tp.loading_sessions")}</p>
+                                                                <p className="py-6 text-center text-sm text-slate-500">{t("tp.loading_sessions")}</p>
                                                             ) : (
                                                                 <div className="overflow-x-auto">
-                                                                    <table className="min-w-full text-left text-xs">
-                                                                        <thead>
-                                                                            <tr className="border-b border-slate-200 text-[11px] text-slate-500">
-                                                                                <th className="px-3 py-2">{t("tp.col_finished")}</th>
-                                                                                <th className="px-3 py-2">{t("tp.col_paid_session")}</th>
-                                                                                <th className="px-3 py-2">{t("tp.col_payment_note")}</th>
-                                                                                <th className="px-3 py-2">{t("tp.col_next_plan")}</th>
-                                                                                <th className="px-3 py-2">{t("tp.col_notes")}</th>
-                                                                                <th className="px-3 py-2 text-end">{t("tp.col_action")}</th>
+                                                                    <table className="w-full text-start text-sm">
+                                                                        <thead className="bg-slate-50">
+                                                                            <tr className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                                                                <th className="px-4 py-3 text-start">{t("tp.col_finished")}</th>
+                                                                                <th className="px-4 py-3 text-start">{t("tp.col_paid_session")}</th>
+                                                                                <th className="px-4 py-3 text-start">{t("tp.col_payment_note")}</th>
+                                                                                <th className="px-4 py-3 text-start">{t("tp.col_next_plan")}</th>
+                                                                                <th className="px-4 py-3 text-start">{t("tp.col_notes")}</th>
+                                                                                <th className="px-4 py-3 text-end">{t("tp.col_action")}</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -333,34 +331,34 @@ export default function TreatmentPlanPage() {
                                                                                 return (
                                                                                     <tr
                                                                                         key={s.session_id}
-                                                                                        className={`border-b border-slate-100 last:border-0 ${isEditingThis ? "bg-[#0E6E75]/10" : "hover:bg-slate-50"}`}
+                                                                                        className={`border-t border-slate-100 ${isEditingThis ? "bg-brand/10" : "hover:bg-slate-50"}`}
                                                                                     >
-                                                                                        <td className="px-3 py-2 text-slate-700">{formatDateTime(s.finished_at)}</td>
+                                                                                        <td className="px-4 py-3 text-slate-700">{formatDateTime(s.finished_at)}</td>
 
-                                                                                        <td className="px-3 py-2">
+                                                                                        <td className="px-4 py-3">
                                                                                             {isEditingThis ? (
                                                                                                 <input
                                                                                                     value={paidDraft}
                                                                                                     onChange={(e) => setPaidDraft(e.target.value)}
                                                                                                     disabled={savingPaid}
-                                                                                                    className="w-36 rounded-md border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#0E6E75]"
+                                                                                                    className="w-36 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15"
                                                                                                 />
                                                                                             ) : (
                                                                                                 <span className="font-medium text-slate-800">{formatMoney(paidValue, tp.currency_code)}</span>
                                                                                             )}
                                                                                         </td>
 
-                                                                                        <td className="px-3 py-2 text-slate-600 max-w-[200px]">
+                                                                                        <td className="px-4 py-3 text-slate-600 max-w-[200px]">
                                                                                             {s.payment_note ? (
                                                                                                 <span className="block truncate" title={s.payment_note}>{s.payment_note}</span>
                                                                                             ) : (
                                                                                                 <span className="text-slate-300">—</span>
                                                                                             )}
                                                                                         </td>
-                                                                                        <td className="px-3 py-2 text-slate-700">{s.next_plan || "-"}</td>
-                                                                                        <td className="px-3 py-2 text-slate-700">{s.notes || "-"}</td>
+                                                                                        <td className="px-4 py-3 text-slate-700">{s.next_plan || "-"}</td>
+                                                                                        <td className="px-4 py-3 text-slate-700">{s.notes || "-"}</td>
 
-                                                                                        <td className="px-3 py-2">
+                                                                                        <td className="px-4 py-3">
                                                                                             <div className="flex items-center justify-end gap-2">
                                                                                                 {isEditingThis ? (
                                                                                                     <>
@@ -368,7 +366,7 @@ export default function TreatmentPlanPage() {
                                                                                                             type="button"
                                                                                                             onClick={saveEditPaid}
                                                                                                             disabled={savingPaid}
-                                                                                                            className="rounded-md border border-slate-200 bg-[#0E6E75] px-3 py-1 text-[11px] text-white hover:bg-[#0A565C] disabled:opacity-60"
+                                                                                                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                                                                                         >
                                                                                                             {savingPaid ? t("tp.saving") : t("tp.save")}
                                                                                                         </button>
@@ -376,7 +374,7 @@ export default function TreatmentPlanPage() {
                                                                                                             type="button"
                                                                                                             onClick={cancelEditPaid}
                                                                                                             disabled={savingPaid}
-                                                                                                            className="rounded-md border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                                                                                            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                                                                                                         >
                                                                                                             {t("common.cancel")}
                                                                                                         </button>
@@ -385,7 +383,7 @@ export default function TreatmentPlanPage() {
                                                                                                     <button
                                                                                                         type="button"
                                                                                                         onClick={() => startEditPaid(tp.id, s.session_id, paidValue)}
-                                                                                                        className="rounded-md border border-slate-200 bg-amber-600 px-3 py-1 text-[11px] text-white hover:bg-amber-700"
+                                                                                                        className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                                                                                                     >
                                                                                                         {t("common.edit")}
                                                                                                     </button>
@@ -409,7 +407,7 @@ export default function TreatmentPlanPage() {
 
                                 {tps.length === 0 && (
                                     <tr>
-                                        <td colSpan={9} className="px-3 py-4 text-center text-xs text-slate-500">
+                                        <td colSpan={9} className="px-4 py-10 text-center text-sm text-slate-500">
                                             {t("tp.no_plans")}
                                         </td>
                                     </tr>
@@ -426,22 +424,22 @@ export default function TreatmentPlanPage() {
                             <button
                                 onClick={() => handlePageChange(page - 1)}
                                 disabled={page === 1}
-                                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 {t("appt.prev")}
                             </button>
 
                             {pageNumbers.map((p, i) =>
                                 p === "..." ? (
-                                    <span key={`ellipsis-${i}`} className="px-1 text-[11px] text-slate-400">…</span>
+                                    <span key={`ellipsis-${i}`} className="px-1 text-xs text-slate-400">…</span>
                                 ) : (
                                     <button
                                         key={p}
                                         onClick={() => handlePageChange(p)}
-                                        className={`rounded-md border px-3 py-1.5 text-[11px] transition-colors ${
+                                        className={`min-w-[2rem] rounded-lg border px-3 py-1.5 text-xs font-medium tabular-nums transition ${
                                             p === page
-                                                ? "border-[#0E6E75] bg-[#0E6E75] text-white"
-                                                : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                                                ? "border-brand bg-brand text-white"
+                                                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                                         }`}
                                     >
                                         {p}
@@ -452,12 +450,12 @@ export default function TreatmentPlanPage() {
                             <button
                                 onClick={() => handlePageChange(page + 1)}
                                 disabled={page === pagination.totalPages}
-                                className="rounded-md border border-slate-200 px-3 py-1.5 text-[11px] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 {t("appt.next")}
                             </button>
                         </div>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-xs text-slate-500">
                             {t("tp.showing_of", { start: rowStart, end: rowEnd, total: pagination.total })}
                         </span>
                     </div>

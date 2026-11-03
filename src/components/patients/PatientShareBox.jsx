@@ -53,7 +53,7 @@ export default function PatientShareBox({ patientId, shares, onChanged }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs" data-share-box>
       {!shares.is_home && shares.shared_here && (
-        <span className="rounded-full bg-sky-50 px-3 py-1 font-medium text-sky-700" data-shared-from>
+        <span className="rounded-full bg-sky-50 px-2.5 py-1 font-semibold text-sky-700" data-shared-from>
           {t("share.shared_from", { branch: shares.shared_here.from_branch_name || shares.home.branch_name, date: formatDateTime(shares.shared_here.created_at) })}
         </span>
       )}
@@ -63,10 +63,10 @@ export default function PatientShareBox({ patientId, shares, onChanged }) {
         <>
           <span className="text-slate-500">{t("share.shared_with")}:</span>
           {shares.shared_with.map((s) => (
-            <span key={s.branch_id} className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 font-medium text-sky-700">
+            <span key={s.branch_id} className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 font-semibold text-sky-700">
               {s.branch_name}
               {canShare && (
-                <button type="button" disabled={busy} onClick={() => doUnshare(s)} title={t("share.stop")} aria-label={t("share.stop")} className="text-sky-500 hover:text-red-600">
+                <button type="button" disabled={busy} onClick={() => doUnshare(s)} title={t("share.stop")} aria-label={t("share.stop")} className="ms-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-sky-500 transition hover:bg-red-50 hover:text-red-600">
                   ×
                 </button>
               )}
@@ -76,12 +76,12 @@ export default function PatientShareBox({ patientId, shares, onChanged }) {
       )}
 
       {canShare && shares.can_share_to.length > 0 && (
-        <span className="ms-auto inline-flex items-center gap-2">
+        <span className="ms-auto inline-flex flex-wrap items-center gap-2">
           <select
             value={target}
             onChange={(e) => setTarget(e.target.value)}
             data-share-select
-            className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700"
+            className="min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
           >
             <option value="">{t("share.choose_branch")}</option>
             {shares.can_share_to.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -90,7 +90,7 @@ export default function PatientShareBox({ patientId, shares, onChanged }) {
             type="button"
             disabled={!target || busy}
             onClick={doShare}
-            className="rounded-md bg-[#0E6E75] px-3 py-1 font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-lg bg-brand px-3 py-1.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50"
           >
             {t("share.share")}
           </button>

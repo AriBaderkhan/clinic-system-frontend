@@ -75,40 +75,42 @@ export default function AnnouncementsPage() {
         }
     };
 
+    const INPUT = "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15";
+
     return (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,0.9fr),1.4fr]">
+        <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-[minmax(320px,0.9fr),1.4fr]">
             {/* Create */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-lg font-medium text-slate-800">New Announcement</h2>
+            <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                <h2 className="mb-4 text-[15px] font-semibold text-slate-900">New Announcement</h2>
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700">Title</label>
                         <input value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
+                            className={INPUT}
                             placeholder="e.g. Scheduled maintenance" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700">Message</label>
                         <textarea rows="5" value={form.body} onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
-                            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
+                            className={INPUT}
                             placeholder="Write the announcement…" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700">Target plan</label>
                         <select value={form.target_plan_id} onChange={(e) => setForm((p) => ({ ...p, target_plan_id: e.target.value }))}
-                            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-[#0E6E75] focus:outline-none">
+                            className={INPUT}>
                             <option value="">All plans</option>
                             {plans.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700">Target roles</label>
-                        <p className="mb-2 text-xs text-slate-400">Leave all unchecked = everyone.</p>
-                        <div className="grid grid-cols-2 gap-2">
+                        <p className="mb-2 mt-0.5 text-xs text-slate-500">Leave all unchecked = everyone.</p>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                             {ROLE_OPTIONS.map((r) => (
-                                <label key={r.value} className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer">
+                                <label key={r.value} className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${roles.includes(r.value) ? "border-brand/40 bg-brand/10 text-slate-900" : "border-slate-200 text-slate-700 hover:bg-slate-50"}`}>
                                     <input type="checkbox" checked={roles.includes(r.value)} onChange={() => toggleRole(r.value)}
-                                        className="h-4 w-4 rounded border-slate-300 text-[#0E6E75] focus:ring-[#0E6E75]" />
+                                        className="h-4 w-4 rounded border-slate-300 accent-brand" />
                                     {r.label}
                                 </label>
                             ))}
@@ -117,12 +119,12 @@ export default function AnnouncementsPage() {
                     <div>
                         <label className="block text-sm font-medium text-slate-700">Image (optional)</label>
                         <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setFile(e.target.files?.[0] || null)}
-                            className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#0E6E75] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#0A565C]" />
-                        {file && <p className="mt-1 text-xs text-slate-500">Selected: {file.name}</p>}
+                            className="mt-1.5 block w-full rounded-xl border border-dashed border-slate-200 bg-slate-50 p-2 text-sm text-slate-600 file:me-3 file:rounded-lg file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-brand-dark" />
+                        {file && <p className="mt-1.5 break-words text-xs text-slate-500">Selected: {file.name}</p>}
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end border-t border-slate-100 pt-4">
                         <button type="submit" disabled={submitting}
-                            className="rounded-md bg-[#0E6E75] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                             {submitting ? "Posting…" : "Post announcement"}
                         </button>
                     </div>
@@ -130,41 +132,41 @@ export default function AnnouncementsPage() {
             </div>
 
             {/* List */}
-            <div>
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="text-lg font-medium text-slate-800">Sent</h2>
+            <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="text-[15px] font-semibold text-slate-900">Sent</h2>
                     <select value={filterPlan} onChange={(e) => setFilterPlan(e.target.value)}
-                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-[#0E6E75] focus:outline-none">
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 sm:w-56">
                         <option value="">All plans</option>
                         {plans.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
                 </div>
 
                 {loading ? (
-                    <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Loading…</div>
+                    <div className="animate-pulse py-10 text-center text-sm text-slate-500">Loading…</div>
                 ) : items.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-500">No announcements.</div>
+                    <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-500">No announcements.</div>
                 ) : (
                     <div className="space-y-3">
                         {items.map((a) => (
-                            <div key={a.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <div key={a.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:bg-slate-50">
                                 {a.image_url && (
-                                    <img src={a.image_url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+                                    <img src={a.image_url} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
                                 )}
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-start justify-between gap-2">
-                                        <p className="truncate font-semibold text-slate-900">{a.title}</p>
-                                        <span className="shrink-0 rounded-full bg-[#0E6E75]/10 px-2 py-0.5 text-[11px] font-medium text-[#0E6E75] border border-[#0E6E75]/20">
+                                        <p className="min-w-0 truncate font-semibold text-slate-900">{a.title}</p>
+                                        <span className="shrink-0 rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">
                                             {a.plan_name || "All plans"}
                                         </span>
                                     </div>
-                                    {a.body && <p className="mt-1 line-clamp-2 text-sm text-slate-600">{a.body}</p>}
-                                    <p className="mt-1 text-[11px] text-slate-400">
+                                    {a.body && <p className="mt-1 line-clamp-2 break-words text-sm text-slate-600">{a.body}</p>}
+                                    <p className="mt-1.5 text-xs text-slate-500">
                                         Roles: {a.target_roles?.length ? a.target_roles.join(", ") : "Everyone"}
                                     </p>
-                                    <div className="mt-2 flex items-center justify-between">
-                                        <span className="text-[11px] text-slate-400">{new Date(a.created_at).toLocaleString()}</span>
-                                        <button onClick={() => remove(a.id)} className="text-xs font-medium text-red-600 hover:underline">Delete</button>
+                                    <div className="mt-2 flex items-center justify-between gap-2">
+                                        <span className="text-xs text-slate-400 tabular-nums">{new Date(a.created_at).toLocaleString()}</span>
+                                        <button onClick={() => remove(a.id)} className="rounded-lg px-2.5 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50">Delete</button>
                                     </div>
                                 </div>
                             </div>

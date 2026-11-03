@@ -39,27 +39,27 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
   const back = () => { setStep(null); setAmount(""); };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-4 shadow-xl max-h-[85vh] overflow-y-auto">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">{t("appt.tw_title", { tooth })}</h3>
-          <button type="button" onClick={onClose} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-200">✕</button>
+      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-pop">
+        <div className="-mx-5 -mt-5 mb-4 flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h3 className="text-base font-semibold text-slate-900">{t("appt.tw_title", { tooth })}</h3>
+          <button type="button" onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">✕</button>
         </div>
 
         {!step ? (
           <>
-            <p className="mb-2 text-[11px] text-slate-500">{t("appt.tw_pick")}</p>
+            <p className="mb-3 text-sm text-slate-500">{t("appt.tw_pick")}</p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {works.map((w) => {
                 const hasPlan = w.is_plan && !!planFor(tooth, w.code);
                 return (
                   <button key={w.id} type="button" onClick={() => clickWork(w)}
-                    className="flex w-full items-center justify-between gap-1 rounded-lg border border-slate-200 px-3 py-2 text-left text-sm hover:border-[#0E6E75] hover:bg-[#0E6E75]/5">
-                    <span className="min-w-0 truncate font-medium text-slate-800" title={w.name}>{w.name}</span>
+                    className="flex w-full min-w-0 items-center justify-between gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-start text-sm transition hover:border-brand hover:bg-brand/5">
+                    <span className="min-w-0 truncate font-medium text-slate-900" title={w.name}>{w.name}</span>
                     <span className="flex shrink-0 items-center gap-1.5 text-[11px]">
-                      {w.is_plan && <span className="rounded bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-700">{t("appt.tw_plan")}</span>}
-                      {hasPlan && <span className="rounded bg-emerald-100 px-1.5 py-0.5 font-semibold text-emerald-700">{t("appt.tw_has_plan")}</span>}
+                      {w.is_plan && <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">{t("appt.tw_plan")}</span>}
+                      {hasPlan && <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-semibold text-emerald-700">{t("appt.tw_has_plan")}</span>}
                     </span>
                   </button>
                 );
@@ -68,33 +68,33 @@ function ToothWorkPopup({ tooth, works, planFor, formatMoney, onConfirm, onClose
           </>
         ) : (
           <>
-            <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-              <span className="text-sm font-semibold text-slate-800">{step.work.name}</span>
-              <button type="button" onClick={back} className="text-[11px] text-[#0E6E75] hover:underline">{t("appt.tw_change")}</button>
+            <div className="mb-3 flex items-center justify-between gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2.5">
+              <span className="min-w-0 truncate text-sm font-semibold text-slate-900">{step.work.name}</span>
+              <button type="button" onClick={back} className="shrink-0 text-xs font-semibold text-brand hover:underline">{t("appt.tw_change")}</button>
             </div>
 
             {step.existing ? (
               // Existing plan on this tooth → ask done or not; either way it continues the plan.
               <div className="space-y-3">
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-slate-700">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-slate-700">
                   {t("appt.tw_existing")} · {t("appt.pay_agreed")} <b>{formatMoney(step.existing.agreed_total)}</b> · {t("appt.pay_remaining")} <b>{formatMoney(Number(step.existing.agreed_total) - Number(step.existing.total_paid || 0))}</b>
                 </div>
-                <p className="text-xs font-medium text-slate-700">{t("appt.tw_done_q")}</p>
+                <p className="text-sm font-medium text-slate-700">{t("appt.tw_done_q")}</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: true, amount: 0 })}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
+                    className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">{t("appt.tw_done_yes")}</button>
                   <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: step.existing, markDone: false, amount: 0 })}
-                    className="rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_done_no")}</button>
+                    className="inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">{t("appt.tw_done_no")}</button>
                 </div>
               </div>
             ) : (
               // New plan → enter the agreed total, then save.
               <div className="space-y-2">
-                <label className="text-[11px] font-medium text-slate-600">{t("appt.tw_agreed")}</label>
+                <label className="block text-sm font-medium text-slate-700">{t("appt.tw_agreed")}</label>
                 <input type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0E6E75] focus:outline-none" />
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                 <button type="button" onClick={() => onConfirm({ work: step.work, existingPlan: null, markDone: false, amount: Number(amount) || 0 })}
-                  className="mt-2 w-full rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0A565C]">{t("appt.tw_add")}</button>
+                  className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">{t("appt.tw_add")}</button>
               </div>
             )}
           </>
@@ -448,31 +448,31 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     return [...s];
   }, [confirmed]);
 
-  const inputCls = "w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-[#0E6E75] focus:outline-none focus:ring-1 focus:ring-[#0E6E75]";
+  const inputCls = "w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60";
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4"
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-ocean-deep/60 p-2 backdrop-blur-sm sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="flex max-h-[96vh] w-full max-w-7xl flex-col rounded-2xl bg-white shadow-xl">
+      <div className="flex max-h-[96vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-100 px-5 py-3 shrink-0">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">{t("appt.comp_title")}</h2>
-            <p className="mt-0.5 text-[11px] text-slate-500">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-slate-900">{t("appt.comp_title")}</h2>
+            <p className="mt-0.5 break-words text-xs text-slate-500">
               {appointment.patient_name} · {appointment.patient_phone} · {appointment.doctor_name} ·{" "}
               {formatDate(appointment.scheduled_start)} {formatTime(appointment.scheduled_start)}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
+          <button type="button" onClick={onClose} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">✕</button>
         </div>
 
-        {error && <div className="mx-5 mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 shrink-0">{error}</div>}
+        {error && <div className="mx-5 mt-3 shrink-0 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{error}</div>}
 
         {/* Body: clean top-down flow — less scrolling, full-width sections */}
-        <div className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-slate-50/60 p-4 sm:p-5">
           {/* Patient medical info — blood type · allergies · chronic diseases (one box) */}
           {(appointment.patient_blood_type || appointment.patient_allergies || appointment.patient_chronic_diseases) && (
-            <div className="grid gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 sm:grid-cols-3">
+            <div className="grid gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:grid-cols-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.blood_type")}</p>
                 <p className="mt-0.5 text-sm font-semibold text-slate-800">{appointment.patient_blood_type || "—"}</p>
@@ -489,17 +489,17 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           )}
 
           {/* Visit notes — complaint + next plan + notes, saved mid-visit (survives refresh) */}
-          <div className="rounded-xl border border-slate-200 bg-white p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("appt.complaint_badge")}</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("appt.complaint_badge")}</p>
               <button type="button" onClick={handleSaveDraft} disabled={savingDraft}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[#0E6E75]/40 bg-white px-3 py-1 text-[11px] font-semibold text-[#0E6E75] transition hover:bg-[#0E6E75]/10 disabled:opacity-50">
+                className="inline-flex items-center gap-1.5 rounded-lg border border-brand/40 bg-white px-3 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-50">
                 {savingDraft ? t("appt.comp_saving") : draftSaved ? t("appt.comp_saved") : t("appt.comp_save_draft")}
               </button>
             </div>
             <textarea value={complaint} onChange={(e) => { setComplaint(e.target.value); setDraftSaved(false); }} rows={2}
               className={`${inputCls} resize-none`} placeholder={t("appt.comp_complaint_ph")} />
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
               <textarea value={nextPlan} onChange={(e) => { setNextPlan(e.target.value); setDraftSaved(false); }} rows={2}
                 className={`${inputCls} resize-none`} placeholder={t("appt.comp_next_plan_ph")} />
               <textarea value={notes} onChange={(e) => { setNotes(e.target.value); setDraftSaved(false); }} rows={2}
@@ -508,12 +508,12 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
           </div>
 
           {/* Middle: treatment controls (left) | teeth chart (right) */}
-          <div className={`grid gap-3 lg:items-start ${usesTeeth ? "lg:grid-cols-[minmax(280px,0.85fr),2fr]" : ""}`}>
+          <div className={`grid gap-4 lg:items-start ${usesTeeth ? "lg:grid-cols-[minmax(280px,0.85fr),2fr]" : ""}`}>
           {/* ===== LEFT: controls ===== */}
-          <div className="flex flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-4">
             {/* Choose treatment */}
-            <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
-              <p className="mb-1.5 text-[11px] font-semibold text-[#0E6E75]">{t("appt.comp_step1")}</p>
+            <div className="rounded-xl border border-brand/30 bg-white p-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand">{t("appt.comp_step1")}</p>
               <div className="flex flex-wrap items-end gap-2">
                 <div className="min-w-[160px] flex-1">
                   <select value={draft.work_id} onChange={(e) => selectWork(e.target.value)} disabled={loadingCatalog} className={inputCls}>
@@ -522,15 +522,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                   </select>
                 </div>
                 {dMeta && !dWhole && !dPerToothPlan && (
-                  <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 rounded-md border border-slate-200 px-2 py-1.5 text-sm" />
+                  <input type="number" min="1" value={draft.quantity} onChange={(e) => setQty(e.target.value)} title={t("appt.comp_qty_title")} className="w-16 px-2 py-2 text-center tabular-nums rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15" />
                 )}
                 <button type="button" onClick={addTreatment} disabled={!canAdd}
-                  className="rounded-md bg-[#0E6E75] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-40">{t("appt.comp_add")}</button>
+                  className="inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-40">{t("appt.comp_add")}</button>
               </div>
 
               {/* agreement / continue */}
               {dPlan && (
-                <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 p-2.5 text-xs">
+                <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs">
                   {/* New vs Continue — works for legacy plans that have no tooth too */}
                   <select value={draft.plan_mode} onChange={(e) => setPlanModeManual(e.target.value)} className={`${inputCls} mb-2`}>
                     {(plans[dCode]?.list || []).map((p) => {
@@ -554,7 +554,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                     </p>
                   ) : (
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-600 mb-0.5">{t("appt.comp_new_agreement", { code: dCode.toUpperCase() })}</label>
+                      <label className="mb-1 block text-xs font-medium text-slate-700">{t("appt.comp_new_agreement", { code: dCode.toUpperCase() })}</label>
                       <input type="number" min={dMeta?.min_price || 0} value={draft.agreed_total}
                         onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls}
                         step="0.01"
@@ -566,20 +566,20 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             </div>
 
             {/* Saved treatments (chips) */}
-            <div className="flex flex-col rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-              <p className="mb-1.5 text-[11px] font-semibold text-emerald-700">{t("appt.comp_saved", { count: confirmed.length })}</p>
+            <div className="flex flex-col rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">{t("appt.comp_saved", { count: confirmed.length })}</p>
               <div className="max-h-48 overflow-y-auto">
                 {confirmed.length === 0 ? (
-                  <p className="text-[11px] text-slate-500">{t("appt.comp_saved_hint")}</p>
+                  <p className="text-xs text-slate-500">{t("appt.comp_saved_hint")}</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {confirmed.map((c) => (
-                      <span key={c.uid} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
-                        <span className="font-semibold">{c.name}</span>
+                      <span key={c.uid} className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm text-slate-700">
+                        <span className="font-semibold text-slate-900">{c.name}</span>
                         <span className="text-slate-500">· {c.wholeMouth ? t("appt.arch_" + (c.arch || "whole")) : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
                         {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("appt.comp_new_plan_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
-                        <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-[#0E6E75]">✎</button>
-                        <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
+                        <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-brand">✎</button>
+                        <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                       </span>
                     ))}
                   </div>
@@ -589,15 +589,15 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
             {/* Existing plans of the selected plan type */}
             {dPlan && existingForSelected.length > 0 && (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="mb-1.5 text-[11px] font-semibold text-slate-700">{t("appt.comp_existing", { code: dCode.toUpperCase() })}</p>
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">{t("appt.comp_existing", { code: dCode.toUpperCase() })}</p>
                 <div className="max-h-24 space-y-1.5 overflow-y-auto">
                   {existingForSelected.map((p) => {
                     const rem = Number(p.agreed_total) - Number(p.total_paid || 0);
                     return (
-                      <label key={p.id} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px]">
+                      <label key={p.id} className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:bg-slate-50">
                         <span>{p.teeth ? t("appt.comp_tooth_label", { teeth: p.teeth }) : t("appt.comp_tooth_not_set")} · {t("appt.comp_remaining", { amount: formatMoney(rem) })}</span>
-                        <input type="checkbox" checked={completedPlanIds.includes(p.id)} onChange={() => toggleCompleted(p.id)} />
+                        <input type="checkbox" checked={completedPlanIds.includes(p.id)} onChange={() => toggleCompleted(p.id)} className="h-4 w-4 accent-brand" />
                       </label>
                     );
                   })}
@@ -606,16 +606,16 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
             )}
 
             {/* Prescription (optional) — sits in the remaining space below treatments */}
-            <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
               <PrescriptionEditor items={prescription} onChange={setPrescription} patientName={appointment.patient_name} />
             </div>
           </div>
 
           {/* ===== RIGHT: teeth chart (hero) — only for specialties that use teeth ===== */}
           {usesTeeth && (
-          <div className="flex flex-col rounded-xl border border-[#0E6E75]/20 bg-[#0E6E75]/5 p-4 lg:min-h-[420px]">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-semibold text-[#0E6E75] dark:text-sky-300">{t("appt.comp_step2")}</p>
+          <div className="flex min-w-0 flex-col rounded-xl border border-brand/20 bg-white p-4 lg:min-h-[420px]">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-brand">{t("appt.comp_step2")}</p>
               {!dWhole && draft.work_id && (
                 <span className="text-xs text-slate-500">
                   {draft.teeth.length
@@ -641,13 +641,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
 
               {dWhole && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                  <span className="rounded-md bg-white/85 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm">
+                  <span className="rounded-xl bg-white/90 px-4 py-2 text-xs font-medium text-slate-700 shadow-card">
                     {t("appt.comp_whole_overlay", { name: dMeta?.name })}
                   </span>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap justify-center gap-2">
                     {[{ v: null, l: t("appt.arch_whole") }, { v: "upper", l: t("appt.arch_upper") }, { v: "lower", l: t("appt.arch_lower") }].map((o) => (
                       <button key={String(o.v)} type="button" onClick={() => setDraft((d) => ({ ...d, arch: o.v }))}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-[#0E6E75] bg-[#0E6E75] text-white" : "border-slate-300 bg-white text-slate-600 hover:border-[#0E6E75]"}`}>
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${(draft.arch ?? null) === o.v ? "border-brand bg-brand text-white" : "border-slate-300 bg-white text-slate-600 hover:border-brand"}`}>
                         {o.l}
                       </button>
                     ))}
@@ -655,31 +655,31 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                 </div>
               )}
             </div>
-            <p className="mt-2 text-center text-[11px] text-slate-400">{t("appt.comp_teeth_hint")}</p>
+            <p className="mt-2 text-center text-xs text-slate-500">{t("appt.comp_teeth_hint")}</p>
           </div>
           )}
           </div>
 
           {/* Case images (optional) — full width at the bottom, responsive grid */}
-          <div className="rounded-xl border border-[#0E6E75]/30 bg-[#0E6E75]/5 p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold text-[#0E6E75]">{t("appt.comp_case_images")}</p>
-              <label className="cursor-pointer rounded-md border border-[#0E6E75]/40 bg-white px-2.5 py-1 text-[11px] font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10">
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand">{t("appt.comp_case_images")}</p>
+              <label className="cursor-pointer rounded-lg border border-brand/40 bg-white px-3 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand/10">
                 {t("appt.comp_add_images")}
                 <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
                   onChange={onPickImages} disabled={saving} />
               </label>
             </div>
             {images.length === 0 ? (
-              <p className="text-[11px] text-slate-500">{t("appt.comp_images_hint")}</p>
+              <p className="text-xs text-slate-500">{t("appt.comp_images_hint")}</p>
             ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
                 {images.map((im) => (
-                  <div key={im.id} className="relative aspect-square overflow-hidden rounded-md border border-slate-200">
+                  <div key={im.id} className="relative aspect-square overflow-hidden rounded-lg border border-slate-200">
                     <img src={im.preview} alt="" className="h-full w-full object-cover" />
                     <button type="button" onClick={() => removeImage(im.id)} disabled={saving}
                       title={t("common.delete")}
-                      className="absolute right-0 top-0 rounded-bl-md bg-black/55 px-1 text-[11px] leading-tight text-white hover:bg-red-600">✕</button>
+                      className="absolute end-0 top-0 rounded-es-md bg-black/55 px-1.5 py-0.5 text-[11px] leading-tight text-onphoto hover:bg-red-600">✕</button>
                   </div>
                 ))}
               </div>
@@ -688,10 +688,10 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         </div>
 
         {/* Footer */}
-        <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 px-5 py-3">
-          <button type="button" onClick={onClose} disabled={saving} className="rounded-md border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50">{t("common.cancel")}</button>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-slate-100 px-5 py-4">
+          <button type="button" onClick={onClose} disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">{t("common.cancel")}</button>
           <button type="button" onClick={handleSubmit} disabled={saving || confirmed.length === 0}
-            className="rounded-md bg-[#0E6E75] px-5 py-1.5 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50">
             {saving ? t("appt.comp_saving") : t("appt.comp_confirm")}
           </button>
         </div>

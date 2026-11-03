@@ -10,6 +10,7 @@ import CompleteAppointmentModal from "../../components/appointments/CompleteAppo
 import { inProgressAppointment } from "../../api/appointmentApi";
 import { useSettings } from "../../context/SettingContext";
 import { useAuth } from "../../context/AuthContext";
+import PageHeader from "../../components/common/PageHeader";
 
 function statusBadgeClasses(status) {
   switch (status) {
@@ -68,7 +69,7 @@ export default function DoctorDashboard() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-5">
       {/* Modals */}
       {selectedAppointment && (
         <CalendarAppointmentModal
@@ -98,29 +99,25 @@ export default function DoctorDashboard() {
 
 
       {/* Top intro */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold text-slate-900">
-          {user?.clinic_name ? `${user.clinic_name} — ` : ""}{t('dash.overview')}
-        </h1>
-        <p className="text-xs text-slate-500">
-          {t('dash.subtitle')}
-        </p>
-      </div>
+      <PageHeader
+        title={<>{user?.clinic_name ? `${user.clinic_name} — ` : ""}{t('dash.overview')}</>}
+        subtitle={t('dash.subtitle')}
+      />
 
       {/* Grid: left column (patients + today list), right column (in_progress list + pay box) */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
         {/* ================= LEFT COLUMN ================= */}
-        <div className="space-y-4">
+        <div className="col-fill">
 
 
           {/* Box 2: Today appointments (all active statuses) */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-slate-900">
                   {t('dash.today_active')}
                 </h2>
-                <p className="text-[11px] text-slate-500">
+                <p className="mt-0.5 text-sm text-slate-500">
                   {t('dash.today_active_hint')}
                 </p>
               </div>
@@ -128,7 +125,7 @@ export default function DoctorDashboard() {
               <button
                 type="button"
                 onClick={refreshToday}
-                className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] text-slate-600 hover:bg-slate-100"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
                 {t('dash.refresh')}
               </button>
@@ -136,14 +133,14 @@ export default function DoctorDashboard() {
 
             {/* Errors */}
             {todayError && (
-              <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {todayError}
               </div>
             )}
 
             {/* Loading */}
             {isTodayLoading && !todayError && (
-              <p className="text-xs text-slate-500">
+              <p className="py-10 text-center text-sm text-slate-500">
                 {t('dash.loading_today')}
               </p>
             )}
@@ -152,31 +149,31 @@ export default function DoctorDashboard() {
             {!isTodayLoading &&
               !todayError &&
               todayAppointments.length === 0 && (
-                <p className="text-xs text-slate-500">
+                <p className="py-10 text-center text-sm text-slate-500">
                   {t('dash.no_active_today')}
                 </p>
               )}
 
             {/* Cards — compact, never scroll sideways (fits the narrow column) */}
             {todayAppointments.length > 0 && (
-              <div className="mt-2 space-y-2">
+              <div className="space-y-2.5">
                 {todayAppointments.map((a) => {
                   const id = a.id ?? a.appointment_id;
                   return (
                     <div
                       key={id}
-                      className="rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-[#0E6E75]/40 hover:shadow-sm"
+                      className="rounded-xl border border-slate-200 bg-white p-3.5 transition hover:border-brand/40 hover:bg-slate-50"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold text-slate-900">{a.patient_name}</p>
-                          <p className="mt-0.5 truncate text-[11px] text-slate-500">
+                          <p className="mt-0.5 truncate text-xs text-slate-500">
                             {a.patient_phone} · {formatTime(a.scheduled_start)} · <span className="capitalize">{a.appointment_type}</span>
                           </p>
                         </div>
                         <span
                           className={
-                            "shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium capitalize " +
+                            "shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold capitalize " +
                             statusBadgeClasses(a.status)
                           }
                         >
@@ -185,18 +182,18 @@ export default function DoctorDashboard() {
                       </div>
 
                       {a.complaint && (
-                        <p className="mt-2 line-clamp-2 whitespace-pre-wrap break-words text-[12px] text-slate-600">
+                        <p className="mt-2 line-clamp-2 whitespace-pre-wrap break-words text-sm text-slate-600">
                           {a.complaint}
                         </p>
                       )}
 
-                      <div className="mt-2.5 flex items-center justify-end gap-1.5">
+                      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {a.status === "checked_in" && (
                           <button
                             type="button"
                             onClick={() => handleStart(id)}
                             disabled={startingId === id}
-                            className="rounded-md border border-purple-200 bg-purple-50 px-3 py-1 text-[11px] font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+                            className="inline-flex items-center rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                           >
                             {startingId === id ? t('dash.starting') : t('dash.start')}
                           </button>
@@ -204,7 +201,7 @@ export default function DoctorDashboard() {
                         <button
                           type="button"
                           onClick={() => setSelectedAppointment(a)}
-                          className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-100"
+                          className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
                         >
                           {t('common.view')}
                         </button>
@@ -218,41 +215,41 @@ export default function DoctorDashboard() {
         </div>
 
         {/* ================= RIGHT COLUMN ================= */}
-        <div className="space-y-4">
+        <div className="col-fill">
           {/* In-progress appointments – click to fill session + works */}
-          <div className="rounded-3xl border border-[#0E6E75]/20 bg-[#0E6E75]/10/60 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-            <div className="mb-4 flex items-center justify-between gap-2">
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">
+          <div className="rounded-2xl border border-brand/30 bg-white p-4 shadow-card sm:p-5">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-slate-900">
                   {t('dash.in_progress_title')}
                 </h2>
-                <p className="text-[12px] text-slate-600">
+                <p className="mt-0.5 text-sm text-slate-500">
                   {t('dash.in_progress_hint')}
                 </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {/* Unfinished visits (all dates) — catches sessions started on a past day. */}
                 <button
                   type="button"
                   onClick={() => setShowOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#0E6E75] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-[#013f5a]"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark"
                 >
                   {t('dash.unfinished_btn')}
-                  <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/20 px-1.5 text-[11px] font-semibold">
+                  <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/20 px-1.5 text-xs font-semibold">
                     {openAppointments.length}
                   </span>
                 </button>
 
-                <span className="rounded-full border border-[#0E6E75]/20 bg-[#0E6E75]/10 px-3 py-1 text-[11px] font-medium text-[#0E6E75]">
+                <span className="inline-flex items-center rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">
                   {t('dash.in_progress_count', { count: inProgressAppointments.length })}
                 </span>
               </div>
             </div>
 
-            <div className="space-y-3 text-sm max-h-64 overflow-y-auto pr-1">
+            <div className="max-h-80 space-y-2.5 overflow-y-auto pe-1 text-sm">
               {inProgressAppointments.length === 0 && (
-                <p className="text-xs text-slate-600">
+                <p className="py-10 text-center text-sm text-slate-500">
                   {t('dash.no_in_progress')}
                 </p>
               )}
@@ -265,19 +262,19 @@ export default function DoctorDashboard() {
                     key={id}
                     type="button"
                     onClick={() => setSelectedForComplete(a)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-[#0E6E75]/20 bg-white px-4 py-3 text-left transition hover:shadow-sm hover:bg-[#0E6E75]/10/60"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-brand/20 bg-brand/5 px-4 py-3 text-start transition hover:border-brand/40 hover:bg-brand/10"
                   >
-                    <div>
-                      <p className="font-medium text-slate-800">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-slate-900">
                         {a.patient_name}
                       </p>
-                      <p className="mt-1 text-[12px] text-slate-500">
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
                         Dr. {a.doctor_name} · {formatTime(a.scheduled_start)} ·{" "}
                         {a.appointment_type}
                       </p>
                     </div>
 
-                    <span className="rounded-full bg-[#0E6E75]/15 px-3 py-1 text-[11px] font-medium text-[#0E6E75] border border-[#0E6E75]/30">
+                    <span className="shrink-0 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">
                       {a.status}
                     </span>
                   </button>
@@ -286,7 +283,7 @@ export default function DoctorDashboard() {
             </div>
           </div>
 
-          
+
         </div>
       </div>
     </div>
@@ -298,29 +295,29 @@ export default function DoctorDashboard() {
 function OpenApptsModal({ appointments, formatDateTime, onPick, onClose, t }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-deep/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white shadow-xl"
+        className="w-full max-w-md max-h-[90vh] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-          <h3 className="text-sm font-semibold text-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h3 className="text-base font-semibold text-slate-900">
             {t('dash.unfinished_title')}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md px-2 py-0.5 text-slate-500 hover:bg-slate-100"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
           >
             ✕
           </button>
         </div>
 
-        <div className="max-h-[60vh] overflow-y-auto p-3">
+        <div className="max-h-[60vh] overflow-y-auto px-5 py-4">
           {appointments.length === 0 ? (
-            <p className="p-3 text-sm text-slate-500">{t('dash.unfinished_empty')}</p>
+            <p className="py-10 text-center text-sm text-slate-500">{t('dash.unfinished_empty')}</p>
           ) : (
             <div className="flex flex-col gap-2">
               {appointments.map((a) => {
@@ -330,10 +327,10 @@ function OpenApptsModal({ appointments, formatDateTime, onPick, onClose, t }) {
                     key={id}
                     type="button"
                     onClick={() => onPick(a)}
-                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2.5 text-left hover:border-[#0E6E75] hover:bg-[#0E6E75]/5"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 text-start transition hover:border-brand hover:bg-brand/5"
                   >
-                    <span className="font-medium text-slate-800">{a.patient_name}</span>
-                    <span className="text-xs text-slate-500">{formatDateTime(a.scheduled_start)}</span>
+                    <span className="min-w-0 truncate font-medium text-slate-900">{a.patient_name}</span>
+                    <span className="shrink-0 text-xs text-slate-500">{formatDateTime(a.scheduled_start)}</span>
                   </button>
                 );
               })}

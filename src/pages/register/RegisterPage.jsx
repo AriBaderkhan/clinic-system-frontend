@@ -127,40 +127,44 @@ export default function RegisterPage() {
     // ── Success screen ──
     if (done) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-                <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-lg">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0E6E75]/10 text-3xl">✓</div>
-                    <h1 className="text-xl font-bold text-slate-900">Request submitted!</h1>
-                    <p className="mt-2 text-sm text-slate-600">
+            <div className="flex min-h-screen flex-col bg-ground">
+                <div className="ocean-band band-dark h-56 shrink-0 sm:h-64" aria-hidden="true" />
+                <div className="relative -mt-40 flex flex-1 items-start justify-center px-4 pb-12 sm:-mt-44">
+                <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-pop sm:p-8">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-3xl text-green-700">✓</div>
+                    <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Request submitted!</h1>
+                    <p className="mt-2 break-words text-sm text-slate-600">
                         We received your registration for <b>{form.tenant_name}</b>. Our team will review your
                         payment and email you at <b>{form.email}</b> once your account is ready.
                     </p>
-                    <Link to="/" className="mt-6 inline-block rounded-lg bg-[#0E6E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C]">
+                    <Link to="/" className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
                         Back to login
                     </Link>
+                </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 py-8 px-4">
+        <div className="min-h-screen bg-ground">
+            <div className="ocean-band band-dark px-4 pb-24 pt-10 sm:pt-12">
             <div className="mx-auto max-w-3xl">
                 {/* Header */}
                 <div className="mb-6 text-center">
-                    <h1 className="text-2xl font-bold text-slate-900">Create your clinic account</h1>
-                    <p className="mt-1 text-sm text-slate-500">Pick a plan, fill your details, and upload your payment to get started.</p>
+                    <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-[28px]">Create your clinic account</h1>
+                    <p className="mt-1.5 text-sm text-slate-600">Pick a plan, fill your details, and upload your payment to get started.</p>
                 </div>
 
                 {/* Stepper */}
-                <div className="mb-6 flex items-center justify-center gap-2 sm:gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
                     {STEPS.map((label, i) => {
                         const n = i + 1;
                         const active = step === n;
                         const passed = step > n;
                         return (
                             <div key={label} className="flex items-center gap-2">
-                                <span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${active ? "bg-[#0E6E75] text-white" : passed ? "bg-[#0E6E75]/20 text-[#0E6E75]" : "bg-slate-200 text-slate-500"}`}>
+                                <span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${active ? "bg-aqua text-ocean-deep" : passed ? "bg-aqua/20 text-aqua" : "bg-white/10 text-slate-500"}`}>
                                     {passed ? "✓" : n}
                                 </span>
                                 <span className={`text-sm ${active ? "font-semibold text-slate-900" : "text-slate-500"}`}>{label}</span>
@@ -169,17 +173,21 @@ export default function RegisterPage() {
                         );
                     })}
                 </div>
+            </div>
+            </div>
 
-                <div className="rounded-2xl bg-white p-5 shadow-sm sm:p-7">
+            <div className="relative -mt-16 px-4 pb-10">
+            <div className="mx-auto max-w-3xl">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-pop sm:p-7">
                     {/* ── Step 1: Plan ── */}
                     {step === 1 && (
                         <div>
                             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                                <h2 className="text-lg font-bold text-slate-800">Choose a plan</h2>
+                                <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a plan</h2>
                                 <BillingPeriodToggle value={billingPeriod} onChange={setBillingPeriod} />
                             </div>
                             {loadingPlans ? (
-                                <p className="text-sm text-slate-500">Loading plans…</p>
+                                <p className="animate-pulse py-10 text-center text-sm text-slate-500">Loading plans…</p>
                             ) : (
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                     {plans.map((plan) => {
@@ -189,11 +197,11 @@ export default function RegisterPage() {
                                                 key={plan.id}
                                                 type="button"
                                                 onClick={() => setSelectedPlanId(plan.id)}
-                                                className={`flex flex-col rounded-xl border p-4 text-left transition ${selected ? "border-[#0E6E75] ring-2 ring-[#0E6E75]/30" : "border-slate-200 hover:border-[#0E6E75]/50"}`}
+                                                className={`flex min-w-0 flex-col rounded-2xl border p-4 text-start transition ${selected ? "border-brand bg-brand/5 ring-4 ring-brand/15" : "border-slate-200 bg-white hover:border-brand/50 hover:bg-slate-50"}`}
                                             >
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-bold text-slate-900">{plan.name}</span>
-                                                    <span className="font-bold text-[#0E6E75]">${planPrice(plan, billingPeriod)} / {periodLabel}</span>
+                                                <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                                                    <span className="min-w-0 break-words font-bold text-slate-900">{plan.name}</span>
+                                                    <span className="font-bold text-brand tabular-nums">${planPrice(plan, billingPeriod)} / {periodLabel}</span>
                                                 </div>
                                                 <p className="mt-1 text-xs text-slate-500">
                                                     {plan.max_branches === -1 ? "Unlimited" : plan.max_branches} branches · {Number(plan.included_doctors) === -1 ? "Unlimited" : plan.included_doctors} doctors · staff free
@@ -205,10 +213,10 @@ export default function RegisterPage() {
                                                             : `+$${billingPeriod === "yearly" ? plan.extra_doctor_yearly_price : plan.extra_doctor_price} / ${periodLabel} per extra doctor`}
                                                     </p>
                                                 )}
-                                                <ul className="mt-3 space-y-1">
+                                                <ul className="mt-3 space-y-1.5 border-t border-slate-100 pt-3">
                                                     {(plan.features ?? []).map((f) => (
-                                                        <li key={f.code} className="flex items-center gap-1.5 text-xs text-slate-600">
-                                                            <span className="text-[#0E6E75]">✓</span> {f.name}
+                                                        <li key={f.code} className="flex items-start gap-1.5 text-xs text-slate-600">
+                                                            <span className="shrink-0 text-brand">✓</span> {f.name}
                                                         </li>
                                                     ))}
                                                     {(plan.features ?? []).length === 0 && (
@@ -220,12 +228,12 @@ export default function RegisterPage() {
                                     })}
                                 </div>
                             )}
-                            <div className="mt-6 flex justify-end">
+                            <div className="mt-6 flex justify-end border-t border-slate-100 pt-5">
                                 <button
                                     type="button"
                                     disabled={!selectedPlanId}
                                     onClick={() => setStep(2)}
-                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
                                 >
                                     Continue
                                 </button>
@@ -236,8 +244,8 @@ export default function RegisterPage() {
                     {/* ── Step 2: Details ── */}
                     {step === 2 && (
                         <div>
-                            <h2 className="mb-4 text-lg font-bold text-slate-800">Your details</h2>
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <h2 className="mb-4 text-lg font-bold tracking-tight text-slate-900">Your details</h2>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Field label="Clinic / Tenant name" required value={form.tenant_name} onChange={(v) => setField("tenant_name", v)} />
                                 <Field label="Your full name" required value={form.manager_name} onChange={(v) => setField("manager_name", v)} />
                                 <Field label="Phone" value={form.phone} onChange={(v) => setField("phone", v)} />
@@ -245,22 +253,22 @@ export default function RegisterPage() {
                             </div>
 
                             {/* Email + verification */}
-                            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                                 <label className="block text-sm font-medium text-slate-700">Email <span className="text-red-500">*</span></label>
-                                <div className="mt-1 flex flex-col gap-2 sm:flex-row">
+                                <div className="mt-1.5 flex flex-col gap-2 sm:flex-row">
                                     <input
                                         type="email"
                                         value={form.email}
                                         onChange={(e) => onEmailChange(e.target.value)}
                                         disabled={emailVerified}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none disabled:opacity-60"
+                                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60"
                                         placeholder="you@example.com"
                                     />
                                     {emailVerified ? (
-                                        <span className="inline-flex items-center justify-center rounded-lg bg-[#0E6E75]/10 px-3 py-2 text-sm font-medium text-[#0E6E75]">Verified ✓</span>
+                                        <span className="inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-green-50 px-4 py-2.5 text-sm font-semibold text-green-700">Verified ✓</span>
                                     ) : (
                                         <button type="button" onClick={handleSendCode} disabled={sendingCode}
-                                            className="whitespace-nowrap rounded-lg border border-[#0E6E75] px-4 py-2 text-sm font-medium text-[#0E6E75] hover:bg-[#0E6E75]/10 disabled:opacity-50">
+                                            className="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-brand/40 bg-white px-4 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-60">
                                             {sendingCode ? "Sending…" : codeSent ? "Resend code" : "Send code"}
                                         </button>
                                     )}
@@ -273,11 +281,11 @@ export default function RegisterPage() {
                                             maxLength={6}
                                             value={code}
                                             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 tracking-widest placeholder:text-slate-400 focus:border-[#0E6E75] focus:outline-none"
+                                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 tracking-widest tabular-nums"
                                             placeholder="6-digit code"
                                         />
                                         <button type="button" onClick={handleVerifyCode} disabled={verifying}
-                                            className="whitespace-nowrap rounded-lg bg-[#0E6E75] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A565C] disabled:opacity-50">
+                                            className="inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                                             {verifying ? "Verifying…" : "Verify"}
                                         </button>
                                     </div>
@@ -285,16 +293,16 @@ export default function RegisterPage() {
                             </div>
 
                             {/* Password */}
-                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Field label="Password" type="password" required value={form.password} onChange={(v) => setField("password", v)} hint="At least 6 characters" />
                                 <Field label="Confirm password" type="password" required value={form.confirmPassword} onChange={(v) => setField("confirmPassword", v)}
                                     error={form.confirmPassword && form.password !== form.confirmPassword ? "Passwords do not match" : ""} />
                             </div>
 
-                            <div className="mt-6 flex justify-between">
-                                <button type="button" onClick={() => setStep(1)} className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50">Back</button>
+                            <div className="mt-6 flex flex-wrap justify-between gap-2 border-t border-slate-100 pt-5">
+                                <button type="button" onClick={() => setStep(1)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Back</button>
                                 <button type="button" disabled={!detailsValid} onClick={() => setStep(3)}
-                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                                     Continue
                                 </button>
                             </div>
@@ -304,18 +312,18 @@ export default function RegisterPage() {
                     {/* ── Step 3: Payment ── */}
                     {step === 3 && (
                         <div>
-                            <h2 className="mb-1 text-lg font-bold text-slate-800">Payment</h2>
+                            <h2 className="mb-1 text-lg font-bold tracking-tight text-slate-900">Payment</h2>
                             <p className="mb-4 text-sm text-slate-500">
-                                Transfer <b className="text-[#0E6E75]">${planPrice(selectedPlan, billingPeriod)}</b> for the <b>{selectedPlan?.name}</b> plan ({billingPeriod}), then upload your payment screenshot.
+                                Transfer <b className="text-brand">${planPrice(selectedPlan, billingPeriod)}</b> for the <b>{selectedPlan?.name}</b> plan ({billingPeriod}), then upload your payment screenshot.
                             </p>
 
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                                 <p className="text-sm font-semibold text-slate-800">1 · Transfer to one of these</p>
                                 <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                                     {BANK_ACCOUNTS.map((b) => (
-                                        <div key={b.label} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
+                                        <div key={b.label} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
                                             <span className="text-sm font-medium text-slate-700">{b.label}</span>
-                                            <span className="select-all font-mono text-sm font-semibold text-[#0E6E75]">{b.number}</span>
+                                            <span className="select-all font-mono text-sm font-semibold text-brand">{b.number}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -325,15 +333,15 @@ export default function RegisterPage() {
                                     type="file"
                                     accept="image/jpeg,image/png,image/webp"
                                     onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                    className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#0E6E75] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#0A565C]"
+                                    className="mt-2 block w-full rounded-xl border border-dashed border-slate-300 bg-white p-2 text-sm text-slate-600 file:me-3 file:rounded-lg file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-brand-dark"
                                 />
-                                {file && <p className="mt-1 text-xs text-slate-500">Selected: {file.name}</p>}
+                                {file && <p className="mt-1.5 break-words text-xs text-slate-500">Selected: {file.name}</p>}
                             </div>
 
-                            <div className="mt-6 flex justify-between">
-                                <button type="button" onClick={() => setStep(2)} className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50">Back</button>
+                            <div className="mt-6 flex flex-wrap justify-between gap-2 border-t border-slate-100 pt-5">
+                                <button type="button" onClick={() => setStep(2)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Back</button>
                                 <button type="button" disabled={submitting || !file} onClick={handleSubmit}
-                                    className="rounded-lg bg-[#0E6E75] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0A565C] disabled:opacity-50">
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
                                     {submitting ? "Submitting…" : "Submit registration"}
                                 </button>
                             </div>
@@ -341,9 +349,10 @@ export default function RegisterPage() {
                     )}
                 </div>
 
-                <p className="mt-4 text-center text-xs text-slate-400">
-                    Already have an account? <Link to="/" className="text-[#0E6E75] hover:underline">Sign in</Link>
+                <p className="mt-5 text-center text-xs text-slate-500">
+                    Already have an account? <Link to="/" className="font-semibold text-brand hover:underline">Sign in</Link>
                 </p>
+            </div>
             </div>
         </div>
     );
@@ -359,9 +368,9 @@ function Field({ label, value, onChange, type = "text", required, hint, error })
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none ${error ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-[#0E6E75]"}`}
+                className={`mt-1.5 block w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 ${error ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200 focus:border-brand focus:ring-brand/15"}`}
             />
-            {error ? <p className="mt-1 text-xs text-red-500">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
+            {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
         </div>
     );
 }

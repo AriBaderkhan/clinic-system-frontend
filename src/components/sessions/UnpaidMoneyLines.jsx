@@ -12,7 +12,7 @@ export default function UnpaidMoneyLines({ breakdown, className = "" }) {
     const planLabel = (p) => `${String(p.type || "").toUpperCase()} ${t("appt.pay_plan_suffix")}`;
 
     return (
-        <div className={`space-y-0.5 text-[11px] text-slate-600 ${className}`}>
+        <div className={`space-y-0.5 text-xs tabular-nums text-slate-600 ${className}`}>
             {normal.show && (
                 <p>
                     {normal.remaining === 0
