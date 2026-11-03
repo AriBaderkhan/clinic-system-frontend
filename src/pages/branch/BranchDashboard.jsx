@@ -100,13 +100,15 @@ export default function BranchDashboard() {
     const revenue = stats?.revenue || [];
     const unpaid = stats?.unpaid || [];
     const doctors = stats?.doctors || [];
+    // lower plans get the short overview: no doctors / busy times / treatments (server leaves them out)
+    const full = stats?.full_overview !== false;
     const money = (list, key) => (list.length ? list.map((r) => formatMoney(key ? r[key] : r.total, r.currency_code)).join('   ·   ') : formatMoney(0));
     const unpaidMoney = (kind) => money(unpaid.map((u) => ({ currency_code: u.currency_code, total: u[kind].total })));
     const unpaidCount = (kind) => unpaid.reduce((a, u) => a + u[kind].count, 0);
 
     // Saturday first (the clinic week)
-    const dayRows = [6, 0, 1, 2, 3, 4, 5].map((d) => ({ label: t(`bdash.day_${d}`), value: stats?.busy.days[d] || 0 }));
-    const hourRows = (stats?.busy.hours || []).map((h) => ({ label: `${String(h.hour).padStart(2, '0')}:00`, value: h.total }));
+    const dayRows = [6, 0, 1, 2, 3, 4, 5].map((d) => ({ label: t(`bdash.day_${d}`), value: stats?.busy?.days[d] || 0 }));
+    const hourRows = (stats?.busy?.hours || []).map((h) => ({ label: `${String(h.hour).padStart(2, '0')}:00`, value: h.total }));
 
     return (
         <div className="w-full space-y-5" data-branch-overview>
@@ -164,6 +166,7 @@ export default function BranchDashboard() {
             </div>
 
             {/* doctors this month */}
+            {full && (
             <div className={CARD} data-doctors>
                 <CardHead title={t('bdash.doctors_title')} hint={t('bdash.doctors_hint')} icon={FiUsers} />
                 {doctors.length === 0 ? (
@@ -198,21 +201,26 @@ export default function BranchDashboard() {
                 )}
             </div>
 
+            )}
+
             {/* busy days + hours */}
+            {full && (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2" data-busy>
                 <div className={CARD}>
-                    <CardHead title={t('bdash.busy_days')} hint={t('bdash.busy_hint', { days: stats?.busy.days_back || 28 })} />
+                    <CardHead title={t('bdash.busy_days')} hint={t('bdash.busy_hint', { days: stats?.busy?.days_back || 28 })} />
                     <Bars rows={dayRows} empty={t('bdash.no_busy')} />
                 </div>
                 <div className={CARD}>
-                    <CardHead title={t('bdash.busy_hours')} hint={t('bdash.busy_hint', { days: stats?.busy.days_back || 28 })} />
+                    <CardHead title={t('bdash.busy_hours')} hint={t('bdash.busy_hint', { days: stats?.busy?.days_back || 28 })} />
                     <Bars rows={hourRows} empty={t('bdash.no_busy')} />
                 </div>
             </div>
 
+            )}
+
             {/* today's appointments + top treatments */}
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-                <div className={`${CARD} xl:col-span-2`}>
+            <div className={`grid grid-cols-1 gap-6 ${full ? 'xl:grid-cols-3' : ''}`}>
+                <div className={`${CARD} ${full ? 'xl:col-span-2' : ''}`}>
                     <CardHead title={t('tdash.appointments_list')} />
                     {loading && !stats ? (
                         <div className="px-5 py-10 text-center text-sm text-slate-400">{t('tdash.loading')}</div>
@@ -232,10 +240,12 @@ export default function BranchDashboard() {
                         </div>
                     )}
                 </div>
-                <div className={CARD}>
+                {full && (
+                <div className={CARD} data-treatments>
                     <CardHead title={t('tdash.treatments_title')} hint={t('tdash.treatments_hint')} icon={FiActivity} />
                     <TreatmentsChart data={stats?.treatments_month || []} />
                 </div>
+                )}
             </div>
         </div>
     );

@@ -347,39 +347,39 @@ export default function WorksPage() {
             <table className="w-full text-sm">
               <thead className="bg-slate-50">
                 <tr className="text-start text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-3 text-start">#</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_code")}</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_name")}</th>
-                  <th className="px-4 py-3 text-start">{t("spec.specialty")}</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_min_price")}</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_installments")}</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_min_installment")}</th>
-                  <th className="px-4 py-3 text-start">{t("clin.col_status")}</th>
-                  <th className="px-4 py-3 text-end">{t("clin.col_actions")}</th>
+                  <th className="px-3 py-3 text-start">#</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_code")}</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_name")}</th>
+                  <th className="px-3 py-3 text-start">{t("spec.specialty")}</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_min_price")}</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_installments")}</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_min_installment")}</th>
+                  <th className="px-3 py-3 text-start">{t("clin.col_status")}</th>
+                  <th className="px-3 py-3 text-end">{t("clin.col_actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {works.map((w, idx) => (
                   <tr key={w.id} className="border-t border-slate-100 hover:bg-slate-50">
-                    <td className="px-4 py-3 text-slate-500">{idx + 1}</td>
-                    <td className="px-4 py-3 font-mono font-medium text-slate-900">{w.code}</td>
-                    <td className="px-4 py-3 text-slate-700">{w.name}</td>
-                    <td className="px-4 py-3 text-slate-600">{specialtyName(w.specialty_id)}</td>
-                    <td className="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(w.min_price)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3 text-slate-500">{idx + 1}</td>
+                    <td className="px-3 py-3 font-mono font-medium text-slate-900 [overflow-wrap:anywhere]">{w.code}</td>
+                    <td className="px-3 py-3 text-slate-700">{w.name}</td>
+                    <td className="px-3 py-3 text-slate-600 [overflow-wrap:anywhere]">{specialtyName(w.specialty_id)}</td>
+                    <td className="whitespace-nowrap px-3 py-3 font-semibold tabular-nums text-slate-900">{formatMoney(w.min_price)}</td>
+                    <td className="px-3 py-3">
                       <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${w.allow_installments ? "bg-brand/10 text-brand" : "bg-slate-100 text-slate-500"}`}>
                         {w.allow_installments ? t("clin.yes") : t("clin.no")}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 tabular-nums text-slate-700">
+                    <td className="whitespace-nowrap px-3 py-3 tabular-nums text-slate-700">
                       {w.allow_installments ? formatMoney(w.min_installment_amount) : "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3">
                       <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${w.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                         {w.is_active ? t("clin.active") : t("clin.inactive")}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
