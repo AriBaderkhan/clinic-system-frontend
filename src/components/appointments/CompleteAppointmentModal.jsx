@@ -6,6 +6,7 @@ import { uploadSessionImages } from "../../api/sessionApi";
 import { getWorksForDoctor } from "../../api/workApi";
 import { getActiveTreatmentPlan } from "../../api/treatmentPlanApi";
 import { useSettings } from "../../context/SettingContext";
+import useWorkflow from "../../hooks/useWorkflow";
 import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
 import TeethDiagram from "../sessions/TeethDiagram";
 
@@ -122,6 +123,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const [plans, setPlans] = useState({});
 
   const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null });
+  const { data: workflow } = useWorkflow();
   const [confirmed, setConfirmed] = useState([]);
   const [completedPlanIds, setCompletedPlanIds] = useState([]);
   const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
@@ -195,7 +197,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const getMeta = (workId) => {
     const item = catalog.find((x) => Number(x.id) === Number(workId));
     if (!item) return null;
-    return { id: Number(item.id), name: item.name, code: String(item.code || "").toLowerCase(), min_price: Number(item.min_price || 0) };
+    return { id: Number(item.id), name: item.name, code: String(item.code || "").toLowerCase(), min_price: Number(item.min_price || 0), one_visit: item.one_visit !== false };
   };
 
   // tooth number -> active plan type (for the label above the tooth)
@@ -213,6 +215,8 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
   const dWhole = !!dCode && wholeMouthCodes.has(dCode);
   const dPlan = !!dCode && planCodes.has(dCode);
   const dPerToothPlan = dPlan && !dWhole;
+  // a NEW plan may be finished in this visit: branch switch on + this treatment ticked
+  const canFinishNow = dPlan && draft.plan_mode === "new" && !!workflow?.allow_one_visit_plans && dMeta?.one_visit !== false;
 
   // Clinical rule: a tooth can't have two active plans of the SAME type at once.
   // Block starting a NEW plan on a tooth that already has an active plan of this type.
@@ -298,6 +302,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
         teeth: whole ? [] : [...draft.teeth],
         plan_mode: isPlan ? draft.plan_mode : null,
         agreed_total: isPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
+        finish_now: canFinishNow && !!draft.finish_now,
         arch: whole ? (draft.arch ?? null) : null,
       },
     ]);
@@ -313,6 +318,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
       teeth: [...e.teeth],
       plan_mode: e.plan_mode || "new",
       agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""),
+      finish_now: !!e.finish_now,
       arch: e.arch ?? null,
     });
     setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
@@ -390,9 +396,9 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
     const works = [];
     for (const c of confirmed) {
       if (c.wholeMouth) {
-        works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null, arch: c.arch ?? null });
+        works.push({ work_id: c.work_id, quantity: 1, tooth_number: null, treatment_plan_id: c.isPlan && c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.isPlan && c.plan_mode === "new" ? Number(c.agreed_total) : null, finish_now: c.isPlan && c.plan_mode === "new" && !!c.finish_now, arch: c.arch ?? null });
       } else if (c.isPlan) {
-        works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0] ?? null, treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null });
+        works.push({ work_id: c.work_id, quantity: 1, tooth_number: c.teeth[0] ?? null, treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null, agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null, finish_now: c.plan_mode === "new" && !!c.finish_now });
       } else if (c.teeth.length > 0) {
         for (const t of c.teeth) works.push({ work_id: c.work_id, quantity: 1, tooth_number: t, treatment_plan_id: null, agreed_total: null });
       } else {
@@ -559,6 +565,13 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                         onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls}
                         step="0.01"
                         placeholder={t("appt.comp_min", { amount: formatMoney(dMeta?.min_price || 0) })} />
+                      {canFinishNow && (
+                        <label className="mt-2 flex items-center gap-2 text-xs font-medium text-slate-700">
+                          <input type="checkbox" data-finish-now checked={!!draft.finish_now}
+                            onChange={(e) => setDraft((d) => ({ ...d, finish_now: e.target.checked }))} className="h-4 w-4 accent-brand" />
+                          {t("appt.finish_now")}
+                        </label>
+                      )}
                     </div>
                   )}
                 </div>
@@ -578,6 +591,7 @@ export default function CompleteAppointmentModal({ appointment, onClose, onCompl
                         <span className="font-semibold text-slate-900">{c.name}</span>
                         <span className="text-slate-500">· {c.wholeMouth ? t("appt.arch_" + (c.arch || "whole")) : c.teeth.length ? t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") }) : t("appt.comp_no_tooth")}</span>
                         {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("appt.comp_new_plan_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
+                        {c.finish_now && <span className="font-medium text-emerald-700" data-finish-now-chip>· {t("appt.finish_now_chip")}</span>}
                         <button type="button" onClick={() => editTreatment(c.uid)} title={t("common.edit")} className="ms-1 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-brand">✎</button>
                         <button type="button" onClick={() => removeTreatment(c.uid)} title={t("common.delete")} className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">✕</button>
                       </span>

@@ -908,7 +908,9 @@
     "pay_settle_done": "Mark as done (final amount — no remaining)",
     "pay_saving": "Saving…",
     "pay_failed": "Failed to save payment. Please try again.",
-    "pay_over": "This is {{amount}} more than the remaining."
+    "pay_over": "This is {{amount}} more than the remaining.",
+    "finish_now": "Finished in this visit",
+    "finish_now_chip": "finished in this visit"
   },
   "spec": {
     "title": "Specialties",
@@ -1032,7 +1034,8 @@
     "sess_delete_confirm": "This deletes the whole visit — its works and payments are removed from all reports. This cannot be undone.",
     "sess_delete_title": "Delete this visit?",
     "sess_delete_failed": "Failed to delete session.",
-    "sess_showing_of": "Showing {{start}}–{{end}} of {{total}} sessions"
+    "sess_showing_of": "Showing {{start}}–{{end}} of {{total}} sessions",
+    "one_visit": "Can be finished in one visit"
   },
   "tp": {
     "title": "Treatment Plans",
@@ -1486,7 +1489,8 @@
     "DISCOUNTS_NOT_ALLOWED": "Discounts are turned off in this branch.",
     "DISCOUNT_OVER_MAX": "This discount is bigger than this branch allows.",
     "PATIENT_HAS_UNPAID": "This patient has an unpaid visit. It must be paid before a new booking.",
-    "USER_NOT_FOUND": "User not found."
+    "USER_NOT_FOUND": "User not found.",
+    "PLAN_ONE_VISIT_NOT_ALLOWED": "This plan cannot be finished in one visit in this branch."
   },
   "roles": {
     "title": "Roles & permissions",
@@ -1636,7 +1640,10 @@
     "save_failed": "Could not save the rules",
     "load_failed": "Could not load the rules",
     "allow_overpay": "Allow paying more than the remaining",
-    "allow_overpay_hint": "Reception can take more money than what is still owed on a visit (for example to round up or pay ahead)."
+    "allow_overpay_hint": "Reception can take more money than what is still owed on a visit (for example to round up or pay ahead).",
+    "allow_one_visit_plans": "Allow finishing a plan in one visit",
+    "allow_one_visit_plans_hint": "The doctor can start a treatment plan and mark it finished in the same visit.",
+    "one_visit_list_hint": "Plans that can be finished in one visit:"
   },
   "design": {
     "title": "Design",

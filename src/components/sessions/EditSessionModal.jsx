@@ -20,6 +20,7 @@ import {
 } from "../../api/sessionApi";
 import { useSettings } from "../../context/SettingContext";
 import { useAuth } from "../../context/AuthContext";
+import useWorkflow from "../../hooks/useWorkflow";
 import TeethDiagram from "./TeethDiagram";
 import PrescriptionEditor from "../prescriptions/PrescriptionEditor";
 import ConfirmModal from "../common/ConfirmModal";
@@ -36,7 +37,7 @@ const ALLOWED_IMG = ["image/jpeg", "image/png", "image/webp"];
 const metaFrom = (catalog, id) => {
     const item = catalog.find((x) => Number(x.id) === Number(id));
     if (!item) return null;
-    return { id: Number(item.id), name: item.name, code: String(item.code || "").toLowerCase(), min_price: Number(item.min_price || 0), is_plan: !!item.is_plan, is_whole_mouth: !!item.is_whole_mouth };
+    return { id: Number(item.id), name: item.name, code: String(item.code || "").toLowerCase(), min_price: Number(item.min_price || 0), is_plan: !!item.is_plan, is_whole_mouth: !!item.is_whole_mouth, one_visit: item.one_visit !== false };
 };
 
 // units a work line counts for: whole-mouth = its quantity; per-tooth = its
@@ -207,6 +208,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const [confirmed, setConfirmed] = useState([]);          // normal + newly-added plan works
     const [origWorksSig, setOrigWorksSig] = useState("[]");
     const [draft, setDraft] = useState({ work_id: "", quantity: 1, teeth: [], plan_mode: "new", agreed_total: "", arch: null, unit_price: "" });
+    const { data: workflow } = useWorkflow();
     const [popupTooth, setPopupTooth] = useState(null); // tooth # for the double-click quick-add popup
 
     const [planWorks, setPlanWorks] = useState([]);          // existing plan works (tooth only)
@@ -363,6 +365,8 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const dWhole = !!dMeta?.is_whole_mouth;
     const dPlan = !!dMeta?.is_plan;
     const dPerToothPlan = dPlan && !dWhole;
+    // a NEW plan may be finished in this visit: branch switch on + this treatment ticked
+    const canFinishNow = dPlan && draft.plan_mode === "new" && !!workflow?.allow_one_visit_plans && dMeta?.one_visit !== false;
 
     const canAdd = (() => {
         if (!dMeta) return false;
@@ -420,6 +424,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 teeth: dWhole ? [] : [...draft.teeth],
                 plan_mode: dPlan ? draft.plan_mode : null,
                 agreed_total: dPlan && draft.plan_mode === "new" ? Number(draft.agreed_total) : null,
+                finish_now: canFinishNow && !!draft.finish_now,
                 arch: dWhole ? (draft.arch ?? null) : null,
                 unit_price: draft.unit_price !== "" && draft.unit_price !== undefined ? Number(draft.unit_price) : dMeta.min_price,
             },
@@ -429,7 +434,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
     const editTreatment = (uid) => {
         const e = confirmed.find((c) => c.uid === uid);
         if (!e) return;
-        setDraft({ work_id: String(e.work_id), quantity: unitsOf(e), teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""), arch: e.arch ?? null, unit_price: e.unit_price ?? "", min_floor: e.min_price });
+        setDraft({ work_id: String(e.work_id), quantity: unitsOf(e), teeth: [...e.teeth], plan_mode: e.plan_mode || "new", agreed_total: e.agreed_total ?? (e.isPlan ? e.min_price : ""), finish_now: !!e.finish_now, arch: e.arch ?? null, unit_price: e.unit_price ?? "", min_floor: e.min_price });
         setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
     };
     const removeTreatment = (uid) => setConfirmed((prev) => prev.filter((c) => c.uid !== uid));
@@ -499,6 +504,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                 tooth_number: c.wholeMouth ? null : (c.teeth[0] ?? null),
                 treatment_plan_id: c.plan_mode !== "new" ? Number(c.plan_mode) : null,
                 agreed_total: c.plan_mode === "new" ? Number(c.agreed_total) : null,
+                finish_now: c.plan_mode === "new" && !!c.finish_now,
                 arch: c.wholeMouth ? (c.arch ?? null) : null,
             });
         }
@@ -702,6 +708,13 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                             <div>
                                                 <label className="block text-[11px] font-medium text-slate-600 mb-0.5">{t("appt.comp_new_agreement", { code: dCode.toUpperCase() })}</label>
                                                 <input type="number" min={dMeta?.min_price || 0} step="0.01" value={draft.agreed_total} onChange={(e) => setDraft((d) => ({ ...d, agreed_total: e.target.value }))} className={inputCls} placeholder={t("appt.comp_min", { amount: formatMoney(dMeta?.min_price || 0) })} />
+                                                {canFinishNow && (
+                                                    <label className="mt-2 flex items-center gap-2 text-xs font-medium text-slate-700">
+                                                        <input type="checkbox" data-finish-now checked={!!draft.finish_now}
+                                                            onChange={(e) => setDraft((d) => ({ ...d, finish_now: e.target.checked }))} className="h-4 w-4 accent-brand" />
+                                                        {t("appt.finish_now")}
+                                                    </label>
+                                                )}
                                             </div>
                                         ) : (
                                             <p className="text-slate-700">{t("appt.comp_continuing")} <b className="uppercase">{dCode}</b>{dWhole ? "" : draft.teeth[0] ? ` · ${t("appt.comp_tooth_label", { teeth: draft.teeth[0] })}` : ` · ${t("es.pick_a_tooth")}`} {t("appt.comp_no_new_agreement")}</p>
@@ -726,6 +739,7 @@ export default function EditSessionModal({ sessionId, onClose, onUpdated, canEdi
                                                     <span className="font-semibold">{c.name}</span>
                                                     <span className="text-slate-500">· {c.wholeMouth ? `${t("appt.arch_" + (c.arch || "whole"))}${units > 1 ? ` ×${units}` : ""}` : c.teeth.length ? `${t("appt.comp_tooth_label", { teeth: c.teeth.join(", ") })}${extraNoTooth ? ` + ${t("es.qty_no_tooth", { quantity: units - c.teeth.length })}` : ""}` : t("es.qty_no_tooth", { quantity: units })}</span>
                                                     {c.isPlan && <span className="text-rose-500">{c.plan_mode === "new" ? t("es.new_chip", { amount: formatMoney(Number(c.agreed_total)) }) : t("appt.comp_continue_chip")}</span>}
+                                                    {c.finish_now && <span className="font-medium text-emerald-700" data-finish-now-chip>· {t("appt.finish_now_chip")}</span>}
                                                     {!c.isPlan && (
                                                         <label className="flex items-center gap-1 text-[11px] text-slate-500" title={t("es.price_below_min", { amount: formatMoney(c.min_price || 0) })}>
                                                             {t("es.price")}

@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getWorkflow, updateWorkflow } from "../../api/settingApi";
+import useWorks from "../../hooks/useWorks";
+import { useAuth } from "../../context/AuthContext";
+import { hasTick } from "../../utils/can";
 
-const SWITCHES = ["allow_settle_unpaid", "allow_overpay", "allow_discounts", "block_booking_if_owes"];
+const SWITCHES = ["allow_settle_unpaid", "allow_overpay", "allow_discounts", "block_booking_if_owes", "allow_one_visit_plans"];
 
 function Switch({ name, checked, onChange }) {
   return (
@@ -26,6 +29,12 @@ export default function WorkflowSettings() {
   const [form, setForm] = useState(null);
   const [saved, setSaved] = useState(null);
   const [saving, setSaving] = useState(false);
+  const { user } = useAuth();
+  // plan treatments and their own "can be finished in one visit" tick (saved on the treatment)
+  const { works, update: updateWork } = useWorks();
+  const planWorks = works.filter((w) => w.is_plan);
+  const [oneVisit, setOneVisit] = useState({}); // work id -> tick, only the ones changed here
+  const canEditWorks = hasTick(user, "manage_works");
 
   useEffect(() => {
     getWorkflow()
@@ -37,7 +46,9 @@ export default function WorkflowSettings() {
 
   const pct = Number(form.max_discount_percent);
   const pctOk = Number.isInteger(pct) && pct >= 0 && pct <= 100 && form.max_discount_percent !== "";
-  const changed = JSON.stringify(form) !== JSON.stringify(saved);
+  const tickOf = (w) => (oneVisit[w.id] !== undefined ? oneVisit[w.id] : w.one_visit !== false);
+  const changedTicks = planWorks.filter((w) => tickOf(w) !== (w.one_visit !== false));
+  const changed = JSON.stringify(form) !== JSON.stringify(saved) || changedTicks.length > 0;
 
   const save = async () => {
     if (!pctOk) return toast.error(t("workflow.bad_percent"));
@@ -49,9 +60,15 @@ export default function WorkflowSettings() {
         allow_discounts: form.allow_discounts,
         max_discount_percent: pct,
         block_booking_if_owes: form.block_booking_if_owes,
+        allow_one_visit_plans: form.allow_one_visit_plans,
       });
       setForm(res.data);
       setSaved(res.data);
+      for (const w of changedTicks) {
+        const r = await updateWork(w.id, { one_visit: tickOf(w) });
+        if (!r.ok) throw { userMessage: r.error };
+      }
+      setOneVisit({});
       toast.success(t("workflow.saved"));
     } catch (err) {
       toast.error(err.userMessage || t("workflow.save_failed"));
@@ -87,6 +104,27 @@ export default function WorkflowSettings() {
                 />
                 %
               </label>
+            )}
+            {key === "allow_one_visit_plans" && planWorks.length > 0 && (
+              // switch off = every plan off (greyed); each plan's own choice is kept for when it is switched on again
+              <div className={`mt-3 rounded-xl bg-slate-50 px-3 py-2 ${form.allow_one_visit_plans ? "" : "opacity-50"}`} data-one-visit-list>
+                <p className="mb-1 text-xs text-slate-500">{t("workflow.one_visit_list_hint")}</p>
+                <div className="flex flex-wrap gap-x-5 gap-y-1">
+                  {planWorks.map((w) => (
+                    <label key={w.id} className="flex items-center gap-2 py-1 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        data-one-visit={w.code}
+                        className="h-4 w-4 rounded border-slate-300 accent-brand"
+                        checked={!!form.allow_one_visit_plans && tickOf(w)}
+                        disabled={!form.allow_one_visit_plans || !canEditWorks}
+                        onChange={(e) => setOneVisit({ ...oneVisit, [w.id]: e.target.checked })}
+                      />
+                      {w.name}
+                    </label>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         ))}

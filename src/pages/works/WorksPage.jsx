@@ -14,6 +14,7 @@ const emptyForm = {
   min_installment_amount: "",
   is_active: true,
   is_plan: false,
+  one_visit: true,
   is_whole_mouth: false,
   specialty_id: "",
 };
@@ -85,7 +86,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
   const curr = settings?.currency_code || "";
   const [form, setForm] = useState(
     mode === "edit"
-      ? { ...initial, min_installment_amount: initial.min_installment_amount ?? "", specialty_id: initial.specialty_id ?? "" }
+      ? { ...initial, min_installment_amount: initial.min_installment_amount ?? "", specialty_id: initial.specialty_id ?? "", one_visit: initial.one_visit !== false }
       : emptyForm
   );
 
@@ -102,6 +103,7 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
       allow_installments: form.allow_installments,
       is_active: form.is_active,
       is_plan: form.is_plan,
+      one_visit: form.one_visit !== false,
       is_whole_mouth: form.is_whole_mouth,
       // empty = for every doctor
       specialty_id: form.specialty_id ? Number(form.specialty_id) : null,
@@ -220,6 +222,19 @@ function WorkFormModal({ mode, initial, specialties, onClose, onSubmit, isSubmit
             />
             <label htmlFor="is_plan" className="text-sm text-slate-700">{t("clin.is_plan")}</label>
           </div>
+
+          {form.is_plan && (
+            <div className="flex items-center gap-3 ps-7">
+              <input
+                type="checkbox"
+                id="one_visit"
+                checked={form.one_visit !== false}
+                onChange={(e) => set("one_visit", e.target.checked)}
+                className="h-4 w-4 accent-brand"
+              />
+              <label htmlFor="one_visit" className="text-sm text-slate-700">{t("clin.one_visit")}</label>
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <input
