@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -9,8 +10,23 @@ export default function AddPatient() {
   const { t } = useTranslation();
   const { createPatients, isSubmitting } = usePatients({ skipFetch: true });
   const navigate = useNavigate();
+  // locks Save from the first press (before the phone check), so a fast double click saves once
+  const busy = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleCreate = async (payload) => {
+    if (busy.current) return;
+    busy.current = true;
+    setIsSaving(true);
+    try {
+      await saveNewPatient(payload);
+    } finally {
+      busy.current = false;
+      setIsSaving(false);
+    }
+  };
+
+  const saveNewPatient = async (payload) => {
     // same phone in another branch? ask them to share the patient instead of making a second file
     try {
       const res = await checkPatientPhone(payload.phone);
@@ -32,7 +48,7 @@ export default function AddPatient() {
       mode="add"
       initialData={null}
       onSubmit={handleCreate}
-      isSubmitting={isSubmitting}
+      isSubmitting={isSubmitting || isSaving}
     />
   );
 }

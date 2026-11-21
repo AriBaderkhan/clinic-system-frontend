@@ -1473,6 +1473,7 @@
     "ROLE_NOT_FOUND": "Role not found.",
     "BRANCH_REQUIRED": "Open a branch first.",
     "PATIENT_NOT_HOME_BRANCH": "Only the patient's home branch can do this.",
+    "PATIENT_ALREADY_EXISTS": "A patient with this name and phone already exists in this branch.",
     "SAME_BRANCH": "The patient already belongs to this branch.",
     "ALREADY_SHARED": "The patient is already shared with this branch.",
     "PATIENT_HAS_RECORDS_IN_BRANCH": "That branch already has records for this patient, so the sharing stays.",
