@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { getInsightsCatalog, getInsight, getInsightsMeta, downloadInsightsExcel } from "../../api/reportsApi";
+import { useSettings } from "../../context/SettingContext";
 import { INSIGHT_CATEGORIES } from "./insightsConfig";
 
 // Trigger a browser download from a Blob (used by the Excel export).
@@ -318,14 +319,37 @@ function PeriodControls({ t, periodType, setPeriodType, month, setMonth, from, s
 }
 
 // Renders any of the result shapes: count / revenue / breakdown / split.
+// Money answers come as one block PER CURRENCY (dinars and dollars are never added together).
 function ResultView({ data, t }) {
+    const { formatMoney } = useSettings();
     const { type, multiBranch, result } = data;
 
+    if (result.currencies) {
+        if (result.currencies.length === 0) return <p className="py-6 text-center text-sm text-slate-500">{t("insights.no_data")}</p>;
+        const several = result.currencies.length > 1;
+        return (
+            <div className="flex flex-col gap-4">
+                {result.currencies.map((c) => (
+                    <div key={c.currency_code} className="flex flex-col gap-2">
+                        {several && <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{c.currency_code}</p>}
+                        {/* several currencies: a branch with no money in this currency is not listed under it */}
+                        <ResultBody type={type} multiBranch={multiBranch} result={several ? { ...c, branches: c.branches.filter((b) => b.value !== 0) } : c} t={t} show={(v) => formatMoney(v, c.currency_code)} />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    return <ResultBody type={type} multiBranch={multiBranch} result={result} t={t} show={fmt} />;
+}
+
+// One answer; `show` formats each number (counts as plain numbers, money with its currency).
+function ResultBody({ type, multiBranch, result, t, show }) {
     if (type === "count" || type === "revenue") {
         return (
             <div className="flex flex-col gap-3">
-                <BigValue value={result.value} unit={result.unit} compare={result.compare} t={t} />
-                {multiBranch && <BranchValueList branches={result.branches} t={t} />}
+                <BigValue value={result.value} unit={result.unit} compare={result.compare} t={t} show={show} />
+                {multiBranch && <BranchValueList branches={result.branches} t={t} show={show} />}
             </div>
         );
     }
@@ -333,14 +357,14 @@ function ResultView({ data, t }) {
     if (type === "split") {
         return (
             <div className="flex flex-col gap-3">
-                <BreakdownList items={result.breakdown} t={t} />
+                <BreakdownList items={result.breakdown} t={t} show={show} />
                 {result.compare && (
                     <div className="space-y-0.5 rounded-xl bg-slate-50 p-3 text-xs text-slate-600">
-                        <p>{t("insights.new")}: {growthText(result.compare.new, t)}</p>
-                        <p>{t("insights.returning")}: {growthText(result.compare.returning, t)}</p>
+                        <p>{t("insights.new")}: {growthText(result.compare.new, t, show)}</p>
+                        <p>{t("insights.returning")}: {growthText(result.compare.returning, t, show)}</p>
                     </div>
                 )}
-                {multiBranch && <BranchBreakdownSections branches={result.branches} t={t} />}
+                {multiBranch && <BranchBreakdownSections branches={result.branches} t={t} show={show} />}
             </div>
         );
     }
@@ -348,16 +372,16 @@ function ResultView({ data, t }) {
     // breakdown
     return (
         <div className="flex flex-col gap-3">
-            <BreakdownList items={result.breakdown} t={t} />
-            {multiBranch && <BranchBreakdownSections branches={result.branches} t={t} />}
+            <BreakdownList items={result.breakdown} t={t} show={show} />
+            {multiBranch && <BranchBreakdownSections branches={result.branches} t={t} show={show} />}
         </div>
     );
 }
 
-function BigValue({ value, unit, compare, t }) {
+function BigValue({ value, unit, compare, t, show }) {
     return (
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-            <div className="text-3xl font-bold tracking-tight text-brand tabular-nums">{fmt(value)}</div>
+            <div className="text-3xl font-bold tracking-tight text-brand tabular-nums">{show(value)}</div>
             <div className="mt-0.5 text-xs font-medium uppercase tracking-wide text-slate-500">{unit === "money" ? t("insights.total") : t("insights.count")}</div>
             {compare && (
                 <div className="mt-2 text-xs font-medium">
@@ -365,7 +389,7 @@ function BigValue({ value, unit, compare, t }) {
                         <span className="text-slate-400">{t("insights.no_prior")}</span>
                     ) : (
                         <span className={compare.rate >= 0 ? "text-emerald-600" : "text-red-600"}>
-                            {compare.rate >= 0 ? "▲" : "▼"} {Math.abs(compare.rate)}% {t("insights.vs_previous")} ({fmt(compare.previous)})
+                            {compare.rate >= 0 ? "▲" : "▼"} {Math.abs(compare.rate)}% {t("insights.vs_previous")} ({show(compare.previous)})
                         </span>
                     )}
                 </div>
@@ -374,31 +398,32 @@ function BigValue({ value, unit, compare, t }) {
     );
 }
 
-function BranchValueList({ branches, t }) {
+function BranchValueList({ branches, t, show }) {
     return (
         <div className="overflow-hidden rounded-xl border border-slate-200">
             <p className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("insights.by_branch")}</p>
             {branches.map((b) => (
                 <div key={b.branch_name} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 text-sm first-of-type:border-t-0">
                     <span className="min-w-0 truncate text-slate-600">{b.branch_name}</span>
-                    <span className="font-semibold text-slate-900 tabular-nums">{fmt(b.value)}</span>
+                    <span className="font-semibold text-slate-900 tabular-nums">{show(b.value)}</span>
                 </div>
             ))}
         </div>
     );
 }
 
-function BreakdownList({ items, t }) {
+function BreakdownList({ items, t, show }) {
     if (!items || items.length === 0) return <p className="py-6 text-center text-sm text-slate-500">{t("insights.no_data")}</p>;
     const max = Math.max(...items.map((i) => i.value), 1);
     return (
         <div className="flex flex-col gap-2">
-            {items.map((it) => (
-                <div key={it.label}>
+            {/* two doctors can share a name, so the key also uses the position */}
+            {items.map((it, i) => (
+                <div key={`${it.label}-${i}`}>
                     <div className="flex items-center justify-between gap-2 text-sm">
                         <span className="min-w-0 break-words text-slate-700">{it.label}</span>
                         <span className="shrink-0 text-slate-500 tabular-nums">
-                            {fmt(it.value)} <span className="text-xs text-slate-400">({it.rate}%)</span>
+                            {show(it.value)} <span className="text-xs text-slate-400">({it.rate}%)</span>
                         </span>
                     </div>
                     <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
@@ -410,22 +435,22 @@ function BreakdownList({ items, t }) {
     );
 }
 
-function BranchBreakdownSections({ branches, t }) {
+function BranchBreakdownSections({ branches, t, show }) {
     return (
         <div className="flex flex-col gap-3">
             {branches.map((b) => (
                 <div key={b.branch_name} className="rounded-xl border border-slate-200 p-3">
                     <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{b.branch_name}</p>
-                    <BreakdownList items={b.breakdown} t={t} />
+                    <BreakdownList items={b.breakdown} t={t} show={show} />
                 </div>
             ))}
         </div>
     );
 }
 
-function growthText(c, t) {
+function growthText(c, t, show) {
     if (!c) return "—";
-    if (c.rate === null) return `${fmt(c.current)} (${t("insights.no_prior")})`;
+    if (c.rate === null) return `${show(c.current)} (${t("insights.no_prior")})`;
     const sign = c.rate >= 0 ? "▲" : "▼";
-    return `${fmt(c.current)} (${sign} ${Math.abs(c.rate)}% ${t("insights.vs_previous")} ${fmt(c.previous)})`;
+    return `${show(c.current)} (${sign} ${Math.abs(c.rate)}% ${t("insights.vs_previous")} ${show(c.previous)})`;
 }

@@ -1,7 +1,8 @@
 import api from "./api";
 
-export const fetchPaymentHistory = async () => {
-    const res = await api.get("/api/history/payments");
+// one page of the payment history (+ totals over all payments)
+export const fetchPaymentHistory = async (page = 1) => {
+    const res = await api.get("/api/history/payments", { params: { page } });
     return res.data;
 };
 

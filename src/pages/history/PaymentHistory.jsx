@@ -8,13 +8,8 @@ import PageHeader from "../../components/common/PageHeader";
 export default function PaymentHistory() {
   const { t } = useTranslation();
   const { formatDateTime, formatMoney } = useSettings();
-  const { payments, isLoading, error, refresh } = usePaymentHistory();
+  const { payments, totals, total, hasMore, isLoading, isLoadingMore, error, refresh, loadMore } = usePaymentHistory();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
-
-  const totalAmount = payments.reduce((sum, p) => {
-    const val = Number(p.amount || 0);
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
 
   return (
     <div className="w-full space-y-5">
@@ -48,7 +43,10 @@ export default function PaymentHistory() {
             {t("clin.ph_total_collected")}
           </p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900 tabular-nums sm:text-[28px]">
-            {formatMoney(totalAmount)}
+            {/* totals of ALL payments (from the server), one line per currency */}
+            {totals.length === 0 ? formatMoney(0) : totals.map((x) => (
+              <span key={x.currency_code} className="block">{formatMoney(x.amount, x.currency_code)}</span>
+            ))}
           </p>
         </div>
 
@@ -57,7 +55,7 @@ export default function PaymentHistory() {
             {t("clin.ph_total_payments")}
           </p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900 tabular-nums sm:text-[28px]">
-            {isLoading ? "…" : payments.length}
+            {isLoading ? "…" : total}
           </p>
         </div>
       </div>
@@ -156,6 +154,20 @@ export default function PaymentHistory() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* next page */}
+        {!isLoading && !error && hasMore && (
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              {isLoadingMore ? t("clin.ph_loading") : t("clin.ph_load_more")}
+            </button>
           </div>
         )}
       </div>

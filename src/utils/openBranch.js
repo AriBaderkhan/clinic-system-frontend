@@ -7,6 +7,8 @@ export const LAST_BRANCH = "last_branch_id";
 export default async function openBranch(branchId, to = "/home") {
   const res = await switchBranch(branchId);
   localStorage.setItem("token", res.token);
+  // the renewal token now belongs to the opened branch too
+  if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
   const me = await api.get("/me");
   if (me.data?.user) localStorage.setItem("user", JSON.stringify(me.data.user));
   try { localStorage.setItem(LAST_BRANCH, String(branchId)); } catch { /* storage off: fine */ }
