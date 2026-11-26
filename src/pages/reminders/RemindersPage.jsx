@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { getUpcomingReminders, markReminderSent } from "../../api/reminderApi";
@@ -18,8 +18,36 @@ const fmtWhen = (iso) =>
     hour: "numeric", minute: "2-digit", hour12: true,
   }).format(new Date(iso));
 
+// The clinic day of an appointment (YYYY-MM-DD), used to group the list by day.
+const dayKey = (iso) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Baghdad" }).format(new Date(iso));
+
+// Day title: weekday name + date, in the user's language.
+const fmtDay = (iso, lang) => {
+  try {
+    return new Intl.DateTimeFormat(lang, {
+      timeZone: "Asia/Baghdad",
+      weekday: "long", day: "numeric", month: "long", year: "numeric",
+    }).format(new Date(iso));
+  } catch {
+    return dayKey(iso);
+  }
+};
+
+// The list comes sorted nearest-first, so one pass groups it into days in order.
+const groupByDay = (list, lang) => {
+  const groups = [];
+  for (const r of list) {
+    const key = dayKey(r.scheduled_start);
+    const last = groups[groups.length - 1];
+    if (last && last.key === key) last.items.push(r);
+    else groups.push({ key, title: fmtDay(r.scheduled_start, lang), items: [r] });
+  }
+  return groups;
+};
+
 export default function RemindersPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -87,6 +115,8 @@ export default function RemindersPage() {
     }
   };
 
+  const days = groupByDay(list, i18n.language);
+
   return (
     <div className="w-full space-y-5">
       <PageHeader title={t("appt.rem_title")} subtitle={t("appt.rem_subtitle")} />
@@ -115,7 +145,14 @@ export default function RemindersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {list.map((r) => (
+              {days.map((day) => (
+                <Fragment key={day.key}>
+                <tr className="bg-slate-50">
+                  <td colSpan={4} className="px-4 py-2 text-sm font-semibold text-slate-800">
+                    {day.title}
+                  </td>
+                </tr>
+                {day.items.map((r) => (
                 <tr key={r.appointment_id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">
                     {r.patient_name}
@@ -138,6 +175,8 @@ export default function RemindersPage() {
                     </button>
                   </td>
                 </tr>
+                ))}
+                </Fragment>
               ))}
             </tbody>
           </table>

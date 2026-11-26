@@ -823,7 +823,7 @@
     "day_sat": "Sat",
     "day_sun": "Sun",
     "rem_title": "Appointment Reminders",
-    "rem_subtitle": "Appointments in the next 48 hours — send a WhatsApp reminder.",
+    "rem_subtitle": "Appointments for the next 4 days, starting tomorrow — send a WhatsApp reminder.",
     "rem_empty": "No appointments need a reminder right now. 🎉",
     "rem_col_patient": "Patient",
     "rem_col_phone": "Phone",
